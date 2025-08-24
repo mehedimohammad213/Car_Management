@@ -1,35 +1,148 @@
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import Layout from "./components/Layout";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import CarManagement from "./pages/CarManagement";
+import StockManagement from "./pages/StockManagement";
+import SellManagement from "./pages/SellManagement";
+import OrderManagement from "./pages/OrderManagement";
+import ClientManagement from "./pages/ClientManagement";
+
+import Settings from "./pages/Settings";
+
+import CarCatalog from "./pages/CarCatalog";
+import CarDetails from "./pages/CarDetails";
+import Cart from "./pages/Cart";
+import Wishlist from "./pages/Wishlist";
+import Orders from "./pages/Orders";
+import UserProfile from "./pages/UserProfile";
+import UserPassword from "./pages/UserPassword";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            Hello World! 🚗
-          </h1>
-          <p className="text-lg text-gray-600 mb-6">
-            Welcome to your Car Management System
-          </p>
-          <div className="space-y-4">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <h2 className="text-xl font-semibold text-blue-800 mb-2">
-                Tech Stack
-              </h2>
-              <ul className="text-sm text-blue-700 space-y-1">
-                <li>• React 18</li>
-                <li>• TypeScript</li>
-                <li>• Tailwind CSS</li>
-                <li>• Modern UI/UX</li>
-              </ul>
+    <ThemeProvider>
+      <AuthProvider>
+        <CartProvider>
+          <Router>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/" element={<Layout />}>
+                  {/* Admin Routes */}
+                  <Route
+                    path="/admin"
+                    element={
+                      <ProtectedRoute role="admin">
+                        <Dashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/cars"
+                    element={
+                      <ProtectedRoute role="admin">
+                        <CarManagement />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/stock"
+                    element={
+                      <ProtectedRoute role="admin">
+                        <StockManagement />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/sell"
+                    element={
+                      <ProtectedRoute role="admin">
+                        <SellManagement />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/orders"
+                    element={
+                      <ProtectedRoute role="admin">
+                        <OrderManagement />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/clients"
+                    element={
+                      <ProtectedRoute role="admin">
+                        <ClientManagement />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/admin/settings"
+                    element={
+                      <ProtectedRoute role="admin">
+                        <Settings />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* User Routes */}
+                  <Route path="/" element={<CarCatalog />} />
+                  <Route path="/car/:id" element={<CarDetails />} />
+                  <Route
+                    path="/wishlist"
+                    element={
+                      <ProtectedRoute role="user">
+                        <Wishlist />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route
+                    path="/orders"
+                    element={
+                      <ProtectedRoute role="user">
+                        <Orders />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute role="user">
+                        <UserProfile />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile/edit"
+                    element={
+                      <ProtectedRoute role="user">
+                        <UserProfile />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile/password"
+                    element={
+                      <ProtectedRoute role="user">
+                        <UserPassword />
+                      </ProtectedRoute>
+                    }
+                  />
+                </Route>
+              </Routes>
             </div>
-            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 transform hover:scale-105">
-              Get Started
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+          </Router>
+        </CartProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
