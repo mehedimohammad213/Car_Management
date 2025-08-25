@@ -29,21 +29,21 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4 sm:px-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 px-4 sm:px-6">
       <div className="max-w-sm sm:max-w-md w-full space-y-6 sm:space-y-8">
         <div className="text-center">
           <div className="flex justify-center">
             <CarIcon className="w-12 h-12 sm:w-16 sm:h-16 text-blue-600" />
           </div>
-          <h2 className="mt-4 sm:mt-6 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          <h2 className="mt-4 sm:mt-6 text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
             Welcome to CarSelling
           </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-sm text-slate-600 dark:text-gray-400">
             Sign in to your account
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-6 sm:p-8">
+        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 sm:p-8">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
               <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-md text-sm">
@@ -54,7 +54,7 @@ const Login: React.FC = () => {
             <div>
               <label
                 htmlFor="username"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-slate-700 dark:text-gray-300"
               >
                 Username
               </label>
@@ -65,7 +65,7 @@ const Login: React.FC = () => {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                className="mt-1 block w-full px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                 placeholder="Enter your username"
               />
             </div>
@@ -73,7 +73,7 @@ const Login: React.FC = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-slate-700 dark:text-gray-300"
               >
                 Password
               </label>
@@ -85,13 +85,13 @@ const Login: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                  className="block w-full px-3 py-2 pr-10 border border-slate-300 dark:border-gray-600 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-gray-300"
                 >
                   {showPassword ? (
                     <EyeOffIcon className="h-5 w-5" />
@@ -116,11 +116,11 @@ const Login: React.FC = () => {
           </form>
 
           {/* Demo credentials */}
-          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-md">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+          <div className="mt-6 p-4 bg-slate-50 dark:bg-gray-700 rounded-md">
+            <h3 className="text-sm font-medium text-slate-900 dark:text-white mb-2">
               Demo Credentials:
             </h3>
-            <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
+            <div className="space-y-1 text-xs text-slate-600 dark:text-gray-400">
               <p>
                 <strong>Admin:</strong> username: admin, password: admin123
               </p>

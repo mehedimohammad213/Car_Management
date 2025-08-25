@@ -17,22 +17,22 @@ code {
     monospace;
 }
 
-/* Custom scrollbar */
+/* Light theme scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f8fafc;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: #cbd5e1;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: #94a3b8;
 }
 
 /* Dark mode scrollbar */
@@ -46,4 +46,15 @@ code {
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
+}
+
+/* Light theme base styles */
+body {
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
+/* Ensure light theme is applied by default */
+:root {
+  color-scheme: light;
 }
