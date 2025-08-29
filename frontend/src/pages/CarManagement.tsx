@@ -103,33 +103,6 @@ const CarManagement: React.FC = () => {
                   <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
                     Car Management
                   </h1>
-                  <div className="flex items-center space-x-4 text-blue-100">
-                    <span className="text-lg">Dashboard</span>
-                    <span className="w-1 h-1 bg-blue-200 rounded-full"></span>
-                    <span className="text-lg">Inventory Control</span>
-                  </div>
-                </div>
-              </div>
-              <p className="text-blue-100 text-xl leading-relaxed max-w-2xl">
-                Manage your car inventory, brands, and categories with powerful
-                tools and real-time insights
-              </p>
-
-              {/* Quick Stats */}
-              <div className="flex flex-wrap gap-6 mt-6">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="text-blue-100 text-sm">Live Updates</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                  <span className="text-blue-100 text-sm">
-                    Real-time Analytics
-                  </span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                  <span className="text-blue-100 text-sm">Smart Filters</span>
                 </div>
               </div>
             </div>
@@ -144,19 +117,6 @@ const CarManagement: React.FC = () => {
                 <span className="relative z-10">Add New Car</span>
                 <div className="absolute -right-1 -top-1 w-3 h-3 bg-green-400 rounded-full animate-ping"></div>
               </button>
-
-              {/* Quick Actions */}
-              <div className="flex space-x-3 mt-4">
-                <button className="p-3 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-all duration-200 border border-white/20">
-                  <TrendingUpIcon className="w-5 h-5 text-white" />
-                </button>
-                <button className="p-3 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-all duration-200 border border-white/20">
-                  <FilterIcon className="w-5 h-5 text-white" />
-                </button>
-                <button className="p-3 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-all duration-200 border border-white/20">
-                  <SearchIcon className="w-5 h-5 text-white" />
-                </button>
-              </div>
             </div>
           </div>
         </div>
