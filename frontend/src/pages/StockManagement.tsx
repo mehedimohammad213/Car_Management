@@ -151,12 +151,7 @@ const StockManagement: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Stock Management
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Track and manage your car inventory
-          </p>
+
         </div>
         <div className="flex space-x-3 mt-4 sm:mt-0">
           <button

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  SearchIcon, 
+import {
+  SearchIcon,
   FilterIcon,
   DownloadIcon,
   EyeIcon,
@@ -34,12 +34,12 @@ const OrderManagement: React.FC = () => {
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.items.some(item => 
+                         order.items.some(item =>
                            item.car.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            item.car.model.toLowerCase().includes(searchTerm.toLowerCase())
                          );
     const matchesStatus = !statusFilter || order.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -61,7 +61,7 @@ const OrderManagement: React.FC = () => {
   };
 
   const handleStatusChange = (orderId: string, newStatus: string) => {
-    setOrders(orders.map(order => 
+    setOrders(orders.map(order =>
       order.id === orderId ? { ...order, status: newStatus as any } : order
     ));
   };
@@ -86,16 +86,6 @@ const OrderManagement: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Order Management
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Manage customer orders and track their status
-        </p>
-      </div>
-
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
@@ -172,7 +162,7 @@ const OrderManagement: React.FC = () => {
               />
             </div>
           </div>
-          
+
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
