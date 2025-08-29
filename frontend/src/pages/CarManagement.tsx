@@ -6,7 +6,6 @@ import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 import CarManagementHeader from "../components/CarManagementHeader";
 import CarTable from "../components/CarTable";
 import Pagination from "../components/Pagination";
-import ResultsCount from "../components/ResultsCount";
 
 const CarManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -140,13 +139,6 @@ const CarManagement: React.FC = () => {
         onSearchChange={setSearchTerm}
         onBrandChange={setSelectedBrand}
         onCategoryChange={setSelectedCategory}
-      />
-
-      {/* Results Count */}
-      <ResultsCount
-        startIndex={startIndex}
-        endIndex={Math.min(endIndex, filteredCars.length)}
-        totalItems={filteredCars.length}
       />
 
       {/* Table Component */}
