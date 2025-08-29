@@ -1,24 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  PlusIcon,
-  EditIcon,
-  TrashIcon,
-  SearchIcon,
-  FilterIcon,
-  EyeIcon,
-  CarIcon,
-  CheckCircleIcon,
-  TagIcon,
-  FolderIcon,
-  MoreVerticalIcon,
-  TrendingUpIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "lucide-react";
 import { mockApi } from "../services/mockData";
 import { Car, Brand, Category } from "../types";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
+import CarManagementHeader from "../components/CarManagementHeader";
+import CarTable from "../components/CarTable";
+import Pagination from "../components/Pagination";
+import ResultsCount from "../components/ResultsCount";
 
 const CarManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -96,42 +84,6 @@ const CarManagement: React.FC = () => {
     goToPage(currentPage + 1);
   };
 
-  // Generate page numbers for pagination
-  const getPageNumbers = () => {
-    const pages = [];
-    const maxVisiblePages = 5;
-
-    if (totalPages <= maxVisiblePages) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      if (currentPage <= 3) {
-        for (let i = 1; i <= 4; i++) {
-          pages.push(i);
-        }
-        pages.push("...");
-        pages.push(totalPages);
-      } else if (currentPage >= totalPages - 2) {
-        pages.push(1);
-        pages.push("...");
-        for (let i = totalPages - 3; i <= totalPages; i++) {
-          pages.push(i);
-        }
-      } else {
-        pages.push(1);
-        pages.push("...");
-        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-          pages.push(i);
-        }
-        pages.push("...");
-        pages.push(totalPages);
-      }
-    }
-
-    return pages;
-  };
-
   const handleDeleteCar = (car: Car) => {
     setCarToDelete(car);
     setShowDeleteModal(true);
@@ -177,337 +129,44 @@ const CarManagement: React.FC = () => {
 
   return (
     <div className="space-y-6 sm:space-y-8 px-4 sm:px-6 lg:px-8">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                Total Cars
-              </p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                {cars.length}
-              </p>
-              <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                +2 from last month
-              </p>
-            </div>
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-              <CarIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-            </div>
-          </div>
-        </div>
+      {/* Header Component */}
+      <CarManagementHeader
+        cars={cars}
+        brands={brands}
+        categories={categories}
+        searchTerm={searchTerm}
+        selectedBrand={selectedBrand}
+        selectedCategory={selectedCategory}
+        onSearchChange={setSearchTerm}
+        onBrandChange={setSelectedBrand}
+        onCategoryChange={setSelectedCategory}
+      />
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                Available
-              </p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                {cars.filter((car) => car.isAvailable).length}
-              </p>
-              <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                Ready for sale
-              </p>
-            </div>
-            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
-              <CheckCircleIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
-            </div>
-          </div>
-        </div>
+      {/* Results Count */}
+      <ResultsCount
+        startIndex={startIndex}
+        endIndex={Math.min(endIndex, filteredCars.length)}
+        totalItems={filteredCars.length}
+      />
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                Brands
-              </p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                {brands.length}
-              </p>
-              <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                Active brands
-              </p>
-            </div>
-            <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl">
-              <TagIcon className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-            </div>
-          </div>
-        </div>
+      {/* Table Component */}
+      <div className="relative">
+        <CarTable
+          cars={paginatedCars}
+          onToggleAvailability={handleToggleAvailability}
+          onDeleteCar={handleDeleteCar}
+        />
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                Categories
-              </p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                {categories.length}
-              </p>
-              <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                Vehicle types
-              </p>
-            </div>
-            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
-              <FolderIcon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
-        <div className="flex flex-col lg:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search cars by brand or model..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-200"
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-3">
-            <select
-              value={selectedBrand}
-              onChange={(e) => setSelectedBrand(e.target.value)}
-              className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-200 min-w-[140px]"
-            >
-              <option value="">All Brands</option>
-              {brands.map((brand) => (
-                <option key={brand.id} value={brand.name}>
-                  {brand.name}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-200 min-w-[140px]"
-            >
-              <option value="">All Categories</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.name}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-
-            <button
-              onClick={() => navigate("/create-car")}
-              className="group relative flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300 font-semibold shadow-lg hover:shadow-xl border border-blue-600 hover:border-blue-700"
-            >
-              <PlusIcon className="w-5 h-5 mr-2" />
-              <span>Add New Car</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Cars Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Car
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Brand
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Category
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Stock
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {paginatedCars.map((car) => (
-                <tr
-                  key={car.id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200"
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <img
-                        src={car.image}
-                        alt={`${car.brand} ${car.model}`}
-                        className="w-12 h-12 rounded-lg object-cover mr-4"
-                      />
-                      <div>
-                        <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                          {car.brand} {car.model}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {car.year} • {car.mileage.toLocaleString()} miles
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                      {car.brand}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                      {car.category}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                      ${car.price.toLocaleString()}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-gray-900 dark:text-white">
-                      {car.stock}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        car.isAvailable
-                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                          : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
-                      }`}
-                    >
-                      {car.isAvailable ? "Available" : "Out of Stock"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => handleToggleAvailability(car.id)}
-                        className={`p-2 rounded-lg transition-colors ${
-                          car.isAvailable
-                            ? "text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30"
-                            : "text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30"
-                        }`}
-                        title={
-                          car.isAvailable
-                            ? "Mark as unavailable"
-                            : "Mark as available"
-                        }
-                      >
-                        <CheckCircleIcon className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => navigate(`/view-car/${car.id}`)}
-                        className="p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
-                        title="View car"
-                      >
-                        <EyeIcon className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => navigate(`/update-car/${car.id}`)}
-                        className="p-2 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-colors"
-                        title="Edit car"
-                      >
-                        <EditIcon className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteCar(car)}
-                        className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                        title="Delete car"
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {filteredCars.length === 0 && (
-          <div className="text-center py-12">
-            <CarIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 dark:text-gray-400">
-              No cars found matching your criteria.
-            </p>
-          </div>
-        )}
-
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-t border-gray-200 dark:border-gray-600">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                <span>Items per page:</span>
-                <span className="font-semibold">{itemsPerPage}</span>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                {/* Previous Button */}
-                <button
-                  onClick={goToPreviousPage}
-                  disabled={currentPage === 1}
-                  className="p-2 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronLeftIcon className="w-4 h-4" />
-                </button>
-
-                {/* Page Numbers */}
-                <div className="flex items-center space-x-1">
-                  {getPageNumbers().map((page, index) => (
-                    <React.Fragment key={index}>
-                      {page === "..." ? (
-                        <span className="px-3 py-2 text-gray-500 dark:text-gray-400">
-                          ...
-                        </span>
-                      ) : (
-                        <button
-                          onClick={() => goToPage(page as number)}
-                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            currentPage === page
-                              ? "bg-blue-600 text-white"
-                              : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600"
-                          }`}
-                        >
-                          {page}
-                        </button>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </div>
-
-                {/* Next Button */}
-                <button
-                  onClick={goToNextPage}
-                  disabled={currentPage === totalPages}
-                  className="p-2 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronRightIcon className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Page <span className="font-semibold">{currentPage}</span> of{" "}
-                <span className="font-semibold">{totalPages}</span>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Pagination Component */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          totalItems={filteredCars.length}
+          onPageChange={goToPage}
+          onPreviousPage={goToPreviousPage}
+          onNextPage={goToNextPage}
+        />
       </div>
 
       {/* Add/Edit Car Modal (Placeholder) */}
