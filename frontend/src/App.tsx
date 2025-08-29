@@ -7,6 +7,9 @@ import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import CarManagement from "./pages/CarManagement";
+import CreateCar from "./pages/CreateCar";
+import ViewCar from "./pages/ViewCar";
+import UpdateCar from "./pages/UpdateCar";
 import StockManagement from "./pages/StockManagement";
 import SellManagement from "./pages/SellManagement";
 import OrderManagement from "./pages/OrderManagement";
@@ -47,6 +50,30 @@ function App() {
                     element={
                       <ProtectedRoute role="admin">
                         <CarManagement />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/create-car"
+                    element={
+                      <ProtectedRoute role="admin">
+                        <CreateCar />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/view-car/:id"
+                    element={
+                      <ProtectedRoute role="admin">
+                        <ViewCar />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/update-car/:id"
+                    element={
+                      <ProtectedRoute role="admin">
+                        <UpdateCar />
                       </ProtectedRoute>
                     }
                   />

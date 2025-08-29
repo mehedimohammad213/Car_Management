@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   PlusIcon,
   EditIcon,
@@ -12,11 +13,15 @@ import {
   FolderIcon,
   MoreVerticalIcon,
   TrendingUpIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "lucide-react";
 import { mockApi } from "../services/mockData";
 import { Car, Brand, Category } from "../types";
+import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 
 const CarManagement: React.FC = () => {
+  const navigate = useNavigate();
   const [cars, setCars] = useState<Car[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -26,6 +31,13 @@ const CarManagement: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCar, setEditingCar] = useState<Car | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [carToDelete, setCarToDelete] = useState<Car | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,10 +72,91 @@ const CarManagement: React.FC = () => {
     return matchesSearch && matchesBrand && matchesCategory;
   });
 
-  const handleDeleteCar = (carId: string) => {
-    if (window.confirm("Are you sure you want to delete this car?")) {
-      setCars(cars.filter((car) => car.id !== carId));
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredCars.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedCars = filteredCars.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedBrand, selectedCategory]);
+
+  // Pagination handlers
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
+
+  const goToPreviousPage = () => {
+    goToPage(currentPage - 1);
+  };
+
+  const goToNextPage = () => {
+    goToPage(currentPage + 1);
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) {
+          pages.push(i);
+        }
+        pages.push("...");
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1);
+        pages.push("...");
+        for (let i = totalPages - 3; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        pages.push(1);
+        pages.push("...");
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pages.push(i);
+        }
+        pages.push("...");
+        pages.push(totalPages);
+      }
     }
+
+    return pages;
+  };
+
+  const handleDeleteCar = (car: Car) => {
+    setCarToDelete(car);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!carToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setCars(cars.filter((car) => car.id !== carToDelete.id));
+      setShowDeleteModal(false);
+      setCarToDelete(null);
+    } catch (error) {
+      console.error("Error deleting car:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setCarToDelete(null);
   };
 
   const handleToggleAvailability = (carId: string) => {
@@ -207,25 +300,13 @@ const CarManagement: React.FC = () => {
             </select>
 
             <button
-              onClick={() => setShowAddModal(true)}
+              onClick={() => navigate("/create-car")}
               className="group relative flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300 font-semibold shadow-lg hover:shadow-xl border border-blue-600 hover:border-blue-700"
             >
               <PlusIcon className="w-5 h-5 mr-2" />
               <span>Add New Car</span>
             </button>
           </div>
-        </div>
-      </div>
-
-      {/* Results Count */}
-      <div className="flex justify-between items-center">
-        <p className="text-gray-600 dark:text-gray-400">
-          Showing <span className="font-semibold">{filteredCars.length}</span>{" "}
-          of <span className="font-semibold">{cars.length}</span> cars
-        </p>
-        <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-          <TrendingUpIcon className="w-4 h-4" />
-          <span>Last updated: {new Date().toLocaleDateString()}</span>
         </div>
       </div>
 
@@ -259,7 +340,7 @@ const CarManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredCars.map((car) => (
+              {paginatedCars.map((car) => (
                 <tr
                   key={car.id}
                   className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200"
@@ -330,14 +411,21 @@ const CarManagement: React.FC = () => {
                         <CheckCircleIcon className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => setEditingCar(car)}
+                        onClick={() => navigate(`/view-car/${car.id}`)}
                         className="p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                        title="View car"
+                      >
+                        <EyeIcon className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => navigate(`/update-car/${car.id}`)}
+                        className="p-2 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-colors"
                         title="Edit car"
                       >
                         <EditIcon className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => handleDeleteCar(car.id)}
+                        onClick={() => handleDeleteCar(car)}
                         className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                         title="Delete car"
                       >
@@ -357,6 +445,67 @@ const CarManagement: React.FC = () => {
             <p className="text-gray-500 dark:text-gray-400">
               No cars found matching your criteria.
             </p>
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-t border-gray-200 dark:border-gray-600">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                <span>Items per page:</span>
+                <span className="font-semibold">{itemsPerPage}</span>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                {/* Previous Button */}
+                <button
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeftIcon className="w-4 h-4" />
+                </button>
+
+                {/* Page Numbers */}
+                <div className="flex items-center space-x-1">
+                  {getPageNumbers().map((page, index) => (
+                    <React.Fragment key={index}>
+                      {page === "..." ? (
+                        <span className="px-3 py-2 text-gray-500 dark:text-gray-400">
+                          ...
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => goToPage(page as number)}
+                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            currentPage === page
+                              ? "bg-blue-600 text-white"
+                              : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+
+                {/* Next Button */}
+                <button
+                  onClick={goToNextPage}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRightIcon className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Page <span className="font-semibold">{currentPage}</span> of{" "}
+                <span className="font-semibold">{totalPages}</span>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -389,6 +538,19 @@ const CarManagement: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Delete Car"
+        message="Are you sure you want to delete"
+        itemName={
+          carToDelete ? `${carToDelete.brand} ${carToDelete.model}` : ""
+        }
+        isLoading={isDeleting}
+      />
     </div>
   );
 };
