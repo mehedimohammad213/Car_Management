@@ -84,44 +84,6 @@ const CarManagement: React.FC = () => {
 
   return (
     <div className="space-y-6 sm:space-y-8 px-4 sm:px-6 lg:px-8">
-      {/* Header Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-white shadow-2xl">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-32 translate-x-32"></div>
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-white rounded-full translate-y-16 -translate-x-16"></div>
-        </div>
-
-        <div className="relative z-10">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex-1">
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mr-3 sm:mr-4 border border-white/30">
-                  <CarIcon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                    Car Management
-                  </h1>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 lg:mt-0 lg:ml-8">
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="group relative flex items-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-2xl hover:bg-white/20 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl border border-white/20 hover:border-white/40"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <PlusIcon className="w-6 h-6 mr-3 relative z-10" />
-                <span className="relative z-10">Add New Car</span>
-                <div className="absolute -right-1 -top-1 w-3 h-3 bg-green-400 rounded-full animate-ping"></div>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300">
@@ -243,6 +205,14 @@ const CarManagement: React.FC = () => {
                 </option>
               ))}
             </select>
+
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="group relative flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300 font-semibold shadow-lg hover:shadow-xl border border-blue-600 hover:border-blue-700"
+            >
+              <PlusIcon className="w-5 h-5 mr-2" />
+              <span>Add New Car</span>
+            </button>
           </div>
         </div>
       </div>
