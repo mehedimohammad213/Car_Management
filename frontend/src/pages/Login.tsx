@@ -54,7 +54,14 @@ const Login: React.FC = () => {
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <div className="flex justify-center">
-              <CarIcon className="w-12 h-12 text-blue-600" />
+              {/* Gorgeous Car Logo */}
+              <div className="relative">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-full flex items-center justify-center shadow-2xl">
+                  <CarIcon className="w-12 h-12 text-white" />
+                </div>
+                {/* Logo Glow Effect */}
+                <div className="absolute inset-0 w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full blur-xl opacity-30 animate-pulse"></div>
+              </div>
             </div>
             <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
               Welcome Back
@@ -155,22 +162,15 @@ const Login: React.FC = () => {
       </div>
 
       {/* Image Section */}
-      <div className="hidden lg:flex lg:flex-1 relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-black opacity-10"></div>
-
+      <div className="hidden lg:flex lg:flex-1 relative overflow-hidden">
         {/* Car Image */}
         <div className="absolute inset-0 flex items-center justify-center">
           <img
-            src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-            alt="Luxury Car"
-            className="w-full h-full object-cover opacity-20"
+            src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+            alt="Unique Vintage Sports Car"
+            className="w-full h-full object-cover"
           />
         </div>
-
-        {/* Decorative Elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white bg-opacity-5 rounded-full -translate-y-32 translate-x-32"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white bg-opacity-5 rounded-full translate-y-24 -translate-x-24"></div>
       </div>
     </div>
   );
