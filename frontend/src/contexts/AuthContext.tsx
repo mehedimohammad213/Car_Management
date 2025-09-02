@@ -82,8 +82,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
+    try {
+      // Clear user state
+      setUser(null);
+      // Remove user data from localStorage
+      localStorage.removeItem("user");
+      // Clear any other user-related data that might be stored
+      localStorage.removeItem("cart");
+      localStorage.removeItem("wishlist");
+      // You can add more cleanup here if needed
+    } catch (error) {
+      console.error("Error during logout:", error);
+      // Even if there's an error, ensure user is logged out
+      setUser(null);
+    }
   };
 
   const value = {

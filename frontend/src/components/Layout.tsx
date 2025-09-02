@@ -24,16 +24,58 @@ import {
 
 const Layout: React.FC = () => {
   const { user, logout } = useAuth();
-  const { getTotalItems } = useCart();
+  const { getTotalItems, clearCart } = useCart();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [sidebarMinimized, setSidebarMinimized] = React.useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = React.useState(false);
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = React.useState(false);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  // Handle clicking outside profile dropdown and escape key
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (profileDropdownOpen && !target.closest(".profile-dropdown")) {
+        setProfileDropdownOpen(false);
+      }
+    };
+
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && profileDropdownOpen) {
+        setProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscapeKey);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [profileDropdownOpen]);
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      // Close the profile dropdown first
+      setProfileDropdownOpen(false);
+      // Close mobile sidebar if open
+      setSidebarOpen(false);
+      // Clear cart if there are items
+      if (getTotalItems() > 0) {
+        clearCart();
+      }
+      // Perform logout
+      logout();
+      // Navigate to login page
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+      setIsLoggingOut(false);
+    }
   };
 
   const isActive = (path: string) => location.pathname === path;
@@ -54,7 +96,8 @@ const Layout: React.FC = () => {
   ];
 
   const userNavItems = [
-    { path: "/", label: "Browse Cars", icon: HomeIcon },
+    { path: "/dashboard", label: "Dashboard", icon: BarChartIcon },
+    { path: "/browse", label: "Browse Cars", icon: HomeIcon },
     { path: "/wishlist", label: "Wishlist", icon: HeartIcon },
     { path: "/cart", label: "Cart", icon: ShoppingCartIcon },
     { path: "/orders", label: "My Orders", icon: UserIcon },
@@ -200,7 +243,7 @@ const Layout: React.FC = () => {
 
               <div className="flex items-center space-x-2 sm:space-x-4">
                 {/* Profile Dropdown */}
-                <div className="relative">
+                <div className="relative profile-dropdown">
                   <button
                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                     className="flex items-center space-x-1 sm:space-x-2 p-1 sm:p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-gray-700 transition-colors"
@@ -224,13 +267,21 @@ const Layout: React.FC = () => {
                     <div className="absolute right-0 mt-2 w-40 sm:w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-slate-200 dark:border-gray-700 py-2 z-50">
                       <hr className="my-2 border-slate-200 dark:border-gray-700" />
                       <button
-                        onClick={() => {
-                          setProfileDropdownOpen(false);
-                          handleLogout();
-                        }}
-                        className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        onClick={handleLogout}
+                        disabled={isLoggingOut}
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                       >
-                        Logout
+                        {isLoggingOut ? (
+                          <>
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-red-600 mr-2"></div>
+                            Logging out...
+                          </>
+                        ) : (
+                          <>
+                            <LogOutIcon className="w-3 h-3 mr-2" />
+                            Logout
+                          </>
+                        )}
                       </button>
                     </div>
                   )}
@@ -244,14 +295,6 @@ const Layout: React.FC = () => {
             <Outlet />
           </main>
         </div>
-
-        {/* Close dropdown when clicking outside */}
-        {profileDropdownOpen && (
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setProfileDropdownOpen(false)}
-          />
-        )}
       </div>
     </div>
   );

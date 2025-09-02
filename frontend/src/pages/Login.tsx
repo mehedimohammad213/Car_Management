@@ -1,14 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { CarIcon, EyeIcon, EyeOffIcon, Shield, Users, TrendingUp } from "lucide-react";
+import {
+  CarIcon,
+  EyeIcon,
+  EyeOffIcon,
+  Shield,
+  Users,
+  TrendingUp,
+} from "lucide-react";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, user } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,12 +28,24 @@ const Login: React.FC = () => {
     }
 
     const success = await login(username, password);
-    if (success) {
-      navigate("/");
-    } else {
+    if (!success) {
       setError("Invalid username or password");
     }
   };
+
+  // Handle navigation after successful login
+  React.useEffect(() => {
+    if (user) {
+      console.log("User logged in:", user);
+      if (user.role === "admin") {
+        console.log("Redirecting to admin dashboard");
+        navigate("/admin"); // Admin dashboard
+      } else {
+        console.log("Redirecting to user dashboard");
+        navigate("/dashboard"); // User dashboard
+      }
+    }
+  }, [user, navigate]);
 
   return (
     <div className="min-h-screen flex">
@@ -148,7 +167,6 @@ const Login: React.FC = () => {
             className="w-full h-full object-cover opacity-20"
           />
         </div>
-
 
         {/* Decorative Elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-white bg-opacity-5 rounded-full -translate-y-32 translate-x-32"></div>
