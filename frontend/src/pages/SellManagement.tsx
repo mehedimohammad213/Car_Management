@@ -94,31 +94,10 @@ const SellManagement: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Sell Management
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Record and manage car sales transactions
-          </p>
-        </div>
-        <div className="flex space-x-3 mt-4 sm:mt-0">
-          <button
-            onClick={() => setShowAddSaleModal(true)}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <PlusIcon className="w-4 h-4 mr-2" />
-            Add Sale
-          </button>
-        </div>
-      </div>
-
       {/* Filters */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <div className="md:col-span-8">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Search
             </label>
@@ -133,7 +112,7 @@ const SellManagement: React.FC = () => {
               />
             </div>
           </div>
-          <div>
+          <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Status
             </label>
@@ -148,15 +127,13 @@ const SellManagement: React.FC = () => {
               <option value="cancelled">Cancelled</option>
             </select>
           </div>
-          <div className="flex items-end">
+          <div className="md:col-span-2 flex items-end">
             <button
-              onClick={() => {
-                setSearchTerm("");
-                setFilterStatus("");
-              }}
-              className="w-full px-4 py-2 text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              onClick={() => setShowAddSaleModal(true)}
+              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Clear Filters
+              <PlusIcon className="w-4 h-4 mr-2" />
+              Add Sale
             </button>
           </div>
         </div>
