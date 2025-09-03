@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { X, Image, Plus, Car, Calendar, Gauge, Fuel, Palette, Users, DollarSign, Settings, Star, MapPin, FileText } from "lucide-react";
 import { Car as CarType, CreateCarData, CarFilterOptions } from "../services/carApi";
+import { Category } from "../services/categoryApi";
 
 interface CarModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: CreateCarData) => void;
   car: CarType | null;
-  categories: Array<{ id: number; name: string }>;
+  categories: Category[];
   filterOptions: CarFilterOptions | null;
 }
 
@@ -60,7 +61,7 @@ const CarModal: React.FC<CarModalProps> = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [subcategories, setSubcategories] = useState<Array<{ id: number; name: string }>>([]);
+  const [subcategories, setSubcategories] = useState<Category[]>([]);
 
   const isEditMode = !!car;
 
@@ -121,17 +122,11 @@ const CarModal: React.FC<CarModalProps> = ({
 
   useEffect(() => {
     if (formData.category_id) {
-      const parentCategory = categories.find(cat => cat.id === formData.category_id);
-      if (parentCategory) {
-        // Filter subcategories based on parent category
-        const filteredSubcategories = categories.filter(cat => 
-          cat.id !== formData.category_id && 
-          categories.some(parent => parent.id === formData.category_id)
-        );
-        setSubcategories(filteredSubcategories);
-      } else {
-        setSubcategories([]);
-      }
+      // Find subcategories that have the selected category as their parent
+      const filteredSubcategories = categories.filter(cat => 
+        cat.parent_category_id === formData.category_id
+      );
+      setSubcategories(filteredSubcategories);
     } else {
       setSubcategories([]);
     }
@@ -186,21 +181,21 @@ const CarModal: React.FC<CarModalProps> = ({
     }
   };
 
-  const handleDetailChange = (detailIndex: number, field: keyof CreateCarData['details'][0], value: any) => {
+  const handleDetailChange = (detailIndex: number, field: keyof NonNullable<CreateCarData['details']>[0], value: any) => {
     setFormData(prev => ({
       ...prev,
-      details: prev.details?.map((detail, index) => 
+      details: (prev.details || []).map((detail, index) => 
         index === detailIndex ? { ...detail, [field]: value } : detail
-      ) || []
+      )
     }));
   };
 
-  const handlePhotoChange = (index: number, field: keyof CreateCarData['photos'][0], value: any) => {
+  const handlePhotoChange = (index: number, field: keyof NonNullable<CreateCarData['photos']>[0], value: any) => {
     setFormData(prev => ({
       ...prev,
-      photos: prev.photos?.map((photo, i) => 
+      photos: (prev.photos || []).map((photo, i) => 
         i === index ? { ...photo, [field]: value } : photo
-      ) || []
+      )
     }));
   };
 
@@ -474,21 +469,26 @@ const CarModal: React.FC<CarModalProps> = ({
                   }`}
                 >
                   <option value="">Select Category</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
+                  {categories
+                    .filter(category => category.children_count > 0) // Only show parent categories
+                    .map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
                 </select>
                 {errors.category_id && (
                   <p className="text-red-500 text-sm mt-1">{errors.category_id}</p>
                 )}
+                <p className="text-gray-500 text-sm mt-1">
+                  Only parent categories (categories with subcategories) are shown here
+                </p>
               </div>
 
               {/* Subcategory */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Subcategory
+                  Subcategory (Optional)
                 </label>
                 <select
                   value={formData.subcategory_id || ""}
@@ -502,6 +502,12 @@ const CarModal: React.FC<CarModalProps> = ({
                     </option>
                   ))}
                 </select>
+                <p className="text-gray-500 text-sm mt-1">
+                  {subcategories.length > 0 
+                    ? `${subcategories.length} subcategory(ies) available` 
+                    : 'No subcategories available for the selected category'
+                  }
+                </p>
               </div>
 
               {/* Reference Number */}
@@ -672,121 +678,105 @@ const CarModal: React.FC<CarModalProps> = ({
               Specifications
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Transmission */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Transmission
-                </label>
-                <select
-                  value={formData.transmission}
-                  onChange={(e) => handleInputChange("transmission", e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                    errors.transmission ? "border-red-300" : "border-gray-200"
-                  }`}
-                >
-                  <option value="">Select Transmission</option>
-                  {filterOptions?.transmissions?.map((transmission) => (
-                    <option key={transmission} value={transmission}>
-                      {transmission}
-                    </option>
-                  ))}
-                </select>
-                {errors.transmission && (
-                  <p className="text-red-500 text-sm mt-1">{errors.transmission}</p>
-                )}
-              </div>
+                             {/* Transmission */}
+               <div>
+                 <label className="block text-sm font-semibold text-gray-700 mb-2">
+                   Transmission
+                 </label>
+                 <input
+                   type="text"
+                   value={formData.transmission}
+                   onChange={(e) => handleInputChange("transmission", e.target.value)}
+                   maxLength={32}
+                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
+                     errors.transmission ? "border-red-300" : "border-gray-200"
+                   }`}
+                   placeholder="e.g., Automatic, Manual, CVT"
+                 />
+                 {errors.transmission && (
+                   <p className="text-red-500 text-sm mt-1">{errors.transmission}</p>
+                 )}
+               </div>
 
-              {/* Drive */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Drive Type
-                </label>
-                <select
-                  value={formData.drive}
-                  onChange={(e) => handleInputChange("drive", e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                    errors.drive ? "border-red-300" : "border-gray-200"
-                  }`}
-                >
-                  <option value="">Select Drive Type</option>
-                  <option value="FWD">Front Wheel Drive (FWD)</option>
-                  <option value="RWD">Rear Wheel Drive (RWD)</option>
-                  <option value="AWD">All Wheel Drive (AWD)</option>
-                  <option value="4WD">Four Wheel Drive (4WD)</option>
-                </select>
-                {errors.drive && (
-                  <p className="text-red-500 text-sm mt-1">{errors.drive}</p>
-                )}
-              </div>
+                             {/* Drive */}
+               <div>
+                 <label className="block text-sm font-semibold text-gray-700 mb-2">
+                   Drive Type
+                 </label>
+                 <input
+                   type="text"
+                   value={formData.drive}
+                   onChange={(e) => handleInputChange("drive", e.target.value)}
+                   maxLength={32}
+                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
+                     errors.drive ? "border-red-300" : "border-gray-200"
+                   }`}
+                   placeholder="e.g., FWD, RWD, AWD, 4WD"
+                 />
+                 {errors.drive && (
+                   <p className="text-red-500 text-sm mt-1">{errors.drive}</p>
+                 )}
+               </div>
 
-              {/* Steering */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Steering
-                </label>
-                <select
-                  value={formData.steering}
-                  onChange={(e) => handleInputChange("steering", e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                    errors.steering ? "border-red-300" : "border-gray-200"
-                  }`}
-                >
-                  <option value="">Select Steering</option>
-                  <option value="LHD">Left Hand Drive (LHD)</option>
-                  <option value="RHD">Right Hand Drive (RHD)</option>
-                </select>
-                {errors.steering && (
-                  <p className="text-red-500 text-sm mt-1">{errors.steering}</p>
-                )}
-              </div>
+                             {/* Steering */}
+               <div>
+                 <label className="block text-sm font-semibold text-gray-700 mb-2">
+                   Steering
+                 </label>
+                 <input
+                   type="text"
+                   value={formData.steering}
+                   onChange={(e) => handleInputChange("steering", e.target.value)}
+                   maxLength={16}
+                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
+                     errors.steering ? "border-red-300" : "border-gray-200"
+                   }`}
+                   placeholder="e.g., LHD, RHD"
+                 />
+                 {errors.steering && (
+                   <p className="text-red-500 text-sm mt-1">{errors.steering}</p>
+                 )}
+               </div>
 
-              {/* Fuel */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Fuel Type
-                </label>
-                <select
-                  value={formData.fuel}
-                  onChange={(e) => handleInputChange("fuel", e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                    errors.fuel ? "border-red-300" : "border-gray-200"
-                  }`}
-                >
-                  <option value="">Select Fuel Type</option>
-                  {filterOptions?.fuels?.map((fuel) => (
-                    <option key={fuel} value={fuel}>
-                      {fuel}
-                    </option>
-                  ))}
-                </select>
-                {errors.fuel && (
-                  <p className="text-red-500 text-sm mt-1">{errors.fuel}</p>
-                )}
-              </div>
+                             {/* Fuel */}
+               <div>
+                 <label className="block text-sm font-semibold text-gray-700 mb-2">
+                   Fuel Type
+                 </label>
+                 <input
+                   type="text"
+                   value={formData.fuel}
+                   onChange={(e) => handleInputChange("fuel", e.target.value)}
+                   maxLength={32}
+                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
+                     errors.fuel ? "border-red-300" : "border-gray-200"
+                   }`}
+                   placeholder="e.g., Gasoline, Diesel, Electric, Hybrid"
+                 />
+                 {errors.fuel && (
+                   <p className="text-red-500 text-sm mt-1">{errors.fuel}</p>
+                 )}
+               </div>
 
-              {/* Color */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Color
-                </label>
-                <select
-                  value={formData.color}
-                  onChange={(e) => handleInputChange("color", e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                    errors.color ? "border-red-300" : "border-gray-200"
-                  }`}
-                >
-                  <option value="">Select Color</option>
-                  {filterOptions?.colors?.map((color) => (
-                    <option key={color} value={color}>
-                      {color}
-                    </option>
-                  ))}
-                </select>
-                {errors.color && (
-                  <p className="text-red-500 text-sm mt-1">{errors.color}</p>
-                )}
-              </div>
+                             {/* Color */}
+               <div>
+                 <label className="block text-sm font-semibold text-gray-700 mb-2">
+                   Color
+                 </label>
+                 <input
+                   type="text"
+                   value={formData.color}
+                   onChange={(e) => handleInputChange("color", e.target.value)}
+                   maxLength={64}
+                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
+                     errors.color ? "border-red-300" : "border-gray-200"
+                   }`}
+                   placeholder="e.g., Red, Blue, Silver, Black"
+                 />
+                 {errors.color && (
+                   <p className="text-red-500 text-sm mt-1">{errors.color}</p>
+                 )}
+               </div>
 
               {/* Mileage */}
               <div>
@@ -952,41 +942,35 @@ const CarModal: React.FC<CarModalProps> = ({
                 )}
               </div>
 
-              {/* Exterior Grade */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Exterior Grade
-                </label>
-                <select
-                  value={formData.grade_exterior}
-                  onChange={(e) => handleInputChange("grade_exterior", e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                >
-                  <option value="">Select Grade</option>
-                  <option value="A">A - Excellent</option>
-                  <option value="B">B - Good</option>
-                  <option value="C">C - Fair</option>
-                  <option value="D">D - Poor</option>
-                </select>
-              </div>
+                             {/* Exterior Grade */}
+               <div>
+                 <label className="block text-sm font-semibold text-gray-700 mb-2">
+                   Exterior Grade
+                 </label>
+                 <input
+                   type="text"
+                   value={formData.grade_exterior}
+                   onChange={(e) => handleInputChange("grade_exterior", e.target.value)}
+                   maxLength={16}
+                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                   placeholder="e.g., A, B, C, D or Excellent, Good, Fair, Poor"
+                 />
+               </div>
 
-              {/* Interior Grade */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Interior Grade
-                </label>
-                <select
-                  value={formData.grade_interior}
-                  onChange={(e) => handleInputChange("grade_interior", e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                >
-                  <option value="">Select Grade</option>
-                  <option value="A">A - Excellent</option>
-                  <option value="B">B - Good</option>
-                  <option value="C">C - Fair</option>
-                  <option value="D">D - Poor</option>
-                </select>
-              </div>
+                             {/* Interior Grade */}
+               <div>
+                 <label className="block text-sm font-semibold text-gray-700 mb-2">
+                   Interior Grade
+                 </label>
+                 <input
+                   type="text"
+                   value={formData.grade_interior}
+                   onChange={(e) => handleInputChange("grade_interior", e.target.value)}
+                   maxLength={16}
+                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                   placeholder="e.g., A, B, C, D or Excellent, Good, Fair, Poor"
+                 />
+               </div>
             </div>
           </div>
 
@@ -1017,29 +1001,25 @@ const CarModal: React.FC<CarModalProps> = ({
                 )}
               </div>
 
-              {/* Country Origin */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Country of Origin
-                </label>
-                <select
-                  value={formData.country_origin}
-                  onChange={(e) => handleInputChange("country_origin", e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                    errors.country_origin ? "border-red-300" : "border-gray-200"
-                  }`}
-                >
-                  <option value="">Select Country</option>
-                  {filterOptions?.countries?.map((country) => (
-                    <option key={country} value={country}>
-                      {country}
-                    </option>
-                  ))}
-                </select>
-                {errors.country_origin && (
-                  <p className="text-red-500 text-sm mt-1">{errors.country_origin}</p>
-                )}
-              </div>
+                             {/* Country Origin */}
+               <div>
+                 <label className="block text-sm font-semibold text-gray-700 mb-2">
+                   Country of Origin
+                 </label>
+                 <input
+                   type="text"
+                   value={formData.country_origin}
+                   onChange={(e) => handleInputChange("country_origin", e.target.value)}
+                   maxLength={64}
+                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
+                     errors.country_origin ? "border-red-300" : "border-gray-200"
+                   }`}
+                   placeholder="e.g., Japan, Germany, USA, UK"
+                 />
+                 {errors.country_origin && (
+                   <p className="text-red-500 text-sm mt-1">{errors.country_origin}</p>
+                 )}
+               </div>
 
               {/* Chassis Number (Masked) */}
               <div>

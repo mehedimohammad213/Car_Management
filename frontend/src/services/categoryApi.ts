@@ -164,9 +164,7 @@ class CategoryApiService {
     });
   }
 
-  async getParentCategories(): Promise<CategoryResponse> {
-    return this.request<CategoryResponse>('/categories/parent/list');
-  }
+
 
   async getCategoryStats(): Promise<CategoryResponse> {
     return this.request<CategoryResponse>('/categories/stats/overview');

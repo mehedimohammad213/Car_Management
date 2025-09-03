@@ -7,7 +7,7 @@ interface CategoryModalProps {
   onClose: () => void;
   onSubmit: (data: CreateCategoryData) => void;
   category: Category | null;
-  parentCategories: Category[];
+  categories: Category[]; // Changed from parentCategories to categories
 }
 
 const CategoryModal: React.FC<CategoryModalProps> = ({
@@ -15,7 +15,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
   onClose,
   onSubmit,
   category,
-  parentCategories,
+  categories,
 }) => {
   const [formData, setFormData] = useState<CreateCategoryData>({
     name: "",
@@ -208,14 +208,21 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
               className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
             >
               <option value="">No Parent (Top Level Category)</option>
-              {parentCategories.map((parent) => (
-                <option key={parent.id} value={parent.id}>
-                  {parent.name}
-                </option>
-              ))}
+              {categories
+                .filter(cat => !category || cat.id !== category.id) // Prevent self-selection
+                .map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
             </select>
             <p className="text-gray-500 text-sm mt-1">
-              Leave empty to create a top-level category
+              Select any existing category as parent, or leave empty for top-level. 
+              {category && (
+                <span className="block mt-1 text-blue-600">
+                  Note: Current category "{category.name}" cannot be its own parent
+                </span>
+              )}
             </p>
           </div>
 

@@ -20,14 +20,14 @@ import {
   FileSpreadsheet
 } from "lucide-react";
 import { carApi, Car, CreateCarData, CarFilterOptions } from "../services/carApi";
-import { categoryApi } from "../services/categoryApi";
+import { categoryApi, Category } from "../services/categoryApi";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 import CarModal from "@/components/CarModal";
 import ExcelImportModal from "@/components/ExcelImportModal";
 
 const CarManagement: React.FC = () => {
   const [cars, setCars] = useState<Car[]>([]);
-  const [categories, setCategories] = useState<Array<{ id: number; name: string }>>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [filterOptions, setFilterOptions] = useState<CarFilterOptions | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
