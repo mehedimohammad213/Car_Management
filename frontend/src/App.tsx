@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import UserDashboard from "./pages/UserDashboard";
 import CarManagement from "./pages/CarManagement";
+import CategoryManagement from "./pages/CategoryManagement";
 import CreateCar from "./pages/CreateCar";
 import ViewCar from "./pages/ViewCar";
 import UpdateCar from "./pages/UpdateCar";
@@ -20,6 +21,7 @@ import Settings from "./pages/Settings";
 
 import CarCatalog from "./pages/CarCatalog";
 import CarDetails from "./pages/CarDetails";
+import UserCarCatalog from "./pages/UserCarCatalog";
 import Cart from "./pages/Cart";
 import Wishlist from "./pages/Wishlist";
 import Orders from "./pages/Orders";
@@ -52,6 +54,14 @@ function App() {
                     element={
                       <ProtectedRoute role="admin">
                         <CarManagement />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/categories"
+                    element={
+                      <ProtectedRoute role="admin">
+                        <CategoryManagement />
                       </ProtectedRoute>
                     }
                   />
@@ -125,6 +135,7 @@ function App() {
                   <Route path="/" element={<HomeRedirect />} />
                   <Route path="/browse" element={<CarCatalog />} />
                   <Route path="/car/:id" element={<CarDetails />} />
+                  <Route path="/cars" element={<UserCarCatalog />} />
                   <Route
                     path="/dashboard"
                     element={

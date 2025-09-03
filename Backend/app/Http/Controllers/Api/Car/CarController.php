@@ -148,11 +148,12 @@ class CarController extends Controller
             'photos.*.sort_order' => 'integer|min:0',
             'photos.*.is_hidden' => 'boolean',
 
-            'detail.short_title' => 'nullable|string|max:255',
-            'detail.full_title' => 'nullable|string|max:255',
-            'detail.description' => 'nullable|string',
-            'detail.images' => 'nullable|array',
-            'detail.images.*' => 'string|max:512',
+            'details' => 'nullable|array',
+            'details.*.short_title' => 'nullable|string|max:255',
+            'details.*.full_title' => 'nullable|string|max:255',
+            'details.*.description' => 'nullable|string',
+            'details.*.images' => 'nullable|array',
+            'details.*.images.*' => 'string|max:512',
         ]);
 
         if ($validator->fails()) {
@@ -184,13 +185,15 @@ class CarController extends Controller
                 }
             }
 
-            if ($request->filled('detail')) {
-                $car->detail()->create($request->detail);
+            if ($request->filled('details')) {
+                foreach ($request->details as $detailData) {
+                    $car->details()->create($detailData);
+                }
             }
 
             DB::commit();
 
-            $car->load(['category', 'subcategory', 'photos', 'detail']);
+            $car->load(['category', 'subcategory', 'photos', 'details']);
 
             return response()->json([
                 'success' => true,

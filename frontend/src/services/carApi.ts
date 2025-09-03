@@ -1,0 +1,328 @@
+const API_BASE_URL = 'http://localhost:8000/api';
+
+export interface CarPhoto {
+  id: number;
+  car_id: number;
+  url: string;
+  is_primary: boolean;
+  sort_order: number;
+  is_hidden: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CarDetail {
+  id: number;
+  car_id: number;
+  short_title?: string;
+  full_title?: string;
+  description?: string;
+  images?: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Car {
+  id: number;
+  category_id: number;
+  subcategory_id?: number;
+  ref_no?: string;
+  make: string;
+  model: string;
+  model_code?: string;
+  variant?: string;
+  year: number;
+  reg_year_month?: string;
+  mileage_km?: number;
+  engine_cc?: number;
+  transmission?: string;
+  drive?: string;
+  steering?: string;
+  fuel?: string;
+  color?: string;
+  seats?: number;
+  grade_overall?: number;
+  grade_exterior?: string;
+  grade_interior?: string;
+  price_amount?: number;
+  price_currency: string;
+  price_basis?: string;
+  chassis_no_masked?: string;
+  chassis_no_full?: string;
+  location?: string;
+  country_origin?: string;
+  status: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+  
+  // Relationships
+  category?: {
+    id: number;
+    name: string;
+  };
+  subcategory?: {
+    id: number;
+    name: string;
+  };
+  photos?: CarPhoto[];
+  details?: CarDetail[];
+  detail?: CarDetail; // Keep for backward compatibility
+  
+  // Computed fields
+  primary_photo_url?: string;
+  price_formatted?: string;
+  year_formatted?: string;
+  mileage_formatted?: string;
+}
+
+export interface CreateCarData {
+  category_id: number;
+  subcategory_id?: number;
+  ref_no?: string;
+  make: string;
+  model: string;
+  model_code?: string;
+  variant?: string;
+  year: number;
+  reg_year_month?: string;
+  mileage_km?: number;
+  engine_cc?: number;
+  transmission?: string;
+  drive?: string;
+  steering?: string;
+  fuel?: string;
+  color?: string;
+  seats?: number;
+  grade_overall?: number;
+  grade_exterior?: string;
+  grade_interior?: string;
+  price_amount?: number;
+  price_currency?: string;
+  price_basis?: string;
+  chassis_no_masked?: string;
+  chassis_no_full?: string;
+  location?: string;
+  country_origin?: string;
+  status?: string;
+  notes?: string;
+  
+  photos?: {
+    url: string;
+    is_primary?: boolean;
+    sort_order?: number;
+    is_hidden?: boolean;
+  }[];
+  
+  details?: {
+    short_title?: string;
+    full_title?: string;
+    description?: string;
+    images?: string[];
+  }[];
+  
+  detail?: {
+    short_title?: string;
+    full_title?: string;
+    description?: string;
+    images?: string[];
+  }; // Keep for backward compatibility
+}
+
+export interface UpdateCarData extends Partial<CreateCarData> {
+  id: number;
+}
+
+export interface CarResponse {
+  success: boolean;
+  message: string;
+  data: {
+    cars?: Car[];
+    car?: Car;
+    pagination?: {
+      current_page: number;
+      last_page: number;
+      per_page: number;
+      total: number;
+      from: number;
+      to: number;
+    };
+  };
+}
+
+export interface CarFilterOptions {
+  categories: Array<{ id: number; name: string }>;
+  makes: string[];
+  years: number[];
+  transmissions: string[];
+  fuels: string[];
+  colors: string[];
+  drives: string[];
+  steerings: string[];
+  countries: string[];
+  statuses: string[];
+}
+
+class CarApiService {
+  private async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const token = localStorage.getItem('token');
+    
+    const config: RequestInit = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        ...options.headers,
+      },
+      ...options,
+    };
+
+    const fullUrl = `${API_BASE_URL}${endpoint}`;
+    console.log('Making request to:', fullUrl);
+    console.log('Request config:', config);
+
+    const response = await fetch(fullUrl, config);
+    
+    console.log('Response status:', response.status);
+    console.log('Response headers:', response.headers);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Response error:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+    }
+
+    const responseData = await response.json();
+    console.log('Response data:', responseData);
+    return responseData;
+  }
+
+  async getCars(params: {
+    search?: string;
+    status?: string;
+    category_id?: string;
+    subcategory_id?: string;
+    make?: string;
+    year?: string;
+    year_from?: string;
+    year_to?: string;
+    price_from?: string;
+    price_to?: string;
+    mileage_from?: string;
+    mileage_to?: string;
+    transmission?: string;
+    fuel?: string;
+    color?: string;
+    drive?: string;
+    steering?: string;
+    country?: string;
+    sort_by?: string;
+    sort_direction?: string;
+    per_page?: number;
+    page?: number;
+  } = {}): Promise<CarResponse> {
+    const searchParams = new URLSearchParams();
+    
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') {
+        searchParams.append(key, value.toString());
+      }
+    });
+
+    const url = `/cars?${searchParams.toString()}`;
+    console.log('Making request to:', url);
+    return this.request<CarResponse>(url);
+  }
+
+  async getCar(id: number): Promise<CarResponse> {
+    return this.request<CarResponse>(`/cars/${id}`);
+  }
+
+  async createCar(data: CreateCarData): Promise<CarResponse> {
+    return this.request<CarResponse>('/cars', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateCar(data: UpdateCarData): Promise<CarResponse> {
+    const { id, ...updateData } = data;
+    return this.request<CarResponse>(`/cars/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updateData),
+    });
+  }
+
+  async deleteCar(id: number): Promise<CarResponse> {
+    return this.request<CarResponse>(`/cars/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async importFromExcel(file: File): Promise<CarResponse> {
+    const formData = new FormData();
+    formData.append('excel_file', file);
+
+    return this.request<CarResponse>('/cars/import/excel', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: formData,
+    });
+  }
+
+  async updateCarPhotos(carId: number, photos: {
+    url: string;
+    is_primary?: boolean;
+    sort_order?: number;
+    is_hidden?: boolean;
+  }[]): Promise<CarResponse> {
+    return this.request<CarResponse>(`/cars/${carId}/photos`, {
+      method: 'PUT',
+      body: JSON.stringify({ photos }),
+    });
+  }
+
+  async updateCarDetails(carId: number, detail: {
+    short_title?: string;
+    full_title?: string;
+    description?: string;
+    images?: string[];
+  }): Promise<CarResponse> {
+    return this.request<CarResponse>(`/cars/${carId}/details`, {
+      method: 'PUT',
+      body: JSON.stringify({ detail }),
+    });
+  }
+
+  async bulkUpdateStatus(carIds: number[], status: string): Promise<CarResponse> {
+    return this.request<CarResponse>('/cars/bulk/status', {
+      method: 'PUT',
+      body: JSON.stringify({ car_ids: carIds, status }),
+    });
+  }
+
+  async getFilterOptions(): Promise<{ success: boolean; data: CarFilterOptions }> {
+    return this.request<{ success: boolean; data: CarFilterOptions }>('/cars/filter/options');
+  }
+
+  async exportToExcel(): Promise<Blob> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/cars/export/excel`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Export failed: ${response.status}`);
+    }
+
+    return response.blob();
+  }
+}
+
+export const carApi = new CarApiService();

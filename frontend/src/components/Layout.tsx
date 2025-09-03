@@ -20,6 +20,7 @@ import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  FolderIcon,
 } from "lucide-react";
 
 const Layout: React.FC = () => {
@@ -83,6 +84,7 @@ const Layout: React.FC = () => {
   const adminNavItems = [
     { path: "/admin", label: "Dashboard", icon: BarChartIcon },
     { path: "/admin/cars", label: "Cars", icon: CarIcon },
+    { path: "/admin/categories", label: "Categories", icon: FolderIcon },
     { path: "/admin/stock", label: "Stock", icon: PackageIcon },
     { path: "/admin/sell", label: "Sell", icon: DollarSignIcon },
     { path: "/admin/orders", label: "Orders", icon: ShoppingCartIcon },
@@ -97,6 +99,7 @@ const Layout: React.FC = () => {
 
   const userNavItems = [
     { path: "/dashboard", label: "Dashboard", icon: BarChartIcon },
+    { path: "/cars", label: "Car Catalog", icon: CarIcon },
     { path: "/browse", label: "Browse Cars", icon: HomeIcon },
     { path: "/wishlist", label: "Wishlist", icon: HeartIcon },
     { path: "/cart", label: "Cart", icon: ShoppingCartIcon },

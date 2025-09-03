@@ -79,6 +79,11 @@ class Car extends Model
         return $this->hasOne(CarPhoto::class)->where('is_primary', true);
     }
 
+    public function details()
+    {
+        return $this->hasMany(CarDetail::class);
+    }
+
     public function detail()
     {
         return $this->hasOne(CarDetail::class);
