@@ -28,32 +28,34 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/user', [AuthController::class, 'user']);
 
-// Category API Routes
+    // Category API Routes
 
 
-// Car API Routes
-Route::prefix('cars')->group(function () {
-    // Main CRUD operations
-    Route::get('/', [CarController::class, 'index']);
-    Route::post('/', [CarController::class, 'store']);
-    Route::get('/{car}', [CarController::class, 'show']);
-    Route::put('/{car}', [CarController::class, 'update']);
-    Route::delete('/{car}', [CarController::class, 'destroy']);
-    
-    // Excel import/export
-    Route::post('/import/excel', [CarController::class, 'importFromExcel']);
-    Route::get('/export/excel', [CarController::class, 'exportToExcel']);
-    
-    // Photos and details management
-    Route::put('/{car}/photos', [CarController::class, 'updatePhotos']);
-    Route::put('/{car}/details', [CarController::class, 'updateDetails']);
-    
-    // Bulk operations
-    Route::put('/bulk/status', [CarController::class, 'bulkUpdateStatus']);
-    
-    // Additional endpoints
-    Route::get('/filter/options', [CarController::class, 'getFilterOptions']);
+    // Car API Routes
+    Route::prefix('cars')->group(function () {
+        // Main CRUD operations
+        Route::get('/', [CarController::class, 'index']);
+        Route::post('/', [CarController::class, 'store']);
+        Route::get('/{car}', [CarController::class, 'show']);
+        Route::put('/{car}', [CarController::class, 'update']);
+        Route::delete('/{car}', [CarController::class, 'destroy']);
+
+        // Excel import/export
+        Route::post('/import/excel', [CarController::class, 'importFromExcel']);
+        Route::get('/export/excel', [CarController::class, 'exportToExcel']);
+
+        // Photos and details management
+        Route::put('/{car}/photos', [CarController::class, 'updatePhotos']);
+        Route::put('/{car}/details', [CarController::class, 'updateDetails']);
+
+        // Bulk operations
+        Route::put('/bulk/status', [CarController::class, 'bulkUpdateStatus']);
+
+        // Additional endpoints
+        Route::get('/filter/options', [CarController::class, 'getFilterOptions']);
+    });
 });
+
 
 // Stock API Routes
 Route::prefix('stocks')->group(function () {
@@ -65,5 +67,4 @@ Route::prefix('stocks')->group(function () {
     Route::get('/stats/overview', [StockController::class, 'statistics']);
     Route::put('/bulk/status', [StockController::class, 'bulkUpdateStatus']);
     Route::get('/available/cars', [StockController::class, 'getAvailableCars']);
-});
 });
