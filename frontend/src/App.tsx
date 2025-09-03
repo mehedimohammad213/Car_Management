@@ -6,6 +6,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import UserDashboard from "./pages/UserDashboard";
 import CarManagement from "./pages/CarManagement";
 import CreateCar from "./pages/CreateCar";
 import ViewCar from "./pages/ViewCar";
@@ -25,6 +26,7 @@ import Orders from "./pages/Orders";
 import UserProfile from "./pages/UserProfile";
 import UserPassword from "./pages/UserPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
+import HomeRedirect from "./components/HomeRedirect";
 
 function App() {
   return (
@@ -120,8 +122,25 @@ function App() {
                   />
 
                   {/* User Routes */}
-                  <Route path="/" element={<CarCatalog />} />
+                  <Route path="/" element={<HomeRedirect />} />
+                  <Route path="/browse" element={<CarCatalog />} />
                   <Route path="/car/:id" element={<CarDetails />} />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute role="user">
+                        <UserDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/user-dashboard"
+                    element={
+                      <ProtectedRoute role="user">
+                        <UserDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="/wishlist"
                     element={
@@ -160,6 +179,14 @@ function App() {
                     element={
                       <ProtectedRoute role="user">
                         <UserPassword />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/user-dashboard"
+                    element={
+                      <ProtectedRoute role="user">
+                        <UserDashboard />
                       </ProtectedRoute>
                     }
                   />
