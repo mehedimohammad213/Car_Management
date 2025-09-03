@@ -29,6 +29,7 @@ import UserProfile from "./pages/UserProfile";
 import UserPassword from "./pages/UserPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HomeRedirect from "./components/HomeRedirect";
+import AuthTest from "./pages/AuthTest";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
               <Routes>
                 <Route path="/login" element={<Login />} />
+                <Route path="/auth-test" element={<AuthTest />} />
                 <Route path="/" element={<Layout />}>
                   {/* Admin Routes */}
                   <Route

@@ -20,10 +20,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        // Seed categories first, then cars
+        // Seed categories first, then cars, then stocks
         $this->call([
             CategorySeeder::class,
             CarSeeder::class,
+            StockSeeder::class,
         ]);
     }
 }

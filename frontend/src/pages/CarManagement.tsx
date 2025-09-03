@@ -98,12 +98,22 @@ const CarManagement: React.FC = () => {
       });
 
       console.log('Cars response:', response);
+      console.log('Response data structure:', {
+        success: response.success,
+        hasData: !!response.data.data,
+        dataLength: response.data.data?.length,
+        pagination: {
+          lastPage: response.data.last_page,
+          total: response.data.total
+        }
+      });
 
-      if (response.success && response.data.cars) {
-        setCars(response.data.cars);
-        if (response.data.pagination) {
-          setTotalPages(response.data.pagination.last_page);
-          setTotalItems(response.data.pagination.total);
+      if (response.success && response.data.data) {
+        setCars(response.data.data);
+        // Handle pagination from Laravel's pagination structure
+        if (response.data.last_page !== undefined) {
+          setTotalPages(response.data.last_page);
+          setTotalItems(response.data.total || 0);
         }
       } else {
         console.log('Response not successful or no cars data:', response);

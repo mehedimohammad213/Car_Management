@@ -56,6 +56,8 @@ class CategoryApiService {
   ): Promise<T> {
     const token = localStorage.getItem('token');
     
+    console.log('CategoryApi: Token from localStorage:', token ? `${token.substring(0, 20)}...` : 'NO TOKEN');
+    
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -77,6 +79,16 @@ class CategoryApiService {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Response error:', errorText);
+      
+      // Handle authentication errors
+      if (response.status === 401) {
+        console.error('CategoryApi: Authentication failed, clearing token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        // Redirect to login
+        window.location.href = '/login';
+      }
+      
       throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
     }
 

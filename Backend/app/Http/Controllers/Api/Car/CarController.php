@@ -10,6 +10,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -216,21 +217,54 @@ class CarController extends Controller
      */
     public function importFromExcel(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'excel_file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // 10MB max
+        // Debug: Log the request data
+        Log::info('Excel import request', [
+            'files' => $request->allFiles(),
+            'headers' => $request->headers->all(),
+            'content_type' => $request->header('Content-Type')
         ]);
 
+        $validator = Validator::make($request->all(), [
+            'excel_file' => 'required|file|max:10240', // 10MB max
+        ]);
+
+        // Additional file type validation
+        if ($request->hasFile('excel_file')) {
+            $file = $request->file('excel_file');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $allowedExtensions = ['xlsx', 'xls', 'csv'];
+            
+            if (!in_array($extension, $allowedExtensions)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid file type. Please upload a .xlsx, .xls, or .csv file.',
+                    'errors' => ['excel_file' => ['The file must be a valid Excel or CSV file.']]
+                ], 422);
+            }
+        }
+
         if ($validator->fails()) {
+            Log::error('Excel import validation failed', [
+                'errors' => $validator->errors()->toArray()
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->fails()
+                'errors' => $validator->errors()
             ], 422);
         }
 
         try {
             $file = $request->file('excel_file');
             $fileName = time() . '_' . $file->getClientOriginalName();
+            
+            Log::info('Excel import: Processing file', [
+                'original_name' => $file->getClientOriginalName(),
+                'extension' => $file->getClientOriginalExtension(),
+                'mime_type' => $file->getMimeType(),
+                'size' => $file->getSize()
+            ]);
             
             // Store file temporarily
             $path = $file->storeAs('temp/excel', $fileName);
@@ -246,10 +280,15 @@ class CarController extends Controller
                 'success' => true,
                 'message' => 'Cars imported successfully',
                 'imported_count' => $import->getRowCount(),
-                'message' => 'Please update car photos and details for imported cars'
+                'note' => 'Please update car photos and details for imported cars'
             ]);
 
         } catch (\Exception $e) {
+            Log::error('Excel import: Processing failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to import cars',

@@ -17,11 +17,37 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({
   const [dragActive, setDragActive] = useState(false);
 
   const handleFileSelect = (file: File) => {
-    if (file && (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
-                  file.type === 'application/vnd.ms-excel' || 
-                  file.type === 'text/csv')) {
-      setSelectedFile(file);
+    // Check file extension first
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    const allowedExtensions = ['xlsx', 'xls', 'csv'];
+    
+    if (!extension || !allowedExtensions.includes(extension)) {
+      alert('Please select a valid file type (.xlsx, .xls, or .csv)');
+      return;
     }
+    
+    // Check file size (10MB limit)
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > maxSize) {
+      alert('File size must be less than 10MB');
+      return;
+    }
+    
+    // Also check MIME type if available
+    if (file.type && file.type !== 'application/octet-stream') {
+      const allowedMimeTypes = [
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-excel',
+        'text/csv',
+        'application/csv'
+      ];
+      
+      if (!allowedMimeTypes.includes(file.type)) {
+        console.warn('File MIME type not recognized, but extension is valid:', file.type);
+      }
+    }
+    
+    setSelectedFile(file);
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -61,6 +87,8 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({
       setSelectedFile(null);
     } catch (error) {
       console.error("Error importing file:", error);
+      // Show user-friendly error message
+      alert(`Import failed: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -167,8 +195,8 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({
               <h4 className="font-semibold text-blue-800 mb-2">Import Instructions:</h4>
               <ul className="text-sm text-blue-700 space-y-1">
                 <li>• Ensure your Excel file has the correct column headers</li>
-                <li>• Required columns: make, model, year, category_id</li>
-                <li>• Optional columns: variant, mileage_km, transmission, fuel, color, price_amount</li>
+                <li>• Required columns: make, model, year, category (category name, not ID)</li>
+                <li>• Optional columns: ref_no, variant, mileage_km, transmission, drive, steering, fuel, color, seats, grade_overall, grade_exterior, grade_interior, price_amount, price_currency, price_basis, chassis_no_masked, location, country_origin, status, notes</li>
                 <li>• Photos and details can be added after import</li>
                 <li>• Maximum file size: 10MB</li>
               </ul>
@@ -181,8 +209,10 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({
                 type="button"
                 className="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
                 onClick={() => {
-                  // Create a sample Excel template
-                  const csvContent = "make,model,year,category_id,variant,mileage_km,transmission,fuel,color,price_amount,status\nToyota,Camry,2020,1,SE,50000,Automatic,Gasoline,White,25000,available\nHonda,Civic,2019,1,EX,45000,Automatic,Gasoline,Black,22000,available";
+                  // Create a sample CSV template that matches the backend expectations
+                  const csvContent = `category,make,model,year,ref_no,variant,mileage_km,transmission,drive,steering,fuel,color,seats,grade_overall,grade_exterior,grade_interior,price_amount,price_currency,price_basis,chassis_no_masked,location,country_origin,status,notes
+Sedan,Toyota,Camry,2020,TOY001,SE,50000,Automatic,FWD,Right,Gasoline,White,5,4.5,A,A,25000,USD,FOB,ABC******123,Tokyo Japan,Japan,available,Excellent condition
+SUV,Honda,CR-V,2019,HON001,EX-L,45000,Automatic,AWD,Right,Gasoline,Black,5,4.2,B,A,28000,USD,FOB,DEF******456,Osaka Japan,Japan,available,Good family SUV`;
                   const blob = new Blob([csvContent], { type: 'text/csv' });
                   const url = window.URL.createObjectURL(blob);
                   const a = document.createElement('a');

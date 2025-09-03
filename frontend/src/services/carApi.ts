@@ -137,8 +137,18 @@ export interface CarResponse {
   success: boolean;
   message: string;
   data: {
-    cars?: Car[];
+    // For paginated responses (like getCars)
+    data?: Car[];
+    current_page?: number;
+    last_page?: number;
+    per_page?: number;
+    total?: number;
+    from?: number;
+    to?: number;
+    // For single car responses (like getCar, createCar, updateCar)
     car?: Car;
+    // For backward compatibility
+    cars?: Car[];
     pagination?: {
       current_page: number;
       last_page: number;
@@ -170,10 +180,19 @@ class CarApiService {
   ): Promise<T> {
     const token = localStorage.getItem('token');
     
+    // Don't set Content-Type for FormData (file uploads)
+    const defaultHeaders: Record<string, string> = {
+      'Authorization': `Bearer ${token}`,
+    };
+    
+    // Only set Content-Type if not FormData
+    if (!(options.body instanceof FormData)) {
+      defaultHeaders['Content-Type'] = 'application/json';
+    }
+    
     const config: RequestInit = {
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        ...defaultHeaders,
         ...options.headers,
       },
       ...options,
@@ -191,6 +210,16 @@ class CarApiService {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Response error:', errorText);
+      
+      // Handle authentication errors
+      if (response.status === 401) {
+        console.error('CarApi: Authentication failed, clearing token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        // Redirect to login
+        window.location.href = '/login';
+      }
+      
       throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
     }
 
@@ -269,6 +298,7 @@ class CarApiService {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        // Don't set Content-Type for FormData, let browser set it with boundary
       },
       body: formData,
     });

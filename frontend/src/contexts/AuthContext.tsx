@@ -12,6 +12,7 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
+  validateToken: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,11 +33,82 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const validateToken = async (): Promise<boolean> => {
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+      console.log('AuthContext: No token found for validation');
+      return false;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8000/api/auth/user', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data.user) {
+          console.log('AuthContext: Token is valid, user:', data.data.user);
+          // Update user data if needed
+          const userData: User = {
+            id: data.data.user.id.toString(),
+            username: data.data.user.username,
+            role: data.data.user.role,
+            email: data.data.user.email,
+            name: data.data.user.name,
+          };
+          setUser(userData);
+          localStorage.setItem("user", JSON.stringify(userData));
+          return true;
+        }
+      } else {
+        console.log('AuthContext: Token validation failed, status:', response.status);
+        // Token is invalid, clear it
+        logout();
+        return false;
+      }
+    } catch (error) {
+      console.error('AuthContext: Error validating token:', error);
+      // Network error, clear token to be safe
+      logout();
+      return false;
+    }
+
+    return false;
+  };
+
   useEffect(() => {
-    // Check for stored user data on app load
+    // Check for stored user data and token on app load
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    const token = localStorage.getItem("token");
+    
+    console.log('AuthContext: Checking stored auth data:', { storedUser: !!storedUser, token: !!token });
+    
+    if (storedUser && token) {
+      try {
+        const userData = JSON.parse(storedUser);
+        console.log('AuthContext: Setting user from localStorage:', userData);
+        setUser(userData);
+        
+        // Validate token with backend
+        validateToken().then((isValid) => {
+          if (!isValid) {
+            console.log('AuthContext: Stored token is invalid, user logged out');
+          }
+        });
+      } catch (error) {
+        console.error('AuthContext: Error parsing stored user data:', error);
+        // Clear invalid data
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      }
+    } else {
+      console.log('AuthContext: No stored auth data found');
     }
     setIsLoading(false);
   }, []);
@@ -47,46 +119,52 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   ): Promise<boolean> => {
     setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const response = await fetch('http://localhost:8000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-    // Mock authentication logic
-    if (username === "admin" && password === "admin123") {
-      const adminUser: User = {
-        id: "1",
-        username: "admin",
-        role: "admin",
-        email: "admin@carselling.com",
-        name: "Admin User",
-      };
-      setUser(adminUser);
-      localStorage.setItem("user", JSON.stringify(adminUser));
+      const data = await response.json();
+
+      if (data.success && data.data.token) {
+        const userData: User = {
+          id: data.data.user.id.toString(),
+          username: data.data.user.username,
+          role: data.data.user.role,
+          email: data.data.user.email,
+          name: data.data.user.name,
+        };
+
+        // Store user data and token
+        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("token", data.data.token);
+
+        setUser(userData);
+        setIsLoading(false);
+        return true;
+      } else {
+        console.error('Login failed:', data.message);
+        setIsLoading(false);
+        return false;
+      }
+    } catch (error) {
+      console.error("Login error:", error);
       setIsLoading(false);
-      return true;
-    } else if (username === "user" && password === "user123") {
-      const regularUser: User = {
-        id: "2",
-        username: "user",
-        role: "user",
-        email: "user@carselling.com",
-        name: "John Doe",
-      };
-      setUser(regularUser);
-      localStorage.setItem("user", JSON.stringify(regularUser));
-      setIsLoading(false);
-      return true;
+      return false;
     }
-
-    setIsLoading(false);
-    return false;
   };
 
   const logout = () => {
     try {
       // Clear user state
       setUser(null);
-      // Remove user data from localStorage
+      // Remove user data and token from localStorage
       localStorage.removeItem("user");
+      localStorage.removeItem("token");
       // Clear any other user-related data that might be stored
       localStorage.removeItem("cart");
       localStorage.removeItem("wishlist");
@@ -98,12 +176,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const value = {
-    user,
-    login,
-    logout,
-    isLoading,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, login, logout, isLoading, validateToken }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
