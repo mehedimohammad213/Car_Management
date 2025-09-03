@@ -13,6 +13,7 @@ import CreateCar from "./pages/CreateCar";
 import ViewCar from "./pages/ViewCar";
 import UpdateCar from "./pages/UpdateCar";
 import StockManagement from "./pages/StockManagement";
+import { StockPage } from "./pages/stock";
 import SellManagement from "./pages/SellManagement";
 import OrderManagement from "./pages/OrderManagement";
 import ClientManagement from "./pages/ClientManagement";
@@ -96,6 +97,14 @@ function App() {
                     element={
                       <ProtectedRoute role="admin">
                         <StockManagement />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/stock"
+                    element={
+                      <ProtectedRoute role="admin">
+                        <StockPage />
                       </ProtectedRoute>
                     }
                   />
