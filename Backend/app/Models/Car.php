@@ -79,6 +79,11 @@ class Car extends Model
         return $this->hasOne(CarPhoto::class)->where('is_primary', true);
     }
 
+    public function detail()
+    {
+        return $this->hasOne(CarDetail::class);
+    }
+
     // Scopes
     public function scopeSearch(Builder $query, $search)
     {

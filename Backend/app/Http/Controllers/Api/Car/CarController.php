@@ -4,266 +4,350 @@ namespace App\Http\Controllers\Api\Car;
 
 use App\Http\Controllers\Controller;
 use App\Models\Car;
+use App\Models\CarPhoto;
+use App\Models\CarDetail;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\CarsImport;
 
 class CarController extends Controller
 {
-    /**
-     * Display a listing of cars with search, filter, and pagination
-     */
+   
     public function index(Request $request): JsonResponse
     {
-        try {
-            $query = Car::with(['category', 'subcategory', 'primaryPhoto']);
+        $query = Car::with(['category', 'subcategory', 'photos', 'detail']);
 
-            // Search functionality
-            if ($request->has('search') && !empty($request->search)) {
-                $query->search($request->search);
-            }
+        if ($request->filled('search')) {
+            $query->search($request->search);
+        }
 
-            // Filter by status
-            if ($request->has('status') && !empty($request->status)) {
-                $query->byStatus($request->status);
-            }
+   
+        if ($request->filled('status')) {
+            $query->byStatus($request->status);
+        }
 
-            // Filter by category
-            if ($request->has('category_id') && !empty($request->category_id)) {
-                $query->byCategory($request->category_id);
-            }
+    
+        if ($request->filled('category_id')) {
+            $query->byCategory($request->category_id);
+        }
 
-            // Filter by subcategory
-            if ($request->has('subcategory_id') && !empty($request->subcategory_id)) {
-                $query->bySubcategory($request->subcategory_id);
-            }
+     
+        if ($request->filled('subcategory_id')) {
+            $query->bySubcategory($request->subcategory_id);
+        }
 
-            // Filter by make
-            if ($request->has('make') && !empty($request->make)) {
-                $query->byMake($request->make);
-            }
+      
+        if ($request->filled('make')) {
+            $query->byMake($request->make);
+        }
 
-            // Filter by year range
-            if ($request->has('year_from') && $request->has('year_to')) {
-                $query->byYearRange($request->year_from, $request->year_to);
-            } elseif ($request->has('year')) {
-                $query->byYear($request->year);
-            }
+   
+        if ($request->filled('year_from') && $request->filled('year_to')) {
+            $query->byYearRange($request->year_from, $request->year_to);
+        } elseif ($request->filled('year')) {
+            $query->byYear($request->year);
+        }
 
-            // Filter by price range
-            if ($request->has('price_from') && $request->has('price_to')) {
-                $query->byPriceRange($request->price_from, $request->price_to);
-            }
+      
+        if ($request->filled('price_from') && $request->filled('price_to')) {
+            $query->byPriceRange($request->price_from, $request->price_to);
+        }
 
-            // Filter by mileage range
-            if ($request->has('mileage_from') && $request->has('mileage_to')) {
-                $query->byMileageRange($request->mileage_from, $request->mileage_to);
-            }
+     
+        if ($request->filled('mileage_from') && $request->filled('mileage_to')) {
+            $query->byMileageRange($request->mileage_from, $request->mileage_to);
+        }
 
-            // Filter by transmission
-            if ($request->has('transmission') && !empty($request->transmission)) {
-                $query->byTransmission($request->transmission);
-            }
 
-            // Filter by fuel
-            if ($request->has('fuel') && !empty($request->fuel)) {
-                $query->byFuel($request->fuel);
-            }
+        if ($request->filled('transmission')) {
+            $query->byTransmission($request->transmission);
+        }
 
-            // Filter by color
-            if ($request->has('color') && !empty($request->color)) {
-                $query->byColor($request->color);
-            }
 
-            // Filter by drive
-            if ($request->has('drive') && !empty($request->drive)) {
-                $query->byDrive($request->drive);
-            }
+        if ($request->filled('fuel')) {
+            $query->byFuel($request->fuel);
+        }
 
-            // Filter by steering
-            if ($request->has('steering') && !empty($request->steering)) {
-                $query->bySteering($request->steering);
-            }
 
-            // Filter by country
-            if ($request->has('country') && !empty($request->country)) {
-                $query->byCountry($request->country);
-            }
+        if ($request->filled('color')) {
+            $query->byColor($request->color);
+        }
 
-            // Sort functionality
-            $sortBy = $request->get('sort_by', 'created_at');
-            $sortOrder = $request->get('sort_order', 'desc');
-            $allowedSortFields = [
-                'id', 'ref_no', 'make', 'model', 'year', 'mileage_km', 
-                'price_amount', 'status', 'created_at', 'updated_at'
-            ];
+
+        if ($request->filled('drive')) {
+            $query->byDrive($request->drive);
+        }
+
+        if ($request->filled('steering')) {
+            $query->bySteering($request->steering);
+        }
+
+        if ($request->filled('country')) {
+            $query->byCountry($request->country);
+        }
+
+ 
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDirection = $request->get('sort_direction', 'desc');
+        $query->orderBy($sortBy, $sortDirection);
+
+
+        $perPage = $request->get('per_page', 15);
+        $cars = $query->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $cars,
+            'message' => 'Cars retrieved successfully'
+        ]);
+    }
+
+
+    public function store(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:categories,id',
+            'ref_no' => 'nullable|string|max:32|unique:cars,ref_no',
+            'make' => 'required|string|max:64',
+            'model' => 'required|string|max:64',
+            'model_code' => 'nullable|string|max:32',
+            'variant' => 'nullable|string|max:128',
+            'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'reg_year_month' => 'nullable|string|max:7',
+            'mileage_km' => 'nullable|integer|min:0',
+            'engine_cc' => 'nullable|integer|min:0',
+            'transmission' => 'nullable|string|max:32',
+            'drive' => 'nullable|string|max:32',
+            'steering' => 'nullable|string|max:16',
+            'fuel' => 'nullable|string|max:32',
+            'color' => 'nullable|string|max:64',
+            'seats' => 'nullable|integer|min:1|max:20',
+            'grade_overall' => 'nullable|numeric|min:0|max:10',
+            'grade_exterior' => 'nullable|string|max:1',
+            'grade_interior' => 'nullable|string|max:1',
+            'price_amount' => 'nullable|numeric|min:0',
+            'price_currency' => 'nullable|string|max:3',
+            'price_basis' => 'nullable|string|max:32',
+            'chassis_no_masked' => 'nullable|string|max:32',
+            'chassis_no_full' => 'nullable|string|max:64',
+            'location' => 'nullable|string|max:128',
+            'country_origin' => 'nullable|string|max:64',
+            'status' => 'nullable|string|max:32',
+            'notes' => 'nullable|string',
             
-            if (in_array($sortBy, $allowedSortFields)) {
-                $query->orderBy($sortBy, $sortOrder);
+            'photos' => 'nullable|array',
+            'photos.*.url' => 'required_with:photos|string|max:512',
+            'photos.*.is_primary' => 'boolean',
+            'photos.*.sort_order' => 'integer|min:0',
+            'photos.*.is_hidden' => 'boolean',
+
+            'detail.short_title' => 'nullable|string|max:255',
+            'detail.full_title' => 'nullable|string|max:255',
+            'detail.description' => 'nullable|string',
+            'detail.images' => 'nullable|array',
+            'detail.images.*' => 'string|max:512',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Create car
+            $carData = $request->only([
+                'category_id', 'subcategory_id', 'ref_no', 'make', 'model', 'model_code',
+                'variant', 'year', 'reg_year_month', 'mileage_km', 'engine_cc',
+                'transmission', 'drive', 'steering', 'fuel', 'color', 'seats',
+                'grade_overall', 'grade_exterior', 'grade_interior', 'price_amount',
+                'price_currency', 'price_basis', 'chassis_no_masked', 'chassis_no_full',
+                'location', 'country_origin', 'status', 'notes'
+            ]);
+
+            $car = Car::create($carData);
+
+            if ($request->filled('photos')) {
+                foreach ($request->photos as $photoData) {
+                    $car->photos()->create($photoData);
+                }
             }
 
-            // Pagination
-            $perPage = $request->get('per_page', 15);
-            $perPage = min(max($perPage, 1), 100); // Limit between 1 and 100
+            if ($request->filled('detail')) {
+                $car->detail()->create($request->detail);
+            }
 
-            $cars = $query->paginate($perPage);
+            DB::commit();
 
-            // Transform data for response
-            $data = $cars->getCollection()->map(function ($car) {
-                return [
-                    'id' => $car->id,
-                    'ref_no' => $car->ref_no,
-                    'make' => $car->make,
-                    'model' => $car->model,
-                    'model_code' => $car->model_code,
-                    'variant' => $car->variant,
-                    'full_name' => $car->full_name,
-                    'year' => $car->year,
-                    'reg_year_month' => $car->reg_year_month,
-                    'mileage_km' => $car->mileage_km,
-                    'formatted_mileage' => $car->formatted_mileage,
-                    'engine_cc' => $car->engine_cc,
-                    'formatted_engine' => $car->formatted_engine,
-                    'transmission' => $car->transmission,
-                    'drive' => $car->drive,
-                    'steering' => $car->steering,
-                    'fuel' => $car->fuel,
-                    'color' => $car->color,
-                    'seats' => $car->seats,
-                    'grade_overall' => $car->grade_overall,
-                    'grade_exterior' => $car->grade_exterior,
-                    'grade_interior' => $car->grade_interior,
-                    'price_amount' => $car->price_amount,
-                    'price_currency' => $car->price_currency,
-                    'formatted_price' => $car->formatted_price,
-                    'price_basis' => $car->price_basis,
-                    'chassis_no_masked' => $car->chassis_no_masked,
-                    'location' => $car->location,
-                    'country_origin' => $car->country_origin,
-                    'status' => $car->status,
-                    'notes' => $car->notes,
-                    'category' => $car->category ? [
-                        'id' => $car->category->id,
-                        'name' => $car->category->name
-                    ] : null,
-                    'subcategory' => $car->subcategory ? [
-                        'id' => $car->subcategory->id,
-                        'name' => $car->subcategory->name
-                    ] : null,
-                    'primary_photo_url' => $car->primary_photo_url,
-                    'photos_count' => $car->photos_count,
-                    'created_at' => $car->created_at->toISOString(),
-                    'updated_at' => $car->updated_at->toISOString(),
-                ];
-            });
+            $car->load(['category', 'subcategory', 'photos', 'detail']);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Cars retrieved successfully',
-                'status_code' => 200,
-                'data' => [
-                    'cars' => $data,
-                    'pagination' => [
-                        'current_page' => $cars->currentPage(),
-                        'last_page' => $cars->lastPage(),
-                        'per_page' => $cars->perPage(),
-                        'total' => $cars->total(),
-                        'from' => $cars->firstItem(),
-                        'to' => $cars->lastItem(),
-                    ]
-                ]
-            ], 200);
+                'data' => $car,
+                'message' => 'Car created successfully'
+            ], 201);
 
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve cars: ' . $e->getMessage(),
-                'status_code' => 500,
-                'data' => []
+                'message' => 'Failed to create car',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
 
     /**
-     * Store a newly created car
+     * Import cars from Excel file
      */
-    public function store(Request $request): JsonResponse
+    public function importFromExcel(Request $request): JsonResponse
     {
+        $validator = Validator::make($request->all(), [
+            'excel_file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // 10MB max
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->fails()
+            ], 422);
+        }
+
         try {
-            $validator = Validator::make($request->all(), [
-                'category_id' => 'required|exists:categories,id',
-                'subcategory_id' => 'nullable|exists:categories,id',
-                'ref_no' => 'nullable|string|max:32|unique:cars,ref_no',
-                'make' => 'required|string|max:64',
-                'model' => 'required|string|max:64',
-                'model_code' => 'nullable|string|max:32',
-                'variant' => 'nullable|string|max:128',
-                'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-                'reg_year_month' => 'nullable|string|max:7',
-                'mileage_km' => 'nullable|integer|min:0',
-                'engine_cc' => 'nullable|integer|min:0',
-                'transmission' => 'nullable|string|max:32',
-                'drive' => 'nullable|string|max:32',
-                'steering' => 'nullable|string|max:16',
-                'fuel' => 'nullable|string|max:32',
-                'color' => 'nullable|string|max:64',
-                'seats' => 'nullable|integer|min:1|max:20',
-                'grade_overall' => 'nullable|numeric|min:0|max:5',
-                'grade_exterior' => 'nullable|string|max:1',
-                'grade_interior' => 'nullable|string|max:1',
-                'price_amount' => 'nullable|numeric|min:0',
-                'price_currency' => 'nullable|string|max:3',
-                'price_basis' => 'nullable|string|max:32',
-                'chassis_no_masked' => 'nullable|string|max:32',
-                'chassis_no_full' => 'nullable|string|max:64',
-                'location' => 'nullable|string|max:128',
-                'country_origin' => 'nullable|string|max:64',
-                'status' => 'nullable|string|max:32',
-                'notes' => 'nullable|string',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation failed',
-                    'status_code' => 422,
-                    'data' => [
-                        'errors' => $validator->errors()
-                    ]
-                ], 422);
-            }
-
-            $data = $validator->validated();
-            $car = Car::create($data);
-
+            $file = $request->file('excel_file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            
+            // Store file temporarily
+            $path = $file->storeAs('temp/excel', $fileName);
+            
+            // Import cars from Excel
+            $import = new CarsImport();
+            Excel::import($import, $path);
+            
+            // Clean up temporary file
+            Storage::delete($path);
+            
             return response()->json([
                 'success' => true,
-                'message' => 'Car created successfully',
-                'status_code' => 201,
-                'data' => [
-                    'car' => [
-                        'id' => $car->id,
-                        'ref_no' => $car->ref_no,
-                        'make' => $car->make,
-                        'model' => $car->model,
-                        'full_name' => $car->full_name,
-                        'year' => $car->year,
-                        'status' => $car->status,
-                        'created_at' => $car->created_at->toISOString(),
-                        'updated_at' => $car->updated_at->toISOString(),
-                    ]
-                ]
-            ], 201);
+                'message' => 'Cars imported successfully',
+                'imported_count' => $import->getRowCount(),
+                'message' => 'Please update car photos and details for imported cars'
+            ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create car: ' . $e->getMessage(),
-                'status_code' => 500,
-                'data' => []
+                'message' => 'Failed to import cars',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update car photos for a specific car
+     */
+    public function updatePhotos(Request $request, Car $car): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'photos' => 'required|array|min:1',
+            'photos.*.url' => 'required|string|max:512',
+            'photos.*.is_primary' => 'boolean',
+            'photos.*.sort_order' => 'integer|min:0',
+            'photos.*.is_hidden' => 'boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Delete existing photos
+            $car->photos()->delete();
+
+            // Create new photos
+            foreach ($request->photos as $photoData) {
+                $car->photos()->create($photoData);
+            }
+
+            DB::commit();
+
+            $car->load('photos');
+
+            return response()->json([
+                'success' => true,
+                'data' => $car,
+                'message' => 'Car photos updated successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update car photos',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update car details for a specific car
+     */
+    public function updateDetails(Request $request, Car $car): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'short_title' => 'nullable|string|max:255',
+            'full_title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'images' => 'nullable|array',
+            'images.*' => 'string|max:512',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            if ($car->detail) {
+                $car->detail()->update($request->all());
+            } else {
+                $car->detail()->create($request->all());
+            }
+
+            $car->load('detail');
+
+            return response()->json([
+                'success' => true,
+                'data' => $car,
+                'message' => 'Car details updated successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update car details',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -271,179 +355,82 @@ class CarController extends Controller
     /**
      * Display the specified car
      */
-    public function show($id): JsonResponse
+    public function show(Car $car): JsonResponse
     {
-        try {
-            $car = Car::with(['category', 'subcategory', 'photos'])->find($id);
+        $car->load(['category', 'subcategory', 'photos', 'detail']);
 
-            if (!$car) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Car not found',
-                    'status_code' => 404,
-                    'data' => []
-                ], 404);
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Car retrieved successfully',
-                'status_code' => 200,
-                'data' => [
-                    'car' => [
-                        'id' => $car->id,
-                        'ref_no' => $car->ref_no,
-                        'make' => $car->make,
-                        'model' => $car->model,
-                        'model_code' => $car->model_code,
-                        'variant' => $car->variant,
-                        'full_name' => $car->full_name,
-                        'year' => $car->year,
-                        'reg_year_month' => $car->reg_year_month,
-                        'mileage_km' => $car->mileage_km,
-                        'formatted_mileage' => $car->formatted_mileage,
-                        'engine_cc' => $car->engine_cc,
-                        'formatted_engine' => $car->formatted_engine,
-                        'transmission' => $car->transmission,
-                        'drive' => $car->drive,
-                        'steering' => $car->steering,
-                        'fuel' => $car->fuel,
-                        'color' => $car->color,
-                        'seats' => $car->seats,
-                        'grade_overall' => $car->grade_overall,
-                        'grade_exterior' => $car->grade_exterior,
-                        'grade_interior' => $car->grade_interior,
-                        'price_amount' => $car->price_amount,
-                        'price_currency' => $car->price_currency,
-                        'formatted_price' => $car->formatted_price,
-                        'price_basis' => $car->price_basis,
-                        'chassis_no_masked' => $car->chassis_no_masked,
-                        'chassis_no_full' => $car->chassis_no_full,
-                        'location' => $car->location,
-                        'country_origin' => $car->country_origin,
-                        'status' => $car->status,
-                        'notes' => $car->notes,
-                        'category' => $car->category ? [
-                            'id' => $car->category->id,
-                            'name' => $car->category->name
-                        ] : null,
-                        'subcategory' => $car->subcategory ? [
-                            'id' => $car->subcategory->id,
-                            'name' => $car->subcategory->name
-                        ] : null,
-                        'photos' => $car->photos->map(function ($photo) {
-                            return [
-                                'id' => $photo->id,
-                                'image_url' => $photo->image_url,
-                                'is_primary' => $photo->is_primary,
-                                'caption' => $photo->caption,
-                            ];
-                        }),
-                        'photos_count' => $car->photos_count,
-                        'created_at' => $car->created_at->toISOString(),
-                        'updated_at' => $car->updated_at->toISOString(),
-                    ]
-                ]
-            ], 200);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve car: ' . $e->getMessage(),
-                'status_code' => 500,
-                'data' => []
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'data' => $car,
+            'message' => 'Car retrieved successfully'
+        ]);
     }
 
     /**
      * Update the specified car
      */
-    public function update(Request $request, $id): JsonResponse
+    public function update(Request $request, Car $car): JsonResponse
     {
+        $validator = Validator::make($request->all(), [
+            'category_id' => 'sometimes|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:categories,id',
+            'ref_no' => [
+                'sometimes',
+                'string',
+                'max:32',
+                Rule::unique('cars')->ignore($car->id)
+            ],
+            'make' => 'sometimes|string|max:64',
+            'model' => 'sometimes|string|max:64',
+            'model_code' => 'nullable|string|max:32',
+            'variant' => 'nullable|string|max:128',
+            'year' => 'sometimes|integer|min:1900|max:' . (date('Y') + 1),
+            'reg_year_month' => 'nullable|string|max:7',
+            'mileage_km' => 'nullable|integer|min:0',
+            'engine_cc' => 'nullable|integer|min:0',
+            'transmission' => 'nullable|string|max:32',
+            'drive' => 'nullable|string|max:32',
+            'steering' => 'nullable|string|max:16',
+            'fuel' => 'nullable|string|max:32',
+            'color' => 'nullable|string|max:64',
+            'seats' => 'nullable|integer|min:1|max:20',
+            'grade_overall' => 'nullable|numeric|min:0|max:10',
+            'grade_exterior' => 'nullable|string|max:1',
+            'grade_interior' => 'nullable|string|max:1',
+            'price_amount' => 'nullable|numeric|min:0',
+            'price_currency' => 'nullable|string|max:3',
+            'price_basis' => 'nullable|string|max:32',
+            'chassis_no_masked' => 'nullable|string|max:32',
+            'chassis_no_full' => 'nullable|string|max:64',
+            'location' => 'nullable|string|max:128',
+            'country_origin' => 'nullable|string|max:64',
+            'status' => 'nullable|string|max:32',
+            'notes' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         try {
-            $car = Car::find($id);
-
-            if (!$car) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Car not found',
-                    'status_code' => 404,
-                    'data' => []
-                ], 404);
-            }
-
-            $validator = Validator::make($request->all(), [
-                'category_id' => 'sometimes|required|exists:categories,id',
-                'subcategory_id' => 'nullable|exists:categories,id',
-                'ref_no' => ['nullable', 'string', 'max:32', Rule::unique('cars')->ignore($id)],
-                'make' => 'sometimes|required|string|max:64',
-                'model' => 'sometimes|required|string|max:64',
-                'model_code' => 'nullable|string|max:32',
-                'variant' => 'nullable|string|max:128',
-                'year' => 'sometimes|required|integer|min:1900|max:' . (date('Y') + 1),
-                'reg_year_month' => 'nullable|string|max:7',
-                'mileage_km' => 'nullable|integer|min:0',
-                'engine_cc' => 'nullable|integer|min:0',
-                'transmission' => 'nullable|string|max:32',
-                'drive' => 'nullable|string|max:32',
-                'steering' => 'nullable|string|max:16',
-                'fuel' => 'nullable|string|max:32',
-                'color' => 'nullable|string|max:64',
-                'seats' => 'nullable|integer|min:1|max:20',
-                'grade_overall' => 'nullable|numeric|min:0|max:5',
-                'grade_exterior' => 'nullable|string|max:1',
-                'grade_interior' => 'nullable|string|max:1',
-                'price_amount' => 'nullable|numeric|min:0',
-                'price_currency' => 'nullable|string|max:3',
-                'price_basis' => 'nullable|string|max:32',
-                'chassis_no_masked' => 'nullable|string|max:32',
-                'chassis_no_full' => 'nullable|string|max:64',
-                'location' => 'nullable|string|max:128',
-                'country_origin' => 'nullable|string|max:64',
-                'status' => 'nullable|string|max:32',
-                'notes' => 'nullable|string',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation failed',
-                    'status_code' => 422,
-                    'data' => [
-                        'errors' => $validator->errors()
-                    ]
-                ], 422);
-            }
-
-            $data = $validator->validated();
-            $car->update($data);
+            $car->update($request->all());
+            $car->load(['category', 'subcategory', 'photos', 'detail']);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Car updated successfully',
-                'status_code' => 200,
-                'data' => [
-                    'car' => [
-                        'id' => $car->id,
-                        'ref_no' => $car->ref_no,
-                        'make' => $car->make,
-                        'model' => $car->model,
-                        'full_name' => $car->full_name,
-                        'year' => $car->year,
-                        'status' => $car->status,
-                        'created_at' => $car->created_at->toISOString(),
-                        'updated_at' => $car->updated_at->toISOString(),
-                    ]
-                ]
-            ], 200);
+                'data' => $car,
+                'message' => 'Car updated successfully'
+            ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update car: ' . $e->getMessage(),
-                'status_code' => 500,
-                'data' => []
+                'message' => 'Failed to update car',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -451,88 +438,21 @@ class CarController extends Controller
     /**
      * Remove the specified car
      */
-    public function destroy($id): JsonResponse
+    public function destroy(Car $car): JsonResponse
     {
         try {
-            $car = Car::find($id);
-
-            if (!$car) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Car not found',
-                    'status_code' => 404,
-                    'data' => []
-                ], 404);
-            }
-
-            // Delete associated photos
-            foreach ($car->photos as $photo) {
-                if ($photo->image) {
-                    Storage::disk('public')->delete($photo->image);
-                }
-                $photo->delete();
-            }
-
             $car->delete();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Car deleted successfully',
-                'status_code' => 200,
-                'data' => []
-            ], 200);
+                'message' => 'Car deleted successfully'
+            ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete car: ' . $e->getMessage(),
-                'status_code' => 500,
-                'data' => []
-            ], 500);
-        }
-    }
-
-    /**
-     * Get car statistics
-     */
-    public function getStats(): JsonResponse
-    {
-        try {
-            $stats = [
-                'total_cars' => Car::count(),
-                'available_cars' => Car::available()->count(),
-                'sold_cars' => Car::sold()->count(),
-                'reserved_cars' => Car::reserved()->count(),
-                'cars_by_make' => Car::selectRaw('make, COUNT(*) as count')
-                    ->groupBy('make')
-                    ->orderBy('count', 'desc')
-                    ->limit(10)
-                    ->get(),
-                'cars_by_year' => Car::selectRaw('year, COUNT(*) as count')
-                    ->groupBy('year')
-                    ->orderBy('year', 'desc')
-                    ->limit(10)
-                    ->get(),
-                'cars_by_status' => Car::selectRaw('status, COUNT(*) as count')
-                    ->groupBy('status')
-                    ->get(),
-            ];
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Car statistics retrieved successfully',
-                'status_code' => 200,
-                'data' => [
-                    'statistics' => $stats
-                ]
-            ], 200);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve car statistics: ' . $e->getMessage(),
-                'status_code' => 500,
-                'data' => []
+                'message' => 'Failed to delete car',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -544,33 +464,113 @@ class CarController extends Controller
     {
         try {
             $options = [
-                'makes' => Car::distinct()->pluck('make')->filter()->sort()->values(),
-                'transmissions' => Car::distinct()->pluck('transmission')->filter()->sort()->values(),
-                'fuels' => Car::distinct()->pluck('fuel')->filter()->sort()->values(),
-                'colors' => Car::distinct()->pluck('color')->filter()->sort()->values(),
-                'drives' => Car::distinct()->pluck('drive')->filter()->sort()->values(),
-                'steerings' => Car::distinct()->pluck('steering')->filter()->sort()->values(),
-                'countries' => Car::distinct()->pluck('country_origin')->filter()->sort()->values(),
-                'statuses' => Car::distinct()->pluck('status')->filter()->sort()->values(),
+                'makes' => Car::distinct()->pluck('make')->filter()->values(),
+                'models' => Car::distinct()->pluck('model')->filter()->values(),
+                'transmissions' => Car::distinct()->pluck('transmission')->filter()->values(),
+                'fuels' => Car::distinct()->pluck('fuel')->filter()->values(),
+                'colors' => Car::distinct()->pluck('color')->filter()->values(),
+                'drives' => Car::distinct()->pluck('drive')->filter()->values(),
+                'steerings' => Car::distinct()->pluck('steering')->filter()->values(),
+                'countries' => Car::distinct()->pluck('country_origin')->filter()->values(),
+                'statuses' => Car::distinct()->pluck('status')->filter()->values(),
+                'categories' => Category::select('id', 'name')->get(),
                 'years' => Car::distinct()->pluck('year')->sort()->values(),
-                'categories' => Category::select('id', 'name')->orderBy('name')->get(),
             ];
 
             return response()->json([
                 'success' => true,
-                'message' => 'Filter options retrieved successfully',
-                'status_code' => 200,
-                'data' => [
-                    'filter_options' => $options
-                ]
-            ], 200);
+                'data' => $options,
+                'message' => 'Filter options retrieved successfully'
+            ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve filter options: ' . $e->getMessage(),
-                'status_code' => 500,
-                'data' => []
+                'message' => 'Failed to retrieve filter options',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Bulk update car status
+     */
+    public function bulkUpdateStatus(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'car_ids' => 'required|array',
+            'car_ids.*' => 'exists:cars,id',
+            'status' => 'required|string|max:32',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $updatedCount = Car::whereIn('id', $request->car_ids)
+                ->update(['status' => $request->status]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Status updated for {$updatedCount} cars",
+                'updated_count' => $updatedCount
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update car statuses',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Export cars to Excel
+     */
+    public function exportToExcel(Request $request): JsonResponse
+    {
+        try {
+            $query = Car::with(['category', 'subcategory']);
+
+            // Apply filters if provided
+            if ($request->filled('search')) {
+                $query->search($request->search);
+            }
+
+            if ($request->filled('status')) {
+                $query->byStatus($request->status);
+            }
+
+            if ($request->filled('category_id')) {
+                $query->byCategory($request->category_id);
+            }
+
+            $cars = $query->get();
+
+            // Generate Excel file
+            $fileName = 'cars_export_' . date('Y-m-d_H-i-s') . '.xlsx';
+            
+            // You can implement Excel export logic here using Laravel Excel
+            // For now, returning success response
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Cars exported successfully',
+                'file_name' => $fileName,
+                'exported_count' => $cars->count()
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to export cars',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

@@ -28,11 +28,21 @@ Route::prefix('cars')->group(function () {
     // Main CRUD operations
     Route::get('/', [CarController::class, 'index']);
     Route::post('/', [CarController::class, 'store']);
-    Route::get('/{id}', [CarController::class, 'show']);
-    Route::put('/{id}', [CarController::class, 'update']);
-    Route::delete('/{id}', [CarController::class, 'destroy']);
+    Route::get('/{car}', [CarController::class, 'show']);
+    Route::put('/{car}', [CarController::class, 'update']);
+    Route::delete('/{car}', [CarController::class, 'destroy']);
+    
+    // Excel import/export
+    Route::post('/import/excel', [CarController::class, 'importFromExcel']);
+    Route::get('/export/excel', [CarController::class, 'exportToExcel']);
+    
+    // Photos and details management
+    Route::put('/{car}/photos', [CarController::class, 'updatePhotos']);
+    Route::put('/{car}/details', [CarController::class, 'updateDetails']);
+    
+    // Bulk operations
+    Route::put('/bulk/status', [CarController::class, 'bulkUpdateStatus']);
     
     // Additional endpoints
-    Route::get('/stats/overview', [CarController::class, 'getStats']);
     Route::get('/filter/options', [CarController::class, 'getFilterOptions']);
 });
