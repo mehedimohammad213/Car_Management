@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Plus, 
-  Search, 
-  Pencil, 
+import axios from "axios";
+import { API_ENDPOINTS } from "../config/api";
+import {
+  Plus,
+  Search,
+  Pencil,
   Trash2,
   Eye,
   Filter,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
 } from "lucide-react";
-import { categoryApi, Category, CreateCategoryData } from "../services/categoryApi";
+import {
+  categoryApi,
+  Category,
+  CreateCategoryData,
+} from "../services/categoryApi";
 import CategoryModal from "../components/CategoryModal";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 
@@ -30,30 +36,35 @@ const CategoryManagement: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
+    null
+  );
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Success/Error messages
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   useEffect(() => {
-    console.log('CategoryManagement component mounted');
-    console.log('Current user token:', localStorage.getItem('token'));
-    console.log('Current user role:', localStorage.getItem('userRole'));
-    console.log('Component state:', { categories, isLoading });
-    
+    console.log("CategoryManagement component mounted");
+    console.log("Current user token:", localStorage.getItem("token"));
+    console.log("Current user role:", localStorage.getItem("userRole"));
+    console.log("Component state:", { categories, isLoading });
+
     // Add a small delay to ensure component is fully mounted
     const timer = setTimeout(() => {
       fetchCategories();
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, [currentPage, searchTerm, statusFilter, typeFilter, sortBy, sortOrder]);
 
   const fetchCategories = async () => {
     try {
       setIsLoading(true);
-      console.log('Fetching categories with params:', {
+      console.log("Fetching categories with params:", {
         search: searchTerm || undefined,
         status: statusFilter || undefined,
         type: typeFilter || undefined,
@@ -65,28 +76,33 @@ const CategoryManagement: React.FC = () => {
 
       // First, let's test if the backend is accessible
       try {
-        console.log('Testing backend connection...');
-        const testResponse = await fetch('http://localhost:8000/api/categories', {
-          method: 'GET',
+        console.log("Testing backend connection...");
+        const testResponse = await axios.get(API_ENDPOINTS.CATEGORIES.BASE, {
           headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          }
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
         });
-        console.log('Backend test response status:', testResponse.status);
-        console.log('Backend test response headers:', testResponse.headers);
-        
-        if (!testResponse.ok) {
-          const errorText = await testResponse.text();
-          console.error('Backend error response:', errorText);
-          throw new Error(`Backend not accessible: ${testResponse.status} - ${errorText}`);
+        console.log("Backend test response status:", testResponse.status);
+        console.log("Backend test response headers:", testResponse.headers);
+
+        if (testResponse.status !== 200) {
+          console.error("Backend error response:", testResponse.data);
+          throw new Error(
+            `Backend not accessible: ${testResponse.status} - ${testResponse.data}`
+          );
         }
-        
-        const testData = await testResponse.json();
-        console.log('Backend test data:', testData);
+
+        const testData = testResponse.data;
+        console.log("Backend test data:", testData);
       } catch (testError) {
-        console.error('Backend connection test failed:', testError);
-        showMessage('error', `Cannot connect to backend server: ${testError instanceof Error ? testError.message : 'Unknown error'}`);
+        console.error("Backend connection test failed:", testError);
+        showMessage(
+          "error",
+          `Cannot connect to backend server: ${
+            testError instanceof Error ? testError.message : "Unknown error"
+          }`
+        );
         setCategories([]);
         setIsLoading(false);
         return;
@@ -102,7 +118,7 @@ const CategoryManagement: React.FC = () => {
         page: currentPage,
       });
 
-      console.log('Categories response:', response);
+      console.log("Categories response:", response);
 
       if (response.success && response.data.categories) {
         setCategories(response.data.categories);
@@ -111,19 +127,17 @@ const CategoryManagement: React.FC = () => {
           setTotalItems(response.data.pagination.total);
         }
       } else {
-        console.log('Response not successful or no categories data:', response);
+        console.log("Response not successful or no categories data:", response);
         setCategories([]);
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
-      showMessage('error', 'Failed to fetch categories');
+      showMessage("error", "Failed to fetch categories");
       setCategories([]);
     } finally {
       setIsLoading(false);
     }
   };
-
-
 
   const handleCreateCategory = () => {
     setEditingCategory(null);
@@ -146,13 +160,13 @@ const CategoryManagement: React.FC = () => {
     setIsDeleting(true);
     try {
       await categoryApi.deleteCategory(categoryToDelete.id);
-      setCategories(categories.filter(cat => cat.id !== categoryToDelete.id));
+      setCategories(categories.filter((cat) => cat.id !== categoryToDelete.id));
       setShowDeleteModal(false);
       setCategoryToDelete(null);
-      showMessage('success', 'Category deleted successfully');
+      showMessage("success", "Category deleted successfully");
     } catch (error) {
       console.error("Error deleting category:", error);
-      showMessage('error', 'Failed to delete category');
+      showMessage("error", "Failed to delete category");
     } finally {
       setIsDeleting(false);
     }
@@ -162,37 +176,42 @@ const CategoryManagement: React.FC = () => {
     try {
       if (editingCategory) {
         await categoryApi.updateCategory({ id: editingCategory.id, ...data });
-        showMessage('success', 'Category updated successfully');
+        showMessage("success", "Category updated successfully");
       } else {
         await categoryApi.createCategory(data);
-        showMessage('success', 'Category created successfully');
+        showMessage("success", "Category created successfully");
       }
       setShowModal(false);
       fetchCategories();
     } catch (error) {
       console.error("Error saving category:", error);
-      showMessage('error', editingCategory ? 'Failed to update category' : 'Failed to create category');
+      showMessage(
+        "error",
+        editingCategory
+          ? "Failed to update category"
+          : "Failed to create category"
+      );
     }
   };
 
-  const showMessage = (type: 'success' | 'error', text: string) => {
+  const showMessage = (type: "success" | "error", text: string) => {
     setMessage({ type, text });
     setTimeout(() => setMessage(null), 5000);
   };
 
   const handleSort = (field: string) => {
     if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortBy(field);
-      setSortOrder('asc');
+      setSortOrder("asc");
     }
     setCurrentPage(1);
   };
 
   const getSortIcon = (field: string) => {
     if (sortBy !== field) return null;
-    return sortOrder === 'asc' ? (
+    return sortOrder === "asc" ? (
       <ArrowUp className="w-4 h-4 ml-1" />
     ) : (
       <ArrowDown className="w-4 h-4 ml-1" />
@@ -203,11 +222,15 @@ const CategoryManagement: React.FC = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
-  console.log('CategoryManagement render - categories:', categories.length, 'loading:', isLoading);
-  
+  console.log(
+    "CategoryManagement render - categories:",
+    categories.length,
+    "loading:",
+    isLoading
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
-
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
@@ -215,7 +238,9 @@ const CategoryManagement: React.FC = () => {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Category Management
             </h1>
-            <p className="text-gray-600 mt-2">Manage your vehicle categories and subcategories</p>
+            <p className="text-gray-600 mt-2">
+              Manage your vehicle categories and subcategories
+            </p>
           </div>
           <button
             onClick={handleCreateCategory}
@@ -229,11 +254,13 @@ const CategoryManagement: React.FC = () => {
 
       {/* Message */}
       {message && (
-        <div className={`mb-6 p-4 rounded-xl shadow-lg ${
-          message.type === 'success' 
-            ? 'bg-green-100 border-l-4 border-green-500 text-green-700' 
-            : 'bg-red-100 border-l-4 border-red-500 text-red-700'
-        }`}>
+        <div
+          className={`mb-6 p-4 rounded-xl shadow-lg ${
+            message.type === "success"
+              ? "bg-green-100 border-l-4 border-green-500 text-green-700"
+              : "bg-red-100 border-l-4 border-red-500 text-red-700"
+          }`}
+        >
           {message.text}
         </div>
       )}
@@ -296,28 +323,42 @@ const CategoryManagement: React.FC = () => {
           <table className="w-full">
             <thead className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
               <tr>
-                <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-indigo-600 transition-colors" onClick={() => handleSort('id')}>
+                <th
+                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-indigo-600 transition-colors"
+                  onClick={() => handleSort("id")}
+                >
                   <div className="flex items-center">
-                    ID {getSortIcon('id')}
+                    ID {getSortIcon("id")}
                   </div>
                 </th>
-                <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-indigo-600 transition-colors" onClick={() => handleSort('name')}>
+                <th
+                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-indigo-600 transition-colors"
+                  onClick={() => handleSort("name")}
+                >
                   <div className="flex items-center">
-                    Name {getSortIcon('name')}
+                    Name {getSortIcon("name")}
                   </div>
                 </th>
                 <th className="px-6 py-4 text-left font-semibold">Image</th>
-                <th className="px-6 py-4 text-left font-semibold">Parent Category</th>
-                <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-indigo-600 transition-colors" onClick={() => handleSort('status')}>
+                <th className="px-6 py-4 text-left font-semibold">
+                  Parent Category
+                </th>
+                <th
+                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-indigo-600 transition-colors"
+                  onClick={() => handleSort("status")}
+                >
                   <div className="flex items-center">
-                    Status {getSortIcon('status')}
+                    Status {getSortIcon("status")}
                   </div>
                 </th>
                 <th className="px-6 py-4 text-left font-semibold">Children</th>
                 <th className="px-6 py-4 text-left font-semibold">Cars</th>
-                <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-indigo-600 transition-colors" onClick={() => handleSort('created_at')}>
+                <th
+                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-indigo-600 transition-colors"
+                  onClick={() => handleSort("created_at")}
+                >
                   <div className="flex items-center">
-                    Created {getSortIcon('created_at')}
+                    Created {getSortIcon("created_at")}
                   </div>
                 </th>
                 <th className="px-6 py-4 text-left font-semibold">Actions</th>
@@ -329,41 +370,55 @@ const CategoryManagement: React.FC = () => {
                   <td colSpan={9} className="px-6 py-12 text-center">
                     <div className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                      <span className="ml-3 text-gray-600">Loading categories...</span>
+                      <span className="ml-3 text-gray-600">
+                        Loading categories...
+                      </span>
                     </div>
                   </td>
                 </tr>
-                             ) : categories.length === 0 ? (
-                 <tr>
-                   <td colSpan={9} className="px-6 py-12 text-center text-gray-500">
-                     <div className="space-y-2">
-                       <p>No categories found</p>
-                       <p className="text-sm text-gray-400">
-                         {isLoading ? 'Loading...' : 'Try refreshing the page or check your connection'}
-                       </p>
-                       <button 
-                         onClick={() => {
-                           console.log('Manual refresh clicked');
-                               fetchCategories();
-                         }}
-                         className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors"
-                       >
-                         Refresh Data
-                       </button>
-                     </div>
-                   </td>
-                 </tr>
-               ) : (
+              ) : categories.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={9}
+                    className="px-6 py-12 text-center text-gray-500"
+                  >
+                    <div className="space-y-2">
+                      <p>No categories found</p>
+                      <p className="text-sm text-gray-400">
+                        {isLoading
+                          ? "Loading..."
+                          : "Try refreshing the page or check your connection"}
+                      </p>
+                      <button
+                        onClick={() => {
+                          console.log("Manual refresh clicked");
+                          fetchCategories();
+                        }}
+                        className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors"
+                      >
+                        Refresh Data
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
                 categories.map((category) => (
-                  <tr key={category.id} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={category.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
                     <td className="px-6 py-4 font-medium text-gray-900">
                       #{category.id}
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <div className="font-semibold text-gray-900">{category.name}</div>
+                        <div className="font-semibold text-gray-900">
+                          {category.name}
+                        </div>
                         {category.short_des && (
-                          <div className="text-sm text-gray-500 mt-1">{category.short_des}</div>
+                          <div className="text-sm text-gray-500 mt-1">
+                            {category.short_des}
+                          </div>
                         )}
                       </div>
                     </td>
@@ -376,7 +431,9 @@ const CategoryManagement: React.FC = () => {
                         />
                       ) : (
                         <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                          <span className="text-gray-400 text-xs">No Image</span>
+                          <span className="text-gray-400 text-xs">
+                            No Image
+                          </span>
                         </div>
                       )}
                     </td>
@@ -392,12 +449,15 @@ const CategoryManagement: React.FC = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                        category.status === 'active'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {category.status.charAt(0).toUpperCase() + category.status.slice(1)}
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                          category.status === "active"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {category.status.charAt(0).toUpperCase() +
+                          category.status.slice(1)}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">
@@ -443,7 +503,9 @@ const CategoryManagement: React.FC = () => {
           <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {((currentPage - 1) * perPage) + 1} to {Math.min(currentPage * perPage, totalItems)} of {totalItems} results
+                Showing {(currentPage - 1) * perPage + 1} to{" "}
+                {Math.min(currentPage * perPage, totalItems)} of {totalItems}{" "}
+                results
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -454,15 +516,16 @@ const CategoryManagement: React.FC = () => {
                   Previous
                 </button>
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const page = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                  const page =
+                    Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
                   return (
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
                       className={`px-3 py-2 text-sm font-medium rounded-lg ${
                         currentPage === page
-                          ? 'bg-indigo-600 text-white'
-                          : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
+                          ? "bg-indigo-600 text-white"
+                          : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-50"
                       }`}
                     >
                       {page}
@@ -470,7 +533,9 @@ const CategoryManagement: React.FC = () => {
                   );
                 })}
                 <button
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  onClick={() =>
+                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                  }
                   disabled={currentPage === totalPages}
                   className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >

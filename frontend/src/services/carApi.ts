@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+import axios from "axios";
+import { API_BASE_URL, API_ENDPOINTS } from "../config/api";
 
 export interface CarPhoto {
   id: number;
@@ -55,7 +56,7 @@ export interface Car {
   notes?: string;
   created_at: string;
   updated_at: string;
-  
+
   // Relationships
   category?: {
     id: number;
@@ -68,7 +69,7 @@ export interface Car {
   photos?: CarPhoto[];
   details?: CarDetail[];
   detail?: CarDetail; // Keep for backward compatibility
-  
+
   // Computed fields
   primary_photo_url?: string;
   price_formatted?: string;
@@ -106,21 +107,21 @@ export interface CreateCarData {
   country_origin?: string;
   status?: string;
   notes?: string;
-  
+
   photos?: {
     url: string;
     is_primary?: boolean;
     sort_order?: number;
     is_hidden?: boolean;
   }[];
-  
+
   details?: {
     short_title?: string;
     full_title?: string;
     description?: string;
     images?: string[];
   }[];
-  
+
   detail?: {
     short_title?: string;
     full_title?: string;
@@ -174,23 +175,20 @@ export interface CarFilterOptions {
 }
 
 class CarApiService {
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    const token = localStorage.getItem('token');
-    
+  private async request<T>(endpoint: string, options: any = {}): Promise<T> {
+    const token = localStorage.getItem("token");
+
     // Don't set Content-Type for FormData (file uploads)
     const defaultHeaders: Record<string, string> = {
-      'Authorization': `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     };
-    
+
     // Only set Content-Type if not FormData
-    if (!(options.body instanceof FormData)) {
-      defaultHeaders['Content-Type'] = 'application/json';
+    if (!(options.data instanceof FormData)) {
+      defaultHeaders["Content-Type"] = "application/json";
     }
-    
-    const config: RequestInit = {
+
+    const config = {
       headers: {
         ...defaultHeaders,
         ...options.headers,
@@ -199,69 +197,74 @@ class CarApiService {
     };
 
     const fullUrl = `${API_BASE_URL}${endpoint}`;
-    console.log('Making request to:', fullUrl);
-    console.log('Request config:', config);
+    console.log("Making request to:", fullUrl);
+    console.log("Request config:", config);
 
-    const response = await fetch(fullUrl, config);
-    
-    console.log('Response status:', response.status);
-    console.log('Response headers:', response.headers);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Response error:', errorText);
-      
+    try {
+      const response = await axios({
+        url: fullUrl,
+        ...config,
+      });
+
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+      console.log("Response data:", response.data);
+
+      return response.data;
+    } catch (error: any) {
+      console.error("Response error:", error);
+
       // Handle authentication errors
-      if (response.status === 401) {
-        console.error('CarApi: Authentication failed, clearing token');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+      if (error.response?.status === 401) {
+        console.error("CarApi: Authentication failed, clearing token");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
         // Redirect to login
-        window.location.href = '/login';
+        window.location.href = "/login";
       }
-      
-      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
-    }
 
-    const responseData = await response.json();
-    console.log('Response data:', responseData);
-    return responseData;
+      throw new Error(
+        `HTTP error! status: ${error.response?.status}, body: ${error.response?.data}`
+      );
+    }
   }
 
-  async getCars(params: {
-    search?: string;
-    status?: string;
-    category_id?: string;
-    subcategory_id?: string;
-    make?: string;
-    year?: string;
-    year_from?: string;
-    year_to?: string;
-    price_from?: string;
-    price_to?: string;
-    mileage_from?: string;
-    mileage_to?: string;
-    transmission?: string;
-    fuel?: string;
-    color?: string;
-    drive?: string;
-    steering?: string;
-    country?: string;
-    sort_by?: string;
-    sort_direction?: string;
-    per_page?: number;
-    page?: number;
-  } = {}): Promise<CarResponse> {
+  async getCars(
+    params: {
+      search?: string;
+      status?: string;
+      category_id?: string;
+      subcategory_id?: string;
+      make?: string;
+      year?: string;
+      year_from?: string;
+      year_to?: string;
+      price_from?: string;
+      price_to?: string;
+      mileage_from?: string;
+      mileage_to?: string;
+      transmission?: string;
+      fuel?: string;
+      color?: string;
+      drive?: string;
+      steering?: string;
+      country?: string;
+      sort_by?: string;
+      sort_direction?: string;
+      per_page?: number;
+      page?: number;
+    } = {}
+  ): Promise<CarResponse> {
     const searchParams = new URLSearchParams();
-    
+
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== '') {
+      if (value !== undefined && value !== "") {
         searchParams.append(key, value.toString());
       }
     });
 
     const url = `/cars?${searchParams.toString()}`;
-    console.log('Making request to:', url);
+    console.log("Making request to:", url);
     return this.request<CarResponse>(url);
   }
 
@@ -270,88 +273,99 @@ class CarApiService {
   }
 
   async createCar(data: CreateCarData): Promise<CarResponse> {
-    return this.request<CarResponse>('/cars', {
-      method: 'POST',
-      body: JSON.stringify(data),
+    return this.request<CarResponse>("/cars", {
+      method: "POST",
+      data: data,
     });
   }
 
   async updateCar(data: UpdateCarData): Promise<CarResponse> {
     const { id, ...updateData } = data;
     return this.request<CarResponse>(`/cars/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(updateData),
+      method: "PUT",
+      data: updateData,
     });
   }
 
   async deleteCar(id: number): Promise<CarResponse> {
     return this.request<CarResponse>(`/cars/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
   async importFromExcel(file: File): Promise<CarResponse> {
     const formData = new FormData();
-    formData.append('excel_file', file);
+    formData.append("excel_file", file);
 
-    return this.request<CarResponse>('/cars/import/excel', {
-      method: 'POST',
+    return this.request<CarResponse>("/cars/import/excel", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
         // Don't set Content-Type for FormData, let browser set it with boundary
       },
-      body: formData,
+      data: formData,
     });
   }
 
-  async updateCarPhotos(carId: number, photos: {
-    url: string;
-    is_primary?: boolean;
-    sort_order?: number;
-    is_hidden?: boolean;
-  }[]): Promise<CarResponse> {
+  async updateCarPhotos(
+    carId: number,
+    photos: {
+      url: string;
+      is_primary?: boolean;
+      sort_order?: number;
+      is_hidden?: boolean;
+    }[]
+  ): Promise<CarResponse> {
     return this.request<CarResponse>(`/cars/${carId}/photos`, {
-      method: 'PUT',
-      body: JSON.stringify({ photos }),
+      method: "PUT",
+      data: { photos },
     });
   }
 
-  async updateCarDetails(carId: number, detail: {
-    short_title?: string;
-    full_title?: string;
-    description?: string;
-    images?: string[];
-  }): Promise<CarResponse> {
+  async updateCarDetails(
+    carId: number,
+    detail: {
+      short_title?: string;
+      full_title?: string;
+      description?: string;
+      images?: string[];
+    }
+  ): Promise<CarResponse> {
     return this.request<CarResponse>(`/cars/${carId}/details`, {
-      method: 'PUT',
-      body: JSON.stringify({ detail }),
+      method: "PUT",
+      data: { detail },
     });
   }
 
-  async bulkUpdateStatus(carIds: number[], status: string): Promise<CarResponse> {
-    return this.request<CarResponse>('/cars/bulk/status', {
-      method: 'PUT',
-      body: JSON.stringify({ car_ids: carIds, status }),
+  async bulkUpdateStatus(
+    carIds: number[],
+    status: string
+  ): Promise<CarResponse> {
+    return this.request<CarResponse>("/cars/bulk/status", {
+      method: "PUT",
+      data: { car_ids: carIds, status },
     });
   }
 
-  async getFilterOptions(): Promise<{ success: boolean; data: CarFilterOptions }> {
-    return this.request<{ success: boolean; data: CarFilterOptions }>('/cars/filter/options');
+  async getFilterOptions(): Promise<{
+    success: boolean;
+    data: CarFilterOptions;
+  }> {
+    return this.request<{ success: boolean; data: CarFilterOptions }>(
+      "/cars/filter/options"
+    );
   }
 
   async exportToExcel(): Promise<Blob> {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE_URL}/cars/export/excel`, {
+    const token = localStorage.getItem("token");
+    const response = await axios.get(API_ENDPOINTS.CARS.EXPORT_EXCEL, {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
+      responseType: "blob",
     });
 
-    if (!response.ok) {
-      throw new Error(`Export failed: ${response.status}`);
-    }
-
-    return response.blob();
+    return response.data;
   }
 }
 

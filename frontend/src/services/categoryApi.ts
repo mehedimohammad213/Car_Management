@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+import axios from "axios";
+import { API_BASE_URL } from "../config/api";
 
 export interface Category {
   id: number;
@@ -9,7 +10,7 @@ export interface Category {
     id: number;
     name: string;
   } | null;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   short_des?: string;
   full_name: string;
   children_count: number;
@@ -22,7 +23,7 @@ export interface CreateCategoryData {
   name: string;
   image?: File;
   parent_category_id?: number;
-  status?: 'active' | 'inactive';
+  status?: "active" | "inactive";
   short_des?: string;
 }
 
@@ -50,73 +51,78 @@ export interface CategoryResponse {
 }
 
 class CategoryApiService {
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    const token = localStorage.getItem('token');
-    
-    console.log('CategoryApi: Token from localStorage:', token ? `${token.substring(0, 20)}...` : 'NO TOKEN');
-    
-    const config: RequestInit = {
+  private async request<T>(endpoint: string, options: any = {}): Promise<T> {
+    const token = localStorage.getItem("token");
+
+    console.log(
+      "CategoryApi: Token from localStorage:",
+      token ? `${token.substring(0, 20)}...` : "NO TOKEN"
+    );
+
+    const config = {
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
         ...options.headers,
       },
       ...options,
     };
 
     const fullUrl = `${API_BASE_URL}${endpoint}`;
-    console.log('Making request to:', fullUrl);
-    console.log('Request config:', config);
+    console.log("Making request to:", fullUrl);
+    console.log("Request config:", config);
 
-    const response = await fetch(fullUrl, config);
-    
-    console.log('Response status:', response.status);
-    console.log('Response headers:', response.headers);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Response error:', errorText);
-      
+    try {
+      const response = await axios({
+        url: fullUrl,
+        ...config,
+      });
+
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+      console.log("Response data:", response.data);
+
+      return response.data;
+    } catch (error: any) {
+      console.error("Response error:", error);
+
       // Handle authentication errors
-      if (response.status === 401) {
-        console.error('CategoryApi: Authentication failed, clearing token');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+      if (error.response?.status === 401) {
+        console.error("CategoryApi: Authentication failed, clearing token");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
         // Redirect to login
-        window.location.href = '/login';
+        window.location.href = "/login";
       }
-      
-      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
-    }
 
-    const responseData = await response.json();
-    console.log('Response data:', responseData);
-    return responseData;
+      throw new Error(
+        `HTTP error! status: ${error.response?.status}, body: ${error.response?.data}`
+      );
+    }
   }
 
-  async getCategories(params: {
-    search?: string;
-    status?: string;
-    type?: string;
-    parent_id?: string;
-    sort_by?: string;
-    sort_order?: string;
-    per_page?: number;
-    page?: number;
-  } = {}): Promise<CategoryResponse> {
+  async getCategories(
+    params: {
+      search?: string;
+      status?: string;
+      type?: string;
+      parent_id?: string;
+      sort_by?: string;
+      sort_order?: string;
+      per_page?: number;
+      page?: number;
+    } = {}
+  ): Promise<CategoryResponse> {
     const searchParams = new URLSearchParams();
-    
+
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== '') {
+      if (value !== undefined && value !== "") {
         searchParams.append(key, value.toString());
       }
     });
 
     const url = `/categories?${searchParams.toString()}`;
-    console.log('Making request to:', url);
+    console.log("Making request to:", url);
     return this.request<CategoryResponse>(url);
   }
 
@@ -126,10 +132,10 @@ class CategoryApiService {
 
   async createCategory(data: CreateCategoryData): Promise<CategoryResponse> {
     const formData = new FormData();
-    
+
     Object.entries(data).forEach(([key, value]) => {
       if (value !== undefined) {
-        if (key === 'image' && value instanceof File) {
+        if (key === "image" && value instanceof File) {
           formData.append(key, value);
         } else {
           formData.append(key, value.toString());
@@ -137,22 +143,22 @@ class CategoryApiService {
       }
     });
 
-    return this.request<CategoryResponse>('/categories', {
-      method: 'POST',
+    return this.request<CategoryResponse>("/categories", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
-      body: formData,
+      data: formData,
     });
   }
 
   async updateCategory(data: UpdateCategoryData): Promise<CategoryResponse> {
     const { id, ...updateData } = data;
     const formData = new FormData();
-    
+
     Object.entries(updateData).forEach(([key, value]) => {
       if (value !== undefined) {
-        if (key === 'image' && value instanceof File) {
+        if (key === "image" && value instanceof File) {
           formData.append(key, value);
         } else {
           formData.append(key, value.toString());
@@ -161,25 +167,23 @@ class CategoryApiService {
     });
 
     return this.request<CategoryResponse>(`/categories/${id}`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        'X-HTTP-Method-Override': 'PUT',
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "X-HTTP-Method-Override": "PUT",
       },
-      body: formData,
+      data: formData,
     });
   }
 
   async deleteCategory(id: number): Promise<CategoryResponse> {
     return this.request<CategoryResponse>(`/categories/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
-
-
   async getCategoryStats(): Promise<CategoryResponse> {
-    return this.request<CategoryResponse>('/categories/stats/overview');
+    return this.request<CategoryResponse>("/categories/stats/overview");
   }
 }
 
