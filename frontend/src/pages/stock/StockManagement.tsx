@@ -24,7 +24,7 @@ const StockManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [sortBy, setSortBy] = useState("created_at");
-  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(15);
   const [totalPages, setTotalPages] = useState(1);
@@ -57,7 +57,6 @@ const StockManagement: React.FC = () => {
         sort_by: sortBy,
         sort_order: sortOrder,
         per_page: perPage,
-        page: currentPage,
       });
 
       if (response.success && response.data.data) {
@@ -202,6 +201,7 @@ const StockManagement: React.FC = () => {
         onClose={handleDrawerClose}
         title={drawerMode === "create" ? "Create New Stock" : "Edit Stock"}
         size="md"
+        showActions={false}
       >
         <StockDrawerForm
           stock={selectedStock}

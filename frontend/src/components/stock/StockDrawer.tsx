@@ -8,7 +8,10 @@ interface StockDrawerProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg";
+  onSave?: () => void;
+  onCancel?: () => void;
+  showActions?: boolean;
 }
 
 const StockDrawer: React.FC<StockDrawerProps> = ({
@@ -17,15 +20,17 @@ const StockDrawer: React.FC<StockDrawerProps> = ({
   title,
   children,
   size = "md",
+  onSave,
+  onCancel,
+  showActions = true,
 }) => {
-  if (!isOpen) return null;
-
   const sizeClasses = {
-    sm: "max-w-md",
-    md: "max-w-2xl",
-    lg: "max-w-4xl",
-    xl: "max-w-6xl",
+    sm: "h-1/3",
+    md: "h-1/2",
+    lg: "h-2/3",
   };
+
+  if (!isOpen) return null;
 
   return (
     <>
@@ -37,9 +42,9 @@ const StockDrawer: React.FC<StockDrawerProps> = ({
 
       {/* Drawer */}
       <div
-        className={`fixed right-0 top-0 h-full bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${sizeClasses[size]} w-full sm:w-auto`}
+        className={`fixed bottom-0 left-0 right-0 ${sizeClasses[size]} bg-white rounded-t-2xl shadow-2xl z-50 transform transition-transform duration-300 ease-in-out`}
         style={{
-          transform: isOpen ? "translateX(0)" : "translateX(100%)",
+          transform: isOpen ? "translateY(0)" : "translateY(100%)",
         }}
       >
         {/* Header */}
@@ -47,14 +52,34 @@ const StockDrawer: React.FC<StockDrawerProps> = ({
           <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto h-full">{children}</div>
+        <div className="p-6 overflow-y-auto h-full">
+          {children}
+
+          {/* Action Buttons */}
+          {showActions && (
+            <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200">
+              <button
+                onClick={onCancel || onClose}
+                className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={onSave}
+                className="flex-1 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
+              >
+                Save
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

@@ -101,37 +101,36 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Car Selection */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          <PackageIcon className="w-4 h-4 inline mr-2" />
-          Car Selection
-        </label>
-        <select
-          value={formData.car_id}
-          onChange={(e) =>
-            handleInputChange("car_id", parseInt(e.target.value))
-          }
-          className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-            errors.car_id ? "border-red-500" : "border-gray-300"
-          }`}
-        >
-          <option value={0}>Select a car</option>
-          {/* This would be populated with available cars from the API */}
-          <option value={1}>Toyota Camry 2023</option>
-          <option value={2}>Honda Civic 2023</option>
-        </select>
-        {errors.car_id && (
-          <p className="mt-1 text-sm text-red-600">{errors.car_id}</p>
-        )}
-      </div>
+      {/* Car Selection, Quantity, and Status Fields - 3 Columns */}
+      <div className="grid grid-cols-3 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            <PackageIcon className="w-4 h-4 inline mr-2" />
+            Car Selection *
+          </label>
+          <select
+            value={formData.car_id}
+            onChange={(e) =>
+              handleInputChange("car_id", parseInt(e.target.value))
+            }
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+              errors.car_id ? "border-red-300" : "border-gray-300"
+            }`}
+          >
+            <option value={0}>Select a car</option>
+            {/* This would be populated with available cars from the API */}
+            <option value={1}>Toyota Camry 2023</option>
+            <option value={2}>Honda Civic 2023</option>
+          </select>
+          {errors.car_id && (
+            <p className="mt-1 text-sm text-red-600">{errors.car_id}</p>
+          )}
+        </div>
 
-      {/* Quantity and Price Row */}
-      <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             <HashIcon className="w-4 h-4 inline mr-2" />
-            Quantity
+            Quantity *
           </label>
           <input
             type="number"
@@ -140,8 +139,8 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
             onChange={(e) =>
               handleInputChange("quantity", parseInt(e.target.value))
             }
-            className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              errors.quantity ? "border-red-500" : "border-gray-300"
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+              errors.quantity ? "border-red-300" : "border-gray-300"
             }`}
           />
           {errors.quantity && (
@@ -149,6 +148,26 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
           )}
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Status
+          </label>
+          <select
+            value={formData.status}
+            onChange={(e) => handleInputChange("status", e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            {statusOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Price and Notes - 2 Columns */}
+      <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             <DollarSignIcon className="w-4 h-4 inline mr-2" />
@@ -163,66 +182,47 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
             onChange={(e) =>
               handleInputChange(
                 "price",
-                e.target.value ? parseFloat(e.target.value) : undefined
+                e.target.value ? parseFloat(e.target.value) : ""
               )
             }
-            className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              errors.price ? "border-red-500" : "border-gray-300"
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+              errors.price ? "border-red-300" : "border-gray-300"
             }`}
           />
           {errors.price && (
             <p className="mt-1 text-sm text-red-600">{errors.price}</p>
           )}
         </div>
-      </div>
 
-      {/* Status */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Status
-        </label>
-        <select
-          value={formData.status}
-          onChange={(e) => handleInputChange("status", e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-          {statusOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Notes */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          <FileTextIcon className="w-4 h-4 inline mr-2" />
-          Notes (Optional)
-        </label>
-        <textarea
-          rows={3}
-          placeholder="Add any additional notes about this stock item..."
-          value={formData.notes}
-          onChange={(e) => handleInputChange("notes", e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            <FileTextIcon className="w-4 h-4 inline mr-2" />
+            Notes (Optional)
+          </label>
+          <textarea
+            rows={1}
+            placeholder="Add any additional notes about this stock item..."
+            value={formData.notes}
+            onChange={(e) => handleInputChange("notes", e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+          />
+        </div>
       </div>
 
       {/* Form Actions */}
-      <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+      <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200">
         <button
           type="button"
           onClick={onCancel}
           disabled={isLoading}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+          className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:border-gray-500 disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isLoading}
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+          className="flex-1 px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
         >
           {isLoading ? (
             <div className="flex items-center">
