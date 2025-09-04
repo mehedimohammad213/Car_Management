@@ -21,10 +21,12 @@ export interface Category {
 
 export interface CreateCategoryData {
   name: string;
-  image?: File;
+  image?: File | string;
   parent_category_id?: number;
   status?: "active" | "inactive";
   short_des?: string;
+  type?: string;
+  description?: string;
 }
 
 export interface UpdateCategoryData extends Partial<CreateCategoryData> {

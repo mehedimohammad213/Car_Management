@@ -11,6 +11,7 @@ interface CategoryTableProps {
   onSort: (field: string) => void;
   onEdit: (category: Category) => void;
   onDelete: (category: Category) => void;
+  onView: (category: Category) => void;
   onRefresh: () => void;
 }
 
@@ -22,6 +23,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
   onSort,
   onEdit,
   onDelete,
+  onView,
   onRefresh,
 }) => {
   const getSortIcon = (field: string) => {
@@ -119,6 +121,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                   category={category}
                   onEdit={onEdit}
                   onDelete={onDelete}
+                  onView={onView}
                 />
               ))
             )}

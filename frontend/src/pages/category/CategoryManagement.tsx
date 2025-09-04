@@ -6,8 +6,10 @@ import {
   Category,
   CreateCategoryData,
 } from "../../services/categoryApi";
-import CategoryModal from "../../components/CategoryModal";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
+import CategoryDrawer from "../../components/CategoryDrawer";
+import CategoryDrawerForm from "../../components/CategoryDrawerForm";
+import CategoryView from "../../components/CategoryView";
 import {
   CategoryHeader,
   CategoryFilters,
@@ -29,9 +31,14 @@ const CategoryManagement: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
-  // Modal states
-  const [showModal, setShowModal] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  // Drawer states
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [drawerMode, setDrawerMode] = useState<"create" | "edit" | "view">(
+    "create"
+  );
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
     null
@@ -107,13 +114,21 @@ const CategoryManagement: React.FC = () => {
   };
 
   const handleCreateCategory = () => {
-    setEditingCategory(null);
-    setShowModal(true);
+    setSelectedCategory(null);
+    setDrawerMode("create");
+    setShowDrawer(true);
   };
 
   const handleEditCategory = (category: Category) => {
-    setEditingCategory(category);
-    setShowModal(true);
+    setSelectedCategory(category);
+    setDrawerMode("edit");
+    setShowDrawer(true);
+  };
+
+  const handleViewCategory = (category: Category) => {
+    setSelectedCategory(category);
+    setDrawerMode("view");
+    setShowDrawer(true);
   };
 
   const handleDeleteCategory = (category: Category) => {
@@ -139,7 +154,7 @@ const CategoryManagement: React.FC = () => {
     }
   };
 
-  const handleModalSubmit = async (data: CreateCategoryData) => {
+  const handleDrawerSubmit = async (data: CreateCategoryData) => {
     try {
       if (editingCategory) {
         await categoryApi.updateCategory({ id: editingCategory.id, ...data });
@@ -158,6 +173,17 @@ const CategoryManagement: React.FC = () => {
           ? "Failed to update category"
           : "Failed to create category"
       );
+    }
+  };
+
+  const handleDrawerClose = () => {
+    setShowDrawer(false);
+    setSelectedCategory(null);
+  };
+
+  const handleDrawerEdit = () => {
+    if (selectedCategory) {
+      setDrawerMode("edit");
     }
   };
 
@@ -207,6 +233,7 @@ const CategoryManagement: React.FC = () => {
         onSort={handleSort}
         onEdit={handleEditCategory}
         onDelete={handleDeleteCategory}
+        onView={handleViewCategory}
         onRefresh={fetchCategories}
       />
 
@@ -220,13 +247,33 @@ const CategoryManagement: React.FC = () => {
         />
       </div>
 
-      <CategoryModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onSubmit={handleModalSubmit}
-        category={editingCategory}
-        categories={categories}
-      />
+      <CategoryDrawer
+        isOpen={showDrawer}
+        onClose={handleDrawerClose}
+        title={
+          drawerMode === "create"
+            ? "Create New Category"
+            : drawerMode === "edit"
+            ? "Edit Category"
+            : "View Category"
+        }
+        size="md"
+      >
+        {drawerMode === "view" && selectedCategory ? (
+          <CategoryView
+            category={selectedCategory}
+            onEdit={handleDrawerEdit}
+            onClose={handleDrawerClose}
+          />
+        ) : (
+          <CategoryDrawerForm
+            category={selectedCategory}
+            onSubmit={handleDrawerSubmit}
+            onCancel={handleDrawerClose}
+            isLoading={false}
+          />
+        )}
+      </CategoryDrawer>
 
       <DeleteConfirmationModal
         isOpen={showDeleteModal}
