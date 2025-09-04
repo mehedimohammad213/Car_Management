@@ -10,12 +10,29 @@ import {
   CreateStockData,
   UpdateStockData,
 } from "../../services/stockApi";
+import { stockApi } from "../../services/stockApi";
 
 interface StockDrawerFormProps {
   stock?: Stock | null;
   onSubmit: (data: CreateStockData | UpdateStockData) => void;
   onCancel: () => void;
   isLoading?: boolean;
+}
+
+interface AvailableCar {
+  id: number;
+  make: string;
+  model: string;
+  year: number;
+  ref_no?: string;
+  category?: {
+    id: number;
+    name: string;
+  };
+  subcategory?: {
+    id: number;
+    name: string;
+  };
 }
 
 const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
@@ -27,29 +44,49 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
   const [formData, setFormData] = useState<CreateStockData>({
     car_id: 0,
     quantity: 1,
-    price: undefined,
+    price: 0,
     status: "available",
     notes: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [availableCars, setAvailableCars] = useState<AvailableCar[]>([]);
+  const [isLoadingCars, setIsLoadingCars] = useState(false);
+
+  useEffect(() => {
+    fetchAvailableCars();
+  }, []);
 
   useEffect(() => {
     if (stock) {
       setFormData({
         car_id: stock.car_id,
         quantity: stock.quantity,
-        price: stock.price,
+        price: stock.price || 0,
         status: stock.status,
         notes: stock.notes || "",
       });
     }
   }, [stock]);
 
+  const fetchAvailableCars = async () => {
+    try {
+      setIsLoadingCars(true);
+      const response = await stockApi.getAvailableCars();
+      if (response.success && response.data) {
+        setAvailableCars(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching available cars:", error);
+    } finally {
+      setIsLoadingCars(false);
+    }
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.car_id) {
+    if (formData.car_id === 0) {
       newErrors.car_id = "Car selection is required";
     }
 
@@ -99,28 +136,55 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
     { value: "stolen", label: "Stolen", color: "text-red-600" },
   ];
 
+  const formatCarLabel = (car: AvailableCar) => {
+    const category = car.category?.name || "";
+    const subcategory = car.subcategory?.name || "";
+    const categoryInfo =
+      category && subcategory
+        ? ` (${category} > ${subcategory})`
+        : category
+        ? ` (${category})`
+        : "";
+    return `${car.make} ${car.model} ${car.year}${categoryInfo}`;
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Car Selection, Quantity, and Status Fields - 3 Columns */}
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <PackageIcon className="w-4 h-4 inline mr-2" />
-            Car Selection *
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700">
+              <PackageIcon className="w-4 h-4 inline mr-2" />
+              Car Selection *
+            </label>
+            <button
+              type="button"
+              onClick={fetchAvailableCars}
+              disabled={isLoadingCars}
+              className="text-xs text-indigo-600 hover:text-indigo-800 disabled:text-gray-400"
+            >
+              {isLoadingCars ? "Loading..." : "Refresh"}
+            </button>
+          </div>
           <select
             value={formData.car_id}
             onChange={(e) =>
               handleInputChange("car_id", parseInt(e.target.value))
             }
+            disabled={isLoadingCars}
             className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
               errors.car_id ? "border-red-300" : "border-gray-300"
-            }`}
+            } ${isLoadingCars ? "bg-gray-100 cursor-not-allowed" : ""}`}
           >
-            <option value={0}>Select a car</option>
-            {/* This would be populated with available cars from the API */}
-            <option value={1}>Toyota Camry 2023</option>
-            <option value={2}>Honda Civic 2023</option>
+            <option value={0}>
+              {isLoadingCars ? "Loading cars..." : "Select a car"}
+            </option>
+            {availableCars.map((car) => (
+              <option key={car.id} value={car.id}>
+                {formatCarLabel(car)}
+              </option>
+            ))}
           </select>
           {errors.car_id && (
             <p className="mt-1 text-sm text-red-600">{errors.car_id}</p>
@@ -178,11 +242,11 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
             min="0"
             step="0.01"
             placeholder="0.00"
-            value={formData.price || ""}
+            value={formData.price === 0 ? "" : formData.price}
             onChange={(e) =>
               handleInputChange(
                 "price",
-                e.target.value ? parseFloat(e.target.value) : ""
+                e.target.value ? parseFloat(e.target.value) : 0
               )
             }
             className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
