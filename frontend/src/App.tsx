@@ -12,8 +12,7 @@ import CategoryManagement from "./pages/CategoryManagement";
 import CreateCar from "./pages/CreateCar";
 import ViewCar from "./pages/ViewCar";
 import UpdateCar from "./pages/UpdateCar";
-import StockManagement from "./pages/StockManagement";
-import { StockPage } from "./pages/stock";
+import StockManagement from "./pages/stock/StockManagement";
 import SellManagement from "./pages/SellManagement";
 import OrderManagement from "./pages/OrderManagement";
 import ClientManagement from "./pages/ClientManagement";
@@ -100,14 +99,7 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
-                  <Route
-                    path="/stock"
-                    element={
-                      <ProtectedRoute role="admin">
-                        <StockPage />
-                      </ProtectedRoute>
-                    }
-                  />
+
                   <Route
                     path="/admin/sell"
                     element={

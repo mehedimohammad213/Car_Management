@@ -1,0 +1,226 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import {
+  stockApi,
+  Stock,
+  CreateStockData,
+  UpdateStockData,
+} from "../../services/stockApi";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
+import {
+  StockHeader,
+  StockFilters,
+  StockTable,
+  StockPagination,
+  MessageDisplay,
+  StockDrawer,
+  StockDrawerForm,
+} from "../../components/stock";
+
+const StockManagement: React.FC = () => {
+  const [stocks, setStocks] = useState<Stock[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [sortBy, setSortBy] = useState("created_at");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage] = useState(15);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Drawer states
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [drawerMode, setDrawerMode] = useState<"create" | "edit">("create");
+  const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [stockToDelete, setStockToDelete] = useState<Stock | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Success/Error messages
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  useEffect(() => {
+    fetchStocks();
+  }, [currentPage, searchTerm, statusFilter, sortBy, sortOrder]);
+
+  const fetchStocks = async () => {
+    try {
+      setIsLoading(true);
+      const response = await stockApi.getStocks({
+        search: searchTerm || undefined,
+        status: statusFilter || undefined,
+        sort_by: sortBy,
+        sort_order: sortOrder,
+        per_page: perPage,
+        page: currentPage,
+      });
+
+      if (response.success && response.data.data) {
+        setStocks(response.data.data);
+        if (response.data.current_page) {
+          setTotalPages(response.data.last_page);
+          setTotalItems(response.data.total);
+        }
+      } else {
+        setStocks([]);
+      }
+    } catch (error) {
+      console.error("Error fetching stocks:", error);
+      showMessage("error", "Failed to fetch stocks");
+      setStocks([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCreateStock = () => {
+    setSelectedStock(null);
+    setDrawerMode("create");
+    setShowDrawer(true);
+  };
+
+  const handleEditStock = (stock: Stock) => {
+    setSelectedStock(stock);
+    setDrawerMode("edit");
+    setShowDrawer(true);
+  };
+
+  const handleDeleteStock = (stock: Stock) => {
+    setStockToDelete(stock);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!stockToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await stockApi.deleteStock(stockToDelete.id);
+      setStocks(stocks.filter((stock) => stock.id !== stockToDelete.id));
+      setShowDeleteModal(false);
+      setStockToDelete(null);
+      showMessage("success", "Stock deleted successfully");
+    } catch (error) {
+      console.error("Error deleting stock:", error);
+      showMessage("error", "Failed to delete stock");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDrawerSubmit = async (
+    data: CreateStockData | UpdateStockData
+  ) => {
+    try {
+      if (selectedStock) {
+        await stockApi.updateStock(selectedStock.id, data as UpdateStockData);
+        showMessage("success", "Stock updated successfully");
+      } else {
+        await stockApi.createStock(data as CreateStockData);
+        showMessage("success", "Stock created successfully");
+      }
+      setShowDrawer(false);
+      setSelectedStock(null);
+      fetchStocks();
+    } catch (error) {
+      console.error("Error saving stock:", error);
+      showMessage(
+        "error",
+        selectedStock ? "Failed to update stock" : "Failed to create stock"
+      );
+    }
+  };
+
+  const handleDrawerClose = () => {
+    setShowDrawer(false);
+    setSelectedStock(null);
+  };
+
+  const showMessage = (type: "success" | "error", text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 5000);
+  };
+
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
+    setCurrentPage(1);
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setStatusFilter("");
+    setCurrentPage(1);
+  };
+
+  return (
+    <div className="min-h-screen p-6">
+      <StockHeader onCreateStock={handleCreateStock} />
+
+      <MessageDisplay message={message} />
+
+      <StockFilters
+        searchTerm={searchTerm}
+        statusFilter={statusFilter}
+        onSearchChange={setSearchTerm}
+        onStatusFilterChange={setStatusFilter}
+        onClearFilters={handleClearFilters}
+      />
+
+      <StockTable
+        stocks={stocks}
+        isLoading={isLoading}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSort={handleSort}
+        onEdit={handleEditStock}
+        onDelete={handleDeleteStock}
+        onRefresh={fetchStocks}
+      />
+
+      <div className="bg-white rounded-lg shadow-sm p-4 mt-6">
+        <StockPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          perPage={perPage}
+          onPageChange={setCurrentPage}
+        />
+      </div>
+
+      <StockDrawer
+        isOpen={showDrawer}
+        onClose={handleDrawerClose}
+        title={drawerMode === "create" ? "Create New Stock" : "Edit Stock"}
+        size="md"
+      >
+        <StockDrawerForm
+          stock={selectedStock}
+          onSubmit={handleDrawerSubmit}
+          onCancel={handleDrawerClose}
+          isLoading={false}
+        />
+      </StockDrawer>
+
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Stock"
+        message={`Are you sure you want to delete this stock item? This action cannot be undone.`}
+        isLoading={isDeleting}
+      />
+    </div>
+  );
+};
+
+export default StockManagement;
