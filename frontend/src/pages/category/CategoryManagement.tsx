@@ -7,15 +7,14 @@ import {
   CreateCategoryData,
 } from "../../services/categoryApi";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
-import CategoryDrawer from "../../components/CategoryDrawer";
-import CategoryDrawerForm from "../../components/CategoryDrawerForm";
-import CategoryView from "../../components/CategoryView";
 import {
   CategoryHeader,
   CategoryFilters,
   CategoryTable,
   CategoryPagination,
   MessageDisplay,
+  CategoryDrawer,
+  CategoryDrawerForm,
 } from "../../components/category";
 
 const CategoryManagement: React.FC = () => {
@@ -33,9 +32,7 @@ const CategoryManagement: React.FC = () => {
 
   // Drawer states
   const [showDrawer, setShowDrawer] = useState(false);
-  const [drawerMode, setDrawerMode] = useState<"create" | "edit" | "view">(
-    "create"
-  );
+  const [drawerMode, setDrawerMode] = useState<"create" | "edit">("create");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
@@ -125,12 +122,6 @@ const CategoryManagement: React.FC = () => {
     setShowDrawer(true);
   };
 
-  const handleViewCategory = (category: Category) => {
-    setSelectedCategory(category);
-    setDrawerMode("view");
-    setShowDrawer(true);
-  };
-
   const handleDeleteCategory = (category: Category) => {
     setCategoryToDelete(category);
     setShowDeleteModal(true);
@@ -156,20 +147,21 @@ const CategoryManagement: React.FC = () => {
 
   const handleDrawerSubmit = async (data: CreateCategoryData) => {
     try {
-      if (editingCategory) {
-        await categoryApi.updateCategory({ id: editingCategory.id, ...data });
+      if (selectedCategory) {
+        await categoryApi.updateCategory({ id: selectedCategory.id, ...data });
         showMessage("success", "Category updated successfully");
       } else {
         await categoryApi.createCategory(data);
         showMessage("success", "Category created successfully");
       }
-      setShowModal(false);
+      setShowDrawer(false);
+      setSelectedCategory(null);
       fetchCategories();
     } catch (error) {
       console.error("Error saving category:", error);
       showMessage(
         "error",
-        editingCategory
+        selectedCategory
           ? "Failed to update category"
           : "Failed to create category"
       );
@@ -233,7 +225,6 @@ const CategoryManagement: React.FC = () => {
         onSort={handleSort}
         onEdit={handleEditCategory}
         onDelete={handleDeleteCategory}
-        onView={handleViewCategory}
         onRefresh={fetchCategories}
       />
 
@@ -251,28 +242,16 @@ const CategoryManagement: React.FC = () => {
         isOpen={showDrawer}
         onClose={handleDrawerClose}
         title={
-          drawerMode === "create"
-            ? "Create New Category"
-            : drawerMode === "edit"
-            ? "Edit Category"
-            : "View Category"
+          drawerMode === "create" ? "Create New Category" : "Edit Category"
         }
         size="md"
       >
-        {drawerMode === "view" && selectedCategory ? (
-          <CategoryView
-            category={selectedCategory}
-            onEdit={handleDrawerEdit}
-            onClose={handleDrawerClose}
-          />
-        ) : (
-          <CategoryDrawerForm
-            category={selectedCategory}
-            onSubmit={handleDrawerSubmit}
-            onCancel={handleDrawerClose}
-            isLoading={false}
-          />
-        )}
+        <CategoryDrawerForm
+          category={selectedCategory}
+          onSubmit={handleDrawerSubmit}
+          onCancel={handleDrawerClose}
+          isLoading={false}
+        />
       </CategoryDrawer>
 
       <DeleteConfirmationModal

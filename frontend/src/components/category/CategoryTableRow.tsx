@@ -6,7 +6,7 @@ interface CategoryTableRowProps {
   category: Category;
   onEdit: (category: Category) => void;
   onDelete: (category: Category) => void;
-  onView: (category: Category) => void;
+  onView?: (category: Category) => void;
 }
 
 const CategoryTableRow: React.FC<CategoryTableRowProps> = ({
@@ -82,13 +82,15 @@ const CategoryTableRow: React.FC<CategoryTableRowProps> = ({
       </td>
       <td className="px-6 py-4">
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => onView(category)}
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-            title="View Category"
-          >
-            <Eye className="w-4 h-4" />
-          </button>
+          {onView && (
+            <button
+              onClick={() => onView(category)}
+              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              title="View Category"
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+          )}
           <button
             onClick={() => onEdit(category)}
             className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"

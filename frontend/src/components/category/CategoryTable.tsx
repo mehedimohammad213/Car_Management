@@ -11,7 +11,7 @@ interface CategoryTableProps {
   onSort: (field: string) => void;
   onEdit: (category: Category) => void;
   onDelete: (category: Category) => void;
-  onView: (category: Category) => void;
+  onView?: (category: Category) => void;
   onRefresh: () => void;
 }
 

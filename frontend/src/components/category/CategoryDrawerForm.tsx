@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Category, CreateCategoryData } from "../services/categoryApi";
+import { Category, CreateCategoryData } from "../../services/categoryApi";
 import { Upload, X } from "lucide-react";
 
 interface CategoryDrawerFormProps {
@@ -55,7 +55,7 @@ const CategoryDrawerForm: React.FC<CategoryDrawerFormProps> = ({
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData((prev: CreateCategoryData) => ({
       ...prev,
       [name]: value,
     }));
@@ -65,7 +65,7 @@ const CategoryDrawerForm: React.FC<CategoryDrawerFormProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      setFormData((prev) => ({ ...prev, image: "" })); // Clear URL when file is selected
+      setFormData((prev: CreateCategoryData) => ({ ...prev, image: "" })); // Clear URL when file is selected
 
       // Create preview
       const reader = new FileReader();
