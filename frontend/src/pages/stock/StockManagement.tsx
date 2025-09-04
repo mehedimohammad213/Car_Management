@@ -26,7 +26,7 @@ const StockManagement: React.FC = () => {
   const [sortBy, setSortBy] = useState("created_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage] = useState(15);
+  const [perPage] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
@@ -57,16 +57,27 @@ const StockManagement: React.FC = () => {
         sort_by: sortBy,
         sort_order: sortOrder,
         per_page: perPage,
+        page: currentPage,
       });
 
-      if (response.success && response.data.data) {
-        setStocks(response.data.data);
-        if (response.data.current_page) {
-          setTotalPages(response.data.last_page);
-          setTotalItems(response.data.total);
+      if (response.success && response.data) {
+        console.log("Setting stocks:", response.data);
+        console.log("Pagination data:", {
+          current_page: response.current_page,
+          last_page: response.last_page,
+          total: response.total,
+        });
+
+        setStocks(response.data);
+        if (response.current_page) {
+          setTotalPages(response.last_page);
+          setTotalItems(response.total);
         }
       } else {
+        console.log("No stocks found, setting empty array");
         setStocks([]);
+        setTotalPages(1);
+        setTotalItems(0);
       }
     } catch (error) {
       console.error("Error fetching stocks:", error);
@@ -192,7 +203,10 @@ const StockManagement: React.FC = () => {
           totalPages={totalPages}
           totalItems={totalItems}
           perPage={perPage}
-          onPageChange={setCurrentPage}
+          onPageChange={(page) => {
+            console.log("Page changed to:", page);
+            setCurrentPage(page);
+          }}
         />
       </div>
 

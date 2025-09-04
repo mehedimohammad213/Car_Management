@@ -73,6 +73,7 @@ export interface StockFilters {
   sort_by?: string;
   sort_order?: "asc" | "desc";
   per_page?: number;
+  page?: number;
 }
 
 export interface BulkUpdateStatusData {
@@ -106,13 +107,11 @@ class StockApiService {
 
   async getStocks(filters: StockFilters = {}): Promise<{
     success: boolean;
-    data: {
-      data: Stock[];
-      current_page: number;
-      last_page: number;
-      per_page: number;
-      total: number;
-    };
+    data: Stock[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
     message: string;
   }> {
     const params = new URLSearchParams();

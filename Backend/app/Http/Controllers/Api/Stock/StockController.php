@@ -33,11 +33,16 @@ class StockController extends Controller
 
             // Pagination
             $perPage = $request->get('per_page', 15);
-            $stocks = $query->paginate($perPage);
+            $page = $request->get('page', 1);
+            $stocks = $query->paginate($perPage, ['*'], 'page', $page);
 
             return response()->json([
                 'success' => true,
-                'data' => $stocks,
+                'data' => $stocks->items(),
+                'current_page' => $stocks->currentPage(),
+                'last_page' => $stocks->lastPage(),
+                'per_page' => $stocks->perPage(),
+                'total' => $stocks->total(),
                 'message' => 'Stocks retrieved successfully'
             ]);
 
@@ -274,10 +279,10 @@ class StockController extends Controller
             DB::beginTransaction();
 
             $stocks = Stock::whereIn('id', $request->stock_ids)->get();
-            
+
             foreach ($stocks as $stock) {
                 $stock->update(['status' => $request->status]);
-                
+
                 // Update car status
                 if ($stock->car) {
                     $stock->car->update(['status' => $request->status]);
