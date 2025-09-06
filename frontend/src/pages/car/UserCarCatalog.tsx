@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Search, 
+import {
+  Search,
   Filter,
   Eye,
   Heart,
@@ -16,15 +16,23 @@ import {
   ChevronLeft,
   ChevronRight,
   Settings,
-  X
+  X,
 } from "lucide-react";
-import { carApi, Car as CarType, CarFilterOptions } from "../services/carApi";
-import { categoryApi } from "../services/categoryApi";
+import {
+  carApi,
+  Car as CarType,
+  CarFilterOptions,
+} from "../../services/carApi";
+import { categoryApi } from "../../services/categoryApi";
 
 const UserCarCatalog: React.FC = () => {
   const [cars, setCars] = useState<CarType[]>([]);
-  const [categories, setCategories] = useState<Array<{ id: number; name: string }>>([]);
-  const [filterOptions, setFilterOptions] = useState<CarFilterOptions | null>(null);
+  const [categories, setCategories] = useState<
+    Array<{ id: number; name: string }>
+  >([]);
+  const [filterOptions, setFilterOptions] = useState<CarFilterOptions | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("available");
@@ -48,7 +56,20 @@ const UserCarCatalog: React.FC = () => {
     fetchCars();
     fetchCategories();
     fetchFilterOptions();
-  }, [currentPage, searchTerm, statusFilter, categoryFilter, makeFilter, yearFilter, transmissionFilter, fuelFilter, colorFilter, priceRange, sortBy, sortDirection]);
+  }, [
+    currentPage,
+    searchTerm,
+    statusFilter,
+    categoryFilter,
+    makeFilter,
+    yearFilter,
+    transmissionFilter,
+    fuelFilter,
+    colorFilter,
+    priceRange,
+    sortBy,
+    sortDirection,
+  ]);
 
   const fetchCars = async () => {
     try {
@@ -133,34 +154,34 @@ const UserCarCatalog: React.FC = () => {
   };
 
   const formatPrice = (amount?: number, currency?: string) => {
-    if (!amount) return 'Price on request';
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
+    if (!amount) return "Price on request";
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency || "USD",
     }).format(amount);
   };
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
-      case 'available':
-        return 'bg-green-100 text-green-800';
-      case 'sold':
-        return 'bg-red-100 text-red-800';
-      case 'reserved':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'in_transit':
-        return 'bg-blue-100 text-blue-800';
+      case "available":
+        return "bg-green-100 text-green-800";
+      case "sold":
+        return "bg-red-100 text-red-800";
+      case "reserved":
+        return "bg-yellow-100 text-yellow-800";
+      case "in_transit":
+        return "bg-blue-100 text-blue-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getGradeColor = (grade?: string | number) => {
-    if (!grade) return 'bg-gray-100 text-gray-800';
-    const numGrade = typeof grade === 'string' ? parseFloat(grade) : grade;
-    if (numGrade >= 8) return 'bg-green-100 text-green-800';
-    if (numGrade >= 6) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
+    if (!grade) return "bg-gray-100 text-gray-800";
+    const numGrade = typeof grade === "string" ? parseFloat(grade) : grade;
+    if (numGrade >= 8) return "bg-green-100 text-green-800";
+    if (numGrade >= 6) return "bg-yellow-100 text-yellow-800";
+    return "bg-red-100 text-red-800";
   };
 
   return (
@@ -172,7 +193,9 @@ const UserCarCatalog: React.FC = () => {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
               🚗 Car Catalog
             </h1>
-            <p className="text-gray-600 mt-2">Discover your perfect vehicle from our extensive collection</p>
+            <p className="text-gray-600 mt-2">
+              Discover your perfect vehicle from our extensive collection
+            </p>
           </div>
         </div>
       </div>
@@ -184,7 +207,7 @@ const UserCarCatalog: React.FC = () => {
             <Filter className="w-5 h-5 text-blue-600" />
             <h3 className="text-lg font-semibold text-gray-800">Filters</h3>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
@@ -288,14 +311,18 @@ const UserCarCatalog: React.FC = () => {
                 type="number"
                 placeholder="Min Price"
                 value={priceRange.min}
-                onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
+                onChange={(e) =>
+                  setPriceRange((prev) => ({ ...prev, min: e.target.value }))
+                }
                 className="flex-1 px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
               <input
                 type="number"
                 placeholder="Max Price"
                 value={priceRange.max}
-                onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
+                onChange={(e) =>
+                  setPriceRange((prev) => ({ ...prev, max: e.target.value }))
+                }
                 className="flex-1 px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
             </div>
@@ -320,7 +347,7 @@ const UserCarCatalog: React.FC = () => {
             <select
               value={`${sortBy}-${sortDirection}`}
               onChange={(e) => {
-                const [field, direction] = e.target.value.split('-');
+                const [field, direction] = e.target.value.split("-");
                 setSortBy(field);
                 setSortDirection(direction);
               }}
@@ -345,18 +372,28 @@ const UserCarCatalog: React.FC = () => {
         ) : cars.length === 0 ? (
           <div className="text-center py-12">
             <Car className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No cars found</h3>
-            <p className="text-gray-500">Try adjusting your filters or search terms</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No cars found
+            </h3>
+            <p className="text-gray-500">
+              Try adjusting your filters or search terms
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {cars.map((car) => (
-              <div key={car.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <div
+                key={car.id}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              >
                 {/* Car Image */}
                 <div className="relative h-48 bg-gray-200">
                   {car.photos && car.photos.length > 0 ? (
                     <img
-                      src={car.photos.find((p: any) => p.is_primary)?.url || car.photos[0].url}
+                      src={
+                        car.photos.find((p: any) => p.is_primary)?.url ||
+                        car.photos[0].url
+                      }
                       alt={`${car.make} ${car.model}`}
                       className="w-full h-full object-cover"
                     />
@@ -365,18 +402,27 @@ const UserCarCatalog: React.FC = () => {
                       <Car className="w-16 h-16 text-gray-400" />
                     </div>
                   )}
-                  
+
                   {/* Status Badge */}
                   <div className="absolute top-3 left-3">
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(car.status)}`}>
-                      {car.status?.charAt(0).toUpperCase() + car.status?.slice(1)}
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        car.status
+                      )}`}
+                    >
+                      {car.status?.charAt(0).toUpperCase() +
+                        car.status?.slice(1)}
                     </span>
                   </div>
 
                   {/* Grade Badge */}
                   {car.grade_overall && (
                     <div className="absolute top-3 right-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getGradeColor(car.grade_overall)}`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getGradeColor(
+                          car.grade_overall
+                        )}`}
+                      >
                         <Star className="w-3 h-3 mr-1" />
                         {car.grade_overall}/10
                       </span>
@@ -392,7 +438,9 @@ const UserCarCatalog: React.FC = () => {
                       {car.make} {car.model}
                     </h3>
                     {car.variant && (
-                      <p className="text-sm text-gray-600 mb-1">{car.variant}</p>
+                      <p className="text-sm text-gray-600 mb-1">
+                        {car.variant}
+                      </p>
                     )}
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <Calendar className="w-4 h-4" />
@@ -475,26 +523,29 @@ const UserCarCatalog: React.FC = () => {
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              
+
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const page = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                const page =
+                  Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
                 return (
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
                     className={`px-3 py-2 text-sm font-medium rounded-lg ${
                       currentPage === page
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
+                        ? "bg-blue-600 text-white"
+                        : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-50"
                     }`}
                   >
                     {page}
                   </button>
                 );
               })}
-              
+
               <button
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                onClick={() =>
+                  setCurrentPage(Math.min(totalPages, currentPage + 1))
+                }
                 disabled={currentPage === totalPages}
                 className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -525,7 +576,10 @@ const UserCarCatalog: React.FC = () => {
                   </h2>
                   <p className="text-blue-100 mt-1">
                     {selectedCar.variant && `${selectedCar.variant} • `}
-                    {selectedCar.year} • {selectedCar.mileage_km ? `${selectedCar.mileage_km.toLocaleString()} km` : 'Mileage not specified'}
+                    {selectedCar.year} •{" "}
+                    {selectedCar.mileage_km
+                      ? `${selectedCar.mileage_km.toLocaleString()} km`
+                      : "Mileage not specified"}
                   </p>
                 </div>
                 <button
@@ -542,14 +596,18 @@ const UserCarCatalog: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left Column - Photos */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Photos</h3>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Photos
+                  </h3>
                   {selectedCar.photos && selectedCar.photos.length > 0 ? (
                     <div className="space-y-4">
                       {selectedCar.photos.map((photo: any, index: number) => (
                         <img
                           key={index}
                           src={photo.url}
-                          alt={`${selectedCar.make} ${selectedCar.model} photo ${index + 1}`}
+                          alt={`${selectedCar.make} ${
+                            selectedCar.model
+                          } photo ${index + 1}`}
                           className="w-full h-64 object-cover rounded-xl"
                         />
                       ))}
@@ -566,36 +624,61 @@ const UserCarCatalog: React.FC = () => {
                 <div className="space-y-6">
                   {/* Basic Information */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">Basic Information</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                      Basic Information
+                    </h3>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div>
                         <span className="font-medium text-gray-600">Make:</span>
-                        <span className="ml-2 text-gray-900">{selectedCar.make}</span>
+                        <span className="ml-2 text-gray-900">
+                          {selectedCar.make}
+                        </span>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Model:</span>
-                        <span className="ml-2 text-gray-900">{selectedCar.model}</span>
+                        <span className="font-medium text-gray-600">
+                          Model:
+                        </span>
+                        <span className="ml-2 text-gray-900">
+                          {selectedCar.model}
+                        </span>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Year:</span>
-                        <span className="ml-2 text-gray-900">{selectedCar.year}</span>
+                        <span className="ml-2 text-gray-900">
+                          {selectedCar.year}
+                        </span>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Status:</span>
-                        <span className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedCar.status)}`}>
-                          {selectedCar.status?.charAt(0).toUpperCase() + selectedCar.status?.slice(1)}
+                        <span className="font-medium text-gray-600">
+                          Status:
+                        </span>
+                        <span
+                          className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                            selectedCar.status
+                          )}`}
+                        >
+                          {selectedCar.status?.charAt(0).toUpperCase() +
+                            selectedCar.status?.slice(1)}
                         </span>
                       </div>
                       {selectedCar.variant && (
                         <div>
-                          <span className="font-medium text-gray-600">Variant:</span>
-                          <span className="ml-2 text-gray-900">{selectedCar.variant}</span>
+                          <span className="font-medium text-gray-600">
+                            Variant:
+                          </span>
+                          <span className="ml-2 text-gray-900">
+                            {selectedCar.variant}
+                          </span>
                         </div>
                       )}
                       {selectedCar.ref_no && (
                         <div>
-                          <span className="font-medium text-gray-600">Ref No:</span>
-                          <span className="ml-2 text-gray-900">{selectedCar.ref_no}</span>
+                          <span className="font-medium text-gray-600">
+                            Ref No:
+                          </span>
+                          <span className="ml-2 text-gray-900">
+                            {selectedCar.ref_no}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -603,42 +686,68 @@ const UserCarCatalog: React.FC = () => {
 
                   {/* Specifications */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">Specifications</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                      Specifications
+                    </h3>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       {selectedCar.transmission && (
                         <div>
-                          <span className="font-medium text-gray-600">Transmission:</span>
-                          <span className="ml-2 text-gray-900">{selectedCar.transmission}</span>
+                          <span className="font-medium text-gray-600">
+                            Transmission:
+                          </span>
+                          <span className="ml-2 text-gray-900">
+                            {selectedCar.transmission}
+                          </span>
                         </div>
                       )}
                       {selectedCar.fuel && (
                         <div>
-                          <span className="font-medium text-gray-600">Fuel:</span>
-                          <span className="ml-2 text-gray-900">{selectedCar.fuel}</span>
+                          <span className="font-medium text-gray-600">
+                            Fuel:
+                          </span>
+                          <span className="ml-2 text-gray-900">
+                            {selectedCar.fuel}
+                          </span>
                         </div>
                       )}
                       {selectedCar.color && (
                         <div>
-                          <span className="font-medium text-gray-600">Color:</span>
-                          <span className="ml-2 text-gray-900">{selectedCar.color}</span>
+                          <span className="font-medium text-gray-600">
+                            Color:
+                          </span>
+                          <span className="ml-2 text-gray-900">
+                            {selectedCar.color}
+                          </span>
                         </div>
                       )}
                       {selectedCar.seats && (
                         <div>
-                          <span className="font-medium text-gray-600">Seats:</span>
-                          <span className="ml-2 text-gray-900">{selectedCar.seats}</span>
+                          <span className="font-medium text-gray-600">
+                            Seats:
+                          </span>
+                          <span className="ml-2 text-gray-900">
+                            {selectedCar.seats}
+                          </span>
                         </div>
                       )}
                       {selectedCar.mileage_km && (
                         <div>
-                          <span className="font-medium text-gray-600">Mileage:</span>
-                          <span className="ml-2 text-gray-900">{selectedCar.mileage_km.toLocaleString()} km</span>
+                          <span className="font-medium text-gray-600">
+                            Mileage:
+                          </span>
+                          <span className="ml-2 text-gray-900">
+                            {selectedCar.mileage_km.toLocaleString()} km
+                          </span>
                         </div>
                       )}
                       {selectedCar.engine_cc && (
                         <div>
-                          <span className="font-medium text-gray-600">Engine:</span>
-                          <span className="ml-2 text-gray-900">{selectedCar.engine_cc.toLocaleString()} cc</span>
+                          <span className="font-medium text-gray-600">
+                            Engine:
+                          </span>
+                          <span className="ml-2 text-gray-900">
+                            {selectedCar.engine_cc.toLocaleString()} cc
+                          </span>
                         </div>
                       )}
                     </div>
@@ -646,45 +755,74 @@ const UserCarCatalog: React.FC = () => {
 
                   {/* Pricing */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">Pricing</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                      Pricing
+                    </h3>
                     <div className="bg-blue-50 rounded-xl p-4">
                       <div className="text-2xl font-bold text-blue-600 mb-2">
-                        {formatPrice(selectedCar.price_amount, selectedCar.price_currency)}
+                        {formatPrice(
+                          selectedCar.price_amount,
+                          selectedCar.price_currency
+                        )}
                       </div>
                       {selectedCar.price_basis && (
-                        <p className="text-sm text-gray-600">Basis: {selectedCar.price_basis}</p>
+                        <p className="text-sm text-gray-600">
+                          Basis: {selectedCar.price_basis}
+                        </p>
                       )}
                     </div>
                   </div>
 
                   {/* Grading */}
-                  {(selectedCar.grade_overall || selectedCar.grade_exterior || selectedCar.grade_interior) && (
+                  {(selectedCar.grade_overall ||
+                    selectedCar.grade_exterior ||
+                    selectedCar.grade_interior) && (
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-3">Grading</h3>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                        Grading
+                      </h3>
                       <div className="grid grid-cols-3 gap-3">
                         {selectedCar.grade_overall && (
                           <div className="text-center">
-                            <div className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getGradeColor(selectedCar.grade_overall)}`}>
+                            <div
+                              className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getGradeColor(
+                                selectedCar.grade_overall
+                              )}`}
+                            >
                               <Star className="w-4 h-4 mr-1" />
                               {selectedCar.grade_overall}/10
                             </div>
-                            <p className="text-xs text-gray-500 mt-1">Overall</p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Overall
+                            </p>
                           </div>
                         )}
                         {selectedCar.grade_exterior && (
                           <div className="text-center">
-                            <div className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getGradeColor(selectedCar.grade_exterior)}`}>
+                            <div
+                              className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getGradeColor(
+                                selectedCar.grade_exterior
+                              )}`}
+                            >
                               {selectedCar.grade_exterior}
                             </div>
-                            <p className="text-xs text-gray-500 mt-1">Exterior</p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Exterior
+                            </p>
                           </div>
                         )}
                         {selectedCar.grade_interior && (
                           <div className="text-center">
-                            <div className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getGradeColor(selectedCar.grade_interior)}`}>
+                            <div
+                              className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getGradeColor(
+                                selectedCar.grade_interior
+                              )}`}
+                            >
                               {selectedCar.grade_interior}
                             </div>
-                            <p className="text-xs text-gray-500 mt-1">Interior</p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Interior
+                            </p>
                           </div>
                         )}
                       </div>
@@ -694,15 +832,23 @@ const UserCarCatalog: React.FC = () => {
                   {/* Additional Details */}
                   {selectedCar.detail && (
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-3">Additional Details</h3>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                        Additional Details
+                      </h3>
                       {selectedCar.detail.short_title && (
-                        <p className="text-lg font-medium text-gray-900 mb-2">{selectedCar.detail.short_title}</p>
+                        <p className="text-lg font-medium text-gray-900 mb-2">
+                          {selectedCar.detail.short_title}
+                        </p>
                       )}
                       {selectedCar.detail.full_title && (
-                        <p className="text-gray-600 mb-2">{selectedCar.detail.full_title}</p>
+                        <p className="text-gray-600 mb-2">
+                          {selectedCar.detail.full_title}
+                        </p>
                       )}
                       {selectedCar.detail.description && (
-                        <p className="text-gray-700">{selectedCar.detail.description}</p>
+                        <p className="text-gray-700">
+                          {selectedCar.detail.description}
+                        </p>
                       )}
                     </div>
                   )}
@@ -710,12 +856,16 @@ const UserCarCatalog: React.FC = () => {
                   {/* Location */}
                   {(selectedCar.location || selectedCar.country_origin) && (
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-3">Location</h3>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                        Location
+                      </h3>
                       <div className="flex items-center gap-2 text-gray-600">
                         <MapPin className="w-4 h-4" />
                         <span>
                           {selectedCar.location}
-                          {selectedCar.location && selectedCar.country_origin && ', '}
+                          {selectedCar.location &&
+                            selectedCar.country_origin &&
+                            ", "}
                           {selectedCar.country_origin}
                         </span>
                       </div>
@@ -725,7 +875,9 @@ const UserCarCatalog: React.FC = () => {
                   {/* Notes */}
                   {selectedCar.notes && (
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-3">Notes</h3>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                        Notes
+                      </h3>
                       <p className="text-gray-700">{selectedCar.notes}</p>
                     </div>
                   )}

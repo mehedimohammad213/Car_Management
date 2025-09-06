@@ -1,18 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeftIcon, CarIcon } from "lucide-react";
-import CarForm from "../components/CarForm";
+import CarFormModal from "../../components/car/CarFormModal";
+import { carApi, CreateCarData } from "../../services/carApi";
+import { categoryApi, Category } from "../../services/categoryApi";
 
 const CreateCar: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
-  const handleSubmit = async (formData: any) => {
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setIsLoadingCategories(true);
+        const categoriesData = await categoryApi.getCategories();
+        setCategories(categoriesData.data.categories || []);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setIsLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const handleSubmit = async (formData: CreateCarData) => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      navigate("/car-management", {
+      await carApi.createCar(formData);
+      navigate("/admin/cars", {
         state: { message: "Car created successfully!" },
       });
     } catch (error) {
@@ -23,7 +42,7 @@ const CreateCar: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate("/car-management");
+    navigate("/admin/cars");
   };
 
   return (
@@ -55,12 +74,22 @@ const CreateCar: React.FC = () => {
         </div>
 
         {/* Form */}
-        <CarForm
-          mode="create"
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-          isLoading={isLoading}
-        />
+        {isLoadingCategories ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-3 text-gray-600">Loading categories...</span>
+          </div>
+        ) : (
+          <CarFormModal
+            mode="create"
+            categories={categories || []}
+            filterOptions={null}
+            onSubmit={handleSubmit}
+            onCancel={handleCancel}
+            isSubmitting={isLoading}
+            isModal={false}
+          />
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { X, Image, Plus, Car, Calendar, Gauge, Fuel, Palette, Users, DollarSign, Settings, Star, MapPin, FileText } from "lucide-react";
-import { Car as CarType, CreateCarData, CarFilterOptions } from "../services/carApi";
+import {
+  X,
+  Image,
+  Plus,
+  Car,
+  Calendar,
+  Gauge,
+  Fuel,
+  Palette,
+  Users,
+  DollarSign,
+  Settings,
+  Star,
+  MapPin,
+  FileText,
+} from "lucide-react";
+import {
+  Car as CarType,
+  CreateCarData,
+  CarFilterOptions,
+} from "../../services/carApi";
 import { Category } from "../services/categoryApi";
 
 interface CarModalProps {
@@ -51,12 +70,14 @@ const CarModal: React.FC<CarModalProps> = ({
     status: "available",
     notes: "",
     photos: [],
-    details: [{
-      short_title: "",
-      full_title: "",
-      description: "",
-      images: [],
-    }],
+    details: [
+      {
+        short_title: "",
+        full_title: "",
+        description: "",
+        images: [],
+      },
+    ],
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -97,23 +118,29 @@ const CarModal: React.FC<CarModalProps> = ({
         country_origin: car.country_origin || "",
         status: car.status || "available",
         notes: car.notes || "",
-        photos: car.photos?.map(p => ({
-          url: p.url,
-          is_primary: p.is_primary,
-          sort_order: p.sort_order,
-          is_hidden: p.is_hidden,
-        })) || [],
-        details: car.details && car.details.length > 0 ? car.details.map(d => ({
-          short_title: d.short_title || "",
-          full_title: d.full_title || "",
-          description: d.description || "",
-          images: d.images || [],
-        })) : [{
-          short_title: "",
-          full_title: "",
-          description: "",
-          images: [],
-        }],
+        photos:
+          car.photos?.map((p) => ({
+            url: p.url,
+            is_primary: p.is_primary,
+            sort_order: p.sort_order,
+            is_hidden: p.is_hidden,
+          })) || [],
+        details:
+          car.details && car.details.length > 0
+            ? car.details.map((d) => ({
+                short_title: d.short_title || "",
+                full_title: d.full_title || "",
+                description: d.description || "",
+                images: d.images || [],
+              }))
+            : [
+                {
+                  short_title: "",
+                  full_title: "",
+                  description: "",
+                  images: [],
+                },
+              ],
       });
     } else {
       resetForm();
@@ -123,8 +150,8 @@ const CarModal: React.FC<CarModalProps> = ({
   useEffect(() => {
     if (formData.category_id) {
       // Find subcategories that have the selected category as their parent
-      const filteredSubcategories = categories.filter(cat => 
-        cat.parent_category_id === formData.category_id
+      const filteredSubcategories = categories.filter(
+        (cat) => cat.parent_category_id === formData.category_id
       );
       setSubcategories(filteredSubcategories);
     } else {
@@ -164,114 +191,144 @@ const CarModal: React.FC<CarModalProps> = ({
       status: "available",
       notes: "",
       photos: [],
-      details: [{
-        short_title: "",
-        full_title: "",
-        description: "",
-        images: [],
-      }],
+      details: [
+        {
+          short_title: "",
+          full_title: "",
+          description: "",
+          images: [],
+        },
+      ],
     });
     setErrors({});
   };
 
   const handleInputChange = (field: keyof CreateCarData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
-  const handleDetailChange = (detailIndex: number, field: keyof NonNullable<CreateCarData['details']>[0], value: any) => {
-    setFormData(prev => ({
+  const handleDetailChange = (
+    detailIndex: number,
+    field: keyof NonNullable<CreateCarData["details"]>[0],
+    value: any
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      details: (prev.details || []).map((detail, index) => 
+      details: (prev.details || []).map((detail, index) =>
         index === detailIndex ? { ...detail, [field]: value } : detail
-      )
+      ),
     }));
   };
 
-  const handlePhotoChange = (index: number, field: keyof NonNullable<CreateCarData['photos']>[0], value: any) => {
-    setFormData(prev => ({
+  const handlePhotoChange = (
+    index: number,
+    field: keyof NonNullable<CreateCarData["photos"]>[0],
+    value: any
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      photos: (prev.photos || []).map((photo, i) => 
+      photos: (prev.photos || []).map((photo, i) =>
         i === index ? { ...photo, [field]: value } : photo
-      )
+      ),
     }));
   };
 
   const addPhoto = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      photos: [...(prev.photos || []), {
-        url: "",
-        is_primary: prev.photos?.length === 0,
-        sort_order: prev.photos?.length || 0,
-        is_hidden: false,
-      }]
+      photos: [
+        ...(prev.photos || []),
+        {
+          url: "",
+          is_primary: prev.photos?.length === 0,
+          sort_order: prev.photos?.length || 0,
+          is_hidden: false,
+        },
+      ],
     }));
   };
 
   const removePhoto = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      photos: prev.photos?.filter((_, i) => i !== index) || []
+      photos: prev.photos?.filter((_, i) => i !== index) || [],
     }));
   };
 
-  const handleDetailImageChange = (detailIndex: number, imageIndex: number, value: string) => {
-    setFormData(prev => ({
+  const handleDetailImageChange = (
+    detailIndex: number,
+    imageIndex: number,
+    value: string
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      details: prev.details?.map((detail, index) => 
-        index === detailIndex ? {
-          ...detail,
-          images: detail.images?.map((image, i) => 
-            i === imageIndex ? value : image
-          ) || []
-        } : detail
-      ) || []
+      details:
+        prev.details?.map((detail, index) =>
+          index === detailIndex
+            ? {
+                ...detail,
+                images:
+                  detail.images?.map((image, i) =>
+                    i === imageIndex ? value : image
+                  ) || [],
+              }
+            : detail
+        ) || [],
     }));
   };
 
   const addDetailImage = (detailIndex: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      details: prev.details?.map((detail, index) => 
-        index === detailIndex ? {
-          ...detail,
-          images: [...(detail.images || []), ""]
-        } : detail
-      ) || []
+      details:
+        prev.details?.map((detail, index) =>
+          index === detailIndex
+            ? {
+                ...detail,
+                images: [...(detail.images || []), ""],
+              }
+            : detail
+        ) || [],
     }));
   };
 
   const removeDetailImage = (detailIndex: number, imageIndex: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      details: prev.details?.map((detail, index) => 
-        index === detailIndex ? {
-          ...detail,
-          images: detail.images?.filter((_, i) => i !== imageIndex) || []
-        } : detail
-      ) || []
+      details:
+        prev.details?.map((detail, index) =>
+          index === detailIndex
+            ? {
+                ...detail,
+                images: detail.images?.filter((_, i) => i !== imageIndex) || [],
+              }
+            : detail
+        ) || [],
     }));
   };
 
   const addDetail = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      details: [...(prev.details || []), {
-        short_title: "",
-        full_title: "",
-        description: "",
-        images: [],
-      }]
+      details: [
+        ...(prev.details || []),
+        {
+          short_title: "",
+          full_title: "",
+          description: "",
+          images: [],
+        },
+      ],
     }));
   };
 
   const removeDetail = (detailIndex: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      details: prev.details?.filter((_, index) => index !== detailIndex) || []
+      details: prev.details?.filter((_, index) => index !== detailIndex) || [],
     }));
   };
 
@@ -291,7 +348,11 @@ const CarModal: React.FC<CarModalProps> = ({
       newErrors.model = "Model is required";
     }
 
-    if (!formData.year || formData.year < 1900 || formData.year > new Date().getFullYear() + 1) {
+    if (
+      !formData.year ||
+      formData.year < 1900 ||
+      formData.year > new Date().getFullYear() + 1
+    ) {
       newErrors.year = "Valid year is required";
     }
 
@@ -317,11 +378,13 @@ const CarModal: React.FC<CarModalProps> = ({
     }
 
     if (formData.chassis_no_masked && formData.chassis_no_masked.length > 32) {
-      newErrors.chassis_no_masked = "Masked chassis number must be 32 characters or less";
+      newErrors.chassis_no_masked =
+        "Masked chassis number must be 32 characters or less";
     }
 
     if (formData.chassis_no_full && formData.chassis_no_full.length > 64) {
-      newErrors.chassis_no_full = "Full chassis number must be 64 characters or less";
+      newErrors.chassis_no_full =
+        "Full chassis number must be 64 characters or less";
     }
 
     if (formData.location && formData.location.length > 128) {
@@ -329,7 +392,8 @@ const CarModal: React.FC<CarModalProps> = ({
     }
 
     if (formData.country_origin && formData.country_origin.length > 64) {
-      newErrors.country_origin = "Country of origin must be 64 characters or less";
+      newErrors.country_origin =
+        "Country of origin must be 64 characters or less";
     }
 
     if (formData.transmission && formData.transmission.length > 32) {
@@ -381,13 +445,20 @@ const CarModal: React.FC<CarModalProps> = ({
       newErrors.seats = "Seats must be between 1 and 20";
     }
 
-    if (formData.grade_overall && (formData.grade_overall < 0 || formData.grade_overall > 10)) {
+    if (
+      formData.grade_overall &&
+      (formData.grade_overall < 0 || formData.grade_overall > 10)
+    ) {
       newErrors.grade_overall = "Grade must be between 0 and 10";
     }
 
     // Registration year/month validation
-    if (formData.reg_year_month && !/^\d{4}-\d{2}$/.test(formData.reg_year_month)) {
-      newErrors.reg_year_month = "Registration year/month must be in YYYY-MM format";
+    if (
+      formData.reg_year_month &&
+      !/^\d{4}-\d{2}$/.test(formData.reg_year_month)
+    ) {
+      newErrors.reg_year_month =
+        "Registration year/month must be in YYYY-MM format";
     }
 
     setErrors(newErrors);
@@ -435,7 +506,9 @@ const CarModal: React.FC<CarModalProps> = ({
                 {isEditMode ? "Edit Car" : "Create New Car"}
               </h2>
               <p className="text-emerald-100 mt-1">
-                {isEditMode ? "Update car information" : "Add a new car to your inventory"}
+                {isEditMode
+                  ? "Update car information"
+                  : "Add a new car to your inventory"}
               </p>
             </div>
             <button
@@ -463,14 +536,16 @@ const CarModal: React.FC<CarModalProps> = ({
                 </label>
                 <select
                   value={formData.category_id || ""}
-                  onChange={(e) => handleInputChange("category_id", parseInt(e.target.value))}
+                  onChange={(e) =>
+                    handleInputChange("category_id", parseInt(e.target.value))
+                  }
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
                     errors.category_id ? "border-red-300" : "border-gray-200"
                   }`}
                 >
                   <option value="">Select Category</option>
                   {categories
-                    .filter(category => category.children_count > 0) // Only show parent categories
+                    .filter((category) => category.children_count > 0) // Only show parent categories
                     .map((category) => (
                       <option key={category.id} value={category.id}>
                         {category.name}
@@ -478,10 +553,13 @@ const CarModal: React.FC<CarModalProps> = ({
                     ))}
                 </select>
                 {errors.category_id && (
-                  <p className="text-red-500 text-sm mt-1">{errors.category_id}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.category_id}
+                  </p>
                 )}
                 <p className="text-gray-500 text-sm mt-1">
-                  Only parent categories (categories with subcategories) are shown here
+                  Only parent categories (categories with subcategories) are
+                  shown here
                 </p>
               </div>
 
@@ -492,7 +570,12 @@ const CarModal: React.FC<CarModalProps> = ({
                 </label>
                 <select
                   value={formData.subcategory_id || ""}
-                  onChange={(e) => handleInputChange("subcategory_id", e.target.value ? parseInt(e.target.value) : undefined)}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "subcategory_id",
+                      e.target.value ? parseInt(e.target.value) : undefined
+                    )
+                  }
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 >
                   <option value="">Select Subcategory</option>
@@ -503,10 +586,9 @@ const CarModal: React.FC<CarModalProps> = ({
                   ))}
                 </select>
                 <p className="text-gray-500 text-sm mt-1">
-                  {subcategories.length > 0 
-                    ? `${subcategories.length} subcategory(ies) available` 
-                    : 'No subcategories available for the selected category'
-                  }
+                  {subcategories.length > 0
+                    ? `${subcategories.length} subcategory(ies) available`
+                    : "No subcategories available for the selected category"}
                 </p>
               </div>
 
@@ -576,7 +658,9 @@ const CarModal: React.FC<CarModalProps> = ({
                 <input
                   type="text"
                   value={formData.model_code}
-                  onChange={(e) => handleInputChange("model_code", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("model_code", e.target.value)
+                  }
                   maxLength={32}
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
                     errors.model_code ? "border-red-300" : "border-gray-200"
@@ -584,7 +668,9 @@ const CarModal: React.FC<CarModalProps> = ({
                   placeholder="e.g., XV50, FB"
                 />
                 {errors.model_code && (
-                  <p className="text-red-500 text-sm mt-1">{errors.model_code}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.model_code}
+                  </p>
                 )}
               </div>
 
@@ -616,7 +702,9 @@ const CarModal: React.FC<CarModalProps> = ({
                 <input
                   type="number"
                   value={formData.year}
-                  onChange={(e) => handleInputChange("year", parseInt(e.target.value))}
+                  onChange={(e) =>
+                    handleInputChange("year", parseInt(e.target.value))
+                  }
                   min="1900"
                   max={new Date().getFullYear() + 1}
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
@@ -636,36 +724,18 @@ const CarModal: React.FC<CarModalProps> = ({
                 <input
                   type="month"
                   value={formData.reg_year_month}
-                  onChange={(e) => handleInputChange("reg_year_month", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("reg_year_month", e.target.value)
+                  }
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
                     errors.reg_year_month ? "border-red-300" : "border-gray-200"
                   }`}
                   placeholder="YYYY-MM"
                 />
                 {errors.reg_year_month && (
-                  <p className="text-red-500 text-sm mt-1">{errors.reg_year_month}</p>
-                )}
-              </div>
-
-              {/* Status */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Status
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) => handleInputChange("status", e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                    errors.status ? "border-red-300" : "border-gray-200"
-                  }`}
-                >
-                  <option value="available">Available</option>
-                  <option value="sold">Sold</option>
-                  <option value="reserved">Reserved</option>
-                  <option value="in_transit">In Transit</option>
-                </select>
-                {errors.status && (
-                  <p className="text-red-500 text-sm mt-1">{errors.status}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.reg_year_month}
+                  </p>
                 )}
               </div>
             </div>
@@ -678,105 +748,111 @@ const CarModal: React.FC<CarModalProps> = ({
               Specifications
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                             {/* Transmission */}
-               <div>
-                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                   Transmission
-                 </label>
-                 <input
-                   type="text"
-                   value={formData.transmission}
-                   onChange={(e) => handleInputChange("transmission", e.target.value)}
-                   maxLength={32}
-                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                     errors.transmission ? "border-red-300" : "border-gray-200"
-                   }`}
-                   placeholder="e.g., Automatic, Manual, CVT"
-                 />
-                 {errors.transmission && (
-                   <p className="text-red-500 text-sm mt-1">{errors.transmission}</p>
-                 )}
-               </div>
+              {/* Transmission */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Transmission
+                </label>
+                <input
+                  type="text"
+                  value={formData.transmission}
+                  onChange={(e) =>
+                    handleInputChange("transmission", e.target.value)
+                  }
+                  maxLength={32}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
+                    errors.transmission ? "border-red-300" : "border-gray-200"
+                  }`}
+                  placeholder="e.g., Automatic, Manual, CVT"
+                />
+                {errors.transmission && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.transmission}
+                  </p>
+                )}
+              </div>
 
-                             {/* Drive */}
-               <div>
-                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                   Drive Type
-                 </label>
-                 <input
-                   type="text"
-                   value={formData.drive}
-                   onChange={(e) => handleInputChange("drive", e.target.value)}
-                   maxLength={32}
-                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                     errors.drive ? "border-red-300" : "border-gray-200"
-                   }`}
-                   placeholder="e.g., FWD, RWD, AWD, 4WD"
-                 />
-                 {errors.drive && (
-                   <p className="text-red-500 text-sm mt-1">{errors.drive}</p>
-                 )}
-               </div>
+              {/* Drive */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Drive Type
+                </label>
+                <input
+                  type="text"
+                  value={formData.drive}
+                  onChange={(e) => handleInputChange("drive", e.target.value)}
+                  maxLength={32}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
+                    errors.drive ? "border-red-300" : "border-gray-200"
+                  }`}
+                  placeholder="e.g., FWD, RWD, AWD, 4WD"
+                />
+                {errors.drive && (
+                  <p className="text-red-500 text-sm mt-1">{errors.drive}</p>
+                )}
+              </div>
 
-                             {/* Steering */}
-               <div>
-                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                   Steering
-                 </label>
-                 <input
-                   type="text"
-                   value={formData.steering}
-                   onChange={(e) => handleInputChange("steering", e.target.value)}
-                   maxLength={16}
-                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                     errors.steering ? "border-red-300" : "border-gray-200"
-                   }`}
-                   placeholder="e.g., LHD, RHD"
-                 />
-                 {errors.steering && (
-                   <p className="text-red-500 text-sm mt-1">{errors.steering}</p>
-                 )}
-               </div>
+              {/* Steering */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Steering
+                </label>
+                <input
+                  type="text"
+                  value={formData.steering}
+                  onChange={(e) =>
+                    handleInputChange("steering", e.target.value)
+                  }
+                  maxLength={16}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
+                    errors.steering ? "border-red-300" : "border-gray-200"
+                  }`}
+                  placeholder="e.g., LHD, RHD"
+                />
+                {errors.steering && (
+                  <p className="text-red-500 text-sm mt-1">{errors.steering}</p>
+                )}
+              </div>
 
-                             {/* Fuel */}
-               <div>
-                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                   Fuel Type
-                 </label>
-                 <input
-                   type="text"
-                   value={formData.fuel}
-                   onChange={(e) => handleInputChange("fuel", e.target.value)}
-                   maxLength={32}
-                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                     errors.fuel ? "border-red-300" : "border-gray-200"
-                   }`}
-                   placeholder="e.g., Gasoline, Diesel, Electric, Hybrid"
-                 />
-                 {errors.fuel && (
-                   <p className="text-red-500 text-sm mt-1">{errors.fuel}</p>
-                 )}
-               </div>
+              {/* Fuel */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Fuel Type
+                </label>
+                <input
+                  type="text"
+                  value={formData.fuel}
+                  onChange={(e) => handleInputChange("fuel", e.target.value)}
+                  maxLength={32}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
+                    errors.fuel ? "border-red-300" : "border-gray-200"
+                  }`}
+                  placeholder="e.g., Gasoline, Diesel, Electric, Hybrid"
+                />
+                {errors.fuel && (
+                  <p className="text-red-500 text-sm mt-1">{errors.fuel}</p>
+                )}
+              </div>
 
-                             {/* Color */}
-               <div>
-                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                   Color
-                 </label>
-                 <input
-                   type="text"
-                   value={formData.color}
-                   onChange={(e) => handleInputChange("color", e.target.value)}
-                   maxLength={64}
-                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                     errors.color ? "border-red-300" : "border-gray-200"
-                   }`}
-                   placeholder="e.g., Red, Blue, Silver, Black"
-                 />
-                 {errors.color && (
-                   <p className="text-red-500 text-sm mt-1">{errors.color}</p>
-                 )}
-               </div>
+              {/* Color */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Color
+                </label>
+                <input
+                  type="text"
+                  value={formData.color}
+                  onChange={(e) => handleInputChange("color", e.target.value)}
+                  maxLength={64}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
+                    errors.color ? "border-red-300" : "border-gray-200"
+                  }`}
+                  placeholder="e.g., Red, Blue, Silver, Black"
+                />
+                {errors.color && (
+                  <p className="text-red-500 text-sm mt-1">{errors.color}</p>
+                )}
+              </div>
 
               {/* Mileage */}
               <div>
@@ -786,7 +862,12 @@ const CarModal: React.FC<CarModalProps> = ({
                 <input
                   type="number"
                   value={formData.mileage_km || ""}
-                  onChange={(e) => handleInputChange("mileage_km", e.target.value ? parseInt(e.target.value) : undefined)}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "mileage_km",
+                      e.target.value ? parseInt(e.target.value) : undefined
+                    )
+                  }
                   min="0"
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
                     errors.mileage_km ? "border-red-300" : "border-gray-200"
@@ -794,7 +875,9 @@ const CarModal: React.FC<CarModalProps> = ({
                   placeholder="e.g., 50000"
                 />
                 {errors.mileage_km && (
-                  <p className="text-red-500 text-sm mt-1">{errors.mileage_km}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.mileage_km}
+                  </p>
                 )}
               </div>
 
@@ -806,7 +889,12 @@ const CarModal: React.FC<CarModalProps> = ({
                 <input
                   type="number"
                   value={formData.engine_cc || ""}
-                  onChange={(e) => handleInputChange("engine_cc", e.target.value ? parseInt(e.target.value) : undefined)}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "engine_cc",
+                      e.target.value ? parseInt(e.target.value) : undefined
+                    )
+                  }
                   min="0"
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
                     errors.engine_cc ? "border-red-300" : "border-gray-200"
@@ -814,7 +902,9 @@ const CarModal: React.FC<CarModalProps> = ({
                   placeholder="e.g., 2000"
                 />
                 {errors.engine_cc && (
-                  <p className="text-red-500 text-sm mt-1">{errors.engine_cc}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.engine_cc}
+                  </p>
                 )}
               </div>
 
@@ -826,7 +916,12 @@ const CarModal: React.FC<CarModalProps> = ({
                 <input
                   type="number"
                   value={formData.seats || ""}
-                  onChange={(e) => handleInputChange("seats", e.target.value ? parseInt(e.target.value) : undefined)}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "seats",
+                      e.target.value ? parseInt(e.target.value) : undefined
+                    )
+                  }
                   min="1"
                   max="20"
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
@@ -856,7 +951,12 @@ const CarModal: React.FC<CarModalProps> = ({
                 <input
                   type="number"
                   value={formData.price_amount || ""}
-                  onChange={(e) => handleInputChange("price_amount", e.target.value ? parseFloat(e.target.value) : undefined)}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "price_amount",
+                      e.target.value ? parseFloat(e.target.value) : undefined
+                    )
+                  }
                   min="0"
                   step="0.01"
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
@@ -865,7 +965,9 @@ const CarModal: React.FC<CarModalProps> = ({
                   placeholder="e.g., 25000.00"
                 />
                 {errors.price_amount && (
-                  <p className="text-red-500 text-sm mt-1">{errors.price_amount}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.price_amount}
+                  </p>
                 )}
               </div>
 
@@ -876,7 +978,9 @@ const CarModal: React.FC<CarModalProps> = ({
                 </label>
                 <select
                   value={formData.price_currency}
-                  onChange={(e) => handleInputChange("price_currency", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("price_currency", e.target.value)
+                  }
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
                     errors.price_currency ? "border-red-300" : "border-gray-200"
                   }`}
@@ -887,7 +991,9 @@ const CarModal: React.FC<CarModalProps> = ({
                   <option value="JPY">JPY</option>
                 </select>
                 {errors.price_currency && (
-                  <p className="text-red-500 text-sm mt-1">{errors.price_currency}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.price_currency}
+                  </p>
                 )}
               </div>
 
@@ -899,7 +1005,9 @@ const CarModal: React.FC<CarModalProps> = ({
                 <input
                   type="text"
                   value={formData.price_basis}
-                  onChange={(e) => handleInputChange("price_basis", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("price_basis", e.target.value)
+                  }
                   maxLength={32}
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
                     errors.price_basis ? "border-red-300" : "border-gray-200"
@@ -907,7 +1015,9 @@ const CarModal: React.FC<CarModalProps> = ({
                   placeholder="e.g., FOB, CIF"
                 />
                 {errors.price_basis && (
-                  <p className="text-red-500 text-sm mt-1">{errors.price_basis}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.price_basis}
+                  </p>
                 )}
               </div>
             </div>
@@ -928,7 +1038,12 @@ const CarModal: React.FC<CarModalProps> = ({
                 <input
                   type="number"
                   value={formData.grade_overall || ""}
-                  onChange={(e) => handleInputChange("grade_overall", e.target.value ? parseFloat(e.target.value) : undefined)}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "grade_overall",
+                      e.target.value ? parseFloat(e.target.value) : undefined
+                    )
+                  }
                   min="0"
                   max="10"
                   step="0.1"
@@ -938,89 +1053,55 @@ const CarModal: React.FC<CarModalProps> = ({
                   placeholder="e.g., 8.5"
                 />
                 {errors.grade_overall && (
-                  <p className="text-red-500 text-sm mt-1">{errors.grade_overall}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.grade_overall}
+                  </p>
                 )}
               </div>
 
-                             {/* Exterior Grade */}
-               <div>
-                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                   Exterior Grade
-                 </label>
-                 <input
-                   type="text"
-                   value={formData.grade_exterior}
-                   onChange={(e) => handleInputChange("grade_exterior", e.target.value)}
-                   maxLength={16}
-                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                   placeholder="e.g., A, B, C, D or Excellent, Good, Fair, Poor"
-                 />
-               </div>
-
-                             {/* Interior Grade */}
-               <div>
-                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                   Interior Grade
-                 </label>
-                 <input
-                   type="text"
-                   value={formData.grade_interior}
-                   onChange={(e) => handleInputChange("grade_interior", e.target.value)}
-                   maxLength={16}
-                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                   placeholder="e.g., A, B, C, D or Excellent, Good, Fair, Poor"
-                 />
-               </div>
-            </div>
-          </div>
-
-          {/* Additional Details Section */}
-          <div className="bg-gray-50 rounded-xl p-4">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <FileText className="w-5 h-5 text-emerald-600" />
-              Additional Details
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Location */}
+              {/* Exterior Grade */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Location
+                  Exterior Grade
                 </label>
                 <input
                   type="text"
-                  value={formData.location}
-                  onChange={(e) => handleInputChange("location", e.target.value)}
-                  maxLength={128}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                    errors.location ? "border-red-300" : "border-gray-200"
-                  }`}
-                  placeholder="e.g., Tokyo, Japan"
+                  value={formData.grade_exterior}
+                  onChange={(e) =>
+                    handleInputChange("grade_exterior", e.target.value)
+                  }
+                  maxLength={16}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                  placeholder="e.g., A, B, C, D or Excellent, Good, Fair, Poor"
                 />
-                {errors.location && (
-                  <p className="text-red-500 text-sm mt-1">{errors.location}</p>
-                )}
               </div>
 
-                             {/* Country Origin */}
-               <div>
-                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                   Country of Origin
-                 </label>
-                 <input
-                   type="text"
-                   value={formData.country_origin}
-                   onChange={(e) => handleInputChange("country_origin", e.target.value)}
-                   maxLength={64}
-                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                     errors.country_origin ? "border-red-300" : "border-gray-200"
-                   }`}
-                   placeholder="e.g., Japan, Germany, USA, UK"
-                 />
-                 {errors.country_origin && (
-                   <p className="text-red-500 text-sm mt-1">{errors.country_origin}</p>
-                 )}
-               </div>
+              {/* Interior Grade */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Interior Grade
+                </label>
+                <input
+                  type="text"
+                  value={formData.grade_interior}
+                  onChange={(e) =>
+                    handleInputChange("grade_interior", e.target.value)
+                  }
+                  maxLength={16}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                  placeholder="e.g., A, B, C, D or Excellent, Good, Fair, Poor"
+                />
+              </div>
+            </div>
+          </div>
 
+          {/* Location & Status Section */}
+          <div className="bg-gray-50 rounded-xl p-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-emerald-600" />
+              Location & Status
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Chassis Number (Masked) */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -1029,15 +1110,21 @@ const CarModal: React.FC<CarModalProps> = ({
                 <input
                   type="text"
                   value={formData.chassis_no_masked}
-                  onChange={(e) => handleInputChange("chassis_no_masked", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("chassis_no_masked", e.target.value)
+                  }
                   maxLength={32}
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                    errors.chassis_no_masked ? "border-red-300" : "border-gray-200"
+                    errors.chassis_no_masked
+                      ? "border-red-300"
+                      : "border-gray-200"
                   }`}
                   placeholder="e.g., ABC123******XYZ789"
                 />
                 {errors.chassis_no_masked && (
-                  <p className="text-red-500 text-sm mt-1">{errors.chassis_no_masked}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.chassis_no_masked}
+                  </p>
                 )}
               </div>
 
@@ -1049,20 +1136,103 @@ const CarModal: React.FC<CarModalProps> = ({
                 <input
                   type="text"
                   value={formData.chassis_no_full}
-                  onChange={(e) => handleInputChange("chassis_no_full", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("chassis_no_full", e.target.value)
+                  }
                   maxLength={64}
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
-                    errors.chassis_no_full ? "border-red-300" : "border-gray-200"
+                    errors.chassis_no_full
+                      ? "border-red-300"
+                      : "border-gray-200"
                   }`}
                   placeholder="Complete chassis number"
                 />
                 {errors.chassis_no_full && (
-                  <p className="text-red-500 text-sm mt-1">{errors.chassis_no_full}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.chassis_no_full}
+                  </p>
                 )}
               </div>
 
+              {/* Location */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) =>
+                    handleInputChange("location", e.target.value)
+                  }
+                  maxLength={128}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
+                    errors.location ? "border-red-300" : "border-gray-200"
+                  }`}
+                  placeholder="e.g., Tokyo, Japan"
+                />
+                {errors.location && (
+                  <p className="text-red-500 text-sm mt-1">{errors.location}</p>
+                )}
+              </div>
+
+              {/* Country Origin */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Country of Origin
+                </label>
+                <input
+                  type="text"
+                  value={formData.country_origin}
+                  onChange={(e) =>
+                    handleInputChange("country_origin", e.target.value)
+                  }
+                  maxLength={64}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
+                    errors.country_origin ? "border-red-300" : "border-gray-200"
+                  }`}
+                  placeholder="e.g., Japan, Germany, USA, UK"
+                />
+                {errors.country_origin && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.country_origin}
+                  </p>
+                )}
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Status
+                </label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => handleInputChange("status", e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
+                    errors.status ? "border-red-300" : "border-gray-200"
+                  }`}
+                >
+                  <option value="available">Available</option>
+                  <option value="sold">Sold</option>
+                  <option value="reserved">Reserved</option>
+                  <option value="in_transit">In Transit</option>
+                </select>
+                {errors.status && (
+                  <p className="text-red-500 text-sm mt-1">{errors.status}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Notes Section */}
+          <div className="bg-gray-50 rounded-xl p-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-emerald-600" />
+              Additional Information
+            </h3>
+            <div className="grid grid-cols-1 gap-4">
               {/* Notes */}
-              <div className="md:col-span-2">
+              <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Notes
                 </label>
@@ -1093,10 +1263,13 @@ const CarModal: React.FC<CarModalProps> = ({
                 Add Detail Section
               </button>
             </div>
-            
+
             <div className="space-y-6">
               {formData.details?.map((detail, detailIndex) => (
-                <div key={detailIndex} className="border border-gray-200 rounded-xl p-4 bg-white">
+                <div
+                  key={detailIndex}
+                  className="border border-gray-200 rounded-xl p-4 bg-white"
+                >
                   <div className="flex items-center justify-between mb-4">
                     <h4 className="text-md font-semibold text-gray-700">
                       Detail Section {detailIndex + 1}
@@ -1111,7 +1284,7 @@ const CarModal: React.FC<CarModalProps> = ({
                       </button>
                     )}
                   </div>
-                  
+
                   <div className="space-y-4">
                     {/* Short Title */}
                     <div>
@@ -1121,7 +1294,13 @@ const CarModal: React.FC<CarModalProps> = ({
                       <input
                         type="text"
                         value={detail.short_title || ""}
-                        onChange={(e) => handleDetailChange(detailIndex, "short_title", e.target.value)}
+                        onChange={(e) =>
+                          handleDetailChange(
+                            detailIndex,
+                            "short_title",
+                            e.target.value
+                          )
+                        }
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                         placeholder="Brief title for the car"
                       />
@@ -1135,7 +1314,13 @@ const CarModal: React.FC<CarModalProps> = ({
                       <input
                         type="text"
                         value={detail.full_title || ""}
-                        onChange={(e) => handleDetailChange(detailIndex, "full_title", e.target.value)}
+                        onChange={(e) =>
+                          handleDetailChange(
+                            detailIndex,
+                            "full_title",
+                            e.target.value
+                          )
+                        }
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                         placeholder="Complete title for the car"
                       />
@@ -1148,7 +1333,13 @@ const CarModal: React.FC<CarModalProps> = ({
                       </label>
                       <textarea
                         value={detail.description || ""}
-                        onChange={(e) => handleDetailChange(detailIndex, "description", e.target.value)}
+                        onChange={(e) =>
+                          handleDetailChange(
+                            detailIndex,
+                            "description",
+                            e.target.value
+                          )
+                        }
                         rows={4}
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                         placeholder="Detailed description of the car..."
@@ -1162,19 +1353,30 @@ const CarModal: React.FC<CarModalProps> = ({
                       </label>
                       <div className="space-y-3">
                         {detail.images?.map((image, imageIndex) => (
-                          <div key={imageIndex} className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg">
+                          <div
+                            key={imageIndex}
+                            className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg"
+                          >
                             <div className="flex-1">
                               <input
                                 type="text"
                                 value={image}
-                                onChange={(e) => handleDetailImageChange(detailIndex, imageIndex, e.target.value)}
+                                onChange={(e) =>
+                                  handleDetailImageChange(
+                                    detailIndex,
+                                    imageIndex,
+                                    e.target.value
+                                  )
+                                }
                                 placeholder="Detail image URL"
                                 className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                               />
                             </div>
                             <button
                               type="button"
-                              onClick={() => removeDetailImage(detailIndex, imageIndex)}
+                              onClick={() =>
+                                removeDetailImage(detailIndex, imageIndex)
+                              }
                               className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                             >
                               <X className="w-4 h-4" />
@@ -1205,12 +1407,17 @@ const CarModal: React.FC<CarModalProps> = ({
             </h3>
             <div className="space-y-4">
               {formData.photos?.map((photo, index) => (
-                <div key={index} className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl">
+                <div
+                  key={index}
+                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl"
+                >
                   <div className="flex-1">
                     <input
                       type="text"
                       value={photo.url}
-                      onChange={(e) => handlePhotoChange(index, "url", e.target.value)}
+                      onChange={(e) =>
+                        handlePhotoChange(index, "url", e.target.value)
+                      }
                       placeholder="Photo URL"
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     />
@@ -1220,7 +1427,13 @@ const CarModal: React.FC<CarModalProps> = ({
                       <input
                         type="checkbox"
                         checked={photo.is_primary}
-                        onChange={(e) => handlePhotoChange(index, "is_primary", e.target.checked)}
+                        onChange={(e) =>
+                          handlePhotoChange(
+                            index,
+                            "is_primary",
+                            e.target.checked
+                          )
+                        }
                         className="rounded"
                       />
                       <span className="text-sm">Primary</span>
@@ -1228,7 +1441,13 @@ const CarModal: React.FC<CarModalProps> = ({
                     <input
                       type="number"
                       value={photo.sort_order}
-                      onChange={(e) => handlePhotoChange(index, "sort_order", parseInt(e.target.value))}
+                      onChange={(e) =>
+                        handlePhotoChange(
+                          index,
+                          "sort_order",
+                          parseInt(e.target.value)
+                        )
+                      }
                       placeholder="Order"
                       className="w-20 px-2 py-2 border border-gray-200 rounded-lg text-center"
                     />
@@ -1272,8 +1491,10 @@ const CarModal: React.FC<CarModalProps> = ({
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                   {isEditMode ? "Updating..." : "Creating..."}
                 </div>
+              ) : isEditMode ? (
+                "Update Car"
               ) : (
-                isEditMode ? "Update Car" : "Create Car"
+                "Create Car"
               )}
             </button>
           </div>

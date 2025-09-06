@@ -6,9 +6,9 @@ import {
   HeartIcon,
   StarIcon,
 } from "lucide-react";
-import { mockApi } from "../services/mockData";
-import { Car } from "../types";
-import { useCart } from "../contexts/CartContext";
+import { mockApi } from "../../services/mockData";
+import { Car } from "../../types";
+import { useCart } from "../../contexts/CartContext";
 
 const CarDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();

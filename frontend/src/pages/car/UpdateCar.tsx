@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftIcon, CarIcon } from "lucide-react";
-import { mockApi } from "../services/mockData";
-import { Car } from "../types";
-import CarForm from "../components/CarForm";
+import CarFormModal from "../../components/car/CarFormModal";
+import { carApi, Car, CreateCarData } from "../../services/carApi";
+import { categoryApi, Category } from "../../services/categoryApi";
 
 const UpdateCar: React.FC = () => {
   const navigate = useNavigate();
@@ -11,6 +11,7 @@ const UpdateCar: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [car, setCar] = useState<Car | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,14 +24,13 @@ const UpdateCar: React.FC = () => {
 
       try {
         setIsLoading(true);
-        const carsData = await mockApi.getCars();
-        const foundCar = carsData.find((c) => c.id === id);
+        const [carData, categoriesData] = await Promise.all([
+          carApi.getCar(parseInt(id)),
+          categoryApi.getCategories(),
+        ]);
 
-        if (foundCar) {
-          setCar(foundCar);
-        } else {
-          setError("Car not found");
-        }
+        setCar(carData);
+        setCategories(categoriesData.data.categories || []);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load car data");
@@ -42,10 +42,12 @@ const UpdateCar: React.FC = () => {
     fetchData();
   }, [id]);
 
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (formData: CreateCarData) => {
+    if (!car) return;
+
     setIsSaving(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await carApi.updateCar({ id: car.id, ...formData });
       navigate("/admin/cars", {
         state: { message: "Car updated successfully!" },
       });
@@ -114,12 +116,15 @@ const UpdateCar: React.FC = () => {
         </div>
 
         {/* Form */}
-        <CarForm
+        <CarFormModal
           mode="update"
-          initialData={car}
+          car={car}
+          categories={categories || []}
+          filterOptions={null}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
-          isLoading={isSaving}
+          isSubmitting={isSaving}
+          isModal={false}
         />
       </div>
     </div>

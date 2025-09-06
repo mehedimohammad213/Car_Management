@@ -6,9 +6,9 @@ import {
   HeartIcon,
   ShoppingCartIcon,
 } from "lucide-react";
-import { mockApi } from "../services/mockData";
-import { Car, FilterOptions } from "../types";
-import { useCart } from "../contexts/CartContext";
+import { mockApi } from "../../services/mockData";
+import { Car, FilterOptions } from "../../types";
+import { useCart } from "../../contexts/CartContext";
 
 const CarCatalog: React.FC = () => {
   const [cars, setCars] = useState<Car[]>([]);

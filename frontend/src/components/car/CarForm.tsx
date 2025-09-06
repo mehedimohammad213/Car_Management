@@ -11,7 +11,7 @@ import {
   FileTextIcon,
 } from "lucide-react";
 import { mockApi } from "../services/mockData";
-import { Car, Brand, Category } from "../types";
+import { Car, Brand, Category } from "../../types";
 
 interface CarFormProps {
   mode: "create" | "update";

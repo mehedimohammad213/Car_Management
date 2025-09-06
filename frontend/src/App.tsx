@@ -7,11 +7,11 @@ import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import UserDashboard from "./pages/UserDashboard";
-import CarManagement from "./pages/CarManagement";
+import CarManagement from "./pages/car/CarManagement";
 import CategoryManagement from "./pages/CategoryManagement";
-import CreateCar from "./pages/CreateCar";
-import ViewCar from "./pages/ViewCar";
-import UpdateCar from "./pages/UpdateCar";
+import CreateCar from "./pages/car/CreateCar";
+import ViewCar from "./pages/car/ViewCar";
+import UpdateCar from "./pages/car/UpdateCar";
 import StockManagement from "./pages/stock/StockManagement";
 import SellManagement from "./pages/SellManagement";
 import OrderManagement from "./pages/OrderManagement";
@@ -19,9 +19,9 @@ import ClientManagement from "./pages/ClientManagement";
 
 import Settings from "./pages/Settings";
 
-import CarCatalog from "./pages/CarCatalog";
-import CarDetails from "./pages/CarDetails";
-import UserCarCatalog from "./pages/UserCarCatalog";
+import CarCatalog from "./pages/car/CarCatalog";
+import CarDetails from "./pages/car/CarDetails";
+import UserCarCatalog from "./pages/car/UserCarCatalog";
 import Cart from "./pages/Cart";
 import Wishlist from "./pages/Wishlist";
 import Orders from "./pages/Orders";

@@ -7,7 +7,7 @@ import {
   CarIcon,
   CheckCircleIcon,
 } from "lucide-react";
-import { Car } from "../types";
+import { Car } from "../../types";
 
 interface CarTableProps {
   cars: Car[];

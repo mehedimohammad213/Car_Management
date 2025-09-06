@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Plus,
   Search,
@@ -17,18 +18,26 @@ import {
   Gauge,
   Fuel,
   Palette,
-  FileSpreadsheet
+  FileSpreadsheet,
 } from "lucide-react";
-import { carApi, Car, CreateCarData, CarFilterOptions } from "../services/carApi";
-import { categoryApi, Category } from "../services/categoryApi";
-import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
-import CarModal from "@/components/CarModal";
-import ExcelImportModal from "@/components/ExcelImportModal";
+import {
+  carApi,
+  Car,
+  CreateCarData,
+  CarFilterOptions,
+} from "../../services/carApi";
+import { categoryApi, Category } from "../../services/categoryApi";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
+import ExcelImportModal from "../../components/ExcelImportModal";
+import CarModal from "../../components/car/CarModal";
 
 const CarManagement: React.FC = () => {
+  const navigate = useNavigate();
   const [cars, setCars] = useState<Car[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [filterOptions, setFilterOptions] = useState<CarFilterOptions | null>(null);
+  const [filterOptions, setFilterOptions] = useState<CarFilterOptions | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -45,29 +54,44 @@ const CarManagement: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
-  // Modal states
+  // Modal states (only for delete confirmation and excel import)
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [carToDelete, setCarToDelete] = useState<Car | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showCarModal, setShowCarModal] = useState(false);
   const [showExcelModal, setShowExcelModal] = useState(false);
+  const [showCarModal, setShowCarModal] = useState(false);
   const [editingCar, setEditingCar] = useState<Car | null>(null);
 
   // Success/Error messages
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   useEffect(() => {
-    console.log('CarManagement component mounted');
-    console.log('Current user token:', localStorage.getItem('token'));
+    console.log("CarManagement component mounted");
+    console.log("Current user token:", localStorage.getItem("token"));
     fetchCars();
     fetchCategories();
     fetchFilterOptions();
-  }, [currentPage, searchTerm, statusFilter, categoryFilter, makeFilter, yearFilter, transmissionFilter, fuelFilter, colorFilter, sortBy, sortDirection]);
+  }, [
+    currentPage,
+    searchTerm,
+    statusFilter,
+    categoryFilter,
+    makeFilter,
+    yearFilter,
+    transmissionFilter,
+    fuelFilter,
+    colorFilter,
+    sortBy,
+    sortDirection,
+  ]);
 
   const fetchCars = async () => {
     try {
       setIsLoading(true);
-      console.log('Fetching cars with params:', {
+      console.log("Fetching cars with params:", {
         search: searchTerm || undefined,
         status: statusFilter || undefined,
         category_id: categoryFilter || undefined,
@@ -97,15 +121,15 @@ const CarManagement: React.FC = () => {
         page: currentPage,
       });
 
-      console.log('Cars response:', response);
-      console.log('Response data structure:', {
+      console.log("Cars response:", response);
+      console.log("Response data structure:", {
         success: response.success,
         hasData: !!response.data.data,
         dataLength: response.data.data?.length,
         pagination: {
           lastPage: response.data.last_page,
-          total: response.data.total
-        }
+          total: response.data.total,
+        },
       });
 
       if (response.success && response.data.data) {
@@ -116,12 +140,12 @@ const CarManagement: React.FC = () => {
           setTotalItems(response.data.total || 0);
         }
       } else {
-        console.log('Response not successful or no cars data:', response);
+        console.log("Response not successful or no cars data:", response);
         setCars([]);
       }
     } catch (error) {
       console.error("Error fetching cars:", error);
-      showMessage('error', 'Failed to fetch cars');
+      showMessage("error", "Failed to fetch cars");
       setCars([]);
     } finally {
       setIsLoading(false);
@@ -151,18 +175,25 @@ const CarManagement: React.FC = () => {
   };
 
   const handleCreateCar = () => {
+    navigate("/create-car");
+  };
+
+  const handleCreateCarModal = () => {
     setEditingCar(null);
     setShowCarModal(true);
   };
 
   const handleEditCar = (car: Car) => {
+    navigate(`/update-car/${car.id}`);
+  };
+
+  const handleEditCarModal = (car: Car) => {
     setEditingCar(car);
     setShowCarModal(true);
   };
 
   const handleViewCar = (car: Car) => {
-    // Navigate to view car page
-    window.location.href = `/view-car/${car.id}`;
+    navigate(`/view-car/${car.id}`);
   };
 
   const handleDeleteCar = (car: Car) => {
@@ -176,13 +207,13 @@ const CarManagement: React.FC = () => {
     setIsDeleting(true);
     try {
       await carApi.deleteCar(carToDelete.id);
-      setCars(cars.filter(car => car.id !== carToDelete.id));
+      setCars(cars.filter((car) => car.id !== carToDelete.id));
       setShowDeleteModal(false);
       setCarToDelete(null);
-      showMessage('success', 'Car deleted successfully');
+      showMessage("success", "Car deleted successfully");
     } catch (error) {
       console.error("Error deleting car:", error);
-      showMessage('error', 'Failed to delete car');
+      showMessage("error", "Failed to delete car");
     } finally {
       setIsDeleting(false);
     }
@@ -190,6 +221,10 @@ const CarManagement: React.FC = () => {
 
   const handleImportExcel = () => {
     setShowExcelModal(true);
+  };
+
+  const handleExcelImportClose = () => {
+    setShowExcelModal(false);
   };
 
   const handleCarModalClose = () => {
@@ -201,32 +236,31 @@ const CarManagement: React.FC = () => {
     try {
       if (editingCar) {
         await carApi.updateCar({ id: editingCar.id, ...data });
-        showMessage('success', 'Car updated successfully');
+        showMessage("success", "Car updated successfully");
       } else {
         await carApi.createCar(data);
-        showMessage('success', 'Car created successfully');
+        showMessage("success", "Car created successfully");
       }
       handleCarModalClose();
       fetchCars(); // Refresh the list
     } catch (error) {
       console.error("Error saving car:", error);
-      showMessage('error', editingCar ? 'Failed to update car' : 'Failed to create car');
+      showMessage(
+        "error",
+        editingCar ? "Failed to update car" : "Failed to create car"
+      );
     }
-  };
-
-  const handleExcelImportClose = () => {
-    setShowExcelModal(false);
   };
 
   const handleExcelImportSubmit = async (file: File) => {
     try {
       await carApi.importFromExcel(file);
-      showMessage('success', 'Cars imported successfully');
+      showMessage("success", "Cars imported successfully");
       handleExcelImportClose();
       fetchCars(); // Refresh the list
     } catch (error) {
       console.error("Error importing cars:", error);
-      showMessage('error', 'Failed to import cars');
+      showMessage("error", "Failed to import cars");
     }
   };
 
@@ -234,36 +268,36 @@ const CarManagement: React.FC = () => {
     try {
       const blob = await carApi.exportToExcel();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = `cars_export_${new Date().toISOString().split('T')[0]}.xlsx`;
+      a.download = `cars_export_${new Date().toISOString().split("T")[0]}.xlsx`;
       a.click();
       window.URL.revokeObjectURL(url);
-      showMessage('success', 'Cars exported successfully');
+      showMessage("success", "Cars exported successfully");
     } catch (error) {
       console.error("Error exporting cars:", error);
-      showMessage('error', 'Failed to export cars');
+      showMessage("error", "Failed to export cars");
     }
   };
 
-  const showMessage = (type: 'success' | 'error', text: string) => {
+  const showMessage = (type: "success" | "error", text: string) => {
     setMessage({ type, text });
     setTimeout(() => setMessage(null), 5000);
   };
 
   const handleSort = (field: string) => {
     if (sortBy === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortBy(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
     setCurrentPage(1);
   };
 
   const getSortIcon = (field: string) => {
     if (sortBy !== field) return null;
-    return sortDirection === 'asc' ? (
+    return sortDirection === "asc" ? (
       <ArrowUp className="w-4 h-4 ml-1" />
     ) : (
       <ArrowDown className="w-4 h-4 ml-1" />
@@ -275,48 +309,55 @@ const CarManagement: React.FC = () => {
   };
 
   const formatPrice = (amount?: number, currency?: string) => {
-    if (!amount) return 'N/A';
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
+    if (!amount) return "N/A";
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency || "USD",
     }).format(amount);
   };
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
-      case 'available':
-        return 'bg-green-100 text-green-800';
-      case 'sold':
-        return 'bg-red-100 text-red-800';
-      case 'reserved':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'in_transit':
-        return 'bg-blue-100 text-blue-800';
+      case "available":
+        return "bg-green-100 text-green-800";
+      case "sold":
+        return "bg-red-100 text-red-800";
+      case "reserved":
+        return "bg-yellow-100 text-yellow-800";
+      case "in_transit":
+        return "bg-blue-100 text-blue-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getGradeColor = (grade?: string | number) => {
-    if (!grade) return 'bg-gray-100 text-gray-800';
-    const numGrade = typeof grade === 'string' ? parseFloat(grade) : grade;
-    if (numGrade >= 8) return 'bg-green-100 text-green-800';
-    if (numGrade >= 6) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
+    if (!grade) return "bg-gray-100 text-gray-800";
+    const numGrade = typeof grade === "string" ? parseFloat(grade) : grade;
+    if (numGrade >= 8) return "bg-green-100 text-green-800";
+    if (numGrade >= 6) return "bg-yellow-100 text-yellow-800";
+    return "bg-red-100 text-red-800";
   };
 
-  console.log('CarManagement render - cars:', cars.length, 'loading:', isLoading);
+  console.log(
+    "CarManagement render - cars:",
+    cars.length,
+    "loading:",
+    isLoading
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-6">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold text-gray-800">
               🚗 Car Management
             </h1>
-            <p className="text-gray-600 mt-2">Manage your vehicle inventory with advanced features</p>
+            <p className="text-gray-600 mt-2">
+              Manage your vehicle inventory with advanced features
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -335,10 +376,17 @@ const CarManagement: React.FC = () => {
             </button>
             <button
               onClick={handleCreateCar}
-              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
             >
               <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
               Add Car
+            </button>
+            <button
+              onClick={handleCreateCarModal}
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
+            >
+              <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              Add Car (Modal)
             </button>
           </div>
         </div>
@@ -346,13 +394,15 @@ const CarManagement: React.FC = () => {
 
       {/* Message */}
       {message && (
-        <div className={`mb-6 p-4 rounded-xl shadow-lg ${
-          message.type === 'success'
-            ? 'bg-green-100 border-l-4 border-green-500 text-green-700'
-            : message.type === 'error'
-            ? 'bg-red-100 border-l-4 border-red-500 text-red-700'
-            : 'bg-blue-100 border-l-4 border-blue-500 text-blue-700'
-        }`}>
+        <div
+          className={`mb-6 p-4 rounded-xl shadow-lg ${
+            message.type === "success"
+              ? "bg-green-100 border-l-4 border-green-500 text-green-700"
+              : message.type === "error"
+              ? "bg-red-100 border-l-4 border-red-500 text-red-700"
+              : "bg-blue-100 border-l-4 border-blue-500 text-blue-700"
+          }`}
+        >
           {message.text}
         </div>
       )}
@@ -360,8 +410,10 @@ const CarManagement: React.FC = () => {
       {/* Advanced Filters */}
       <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
         <div className="flex items-center gap-2 mb-4">
-          <Filter className="w-5 h-5 text-emerald-600" />
-          <h3 className="text-lg font-semibold text-gray-800">Advanced Filters</h3>
+          <Filter className="w-5 h-5 text-gray-600" />
+          <h3 className="text-lg font-semibold text-gray-800">
+            Advanced Filters
+          </h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Search */}
@@ -498,40 +550,41 @@ const CarManagement: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
+            <thead className="bg-gray-800 text-white">
               <tr>
-                <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-emerald-600 transition-colors" onClick={() => handleSort('id')}>
+                <th
+                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-gray-700 transition-colors"
+                  onClick={() => handleSort("id")}
+                >
                   <div className="flex items-center">
-                    ID {getSortIcon('id')}
+                    ID {getSortIcon("id")}
                   </div>
                 </th>
                 <th className="px-6 py-4 text-left font-semibold">Photo</th>
-                <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-emerald-600 transition-colors" onClick={() => handleSort('make')}>
+                <th
+                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-gray-700 transition-colors"
+                  onClick={() => handleSort("make")}
+                >
                   <div className="flex items-center">
-                    Make & Model {getSortIcon('make')}
+                    Make & Model {getSortIcon("make")}
                   </div>
                 </th>
                 <th className="px-6 py-4 text-left font-semibold">Category</th>
-                <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-emerald-600 transition-colors" onClick={() => handleSort('year')}>
-                  <div className="flex items-center">
-                    Year {getSortIcon('year')}
-                  </div>
-                </th>
                 <th className="px-6 py-4 text-left font-semibold">Specs</th>
-                <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-emerald-600 transition-colors" onClick={() => handleSort('price_amount')}>
+                <th
+                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-gray-700 transition-colors"
+                  onClick={() => handleSort("price_amount")}
+                >
                   <div className="flex items-center">
-                    Price {getSortIcon('price_amount')}
+                    Price {getSortIcon("price_amount")}
                   </div>
                 </th>
-                <th className="px-6 py-4 text-left font-semibold">Grade</th>
-                <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-emerald-600 transition-colors" onClick={() => handleSort('status')}>
+                <th
+                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-gray-700 transition-colors"
+                  onClick={() => handleSort("status")}
+                >
                   <div className="flex items-center">
-                    Status {getSortIcon('status')}
-                  </div>
-                </th>
-                <th className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-emerald-600 transition-colors" onClick={() => handleSort('created_at')}>
-                  <div className="flex items-center">
-                    Created {getSortIcon('created_at')}
+                    Status {getSortIcon("status")}
                   </div>
                 </th>
                 <th className="px-6 py-4 text-left font-semibold">Actions</th>
@@ -540,24 +593,31 @@ const CarManagement: React.FC = () => {
             <tbody className="divide-y divide-gray-100">
               {isLoading ? (
                 <tr>
-                  <td colSpan={11} className="px-6 py-12 text-center">
+                  <td colSpan={8} className="px-6 py-12 text-center">
                     <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
-                      <span className="ml-3 text-gray-600">Loading cars...</span>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                      <span className="ml-3 text-gray-600">
+                        Loading cars...
+                      </span>
                     </div>
                   </td>
                 </tr>
               ) : cars.length === 0 ? (
                 <tr>
-                  <td colSpan={11} className="px-6 py-12 text-center text-gray-500">
+                  <td
+                    colSpan={8}
+                    className="px-6 py-12 text-center text-gray-500"
+                  >
                     <div className="space-y-2">
                       <p>No cars found</p>
                       <p className="text-sm text-gray-400">
-                        {isLoading ? 'Loading...' : 'Try refreshing the page or check your connection'}
+                        {isLoading
+                          ? "Loading..."
+                          : "Try refreshing the page or check your connection"}
                       </p>
                       <button
                         onClick={() => {
-                          console.log('Manual refresh clicked');
+                          console.log("Manual refresh clicked");
                           fetchCars();
                           fetchCategories();
                           fetchFilterOptions();
@@ -571,31 +631,45 @@ const CarManagement: React.FC = () => {
                 </tr>
               ) : (
                 cars.map((car) => (
-                  <tr key={car.id} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={car.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
                     <td className="px-6 py-4 font-medium text-gray-900">
                       #{car.id}
                     </td>
                     <td className="px-6 py-4">
                       {car.photos && car.photos.length > 0 ? (
                         <img
-                          src={car.photos.find(p => p.is_primary)?.url || car.photos[0].url}
+                          src={
+                            car.photos.find((p) => p.is_primary)?.url ||
+                            car.photos[0].url
+                          }
                           alt={`${car.make} ${car.model}`}
                           className="w-16 h-12 rounded-lg object-cover border-2 border-gray-200"
                         />
                       ) : (
                         <div className="w-16 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                          <div className="w-6 h-6 text-gray-400 font-bold">🚗</div>
+                          <div className="w-6 h-6 text-gray-400 font-bold">
+                            🚗
+                          </div>
                         </div>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <div className="font-semibold text-gray-900">{car.make} {car.model}</div>
+                        <div className="font-semibold text-gray-900">
+                          {car.make} {car.model}
+                        </div>
                         {car.variant && (
-                          <div className="text-sm text-gray-500 mt-1">{car.variant}</div>
+                          <div className="text-sm text-gray-500 mt-1">
+                            {car.variant}
+                          </div>
                         )}
                         {car.ref_no && (
-                          <div className="text-xs text-gray-400 mt-1">Ref: {car.ref_no}</div>
+                          <div className="text-xs text-gray-400 mt-1">
+                            Ref: {car.ref_no}
+                          </div>
                         )}
                       </div>
                     </td>
@@ -614,17 +688,13 @@ const CarManagement: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4 text-gray-400" />
-                        <span className="font-medium text-gray-900">{car.year}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
                       <div className="space-y-1 text-sm">
                         {car.transmission && (
                           <div className="flex items-center gap-1">
                             <Settings className="w-3 h-3 text-gray-400" />
-                            <span className="text-gray-600">{car.transmission}</span>
+                            <span className="text-gray-600">
+                              {car.transmission}
+                            </span>
                           </div>
                         )}
                         {car.fuel && (
@@ -642,7 +712,9 @@ const CarManagement: React.FC = () => {
                         {car.mileage_km && (
                           <div className="flex items-center gap-1">
                             <Gauge className="w-3 h-3 text-gray-400" />
-                            <span className="text-gray-600">{car.mileage_km.toLocaleString()} km</span>
+                            <span className="text-gray-600">
+                              {car.mileage_km.toLocaleString()} km
+                            </span>
                           </div>
                         )}
                       </div>
@@ -653,39 +725,21 @@ const CarManagement: React.FC = () => {
                           {formatPrice(car.price_amount, car.price_currency)}
                         </div>
                         {car.price_basis && (
-                          <div className="text-xs text-gray-500">{car.price_basis}</div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="space-y-1">
-                        {car.grade_overall && (
-                          <div className="flex items-center gap-1">
-                            <Star className="w-4 h-4 text-yellow-500" />
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getGradeColor(car.grade_overall)}`}>
-                              {car.grade_overall}/10
-                            </span>
+                          <div className="text-xs text-gray-500">
+                            {car.price_basis}
                           </div>
                         )}
-                        {car.grade_exterior && (
-                          <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getGradeColor(car.grade_exterior)}`}>
-                            Ext: {car.grade_exterior}
-                          </span>
-                        )}
-                        {car.grade_interior && (
-                          <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getGradeColor(car.grade_interior)}`}>
-                            Int: {car.grade_interior}
-                          </span>
-                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(car.status)}`}>
-                        {car.status?.charAt(0).toUpperCase() + car.status?.slice(1)}
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                          car.status
+                        )}`}
+                      >
+                        {car.status?.charAt(0).toUpperCase() +
+                          car.status?.slice(1)}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {formatDate(car.created_at)}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
@@ -698,7 +752,7 @@ const CarManagement: React.FC = () => {
                         </button>
                         <button
                           onClick={() => handleEditCar(car)}
-                          className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="Edit Car"
                         >
                           <Pencil className="w-4 h-4" />
@@ -724,7 +778,9 @@ const CarManagement: React.FC = () => {
           <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {((currentPage - 1) * perPage) + 1} to {Math.min(currentPage * perPage, totalItems)} of {totalItems} results
+                Showing {(currentPage - 1) * perPage + 1} to{" "}
+                {Math.min(currentPage * perPage, totalItems)} of {totalItems}{" "}
+                results
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -735,15 +791,16 @@ const CarManagement: React.FC = () => {
                   Previous
                 </button>
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const page = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                  const page =
+                    Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
                   return (
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
                       className={`px-3 py-2 text-sm font-medium rounded-lg ${
                         currentPage === page
-                          ? 'bg-emerald-600 text-white'
-                          : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
+                          ? "bg-blue-600 text-white"
+                          : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-50"
                       }`}
                     >
                       {page}
@@ -751,7 +808,9 @@ const CarManagement: React.FC = () => {
                   );
                 })}
                 <button
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  onClick={() =>
+                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                  }
                   disabled={currentPage === totalPages}
                   className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -773,6 +832,13 @@ const CarManagement: React.FC = () => {
         isLoading={isDeleting}
       />
 
+      {/* Excel Import Modal */}
+      <ExcelImportModal
+        isOpen={showExcelModal}
+        onClose={handleExcelImportClose}
+        onSubmit={handleExcelImportSubmit}
+      />
+
       {/* Car Modal */}
       <CarModal
         isOpen={showCarModal}
@@ -781,13 +847,6 @@ const CarManagement: React.FC = () => {
         car={editingCar}
         categories={categories}
         filterOptions={filterOptions}
-      />
-
-      {/* Excel Import Modal */}
-      <ExcelImportModal
-        isOpen={showExcelModal}
-        onClose={handleExcelImportClose}
-        onSubmit={handleExcelImportSubmit}
       />
     </div>
   );

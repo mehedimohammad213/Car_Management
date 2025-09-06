@@ -8,7 +8,7 @@ import {
   TagIcon,
   FolderIcon,
 } from "lucide-react";
-import { Car, Brand, Category } from "../types";
+import { Car, Brand, Category } from "../../types";
 
 interface CarManagementHeaderProps {
   cars: Car[];
