@@ -527,7 +527,8 @@ const CarManagement: React.FC = () => {
                 cars.map((car) => (
                   <tr
                     key={car.id}
-                    className="hover:bg-gray-50 transition-colors"
+                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={() => handleViewCar(car)}
                   >
                     <td className="px-6 py-4 font-medium text-gray-900">
                       #{car.id}
@@ -638,21 +639,30 @@ const CarManagement: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => handleViewCar(car)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewCar(car);
+                          }}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="View Car"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleEditCar(car)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditCar(car);
+                          }}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="Edit Car"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleDeleteCar(car)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteCar(car);
+                          }}
                           className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="Delete Car"
                         >
