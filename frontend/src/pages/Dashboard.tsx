@@ -19,20 +19,25 @@ import {
   TrendingUpIcon,
   TrendingDownIcon,
 } from "lucide-react";
-// Removed mockData import
-import { SalesReport } from "../types";
+import { dashboardApi, DashboardData } from "../services/dashboardApi";
 
 const Dashboard: React.FC = () => {
-  const [salesReport, setSalesReport] = useState<SalesReport | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Placeholder - no mock data
-        setSalesReport(null);
+        setIsLoading(true);
+        setError(null);
+        const data = await dashboardApi.getDashboardData();
+        setDashboardData(data);
       } catch (error) {
-        console.error("Error fetching sales report:", error);
+        console.error("Error fetching dashboard data:", error);
+        setError("Failed to load dashboard data");
       } finally {
         setIsLoading(false);
       }
@@ -49,10 +54,10 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  if (!salesReport) {
+  if (error || !dashboardData) {
     return (
       <div className="text-center text-slate-500">
-        Failed to load dashboard data
+        {error || "Failed to load dashboard data"}
       </div>
     );
   }
@@ -67,7 +72,7 @@ const Dashboard: React.FC = () => {
           Dashboard
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-gray-400">
-          Overview of your car selling business
+          Overview of your car management system
         </p>
       </div>
 
@@ -81,10 +86,10 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-slate-600 dark:text-gray-400">
-                  Total Sales
+                  Total Stock Value
                 </p>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                  ${salesReport.totalSales.toLocaleString()}
+                  ${dashboardData.totalStockValue.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -104,10 +109,10 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-slate-600 dark:text-gray-400">
-                  Total Orders
+                  Cars Sold
                 </p>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                  {salesReport.totalOrders}
+                  {dashboardData.soldCars}
                 </p>
               </div>
             </div>
@@ -130,7 +135,7 @@ const Dashboard: React.FC = () => {
                   Available Cars
                 </p>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                  42
+                  {dashboardData.availableCars}
                 </p>
               </div>
             </div>
@@ -150,10 +155,10 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-slate-600 dark:text-gray-400">
-                  Active Users
+                  Categories
                 </p>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                  156
+                  {dashboardData.totalCategories}
                 </p>
               </div>
             </div>
@@ -177,7 +182,7 @@ const Dashboard: React.FC = () => {
               Monthly Sales
             </h3>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={salesReport.monthlySales}>
+              <BarChart data={dashboardData.monthlySales}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
@@ -193,50 +198,43 @@ const Dashboard: React.FC = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* Top Selling Brands */}
+          {/* Cars by Brand */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
             <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-              Top Selling Brands
+              Cars by Brand
             </h3>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={salesReport.topSellingBrands}
+                  data={dashboardData.carsByBrand}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ brand, revenue }) =>
-                    `${brand}: $${revenue.toLocaleString()}`
-                  }
+                  label={({ brand, count }) => `${brand}: ${count}`}
                   outerRadius={80}
                   fill="#8884d8"
-                  dataKey="revenue"
+                  dataKey="count"
                 >
-                  {salesReport.topSellingBrands.map((entry, index) => (
+                  {dashboardData.carsByBrand.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
                     />
                   ))}
                 </Pie>
-                <Tooltip
-                  formatter={(value: number) => [
-                    `$${value.toLocaleString()}`,
-                    "Revenue",
-                  ]}
-                />
+                <Tooltip formatter={(value: number) => [`${value}`, "Cars"]} />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
       </div>
 
-      {/* Top Selling Cars Table */}
+      {/* Recent Cars Table */}
       <div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Top Selling Cars
+              Recent Cars Added
             </h3>
           </div>
           <div className="overflow-x-auto">
@@ -250,41 +248,56 @@ const Dashboard: React.FC = () => {
                     Brand
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Units Sold
+                    Year
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Revenue
+                    Price
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Status
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {salesReport.topSellingCars.map((item, index) => (
+                {dashboardData.recentCars.map((car, index) => (
                   <tr key={index}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <img
                           className="h-10 w-10 rounded-lg object-cover"
-                          src={item.car.image}
-                          alt={item.car.model}
+                          src={car.primary_photo_url || "/placeholder-car.jpg"}
+                          alt={car.model}
                         />
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            {item.car.model}
+                            {car.model}
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {item.car.year}
+                            {car.variant || car.model_code}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                      {item.car.brand}
+                      {car.make}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                      {item.totalSold}
+                      {car.year}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                      ${item.revenue.toLocaleString()}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {car.price_formatted ||
+                        `$${car.price_amount?.toLocaleString() || "N/A"}`}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          car.status === "active"
+                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                            : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+                        }`}
+                      >
+                        {car.status}
+                      </span>
                     </td>
                   </tr>
                 ))}
