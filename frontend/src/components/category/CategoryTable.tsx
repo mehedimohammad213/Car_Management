@@ -39,16 +39,16 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+          <thead className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
             <tr>
               <th
-                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-indigo-600 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
                 onClick={() => onSort("id")}
               >
                 <div className="flex items-center">ID {getSortIcon("id")}</div>
               </th>
               <th
-                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-indigo-600 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
                 onClick={() => onSort("name")}
               >
                 <div className="flex items-center">
@@ -60,7 +60,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                 Parent Category
               </th>
               <th
-                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-indigo-600 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
                 onClick={() => onSort("status")}
               >
                 <div className="flex items-center">
@@ -70,7 +70,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
               <th className="px-6 py-4 text-left font-semibold">Children</th>
               <th className="px-6 py-4 text-left font-semibold">Cars</th>
               <th
-                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-indigo-600 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
                 onClick={() => onSort("created_at")}
               >
                 <div className="flex items-center">

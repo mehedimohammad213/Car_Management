@@ -1,5 +1,5 @@
 import React from "react";
-import { Plus } from "lucide-react";
+import { TagIcon, PlusIcon } from "lucide-react";
 
 interface CategoryHeaderProps {
   onCreateCategory: () => void;
@@ -10,20 +10,26 @@ const CategoryHeader: React.FC<CategoryHeaderProps> = ({
 }) => {
   return (
     <div className="mb-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Category Management
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Manage your vehicle categories and subcategories
-          </p>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center">
+          <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mr-4">
+            <TagIcon className="w-6 h-6 text-blue-600" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Category Management
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Manage your vehicle categories and subcategories
+            </p>
+          </div>
         </div>
+
         <button
           onClick={onCreateCategory}
-          className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
+          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
         >
-          <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
+          <PlusIcon className="w-4 h-4 mr-2" />
           Add Category
         </button>
       </div>

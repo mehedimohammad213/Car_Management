@@ -21,7 +21,7 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({
   onClearFilters,
 }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+    <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Search */}
         <div className="relative">
@@ -31,7 +31,7 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({
             placeholder="Search categories..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
         </div>
 
@@ -39,7 +39,7 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({
         <select
           value={statusFilter}
           onChange={(e) => onStatusFilterChange(e.target.value)}
-          className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+          className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
         >
           <option value="">All Status</option>
           <option value="active">Active</option>
@@ -50,7 +50,7 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({
         <select
           value={typeFilter}
           onChange={(e) => onTypeFilterChange(e.target.value)}
-          className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+          className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
         >
           <option value="">All Types</option>
           <option value="parent">Parent Categories</option>
@@ -60,7 +60,7 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({
         {/* Clear Filters */}
         <button
           onClick={onClearFilters}
-          className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors font-medium"
+          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors font-medium"
         >
           Clear Filters
         </button>
