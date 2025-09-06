@@ -1,29 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   SearchIcon,
   FilterIcon,
   DownloadIcon,
   EyeIcon,
-  EditIcon
-} from 'lucide-react';
-import { mockApi } from '../services/mockData';
-import { Order } from '../types';
+  EditIcon,
+} from "lucide-react";
+// Removed mockData import
+import { Order } from "../types";
 
 const OrderManagement: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const ordersData = await mockApi.getOrders();
-        await mockApi.delay();
-        setOrders(ordersData);
+        // Placeholder - no mock data
+        setOrders([]);
       } catch (error) {
-        console.error('Error fetching orders:', error);
+        console.error("Error fetching orders:", error);
       } finally {
         setIsLoading(false);
       }
@@ -32,12 +31,14 @@ const OrderManagement: React.FC = () => {
     fetchOrders();
   }, []);
 
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.items.some(item =>
-                           item.car.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           item.car.model.toLowerCase().includes(searchTerm.toLowerCase())
-                         );
+  const filteredOrders = orders.filter((order) => {
+    const matchesSearch =
+      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.items.some(
+        (item) =>
+          item.car.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.car.model.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     const matchesStatus = !statusFilter || order.status === statusFilter;
 
     return matchesSearch && matchesStatus;
@@ -45,25 +46,27 @@ const OrderManagement: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'approved':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'shipped':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
-      case 'delivered':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'canceled':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      case "approved":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      case "shipped":
+        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
+      case "delivered":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "canceled":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
   };
 
   const handleStatusChange = (orderId: string, newStatus: string) => {
-    setOrders(orders.map(order =>
-      order.id === orderId ? { ...order, status: newStatus as any } : order
-    ));
+    setOrders(
+      orders.map((order) =>
+        order.id === orderId ? { ...order, status: newStatus as any } : order
+      )
+    );
   };
 
   const handleDownloadInvoice = (order: Order) => {
@@ -72,9 +75,12 @@ const OrderManagement: React.FC = () => {
   };
 
   const getTotalOrders = () => orders.length;
-  const getTotalRevenue = () => orders.reduce((sum, order) => sum + order.totalAmount, 0);
-  const getPendingOrders = () => orders.filter(order => order.status === 'pending').length;
-  const getDeliveredOrders = () => orders.filter(order => order.status === 'delivered').length;
+  const getTotalRevenue = () =>
+    orders.reduce((sum, order) => sum + order.totalAmount, 0);
+  const getPendingOrders = () =>
+    orders.filter((order) => order.status === "pending").length;
+  const getDeliveredOrders = () =>
+    orders.filter((order) => order.status === "delivered").length;
 
   if (isLoading) {
     return (
@@ -91,13 +97,27 @@ const OrderManagement: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              <svg
+                className="w-6 h-6 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Orders</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{getTotalOrders()}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Total Orders
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {getTotalOrders()}
+              </p>
             </div>
           </div>
         </div>
@@ -105,12 +125,24 @@ const OrderManagement: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+              <svg
+                className="w-6 h-6 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                />
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Revenue</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Total Revenue
+              </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 ${getTotalRevenue().toLocaleString()}
               </p>
@@ -121,13 +153,27 @@ const OrderManagement: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
-              <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-6 h-6 text-yellow-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{getPendingOrders()}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Pending
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {getPendingOrders()}
+              </p>
             </div>
           </div>
         </div>
@@ -135,13 +181,27 @@ const OrderManagement: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-6 h-6 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Delivered</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{getDeliveredOrders()}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Delivered
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {getDeliveredOrders()}
+              </p>
             </div>
           </div>
         </div>
@@ -209,7 +269,10 @@ const OrderManagement: React.FC = () => {
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {filteredOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <tr
+                  key={order.id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                     #{order.id}
                   </td>
@@ -218,10 +281,13 @@ const OrderManagement: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900 dark:text-white">
-                      {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                      {order.items.length} item
+                      {order.items.length !== 1 ? "s" : ""}
                     </div>
                     <div className="text-sm text-gray-500 dark:text-gray-400">
-                      {order.items.map(item => `${item.car.brand} ${item.car.model}`).join(', ')}
+                      {order.items
+                        .map((item) => `${item.car.brand} ${item.car.model}`)
+                        .join(", ")}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
@@ -230,8 +296,12 @@ const OrderManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <select
                       value={order.status}
-                      onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                      className={`px-2 py-1 text-xs font-semibold rounded-full border-0 ${getStatusColor(order.status)}`}
+                      onChange={(e) =>
+                        handleStatusChange(order.id, e.target.value)
+                      }
+                      className={`px-2 py-1 text-xs font-semibold rounded-full border-0 ${getStatusColor(
+                        order.status
+                      )}`}
                     >
                       <option value="pending">Pending</option>
                       <option value="approved">Approved</option>
@@ -278,8 +348,18 @@ const OrderManagement: React.FC = () => {
                 onClick={() => setSelectedOrder(null)}
                 className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -291,27 +371,45 @@ const OrderManagement: React.FC = () => {
                 </h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Order ID:</span>
-                    <span className="text-gray-900 dark:text-white">#{selectedOrder.id}</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Order ID:
+                    </span>
+                    <span className="text-gray-900 dark:text-white">
+                      #{selectedOrder.id}
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Customer ID:</span>
-                    <span className="text-gray-900 dark:text-white">{selectedOrder.userId}</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Customer ID:
+                    </span>
+                    <span className="text-gray-900 dark:text-white">
+                      {selectedOrder.userId}
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Status:</span>
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedOrder.status)}`}>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Status:
+                    </span>
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                        selectedOrder.status
+                      )}`}
+                    >
                       {selectedOrder.status}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Created:</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Created:
+                    </span>
                     <span className="text-gray-900 dark:text-white">
                       {new Date(selectedOrder.createdAt).toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Updated:</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Updated:
+                    </span>
                     <span className="text-gray-900 dark:text-white">
                       {new Date(selectedOrder.updatedAt).toLocaleString()}
                     </span>
@@ -325,15 +423,19 @@ const OrderManagement: React.FC = () => {
                 </h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Address:</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Address:
+                    </span>
                     <span className="text-gray-900 dark:text-white">
-                      {selectedOrder.shippingAddress || 'Not provided'}
+                      {selectedOrder.shippingAddress || "Not provided"}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Payment Method:</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Payment Method:
+                    </span>
                     <span className="text-gray-900 dark:text-white">
-                      {selectedOrder.paymentMethod || 'Not specified'}
+                      {selectedOrder.paymentMethod || "Not specified"}
                     </span>
                   </div>
                 </div>
@@ -346,7 +448,10 @@ const OrderManagement: React.FC = () => {
               </h3>
               <div className="space-y-3">
                 {selectedOrder.items.map((item, index) => (
-                  <div key={index} className="flex items-center space-x-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center space-x-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                  >
                     <img
                       src={item.car.image}
                       alt={`${item.car.brand} ${item.car.model}`}
@@ -357,7 +462,8 @@ const OrderManagement: React.FC = () => {
                         {item.car.brand} {item.car.model}
                       </h4>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {item.car.year} • {item.car.mileage.toLocaleString()} miles
+                        {item.car.year} • {item.car.mileage.toLocaleString()}{" "}
+                        miles
                       </p>
                     </div>
                     <div className="text-right">

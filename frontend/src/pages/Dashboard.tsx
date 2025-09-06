@@ -19,7 +19,7 @@ import {
   TrendingUpIcon,
   TrendingDownIcon,
 } from "lucide-react";
-import { mockApi } from "../services/mockData";
+// Removed mockData import
 import { SalesReport } from "../types";
 
 const Dashboard: React.FC = () => {
@@ -29,9 +29,8 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const report = await mockApi.getSalesReport();
-        await mockApi.delay();
-        setSalesReport(report);
+        // Placeholder - no mock data
+        setSalesReport(null);
       } catch (error) {
         console.error("Error fetching sales report:", error);
       } finally {

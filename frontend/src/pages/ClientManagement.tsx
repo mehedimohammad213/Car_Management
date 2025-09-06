@@ -10,7 +10,7 @@ import {
   MailIcon,
   PhoneIcon,
 } from "lucide-react";
-import { mockApi } from "../services/mockData";
+// Removed mockData import
 
 interface Client {
   id: string;

@@ -6,7 +6,7 @@ import {
   HeartIcon,
   StarIcon,
 } from "lucide-react";
-import { mockApi } from "../../services/mockData";
+// Removed mockData import
 import { Car } from "../../types";
 import { useCart } from "../../contexts/CartContext";
 
@@ -22,9 +22,8 @@ const CarDetails: React.FC = () => {
       if (!id) return;
 
       try {
-        const carData = await mockApi.getCar(id);
-        await mockApi.delay();
-        setCar(carData || null);
+        // Placeholder - no mock data
+        setCar(null);
       } catch (error) {
         console.error("Error fetching car:", error);
       } finally {

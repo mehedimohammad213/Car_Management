@@ -10,7 +10,7 @@ import {
   CarIcon,
 } from "lucide-react";
 import { Car } from "../types";
-import { mockApi } from "../services/mockData";
+// Removed mockData import
 import { useCart } from "../contexts/CartContext";
 
 const Wishlist: React.FC = () => {
@@ -24,9 +24,8 @@ const Wishlist: React.FC = () => {
 
   const fetchWishlist = async () => {
     try {
-      const cars = await mockApi.getCars();
-      // Mock wishlist - take first 5 cars
-      setWishlistItems(cars.slice(0, 5));
+      // Placeholder - no mock data
+      setWishlistItems([]);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
     } finally {

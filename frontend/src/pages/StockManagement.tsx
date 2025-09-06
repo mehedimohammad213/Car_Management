@@ -21,7 +21,13 @@ import {
   HashIcon,
   RefreshCwIcon,
 } from "lucide-react";
-import { stockApi, Stock, StockStatistics, CreateStockData, UpdateStockData } from "../services/stockApi";
+import {
+  stockApi,
+  Stock,
+  StockStatistics,
+  CreateStockData,
+  UpdateStockData,
+} from "../services/stockApi";
 
 const StockManagement: React.FC = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -48,7 +54,7 @@ const StockManagement: React.FC = () => {
   const [selectedStocks, setSelectedStocks] = useState<number[]>([]);
   const [bulkStatus, setBulkStatus] = useState("available");
   const [notification, setNotification] = useState<{
-    type: 'success' | 'error' | 'info';
+    type: "success" | "error" | "info";
     message: string;
     show: boolean;
   } | null>(null);
@@ -78,11 +84,11 @@ const StockManagement: React.FC = () => {
         sort_order: sortOrder,
         per_page: 15,
       });
-      
+
       if (response.success) {
-        setStocks(response.data.data);
-        setTotalPages(response.data.last_page);
-        setCurrentPage(response.data.current_page);
+        setStocks(response.data);
+        setTotalPages(response.last_page);
+        setCurrentPage(response.current_page);
       }
     } catch (error) {
       console.error("Error fetching stocks:", error);
@@ -133,18 +139,18 @@ const StockManagement: React.FC = () => {
         fetchStatistics();
         fetchAvailableCars();
         setNotification({
-          type: 'success',
-          message: 'Stock created successfully!',
-          show: true
+          type: "success",
+          message: "Stock created successfully!",
+          show: true,
         });
         setTimeout(() => setNotification(null), 3000);
       }
     } catch (error: any) {
       console.error("Error creating stock:", error);
       setNotification({
-        type: 'error',
-        message: error.message || 'Failed to create stock',
-        show: true
+        type: "error",
+        message: error.message || "Failed to create stock",
+        show: true,
       });
       setTimeout(() => setNotification(null), 5000);
     }
@@ -153,7 +159,7 @@ const StockManagement: React.FC = () => {
   const handleUpdateStock = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedStock) return;
-    
+
     try {
       const response = await stockApi.updateStock(selectedStock.id, formData);
       if (response.success) {
@@ -188,7 +194,7 @@ const StockManagement: React.FC = () => {
 
   const handleBulkUpdateStatus = async () => {
     if (selectedStocks.length === 0) return;
-    
+
     try {
       await stockApi.bulkUpdateStatus({
         stock_ids: selectedStocks,
@@ -240,12 +246,12 @@ const StockManagement: React.FC = () => {
     return icons[status as keyof typeof icons] || icons.available;
   };
 
-  const filteredStocks = stocks.filter(stock => {
+  const filteredStocks = stocks.filter((stock) => {
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       const car = stock.car;
       if (!car) return false;
-      
+
       return (
         car.make.toLowerCase().includes(searchLower) ||
         car.model.toLowerCase().includes(searchLower) ||
@@ -267,11 +273,15 @@ const StockManagement: React.FC = () => {
     <div className="space-y-6 p-6 bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
       {/* Notification */}
       {notification && (
-        <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm ${
-          notification.type === 'success' ? 'bg-green-500 text-white' :
-          notification.type === 'error' ? 'bg-red-500 text-white' :
-          'bg-blue-500 text-white'
-        }`}>
+        <div
+          className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm ${
+            notification.type === "success"
+              ? "bg-green-500 text-white"
+              : notification.type === "error"
+              ? "bg-red-500 text-white"
+              : "bg-blue-500 text-white"
+          }`}
+        >
           <div className="flex items-center justify-between">
             <span>{notification.message}</span>
             <button
@@ -290,7 +300,8 @@ const StockManagement: React.FC = () => {
           Stock Management
         </h1>
         <p className="text-gray-600 text-lg">
-          Manage your vehicle inventory, track stock levels, and monitor availability
+          Manage your vehicle inventory, track stock levels, and monitor
+          availability
         </p>
       </div>
 
@@ -315,7 +326,9 @@ const StockManagement: React.FC = () => {
         <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-emerald-100 text-sm font-medium">Total Quantity</p>
+              <p className="text-emerald-100 text-sm font-medium">
+                Total Quantity
+              </p>
               <p className="text-3xl font-bold">
                 {isLoadingStats ? (
                   <div className="animate-pulse bg-emerald-400 h-8 w-16 rounded"></div>
@@ -336,7 +349,11 @@ const StockManagement: React.FC = () => {
                 {isLoadingStats ? (
                   <div className="animate-pulse bg-purple-400 h-8 w-16 rounded"></div>
                 ) : (
-                  `$${statistics?.total_value ? (statistics.total_value / 1000).toFixed(1) + 'K' : '0'}`
+                  `$${
+                    statistics?.total_value
+                      ? (statistics.total_value / 1000).toFixed(1) + "K"
+                      : "0"
+                  }`
                 )}
               </p>
             </div>
@@ -349,7 +366,7 @@ const StockManagement: React.FC = () => {
             <div>
               <p className="text-amber-100 text-sm font-medium">Available</p>
               <p className="text-3xl font-bold">
-                {stocks.filter(s => s.status === 'available').length}
+                {stocks.filter((s) => s.status === "available").length}
               </p>
             </div>
             <CheckCircleIcon className="w-8 h-8 text-amber-200" />
@@ -376,7 +393,9 @@ const StockManagement: React.FC = () => {
           <div>
             <select
               value={filters.status}
-              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+              onChange={(e) =>
+                setFilters({ ...filters, status: e.target.value })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">All Status</option>
@@ -426,45 +445,81 @@ const StockManagement: React.FC = () => {
 
         <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Min Price</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Min Price
+            </label>
             <input
               type="number"
               placeholder="Min price"
-              value={filters.min_price || ''}
-              onChange={(e) => setFilters({ ...filters, min_price: e.target.value ? Number(e.target.value) : undefined })}
+              value={filters.min_price || ""}
+              onChange={(e) =>
+                setFilters({
+                  ...filters,
+                  min_price: e.target.value
+                    ? Number(e.target.value)
+                    : undefined,
+                })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Max Price</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Max Price
+            </label>
             <input
               type="number"
               placeholder="Max price"
-              value={filters.max_price || ''}
-              onChange={(e) => setFilters({ ...filters, max_price: e.target.value ? Number(e.target.value) : undefined })}
+              value={filters.max_price || ""}
+              onChange={(e) =>
+                setFilters({
+                  ...filters,
+                  max_price: e.target.value
+                    ? Number(e.target.value)
+                    : undefined,
+                })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Min Quantity</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Min Quantity
+            </label>
             <input
               type="number"
               placeholder="Min quantity"
-              value={filters.min_quantity || ''}
-              onChange={(e) => setFilters({ ...filters, min_quantity: e.target.value ? Number(e.target.value) : undefined })}
+              value={filters.min_quantity || ""}
+              onChange={(e) =>
+                setFilters({
+                  ...filters,
+                  min_quantity: e.target.value
+                    ? Number(e.target.value)
+                    : undefined,
+                })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Max Quantity</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Max Quantity
+            </label>
             <input
               type="number"
               placeholder="Max quantity"
-              value={filters.max_quantity || ''}
-              onChange={(e) => setFilters({ ...filters, max_quantity: e.target.value ? Number(e.target.value) : undefined })}
+              value={filters.max_quantity || ""}
+              onChange={(e) =>
+                setFilters({
+                  ...filters,
+                  max_quantity: e.target.value
+                    ? Number(e.target.value)
+                    : undefined,
+                })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -478,7 +533,7 @@ const StockManagement: React.FC = () => {
           >
             Bulk Update ({selectedStocks.length})
           </button>
-          
+
           <button
             onClick={fetchStocks}
             className="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-4 py-2 rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all duration-200 font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
@@ -486,7 +541,7 @@ const StockManagement: React.FC = () => {
             <RefreshCwIcon className="w-4 h-4 mr-2 inline" />
             Refresh
           </button>
-          
+
           <button
             onClick={() => {
               setFilters({
@@ -510,22 +565,35 @@ const StockManagement: React.FC = () => {
       {/* Status Distribution Chart */}
       {statistics && (
         <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Stock Status Distribution</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Stock Status Distribution
+          </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {statistics.by_status.map((statusItem) => (
               <div key={statusItem.status} className="text-center">
-                <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center text-white font-bold text-lg mb-2 ${
-                  statusItem.status === 'available' ? 'bg-emerald-500' :
-                  statusItem.status === 'sold' ? 'bg-blue-500' :
-                  statusItem.status === 'reserved' ? 'bg-amber-500' :
-                  statusItem.status === 'damaged' ? 'bg-orange-500' :
-                  statusItem.status === 'lost' ? 'bg-gray-500' :
-                  'bg-red-500'
-                }`}>
+                <div
+                  className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center text-white font-bold text-lg mb-2 ${
+                    statusItem.status === "available"
+                      ? "bg-emerald-500"
+                      : statusItem.status === "sold"
+                      ? "bg-blue-500"
+                      : statusItem.status === "reserved"
+                      ? "bg-amber-500"
+                      : statusItem.status === "damaged"
+                      ? "bg-orange-500"
+                      : statusItem.status === "lost"
+                      ? "bg-gray-500"
+                      : "bg-red-500"
+                  }`}
+                >
                   {statusItem.count}
                 </div>
-                <div className="text-sm font-medium text-gray-700 capitalize">{statusItem.status}</div>
-                <div className="text-xs text-gray-500">{statusItem.count} items</div>
+                <div className="text-sm font-medium text-gray-700 capitalize">
+                  {statusItem.status}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {statusItem.count} items
+                </div>
               </div>
             ))}
           </div>
@@ -535,12 +603,14 @@ const StockManagement: React.FC = () => {
       {/* Stock Table */}
       <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
         <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Stock Inventory</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Stock Inventory
+          </h3>
           <p className="text-sm text-gray-500 mt-1">
             {stocks.length} stocks found • Page {currentPage} of {totalPages}
           </p>
         </div>
-        
+
         {isLoading ? (
           <div className="p-6">
             <div className="space-y-4">
@@ -561,122 +631,133 @@ const StockManagement: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-              <tr>
-                <th className="px-6 py-4 text-left">
-                  <input
-                    type="checkbox"
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedStocks(stocks.map(s => s.id));
-                      } else {
-                        setSelectedStocks([]);
-                      }
-                    }}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Car Details
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Quantity
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Last Updated
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredStocks.map((stock) => (
-                <tr key={stock.id} className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-colors duration-200">
-                  <td className="px-6 py-4">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                <tr>
+                  <th className="px-6 py-4 text-left">
                     <input
                       type="checkbox"
-                      checked={selectedStocks.includes(stock.id)}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedStocks([...selectedStocks, stock.id]);
+                          setSelectedStocks(stocks.map((s) => s.id));
                         } else {
-                          setSelectedStocks(selectedStocks.filter(id => id !== stock.id));
+                          setSelectedStocks([]);
                         }
                       }}
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
-                  </td>
-                  <td className="px-6 py-4">
-                    {stock.car && (
-                      <div className="flex items-center">
-                        <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
-                          <PackageIcon className="w-6 h-6 text-blue-600" />
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-semibold text-gray-900">
-                            {stock.car.make} {stock.car.model}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {stock.car.year} • {stock.car.ref_no || 'N/A'}
-                          </div>
-                          {stock.car.category && (
-                            <div className="text-xs text-gray-400">
-                              {stock.car.category.name}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                      {stock.quantity}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm font-medium text-gray-900">
-                      {stock.price ? `$${stock.price.toLocaleString()}` : 'N/A'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(stock.status)}`}>
-                      {getStatusIcon(stock.status)}
-                      <span className="ml-1 capitalize">{stock.status}</span>
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {new Date(stock.updated_at).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => openEditModal(stock)}
-                        className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors"
-                        title="Edit Stock"
-                      >
-                        <EditIcon className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteStock(stock.id)}
-                        className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
-                        title="Delete Stock"
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Car Details
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Quantity
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Price
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Last Updated
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredStocks.map((stock) => (
+                  <tr
+                    key={stock.id}
+                    className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-colors duration-200"
+                  >
+                    <td className="px-6 py-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedStocks.includes(stock.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedStocks([...selectedStocks, stock.id]);
+                          } else {
+                            setSelectedStocks(
+                              selectedStocks.filter((id) => id !== stock.id)
+                            );
+                          }
+                        }}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                    </td>
+                    <td className="px-6 py-4">
+                      {stock.car && (
+                        <div className="flex items-center">
+                          <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                            <PackageIcon className="w-6 h-6 text-blue-600" />
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-semibold text-gray-900">
+                              {stock.car.make} {stock.car.model}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {stock.car.year} • {stock.car.ref_no || "N/A"}
+                            </div>
+                            {stock.car.category && (
+                              <div className="text-xs text-gray-400">
+                                {stock.car.category.name}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                        {stock.quantity}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-medium text-gray-900">
+                        {stock.price
+                          ? `$${stock.price.toLocaleString()}`
+                          : "N/A"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
+                          stock.status
+                        )}`}
+                      >
+                        {getStatusIcon(stock.status)}
+                        <span className="ml-1 capitalize">{stock.status}</span>
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {new Date(stock.updated_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => openEditModal(stock)}
+                          className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors"
+                          title="Edit Stock"
+                        >
+                          <EditIcon className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteStock(stock.id)}
+                          className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
+                          title="Delete Stock"
+                        >
+                          <TrashIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
@@ -690,8 +771,8 @@ const StockManagement: React.FC = () => {
                 onClick={() => setCurrentPage(page)}
                 className={`px-3 py-2 rounded-lg font-medium transition-colors ${
                   currentPage === page
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
                 }`}
               >
                 {page}
@@ -707,9 +788,11 @@ const StockManagement: React.FC = () => {
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-t-xl">
               <h3 className="text-xl font-semibold">Add New Stock</h3>
-              <p className="text-blue-100 mt-1">Create a new stock entry for a car</p>
+              <p className="text-blue-100 mt-1">
+                Create a new stock entry for a car
+              </p>
             </div>
-            
+
             <form onSubmit={handleCreateStock} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -718,13 +801,16 @@ const StockManagement: React.FC = () => {
                 <select
                   required
                   value={formData.car_id}
-                  onChange={(e) => setFormData({ ...formData, car_id: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, car_id: Number(e.target.value) })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value={0}>Choose a car</option>
                   {availableCars.map((car) => (
                     <option key={car.id} value={car.id}>
-                      {car.make} {car.model} ({car.year}) - {car.ref_no || 'N/A'}
+                      {car.make} {car.model} ({car.year}) -{" "}
+                      {car.ref_no || "N/A"}
                     </option>
                   ))}
                 </select>
@@ -739,7 +825,12 @@ const StockManagement: React.FC = () => {
                   required
                   min="1"
                   value={formData.quantity}
-                  onChange={(e) => setFormData({ ...formData, quantity: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      quantity: Number(e.target.value),
+                    })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -753,7 +844,9 @@ const StockManagement: React.FC = () => {
                   min="0"
                   step="0.01"
                   value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, price: Number(e.target.value) })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="0.00"
                 />
@@ -766,7 +859,9 @@ const StockManagement: React.FC = () => {
                 <select
                   required
                   value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, status: e.target.value as any })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="available">Available</option>
@@ -784,7 +879,9 @@ const StockManagement: React.FC = () => {
                 </label>
                 <textarea
                   value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Optional notes about this stock..."
@@ -819,7 +916,7 @@ const StockManagement: React.FC = () => {
               <h3 className="text-xl font-semibold">Edit Stock</h3>
               <p className="text-emerald-100 mt-1">Update stock information</p>
             </div>
-            
+
             <form onSubmit={handleUpdateStock} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -830,7 +927,12 @@ const StockManagement: React.FC = () => {
                   required
                   min="1"
                   value={formData.quantity}
-                  onChange={(e) => setFormData({ ...formData, quantity: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      quantity: Number(e.target.value),
+                    })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 />
               </div>
@@ -844,7 +946,9 @@ const StockManagement: React.FC = () => {
                   min="0"
                   step="0.01"
                   value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, price: Number(e.target.value) })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   placeholder="0.00"
                 />
@@ -857,7 +961,9 @@ const StockManagement: React.FC = () => {
                 <select
                   required
                   value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, status: e.target.value as any })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 >
                   <option value="available">Available</option>
@@ -875,7 +981,9 @@ const StockManagement: React.FC = () => {
                 </label>
                 <textarea
                   value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   placeholder="Optional notes about this stock..."
@@ -908,9 +1016,11 @@ const StockManagement: React.FC = () => {
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
             <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-t-xl">
               <h3 className="text-xl font-semibold">Bulk Update Status</h3>
-              <p className="text-purple-100 mt-1">Update status for {selectedStocks.length} selected stocks</p>
+              <p className="text-purple-100 mt-1">
+                Update status for {selectedStocks.length} selected stocks
+              </p>
             </div>
-            
+
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

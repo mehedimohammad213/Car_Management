@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { DownloadIcon, EyeIcon } from 'lucide-react';
-import { mockApi } from '../services/mockData';
-import { Order } from '../types';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState, useEffect } from "react";
+import { DownloadIcon, EyeIcon } from "lucide-react";
+// Removed mockData import
+import { Order } from "../types";
+import { useAuth } from "../contexts/AuthContext";
 
 const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -13,13 +13,11 @@ const Orders: React.FC = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const ordersData = await mockApi.getOrders();
-        await mockApi.delay();
-        // Filter orders for current user
-        const userOrders = ordersData.filter(order => order.userId === user?.id);
+        // Placeholder - no mock data
+        const userOrders: any[] = [];
         setOrders(userOrders);
       } catch (error) {
-        console.error('Error fetching orders:', error);
+        console.error("Error fetching orders:", error);
       } finally {
         setIsLoading(false);
       }
@@ -30,18 +28,18 @@ const Orders: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'approved':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'shipped':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
-      case 'delivered':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'canceled':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      case "approved":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      case "shipped":
+        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
+      case "delivered":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "canceled":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
   };
 
@@ -74,22 +72,36 @@ const Orders: React.FC = () => {
         <div className="text-center py-12">
           <div className="max-w-md mx-auto">
             <div className="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              <svg
+                className="w-12 h-12 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
               </svg>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               No orders yet
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              You haven't placed any orders yet. Start shopping to see your orders here.
+              You haven't placed any orders yet. Start shopping to see your
+              orders here.
             </p>
           </div>
         </div>
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
-            <div key={order.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div
+              key={order.id}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
+            >
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -100,8 +112,13 @@ const Orders: React.FC = () => {
                   </p>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <span className={`px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(order.status)}`}>
-                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                  <span
+                    className={`px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(
+                      order.status
+                    )}`}
+                  >
+                    {order.status.charAt(0).toUpperCase() +
+                      order.status.slice(1)}
                   </span>
                   <div className="flex items-center space-x-2">
                     <button
@@ -122,7 +139,10 @@ const Orders: React.FC = () => {
 
               <div className="space-y-3">
                 {order.items.map((item, index) => (
-                  <div key={index} className="flex items-center space-x-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center space-x-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                  >
                     <img
                       src={item.car.image}
                       alt={`${item.car.brand} ${item.car.model}`}
@@ -133,7 +153,8 @@ const Orders: React.FC = () => {
                         {item.car.brand} {item.car.model}
                       </h4>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {item.car.year} • {item.car.mileage.toLocaleString()} miles
+                        {item.car.year} • {item.car.mileage.toLocaleString()}{" "}
+                        miles
                       </p>
                     </div>
                     <div className="text-right">
@@ -172,8 +193,18 @@ const Orders: React.FC = () => {
                 onClick={() => setSelectedOrder(null)}
                 className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -185,23 +216,37 @@ const Orders: React.FC = () => {
                 </h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Order ID:</span>
-                    <span className="text-gray-900 dark:text-white">#{selectedOrder.id}</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Order ID:
+                    </span>
+                    <span className="text-gray-900 dark:text-white">
+                      #{selectedOrder.id}
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Status:</span>
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedOrder.status)}`}>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Status:
+                    </span>
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                        selectedOrder.status
+                      )}`}
+                    >
                       {selectedOrder.status}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Created:</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Created:
+                    </span>
                     <span className="text-gray-900 dark:text-white">
                       {new Date(selectedOrder.createdAt).toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Updated:</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Updated:
+                    </span>
                     <span className="text-gray-900 dark:text-white">
                       {new Date(selectedOrder.updatedAt).toLocaleString()}
                     </span>
@@ -215,15 +260,19 @@ const Orders: React.FC = () => {
                 </h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Address:</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Address:
+                    </span>
                     <span className="text-gray-900 dark:text-white">
-                      {selectedOrder.shippingAddress || 'Not provided'}
+                      {selectedOrder.shippingAddress || "Not provided"}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Payment Method:</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Payment Method:
+                    </span>
                     <span className="text-gray-900 dark:text-white">
-                      {selectedOrder.paymentMethod || 'Not specified'}
+                      {selectedOrder.paymentMethod || "Not specified"}
                     </span>
                   </div>
                 </div>
@@ -236,7 +285,10 @@ const Orders: React.FC = () => {
               </h3>
               <div className="space-y-3">
                 {selectedOrder.items.map((item, index) => (
-                  <div key={index} className="flex items-center space-x-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center space-x-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                  >
                     <img
                       src={item.car.image}
                       alt={`${item.car.brand} ${item.car.model}`}
@@ -247,7 +299,8 @@ const Orders: React.FC = () => {
                         {item.car.brand} {item.car.model}
                       </h4>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {item.car.year} • {item.car.mileage.toLocaleString()} miles
+                        {item.car.year} • {item.car.mileage.toLocaleString()}{" "}
+                        miles
                       </p>
                       <div className="flex items-center space-x-2 mt-1">
                         <span className="px-2 py-1 bg-gray-100 dark:bg-gray-600 text-xs text-gray-600 dark:text-gray-300 rounded">

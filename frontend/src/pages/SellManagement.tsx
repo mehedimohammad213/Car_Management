@@ -10,7 +10,7 @@ import {
   SearchIcon,
 } from "lucide-react";
 import { Car } from "../types";
-import { mockApi } from "../services/mockData";
+// Removed mockData import
 
 interface Sale {
   id: string;
@@ -38,23 +38,11 @@ const SellManagement: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const carsData = await mockApi.getCars();
-      setCars(carsData);
+      // Placeholder - no mock data
+      setCars([]);
 
       // Mock sales data
-      const mockSales: Sale[] = carsData.slice(0, 10).map((car, index) => ({
-        id: `sale-${index}`,
-        invoiceNo: `INV-${String(index + 1).padStart(4, "0")}`,
-        clientName: `Client ${index + 1}`,
-        clientEmail: `client${index + 1}@example.com`,
-        car,
-        quantity: Math.floor(Math.random() * 3) + 1,
-        total: car.price * (Math.floor(Math.random() * 3) + 1),
-        status: ["pending", "completed", "cancelled"][
-          Math.floor(Math.random() * 3)
-        ] as any,
-        date: new Date(Date.now() - index * 24 * 60 * 60 * 1000).toISOString(),
-      }));
+      const mockSales: Sale[] = []; // No mock data
       setSales(mockSales);
     } catch (error) {
       console.error("Error fetching data:", error);

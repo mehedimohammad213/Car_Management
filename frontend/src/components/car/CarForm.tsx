@@ -10,8 +10,8 @@ import {
   SettingsIcon,
   FileTextIcon,
 } from "lucide-react";
-import { mockApi } from "../services/mockData";
 import { Car, Brand, Category } from "../../types";
+import { categoryApi } from "../../services/categoryApi";
 
 interface CarFormProps {
   mode: "create" | "update";
@@ -60,10 +60,28 @@ const CarForm: React.FC<CarFormProps> = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [brandsData, categoriesData] = await Promise.all([
-          mockApi.getBrands(),
-          mockApi.getCategories(),
-        ]);
+        // Hardcoded brands list
+        const brandsData: Brand[] = [
+          { id: "1", name: "Toyota" },
+          { id: "2", name: "Honda" },
+          { id: "3", name: "Nissan" },
+          { id: "4", name: "Mazda" },
+          { id: "5", name: "Subaru" },
+          { id: "6", name: "Mitsubishi" },
+          { id: "7", name: "Suzuki" },
+          { id: "8", name: "Daihatsu" },
+          { id: "9", name: "Isuzu" },
+          { id: "10", name: "Lexus" },
+        ];
+
+        // Fetch categories from API
+        const categoriesResponse = await categoryApi.getCategories();
+        const categoriesData: Category[] =
+          categoriesResponse.data.categories?.map((cat) => ({
+            id: cat.id.toString(),
+            name: cat.name,
+            description: cat.short_des,
+          })) || [];
 
         setBrands(brandsData);
         setCategories(categoriesData);

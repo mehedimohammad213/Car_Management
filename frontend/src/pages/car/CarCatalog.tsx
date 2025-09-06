@@ -6,7 +6,7 @@ import {
   HeartIcon,
   ShoppingCartIcon,
 } from "lucide-react";
-import { mockApi } from "../../services/mockData";
+// Removed mockData import
 import { Car, FilterOptions } from "../../types";
 import { useCart } from "../../contexts/CartContext";
 
@@ -22,10 +22,9 @@ const CarCatalog: React.FC = () => {
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const carsData = await mockApi.getCars();
-        await mockApi.delay();
-        setCars(carsData);
-        setFilteredCars(carsData);
+        // Placeholder - no mock data
+        setCars([]);
+        setFilteredCars([]);
       } catch (error) {
         console.error("Error fetching cars:", error);
       } finally {
