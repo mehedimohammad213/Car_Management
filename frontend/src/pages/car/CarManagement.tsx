@@ -365,10 +365,6 @@ const CarManagement: React.FC = () => {
       {/* Advanced Filters */}
       <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
         <div className="flex items-center gap-2 mb-4">
-          <Filter className="w-5 h-5 text-gray-600" />
-          <h3 className="text-lg font-semibold text-gray-800">
-            Advanced Filters
-          </h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Search */}
@@ -424,63 +420,6 @@ const CarManagement: React.FC = () => {
               </option>
             ))}
           </select>
-
-          {/* Year Filter */}
-          <select
-            value={yearFilter}
-            onChange={(e) => setYearFilter(e.target.value)}
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-          >
-            <option value="">All Years</option>
-            {filterOptions?.years?.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-
-          {/* Transmission Filter */}
-          <select
-            value={transmissionFilter}
-            onChange={(e) => setTransmissionFilter(e.target.value)}
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-          >
-            <option value="">All Transmissions</option>
-            {filterOptions?.transmissions?.map((transmission) => (
-              <option key={transmission} value={transmission}>
-                {transmission}
-              </option>
-            ))}
-          </select>
-
-          {/* Fuel Filter */}
-          <select
-            value={fuelFilter}
-            onChange={(e) => setFuelFilter(e.target.value)}
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-          >
-            <option value="">All Fuels</option>
-            {filterOptions?.fuels?.map((fuel) => (
-              <option key={fuel} value={fuel}>
-                {fuel}
-              </option>
-            ))}
-          </select>
-
-          {/* Color Filter */}
-          <select
-            value={colorFilter}
-            onChange={(e) => setColorFilter(e.target.value)}
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-          >
-            <option value="">All Colors</option>
-            {filterOptions?.colors?.map((color) => (
-              <option key={color} value={color}>
-                {color}
-              </option>
-            ))}
-          </select>
-
           {/* Clear Filters */}
           <button
             onClick={() => {
