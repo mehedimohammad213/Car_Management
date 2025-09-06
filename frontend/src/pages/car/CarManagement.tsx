@@ -29,7 +29,6 @@ import {
 import { categoryApi, Category } from "../../services/categoryApi";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 import ExcelImportModal from "../../components/ExcelImportModal";
-import CarModal from "../../components/car/CarModal";
 
 const CarManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -59,8 +58,6 @@ const CarManagement: React.FC = () => {
   const [carToDelete, setCarToDelete] = useState<Car | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showExcelModal, setShowExcelModal] = useState(false);
-  const [showCarModal, setShowCarModal] = useState(false);
-  const [editingCar, setEditingCar] = useState<Car | null>(null);
 
   // Success/Error messages
   const [message, setMessage] = useState<{
@@ -178,18 +175,8 @@ const CarManagement: React.FC = () => {
     navigate("/create-car");
   };
 
-  const handleCreateCarModal = () => {
-    setEditingCar(null);
-    setShowCarModal(true);
-  };
-
   const handleEditCar = (car: Car) => {
     navigate(`/update-car/${car.id}`);
-  };
-
-  const handleEditCarModal = (car: Car) => {
-    setEditingCar(car);
-    setShowCarModal(true);
   };
 
   const handleViewCar = (car: Car) => {
@@ -225,31 +212,6 @@ const CarManagement: React.FC = () => {
 
   const handleExcelImportClose = () => {
     setShowExcelModal(false);
-  };
-
-  const handleCarModalClose = () => {
-    setShowCarModal(false);
-    setEditingCar(null);
-  };
-
-  const handleCarModalSubmit = async (data: CreateCarData) => {
-    try {
-      if (editingCar) {
-        await carApi.updateCar({ id: editingCar.id, ...data });
-        showMessage("success", "Car updated successfully");
-      } else {
-        await carApi.createCar(data);
-        showMessage("success", "Car created successfully");
-      }
-      handleCarModalClose();
-      fetchCars(); // Refresh the list
-    } catch (error) {
-      console.error("Error saving car:", error);
-      showMessage(
-        "error",
-        editingCar ? "Failed to update car" : "Failed to create car"
-      );
-    }
   };
 
   const handleExcelImportSubmit = async (file: File) => {
@@ -380,13 +342,6 @@ const CarManagement: React.FC = () => {
             >
               <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
               Add Car
-            </button>
-            <button
-              onClick={handleCreateCarModal}
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
-            >
-              <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
-              Add Car (Modal)
             </button>
           </div>
         </div>
@@ -837,16 +792,6 @@ const CarManagement: React.FC = () => {
         isOpen={showExcelModal}
         onClose={handleExcelImportClose}
         onSubmit={handleExcelImportSubmit}
-      />
-
-      {/* Car Modal */}
-      <CarModal
-        isOpen={showCarModal}
-        onClose={handleCarModalClose}
-        onSubmit={handleCarModalSubmit}
-        car={editingCar}
-        categories={categories}
-        filterOptions={filterOptions}
       />
     </div>
   );
