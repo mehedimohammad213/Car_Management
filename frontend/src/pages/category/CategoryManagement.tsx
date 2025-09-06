@@ -245,6 +245,7 @@ const CategoryManagement: React.FC = () => {
           drawerMode === "create" ? "Create New Category" : "Edit Category"
         }
         size="md"
+        showActions={false}
       >
         <CategoryDrawerForm
           category={selectedCategory}
