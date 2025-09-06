@@ -1,26 +1,21 @@
 import React, { useState, useEffect } from "react";
-import {
-  X,
-  Image,
-  Plus,
-  Car,
-  Calendar,
-  Gauge,
-  Fuel,
-  Palette,
-  Users,
-  DollarSign,
-  Settings,
-  Star,
-  MapPin,
-  FileText,
-} from "lucide-react";
+import { X } from "lucide-react";
 import {
   Car as CarType,
   CreateCarData,
   CarFilterOptions,
 } from "../../services/carApi";
 import { Category } from "../../services/categoryApi";
+import {
+  BasicInfoSection,
+  TechnicalSpecsSection,
+  GradingSection,
+  PricingSection,
+  LocationStatusSection,
+  NotesSection,
+  PhotoSection,
+  CarDetailsSection,
+} from "./form";
 
 interface CarFormModalProps {
   mode: "create" | "update" | "view";
@@ -427,156 +422,6 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
     }
   };
 
-  const renderFormField = (
-    label: string,
-    field: keyof CreateCarData,
-    type: string = "text",
-    placeholder: string = "",
-    required: boolean = false,
-    maxLength?: number
-  ) => {
-    const value = formData[field] as any;
-    const error = errors[field];
-
-    if (isViewMode) {
-      return (
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            {label}
-          </label>
-          <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900">
-            {value || "Not specified"}
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
-          {label} {required && <span className="text-red-500">*</span>}
-        </label>
-        <input
-          type={type}
-          value={value || ""}
-          onChange={(e) =>
-            handleInputChange(
-              field,
-              type === "number"
-                ? parseFloat(e.target.value) || undefined
-                : e.target.value
-            )
-          }
-          maxLength={maxLength}
-          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-            error ? "border-red-300" : "border-gray-200"
-          }`}
-          placeholder={placeholder}
-        />
-        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-      </div>
-    );
-  };
-
-  const renderSelectField = (
-    label: string,
-    field: keyof CreateCarData,
-    options: { value: any; label: string }[],
-    required: boolean = false,
-    placeholder: string = "Select..."
-  ) => {
-    const value = formData[field] as any;
-    const error = errors[field];
-
-    if (isViewMode) {
-      const selectedOption = options.find((opt) => opt.value === value);
-      return (
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            {label}
-          </label>
-          <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900">
-            {selectedOption?.label || "Not specified"}
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
-          {label} {required && <span className="text-red-500">*</span>}
-        </label>
-        <select
-          value={value || ""}
-          onChange={(e) =>
-            handleInputChange(
-              field,
-              e.target.value
-                ? field === "category_id"
-                  ? parseInt(e.target.value)
-                  : e.target.value
-                : undefined
-            )
-          }
-          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-            error ? "border-red-300" : "border-gray-200"
-          }`}
-        >
-          <option value="">{placeholder}</option>
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-      </div>
-    );
-  };
-
-  const renderTextareaField = (
-    label: string,
-    field: keyof CreateCarData,
-    placeholder: string = "",
-    maxLength?: number
-  ) => {
-    const value = formData[field] as any;
-    const error = errors[field];
-
-    if (isViewMode) {
-      return (
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            {label}
-          </label>
-          <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 min-h-[100px]">
-            {value || "Not specified"}
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
-          {label}
-        </label>
-        <textarea
-          value={value || ""}
-          onChange={(e) => handleInputChange(field, e.target.value)}
-          maxLength={maxLength}
-          rows={4}
-          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-            error ? "border-red-300" : "border-gray-200"
-          }`}
-          placeholder={placeholder}
-        />
-        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-      </div>
-    );
-  };
-
   const content = (
     <div
       className={
@@ -618,678 +463,79 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
       {/* Form */}
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         {/* Basic Information Section */}
-        <div className="bg-gray-50 rounded-xl p-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <Car className="w-5 h-5 text-blue-600" />
-            Basic Information
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Category */}
-            {renderSelectField(
-              "Category",
-              "category_id",
-              (categories || [])
-                .filter((category) => category.children_count > 0)
-                .map((category) => ({
-                  value: category.id,
-                  label: category.name,
-                })),
-              true,
-              "Select Category"
-            )}
-
-            {/* Subcategory */}
-            {renderSelectField(
-              "Subcategory",
-              "subcategory_id",
-              (subcategories || []).map((subcategory) => ({
-                value: subcategory.id,
-                label: subcategory.name,
-              })),
-              false,
-              "Select Subcategory"
-            )}
-
-            {/* Reference Number */}
-            {renderFormField(
-              "Reference Number",
-              "ref_no",
-              "text",
-              "Auto-generated if empty",
-              false,
-              32
-            )}
-
-            {/* Make */}
-            {renderFormField(
-              "Make",
-              "make",
-              "text",
-              "e.g., Toyota, Honda",
-              true,
-              64
-            )}
-
-            {/* Model */}
-            {renderFormField(
-              "Model",
-              "model",
-              "text",
-              "e.g., Camry, Civic",
-              true,
-              64
-            )}
-
-            {/* Model Code */}
-            {renderFormField(
-              "Model Code",
-              "model_code",
-              "text",
-              "e.g., XV50, FB",
-              false,
-              32
-            )}
-
-            {/* Variant */}
-            {renderFormField(
-              "Variant",
-              "variant",
-              "text",
-              "e.g., Hybrid, Sport",
-              false,
-              64
-            )}
-
-            {/* Year */}
-            {renderFormField("Year", "year", "number", "e.g., 2023", true)}
-
-            {/* Registration Year/Month */}
-            {renderFormField(
-              "Registration Year/Month",
-              "reg_year_month",
-              "text",
-              "e.g., 2023-03",
-              false,
-              10
-            )}
-          </div>
-        </div>
+        <BasicInfoSection
+          formData={formData}
+          errors={errors}
+          categories={categories}
+          subcategories={subcategories}
+          isViewMode={isViewMode}
+          onInputChange={handleInputChange}
+        />
 
         {/* Technical Specifications Section */}
-        <div className="bg-gray-50 rounded-xl p-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <Settings className="w-5 h-5 text-blue-600" />
-            Technical Specifications
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Transmission */}
-            {renderFormField(
-              "Transmission",
-              "transmission",
-              "text",
-              "e.g., Automatic, Manual, CVT",
-              false,
-              32
-            )}
-
-            {/* Drive */}
-            {renderFormField(
-              "Drive",
-              "drive",
-              "text",
-              "e.g., FWD, AWD, RWD",
-              false,
-              32
-            )}
-
-            {/* Steering */}
-            {renderFormField(
-              "Steering",
-              "steering",
-              "text",
-              "e.g., LHD, RHD",
-              false,
-              16
-            )}
-
-            {/* Fuel */}
-            {renderFormField(
-              "Fuel Type",
-              "fuel",
-              "text",
-              "e.g., Gasoline, Diesel, Electric, Hybrid",
-              false,
-              32
-            )}
-
-            {/* Color */}
-            {renderFormField(
-              "Color",
-              "color",
-              "text",
-              "e.g., Red, Blue, Silver, Black",
-              false,
-              64
-            )}
-
-            {/* Mileage */}
-            {renderFormField(
-              "Mileage (km)",
-              "mileage_km",
-              "number",
-              "e.g., 50000",
-              false
-            )}
-
-            {/* Engine Capacity */}
-            {renderFormField(
-              "Engine Capacity (cc)",
-              "engine_cc",
-              "number",
-              "e.g., 2000",
-              false
-            )}
-
-            {/* Seats */}
-            {renderFormField("Seats", "seats", "number", "e.g., 5", false)}
-          </div>
-        </div>
+        <TechnicalSpecsSection
+          formData={formData}
+          errors={errors}
+          isViewMode={isViewMode}
+          onInputChange={handleInputChange}
+        />
 
         {/* Grading Section */}
-        <div className="bg-gray-50 rounded-xl p-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <Star className="w-5 h-5 text-blue-600" />
-            Grading
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Overall Grade */}
-            {renderFormField(
-              "Overall Grade (0-10)",
-              "grade_overall",
-              "number",
-              "e.g., 8.5",
-              false
-            )}
-
-            {/* Exterior Grade */}
-            {renderFormField(
-              "Exterior Grade",
-              "grade_exterior",
-              "text",
-              "e.g., A, B, C, D or Excellent, Good, Fair, Poor",
-              false,
-              32
-            )}
-
-            {/* Interior Grade */}
-            {renderFormField(
-              "Interior Grade",
-              "grade_interior",
-              "text",
-              "e.g., A, B, C, D or Excellent, Good, Fair, Poor",
-              false,
-              32
-            )}
-          </div>
-        </div>
+        <GradingSection
+          formData={formData}
+          errors={errors}
+          isViewMode={isViewMode}
+          onInputChange={handleInputChange}
+        />
 
         {/* Pricing Section */}
-        <div className="bg-gray-50 rounded-xl p-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <DollarSign className="w-5 h-5 text-blue-600" />
-            Pricing
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Price Amount */}
-            {renderFormField(
-              "Price Amount",
-              "price_amount",
-              "number",
-              "e.g., 25000.00",
-              false
-            )}
-
-            {/* Price Currency */}
-            {renderSelectField(
-              "Currency",
-              "price_currency",
-              [
-                { value: "USD", label: "USD" },
-                { value: "EUR", label: "EUR" },
-                { value: "GBP", label: "GBP" },
-                { value: "JPY", label: "JPY" },
-              ],
-              false,
-              "Select Currency"
-            )}
-
-            {/* Price Basis */}
-            {renderFormField(
-              "Price Basis",
-              "price_basis",
-              "text",
-              "e.g., FOB, CIF",
-              false,
-              32
-            )}
-          </div>
-        </div>
+        <PricingSection
+          formData={formData}
+          errors={errors}
+          isViewMode={isViewMode}
+          onInputChange={handleInputChange}
+        />
 
         {/* Location & Status Section */}
-        <div className="bg-gray-50 rounded-xl p-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-blue-600" />
-            Location & Status
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Chassis Number (Masked) */}
-            {renderFormField(
-              "Chassis Number (Masked)",
-              "chassis_no_masked",
-              "text",
-              "e.g., ABC123******XYZ789",
-              false,
-              32
-            )}
-
-            {/* Chassis Number (Full) */}
-            {renderFormField(
-              "Chassis Number (Full)",
-              "chassis_no_full",
-              "text",
-              "Complete chassis number",
-              false,
-              64
-            )}
-
-            {/* Location */}
-            {renderFormField(
-              "Location",
-              "location",
-              "text",
-              "e.g., Tokyo, Japan",
-              false,
-              128
-            )}
-
-            {/* Country of Origin */}
-            {renderFormField(
-              "Country of Origin",
-              "country_origin",
-              "text",
-              "e.g., Japan, Germany, USA, UK",
-              false,
-              64
-            )}
-
-            {/* Status */}
-            {renderSelectField(
-              "Status",
-              "status",
-              [
-                { value: "available", label: "Available" },
-                { value: "sold", label: "Sold" },
-                { value: "reserved", label: "Reserved" },
-                { value: "in_transit", label: "In Transit" },
-              ],
-              false,
-              "Select Status"
-            )}
-          </div>
-        </div>
+        <LocationStatusSection
+          formData={formData}
+          errors={errors}
+          isViewMode={isViewMode}
+          onInputChange={handleInputChange}
+        />
 
         {/* Notes Section */}
-        <div className="bg-gray-50 rounded-xl p-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-blue-600" />
-            Additional Information
-          </h3>
-          <div className="grid grid-cols-1 gap-4">
-            {/* Notes */}
-            {renderTextareaField(
-              "Notes",
-              "notes",
-              "Additional notes about the car...",
-              1000
-            )}
-          </div>
-        </div>
+        <NotesSection
+          formData={formData}
+          errors={errors}
+          isViewMode={isViewMode}
+          onInputChange={handleInputChange}
+        />
 
         {/* Photos Section */}
-        {!isViewMode && (
-          <div className="bg-gray-50 rounded-xl p-4">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <Image className="w-5 h-5 text-blue-600" />
-              Photos
-            </h3>
-            <div className="space-y-4">
-              {formData.photos?.map((photo, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl"
-                >
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      value={photo.url}
-                      onChange={(e) => {
-                        const newPhotos = [...(formData.photos || [])];
-                        newPhotos[index] = { ...photo, url: e.target.value };
-                        setFormData((prev) => ({ ...prev, photos: newPhotos }));
-                      }}
-                      placeholder="Photo URL"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={photo.is_primary}
-                        onChange={(e) => {
-                          const newPhotos = (formData.photos || []).map(
-                            (p, i) => ({
-                              ...p,
-                              is_primary:
-                                i === index ? e.target.checked : false,
-                            })
-                          );
-                          setFormData((prev) => ({
-                            ...prev,
-                            photos: newPhotos,
-                          }));
-                        }}
-                        className="rounded"
-                      />
-                      <span className="text-sm">Primary</span>
-                    </label>
-                    <input
-                      type="number"
-                      value={photo.sort_order}
-                      onChange={(e) => {
-                        const newPhotos = [...(formData.photos || [])];
-                        newPhotos[index] = {
-                          ...photo,
-                          sort_order: parseInt(e.target.value),
-                        };
-                        setFormData((prev) => ({ ...prev, photos: newPhotos }));
-                      }}
-                      placeholder="Order"
-                      className="w-20 px-2 py-2 border border-gray-200 rounded-lg text-center"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => removePhoto(index)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={addPhoto}
-                className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-blue-500 hover:text-blue-600 transition-colors flex items-center justify-center gap-2"
-              >
-                <Plus className="w-5 h-5" />
-                Add Photo
-              </button>
-            </div>
-          </div>
-        )}
+        <PhotoSection
+          formData={formData}
+          isViewMode={isViewMode}
+          onAddPhoto={addPhoto}
+          onRemovePhoto={removePhoto}
+          onUpdatePhoto={(index, photo) => {
+            const newPhotos = [...(formData.photos || [])];
+            newPhotos[index] = photo;
+            setFormData((prev) => ({ ...prev, photos: newPhotos }));
+          }}
+        />
 
-        {/* View Mode Photos */}
-        {isViewMode && formData.photos && formData.photos.length > 0 && (
-          <div className="bg-gray-50 rounded-xl p-4">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <Image className="w-5 h-5 text-blue-600" />
-              Photos
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {formData.photos.map((photo, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={photo.url}
-                    alt={`Car photo ${index + 1}`}
-                    className="w-full h-32 object-cover rounded-lg border border-gray-200"
-                  />
-                  {photo.is_primary && (
-                    <div className="absolute top-2 right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
-                      Primary
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Car Details Section - Edit/Create Mode */}
-        {!isViewMode && (
-          <div className="bg-gray-50 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-blue-600" />
-                Car Details
-              </h3>
-              <button
-                type="button"
-                onClick={addDetail}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                Add Detail Section
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              {formData.details?.map((detail, detailIndex) => (
-                <div
-                  key={detailIndex}
-                  className="border border-gray-200 rounded-xl p-4 bg-white"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-md font-semibold text-gray-700">
-                      Detail Section {detailIndex + 1}
-                    </h4>
-                    {formData.details && formData.details.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeDetail(detailIndex)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="space-y-4">
-                    {/* Short Title */}
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Short Title
-                      </label>
-                      <input
-                        type="text"
-                        value={detail.short_title || ""}
-                        onChange={(e) =>
-                          handleDetailChange(
-                            detailIndex,
-                            "short_title",
-                            e.target.value
-                          )
-                        }
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        placeholder="Brief title for the car"
-                      />
-                    </div>
-
-                    {/* Full Title */}
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Full Title
-                      </label>
-                      <input
-                        type="text"
-                        value={detail.full_title || ""}
-                        onChange={(e) =>
-                          handleDetailChange(
-                            detailIndex,
-                            "full_title",
-                            e.target.value
-                          )
-                        }
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        placeholder="Complete title for the car"
-                      />
-                    </div>
-
-                    {/* Description */}
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Description
-                      </label>
-                      <textarea
-                        value={detail.description || ""}
-                        onChange={(e) =>
-                          handleDetailChange(
-                            detailIndex,
-                            "description",
-                            e.target.value
-                          )
-                        }
-                        rows={4}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        placeholder="Detailed description of the car..."
-                      />
-                    </div>
-
-                    {/* Detail Images */}
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Detail Images
-                      </label>
-                      <div className="space-y-3">
-                        {detail.images?.map((image, imageIndex) => (
-                          <div
-                            key={imageIndex}
-                            className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg"
-                          >
-                            <div className="flex-1">
-                              <input
-                                type="text"
-                                value={image}
-                                onChange={(e) =>
-                                  handleDetailImageChange(
-                                    detailIndex,
-                                    imageIndex,
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Detail image URL"
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              />
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                removeDetailImage(detailIndex, imageIndex)
-                              }
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        ))}
-                        <button
-                          type="button"
-                          onClick={() => addDetailImage(detailIndex)}
-                          className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-500 transition-colors flex items-center justify-center gap-2"
-                        >
-                          <Plus className="w-4 h-4" />
-                          Add Detail Image
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Car Details Section - View Mode */}
-        {isViewMode && formData.details && formData.details.length > 0 && (
-          <div className="bg-gray-50 rounded-xl p-4">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <FileText className="w-5 h-5 text-blue-600" />
-              Car Details
-            </h3>
-            <div className="space-y-6">
-              {formData.details.map((detail, detailIndex) => (
-                <div
-                  key={detailIndex}
-                  className="border border-gray-200 rounded-xl p-4 bg-white"
-                >
-                  <h4 className="text-md font-semibold text-gray-700 mb-4">
-                    {detail.short_title || `Detail Section ${detailIndex + 1}`}
-                  </h4>
-
-                  <div className="space-y-4">
-                    {/* Full Title */}
-                    {detail.full_title && (
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Full Title
-                        </label>
-                        <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900">
-                          {detail.full_title}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Description */}
-                    {detail.description && (
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Description
-                        </label>
-                        <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 min-h-[100px]">
-                          {detail.description}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Detail Images */}
-                    {detail.images && detail.images.length > 0 && (
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Detail Images
-                        </label>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                          {detail.images.map((image, imageIndex) => (
-                            <div key={imageIndex} className="relative">
-                              <img
-                                src={image}
-                                alt={`Detail image ${imageIndex + 1}`}
-                                className="w-full h-32 object-cover rounded-lg border border-gray-200"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.style.display = "none";
-                                }}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Car Details Section */}
+        <CarDetailsSection
+          formData={formData}
+          isViewMode={isViewMode}
+          onAddDetail={addDetail}
+          onRemoveDetail={removeDetail}
+          onDetailChange={handleDetailChange}
+          onAddDetailImage={addDetailImage}
+          onRemoveDetailImage={removeDetailImage}
+          onDetailImageChange={handleDetailImageChange}
+        />
 
         {/* Form Actions */}
         {!isViewMode && (
