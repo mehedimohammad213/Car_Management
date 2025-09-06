@@ -505,10 +505,10 @@ const CarManagement: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-800 text-white">
+            <thead className="bg-blue-600 text-white">
               <tr>
                 <th
-                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-gray-700 transition-colors"
+                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
                   onClick={() => handleSort("id")}
                 >
                   <div className="flex items-center">
@@ -517,7 +517,7 @@ const CarManagement: React.FC = () => {
                 </th>
                 <th className="px-6 py-4 text-left font-semibold">Photo</th>
                 <th
-                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-gray-700 transition-colors"
+                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
                   onClick={() => handleSort("make")}
                 >
                   <div className="flex items-center">
@@ -527,7 +527,7 @@ const CarManagement: React.FC = () => {
                 <th className="px-6 py-4 text-left font-semibold">Category</th>
                 <th className="px-6 py-4 text-left font-semibold">Specs</th>
                 <th
-                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-gray-700 transition-colors"
+                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
                   onClick={() => handleSort("price_amount")}
                 >
                   <div className="flex items-center">
@@ -535,7 +535,7 @@ const CarManagement: React.FC = () => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-gray-700 transition-colors"
+                  className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
                   onClick={() => handleSort("status")}
                 >
                   <div className="flex items-center">
@@ -727,10 +727,12 @@ const CarManagement: React.FC = () => {
             </tbody>
           </table>
         </div>
+      </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="bg-white rounded-lg shadow-sm p-4 mt-6">
+          <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
                 Showing {(currentPage - 1) * perPage + 1} to{" "}
@@ -774,8 +776,8 @@ const CarManagement: React.FC = () => {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal
