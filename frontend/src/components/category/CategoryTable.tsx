@@ -42,42 +42,40 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
           <thead className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
             <tr>
               <th
-                className="px-6 py-2 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
                 onClick={() => onSort("id")}
               >
                 <div className="flex items-center">ID {getSortIcon("id")}</div>
               </th>
               <th
-                className="px-6 py-2 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
                 onClick={() => onSort("name")}
               >
                 <div className="flex items-center">
                   Name {getSortIcon("name")}
                 </div>
               </th>
-              <th className="px-6 py-2 text-left font-semibold">Image</th>
-              <th className="px-6 py-2 text-left font-semibold">
-                Parent Category
-              </th>
+              <th className="px-6 py-4 text-left font-semibold">Image</th>
+              <th className="px-6 py-4 text-left font-semibold">Category</th>
               <th
-                className="px-6 py-2 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
                 onClick={() => onSort("status")}
               >
                 <div className="flex items-center">
                   Status {getSortIcon("status")}
                 </div>
               </th>
-              <th className="px-6 py-2 text-left font-semibold">Children</th>
-              <th className="px-6 py-2 text-left font-semibold">Cars</th>
+              <th className="px-6 py-4 text-left font-semibold">Children</th>
+              <th className="px-6 py-4 text-left font-semibold">Cars</th>
               <th
-                className="px-6 py-2 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
                 onClick={() => onSort("created_at")}
               >
                 <div className="flex items-center">
                   Created {getSortIcon("created_at")}
                 </div>
               </th>
-              <th className="px-6 py-2 text-left font-semibold">Actions</th>
+              <th className="px-6 py-4 text-left font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
