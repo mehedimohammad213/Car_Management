@@ -10,6 +10,7 @@ const CreateCar: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -29,13 +30,17 @@ const CreateCar: React.FC = () => {
 
   const handleSubmit = async (formData: CreateCarData) => {
     setIsLoading(true);
+    setError(null);
     try {
-      await carApi.createCar(formData);
+      console.log("Submitting car data:", formData);
+      const response = await carApi.createCar(formData);
+      console.log("Car creation response:", response);
       navigate("/admin/cars", {
         state: { message: "Car created successfully!" },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating car:", error);
+      setError(error.message || "Failed to create car. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -72,6 +77,30 @@ const CreateCar: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-800">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Form */}
         {isLoadingCategories ? (

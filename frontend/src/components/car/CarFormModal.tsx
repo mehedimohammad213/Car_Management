@@ -20,7 +20,7 @@ import {
   CreateCarData,
   CarFilterOptions,
 } from "../../services/carApi";
-import { Category } from "../services/categoryApi";
+import { Category } from "../../services/categoryApi";
 
 interface CarFormModalProps {
   mode: "create" | "update" | "view";
@@ -286,7 +286,7 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
     const newErrors: Record<string, string> = {};
 
     // Required fields validation
-    if (!formData.category_id) {
+    if (!formData.category_id || formData.category_id === 0) {
       newErrors.category_id = "Category is required";
     }
 
@@ -339,6 +339,14 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
       newErrors.color = "Color must be 32 characters or less";
     }
 
+    if (formData.grade_exterior && formData.grade_exterior.length > 32) {
+      newErrors.grade_exterior = "Exterior grade must be 32 characters or less";
+    }
+
+    if (formData.grade_interior && formData.grade_interior.length > 32) {
+      newErrors.grade_interior = "Interior grade must be 32 characters or less";
+    }
+
     if (formData.location && formData.location.length > 128) {
       newErrors.location = "Location must be 128 characters or less";
     }
@@ -350,6 +358,11 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
 
     if (formData.notes && formData.notes.length > 1000) {
       newErrors.notes = "Notes must be 1000 characters or less";
+    }
+
+    if (formData.reg_year_month && formData.reg_year_month.length > 10) {
+      newErrors.reg_year_month =
+        "Registration year/month must be 10 characters or less";
     }
 
     // Numeric validation
@@ -394,8 +407,13 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
 
     if (isViewMode || !onSubmit) return;
 
-    if (!validateForm()) return;
+    console.log("Form validation starting...");
+    if (!validateForm()) {
+      console.log("Form validation failed:", errors);
+      return;
+    }
 
+    console.log("Submitting form data:", formData);
     try {
       await onSubmit(formData);
     } catch (error) {
@@ -691,7 +709,8 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
               "reg_year_month",
               "text",
               "e.g., 2023-03",
-              false
+              false,
+              10
             )}
           </div>
         </div>
@@ -799,7 +818,7 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
               "text",
               "e.g., A, B, C, D or Excellent, Good, Fair, Poor",
               false,
-              16
+              32
             )}
 
             {/* Interior Grade */}
@@ -809,7 +828,7 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
               "text",
               "e.g., A, B, C, D or Excellent, Good, Fair, Poor",
               false,
-              16
+              32
             )}
           </div>
         </div>

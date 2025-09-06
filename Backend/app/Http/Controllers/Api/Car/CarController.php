@@ -19,7 +19,7 @@ use App\Imports\CarsImport;
 
 class CarController extends Controller
 {
-   
+
     public function index(Request $request): JsonResponse
     {
         $query = Car::with(['category', 'subcategory', 'photos', 'detail']);
@@ -28,39 +28,39 @@ class CarController extends Controller
             $query->search($request->search);
         }
 
-   
+
         if ($request->filled('status')) {
             $query->byStatus($request->status);
         }
 
-    
+
         if ($request->filled('category_id')) {
             $query->byCategory($request->category_id);
         }
 
-     
+
         if ($request->filled('subcategory_id')) {
             $query->bySubcategory($request->subcategory_id);
         }
 
-      
+
         if ($request->filled('make')) {
             $query->byMake($request->make);
         }
 
-   
+
         if ($request->filled('year_from') && $request->filled('year_to')) {
             $query->byYearRange($request->year_from, $request->year_to);
         } elseif ($request->filled('year')) {
             $query->byYear($request->year);
         }
 
-      
+
         if ($request->filled('price_from') && $request->filled('price_to')) {
             $query->byPriceRange($request->price_from, $request->price_to);
         }
 
-     
+
         if ($request->filled('mileage_from') && $request->filled('mileage_to')) {
             $query->byMileageRange($request->mileage_from, $request->mileage_to);
         }
@@ -93,7 +93,7 @@ class CarController extends Controller
             $query->byCountry($request->country);
         }
 
- 
+
         $sortBy = $request->get('sort_by', 'created_at');
         $sortDirection = $request->get('sort_direction', 'desc');
         $query->orderBy($sortBy, $sortDirection);
@@ -112,8 +112,14 @@ class CarController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        // Debug: Log the request data
+        Log::info('Car creation request', [
+            'request_data' => $request->all(),
+            'headers' => $request->headers->all()
+        ]);
+
         $validator = Validator::make($request->all(), [
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'required|integer|exists:categories,id',
             'subcategory_id' => 'nullable|exists:categories,id',
             'ref_no' => 'nullable|string|max:32|unique:cars,ref_no',
             'make' => 'required|string|max:64',
@@ -121,7 +127,7 @@ class CarController extends Controller
             'model_code' => 'nullable|string|max:32',
             'variant' => 'nullable|string|max:128',
             'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-            'reg_year_month' => 'nullable|string|max:7',
+            'reg_year_month' => 'nullable|string|max:10',
             'mileage_km' => 'nullable|integer|min:0',
             'engine_cc' => 'nullable|integer|min:0',
             'transmission' => 'nullable|string|max:32',
@@ -131,8 +137,8 @@ class CarController extends Controller
             'color' => 'nullable|string|max:64',
             'seats' => 'nullable|integer|min:1|max:20',
             'grade_overall' => 'nullable|numeric|min:0|max:10',
-            'grade_exterior' => 'nullable|string|max:1',
-            'grade_interior' => 'nullable|string|max:1',
+            'grade_exterior' => 'nullable|string|max:32',
+            'grade_interior' => 'nullable|string|max:32',
             'price_amount' => 'nullable|numeric|min:0',
             'price_currency' => 'nullable|string|max:3',
             'price_basis' => 'nullable|string|max:32',
@@ -142,7 +148,7 @@ class CarController extends Controller
             'country_origin' => 'nullable|string|max:64',
             'status' => 'nullable|string|max:32',
             'notes' => 'nullable|string',
-            
+
             'photos' => 'nullable|array',
             'photos.*.url' => 'required_with:photos|string|max:512',
             'photos.*.is_primary' => 'boolean',
@@ -158,6 +164,10 @@ class CarController extends Controller
         ]);
 
         if ($validator->fails()) {
+            Log::error('Car creation validation failed', [
+                'errors' => $validator->errors()->toArray()
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
@@ -198,7 +208,9 @@ class CarController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $car,
+                'data' => [
+                    'car' => $car
+                ],
                 'message' => 'Car created successfully'
             ], 201);
 
@@ -233,7 +245,7 @@ class CarController extends Controller
             $file = $request->file('excel_file');
             $extension = strtolower($file->getClientOriginalExtension());
             $allowedExtensions = ['xlsx', 'xls', 'csv'];
-            
+
             if (!in_array($extension, $allowedExtensions)) {
                 return response()->json([
                     'success' => false,
@@ -247,7 +259,7 @@ class CarController extends Controller
             Log::error('Excel import validation failed', [
                 'errors' => $validator->errors()->toArray()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
@@ -258,24 +270,24 @@ class CarController extends Controller
         try {
             $file = $request->file('excel_file');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            
+
             Log::info('Excel import: Processing file', [
                 'original_name' => $file->getClientOriginalName(),
                 'extension' => $file->getClientOriginalExtension(),
                 'mime_type' => $file->getMimeType(),
                 'size' => $file->getSize()
             ]);
-            
+
             // Store file temporarily
             $path = $file->storeAs('temp/excel', $fileName);
-            
+
             // Import cars from Excel
             $import = new CarsImport();
             Excel::import($import, $path);
-            
+
             // Clean up temporary file
             Storage::delete($path);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Cars imported successfully',
@@ -288,7 +300,7 @@ class CarController extends Controller
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to import cars',
@@ -403,7 +415,9 @@ class CarController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $car,
+            'data' => [
+                'car' => $car
+            ],
             'message' => 'Car retrieved successfully'
         ]);
     }
@@ -437,8 +451,8 @@ class CarController extends Controller
             'color' => 'nullable|string|max:64',
             'seats' => 'nullable|integer|min:1|max:20',
             'grade_overall' => 'nullable|numeric|min:0|max:10',
-            'grade_exterior' => 'nullable|string|max:1',
-            'grade_interior' => 'nullable|string|max:1',
+            'grade_exterior' => 'nullable|string|max:32',
+            'grade_interior' => 'nullable|string|max:32',
             'price_amount' => 'nullable|numeric|min:0',
             'price_currency' => 'nullable|string|max:3',
             'price_basis' => 'nullable|string|max:32',
@@ -464,7 +478,9 @@ class CarController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $car,
+                'data' => [
+                    'car' => $car
+                ],
                 'message' => 'Car updated successfully'
             ]);
 
@@ -597,10 +613,10 @@ class CarController extends Controller
 
             // Generate Excel file
             $fileName = 'cars_export_' . date('Y-m-d_H-i-s') . '.xlsx';
-            
+
             // You can implement Excel export logic here using Laravel Excel
             // For now, returning success response
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Cars exported successfully',
