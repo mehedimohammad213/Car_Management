@@ -29,7 +29,19 @@ const UpdateCar: React.FC = () => {
           categoryApi.getCategories(),
         ]);
 
-        setCar(carData);
+        // Extract car from response - handle both single car and paginated responses
+        let car: Car | null = null;
+        if (carData.data.car) {
+          car = carData.data.car;
+        } else if (
+          Array.isArray(carData.data.data) &&
+          carData.data.data.length > 0
+        ) {
+          car = carData.data.data[0];
+        } else if (carData.data && "id" in carData.data) {
+          car = carData.data as Car;
+        }
+        setCar(car);
         setCategories(categoriesData.data.categories || []);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -106,7 +118,7 @@ const UpdateCar: React.FC = () => {
             </button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Edit {car.brand} {car.model}
+                Edit {car.make} {car.model}
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
                 Update car information

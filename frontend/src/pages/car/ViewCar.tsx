@@ -24,7 +24,19 @@ const ViewCar: React.FC = () => {
           carApi.getCar(parseInt(id)),
           categoryApi.getCategories(),
         ]);
-        setCar(carData);
+        // Extract car from response - handle both single car and paginated responses
+        let car: Car | null = null;
+        if (carData.data.car) {
+          car = carData.data.car;
+        } else if (
+          Array.isArray(carData.data.data) &&
+          carData.data.data.length > 0
+        ) {
+          car = carData.data.data[0];
+        } else if (carData.data && "id" in carData.data) {
+          car = carData.data as Car;
+        }
+        setCar(car);
         setCategories(categoriesData.data.categories || []);
       } catch (error) {
         console.error("Error fetching car:", error);
@@ -142,7 +154,7 @@ const ViewCar: React.FC = () => {
         onConfirm={confirmDelete}
         title="Delete Car"
         message="Are you sure you want to delete"
-        itemName={car ? `${car.brand} ${car.model}` : ""}
+        itemName={car ? `${car.make} ${car.model}` : ""}
         isLoading={isDeleting}
       />
     </div>

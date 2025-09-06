@@ -22,7 +22,7 @@ class CarController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $query = Car::with(['category', 'subcategory', 'photos', 'detail']);
+        $query = Car::with(['category', 'subcategory', 'photos', 'details']);
 
         if ($request->filled('search')) {
             $query->search($request->search);
@@ -383,13 +383,13 @@ class CarController extends Controller
         }
 
         try {
-            if ($car->detail) {
-                $car->detail()->update($request->all());
+            if ($car->details()->count() > 0) {
+                $car->details()->first()->update($request->all());
             } else {
-                $car->detail()->create($request->all());
+                $car->details()->create($request->all());
             }
 
-            $car->load('detail');
+            $car->load('details');
 
             return response()->json([
                 'success' => true,
@@ -411,7 +411,7 @@ class CarController extends Controller
      */
     public function show(Car $car): JsonResponse
     {
-        $car->load(['category', 'subcategory', 'photos', 'detail']);
+        $car->load(['category', 'subcategory', 'photos', 'details']);
 
         return response()->json([
             'success' => true,
@@ -441,7 +441,7 @@ class CarController extends Controller
             'model_code' => 'nullable|string|max:32',
             'variant' => 'nullable|string|max:128',
             'year' => 'sometimes|integer|min:1900|max:' . (date('Y') + 1),
-            'reg_year_month' => 'nullable|string|max:7',
+            'reg_year_month' => 'nullable|string|max:10',
             'mileage_km' => 'nullable|integer|min:0',
             'engine_cc' => 'nullable|integer|min:0',
             'transmission' => 'nullable|string|max:32',
@@ -474,7 +474,7 @@ class CarController extends Controller
 
         try {
             $car->update($request->all());
-            $car->load(['category', 'subcategory', 'photos', 'detail']);
+            $car->load(['category', 'subcategory', 'photos', 'details']);
 
             return response()->json([
                 'success' => true,

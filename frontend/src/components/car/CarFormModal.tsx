@@ -1065,7 +1065,7 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
           </div>
         )}
 
-        {/* Car Details Section */}
+        {/* Car Details Section - Edit/Create Mode */}
         {!isViewMode && (
           <div className="bg-gray-50 rounded-xl p-4">
             <div className="flex items-center justify-between mb-4">
@@ -1212,6 +1212,78 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
                         </button>
                       </div>
                     </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Car Details Section - View Mode */}
+        {isViewMode && formData.details && formData.details.length > 0 && (
+          <div className="bg-gray-50 rounded-xl p-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-blue-600" />
+              Car Details
+            </h3>
+            <div className="space-y-6">
+              {formData.details.map((detail, detailIndex) => (
+                <div
+                  key={detailIndex}
+                  className="border border-gray-200 rounded-xl p-4 bg-white"
+                >
+                  <h4 className="text-md font-semibold text-gray-700 mb-4">
+                    {detail.short_title || `Detail Section ${detailIndex + 1}`}
+                  </h4>
+
+                  <div className="space-y-4">
+                    {/* Full Title */}
+                    {detail.full_title && (
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Full Title
+                        </label>
+                        <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900">
+                          {detail.full_title}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Description */}
+                    {detail.description && (
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Description
+                        </label>
+                        <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 min-h-[100px]">
+                          {detail.description}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Detail Images */}
+                    {detail.images && detail.images.length > 0 && (
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Detail Images
+                        </label>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                          {detail.images.map((image, imageIndex) => (
+                            <div key={imageIndex} className="relative">
+                              <img
+                                src={image}
+                                alt={`Detail image ${imageIndex + 1}`}
+                                className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = "none";
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
