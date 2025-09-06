@@ -128,21 +128,35 @@ const StockManagement: React.FC = () => {
   ) => {
     try {
       if (selectedStock) {
-        await stockApi.updateStock(selectedStock.id, data as UpdateStockData);
-        showMessage("success", "Stock updated successfully");
+        const response = await stockApi.updateStock(
+          selectedStock.id,
+          data as UpdateStockData
+        );
+        if (response.success) {
+          showMessage("success", "Stock updated successfully");
+          setShowDrawer(false);
+          setSelectedStock(null);
+          fetchStocks();
+        } else {
+          showMessage("error", response.message || "Failed to update stock");
+        }
       } else {
-        await stockApi.createStock(data as CreateStockData);
-        showMessage("success", "Stock created successfully");
+        const response = await stockApi.createStock(data as CreateStockData);
+        if (response.success) {
+          showMessage("success", "Stock created successfully");
+          setShowDrawer(false);
+          setSelectedStock(null);
+          fetchStocks();
+        } else {
+          showMessage("error", response.message || "Failed to create stock");
+        }
       }
-      setShowDrawer(false);
-      setSelectedStock(null);
-      fetchStocks();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving stock:", error);
-      showMessage(
-        "error",
-        selectedStock ? "Failed to update stock" : "Failed to create stock"
-      );
+      const errorMessage =
+        error.message ||
+        (selectedStock ? "Failed to update stock" : "Failed to create stock");
+      showMessage("error", errorMessage);
     }
   };
 
@@ -222,6 +236,7 @@ const StockManagement: React.FC = () => {
           onSubmit={handleDrawerSubmit}
           onCancel={handleDrawerClose}
           isLoading={false}
+          onError={(error) => showMessage("error", error)}
         />
       </StockDrawer>
 

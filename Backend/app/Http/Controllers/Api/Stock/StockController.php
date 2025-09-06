@@ -145,14 +145,24 @@ class StockController extends Controller
     public function update(Request $request, Stock $stock): JsonResponse
     {
         try {
+            // Log the update attempt
+            \Log::info('Stock update attempt', [
+                'stock_id' => $stock->id,
+                'request_data' => $request->all()
+            ]);
+
             $validator = Validator::make($request->all(), [
-                'quantity' => 'sometimes|required|integer|min:0',
-                'price' => 'sometimes|required|nullable|numeric|min:0',
-                'status' => 'sometimes|required|in:available,sold,reserved,damaged,lost,stolen',
-                'notes' => 'sometimes|required|nullable|string|max:1000',
+                'quantity' => 'sometimes|integer|min:0',
+                'price' => 'sometimes|nullable|numeric|min:0',
+                'status' => 'sometimes|in:available,sold,reserved,damaged,lost,stolen',
+                'notes' => 'sometimes|nullable|string|max:1000',
             ]);
 
             if ($validator->fails()) {
+                \Log::warning('Stock update validation failed', [
+                    'stock_id' => $stock->id,
+                    'errors' => $validator->errors()
+                ]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Validation failed',
@@ -162,16 +172,27 @@ class StockController extends Controller
 
             DB::beginTransaction();
 
-            $stock->update($request->all());
+            // Only update fields that are provided in the request
+            $updateData = $request->only(['quantity', 'price', 'status', 'notes']);
+            $stock->update($updateData);
 
             // Update car status if stock status changed
             if ($request->has('status') && $stock->car) {
                 $stock->car->update(['status' => $request->status]);
+                \Log::info('Car status updated', [
+                    'car_id' => $stock->car->id,
+                    'new_status' => $request->status
+                ]);
             }
 
             DB::commit();
 
             $stock->load(['car.category', 'car.subcategory', 'car.photos']);
+
+            \Log::info('Stock updated successfully', [
+                'stock_id' => $stock->id,
+                'updated_fields' => array_keys($updateData)
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -181,6 +202,11 @@ class StockController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Stock update failed', [
+                'stock_id' => $stock->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update stock',

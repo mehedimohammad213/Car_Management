@@ -17,6 +17,7 @@ interface StockDrawerFormProps {
   onSubmit: (data: CreateStockData | UpdateStockData) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  onError?: (error: string) => void;
 }
 
 interface AvailableCar {
@@ -40,6 +41,7 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
   onSubmit,
   onCancel,
   isLoading = false,
+  onError,
 }) => {
   const [formData, setFormData] = useState<CreateStockData>({
     car_id: 0,
@@ -86,7 +88,8 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (formData.car_id === 0) {
+    // Only validate car_id for new stocks, not updates
+    if (!stock && formData.car_id === 0) {
       newErrors.car_id = "Car selection is required";
     }
 
@@ -102,10 +105,29 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit(formData);
+      try {
+        // For updates, only send the fields that can be updated (exclude car_id)
+        const submitData = stock
+          ? {
+              quantity: formData.quantity,
+              price: formData.price,
+              status: formData.status,
+              notes: formData.notes,
+            }
+          : formData;
+
+        onSubmit(submitData);
+      } catch (error: any) {
+        console.error("Form submission error:", error);
+        if (onError) {
+          onError(
+            error.message || "An error occurred while submitting the form"
+          );
+        }
+      }
     }
   };
 
@@ -156,36 +178,46 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
           <div className="flex items-center justify-between mb-2">
             <label className="block text-sm font-medium text-gray-700">
               <PackageIcon className="w-4 h-4 inline mr-2" />
-              Car Selection *
+              {stock ? "Car" : "Car Selection *"}
             </label>
-            <button
-              type="button"
-              onClick={fetchAvailableCars}
-              disabled={isLoadingCars}
-              className="text-xs text-indigo-600 hover:text-indigo-800 disabled:text-gray-400"
-            >
-              {isLoadingCars ? "Loading..." : "Refresh"}
-            </button>
+            {!stock && (
+              <button
+                type="button"
+                onClick={fetchAvailableCars}
+                disabled={isLoadingCars}
+                className="text-xs text-indigo-600 hover:text-indigo-800 disabled:text-gray-400"
+              >
+                {isLoadingCars ? "Loading..." : "Refresh"}
+              </button>
+            )}
           </div>
-          <select
-            value={formData.car_id}
-            onChange={(e) =>
-              handleInputChange("car_id", parseInt(e.target.value))
-            }
-            disabled={isLoadingCars}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-              errors.car_id ? "border-red-300" : "border-gray-300"
-            } ${isLoadingCars ? "bg-gray-100 cursor-not-allowed" : ""}`}
-          >
-            <option value={0}>
-              {isLoadingCars ? "Loading cars..." : "Select a car"}
-            </option>
-            {availableCars.map((car) => (
-              <option key={car.id} value={car.id}>
-                {formatCarLabel(car)}
+          {stock ? (
+            <div className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700">
+              {stock.car
+                ? `${stock.car.make} ${stock.car.model} (${stock.car.year})`
+                : "N/A"}
+            </div>
+          ) : (
+            <select
+              value={formData.car_id}
+              onChange={(e) =>
+                handleInputChange("car_id", parseInt(e.target.value))
+              }
+              disabled={isLoadingCars}
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                errors.car_id ? "border-red-300" : "border-gray-300"
+              } ${isLoadingCars ? "bg-gray-100 cursor-not-allowed" : ""}`}
+            >
+              <option value={0}>
+                {isLoadingCars ? "Loading cars..." : "Select a car"}
               </option>
-            ))}
-          </select>
+              {availableCars.map((car) => (
+                <option key={car.id} value={car.id}>
+                  {formatCarLabel(car)}
+                </option>
+              ))}
+            </select>
+          )}
           {errors.car_id && (
             <p className="mt-1 text-sm text-red-600">{errors.car_id}</p>
           )}
