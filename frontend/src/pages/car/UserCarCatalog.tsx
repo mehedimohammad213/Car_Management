@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Settings,
   X,
+  ShoppingCart,
 } from "lucide-react";
 import {
   carApi,
@@ -24,6 +25,7 @@ import {
   CarFilterOptions,
 } from "../../services/carApi";
 import { categoryApi } from "../../services/categoryApi";
+import { useCart } from "../../contexts/CartContext";
 
 const UserCarCatalog: React.FC = () => {
   const [cars, setCars] = useState<CarType[]>([]);
@@ -51,8 +53,10 @@ const UserCarCatalog: React.FC = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [selectedCar, setSelectedCar] = useState<CarType | null>(null);
   const [showCarModal, setShowCarModal] = useState(false);
+  const { addToCart } = useCart();
 
   useEffect(() => {
+    console.log("UserCarCatalog: Component mounted, fetching data...");
     fetchCars();
     fetchCategories();
     fetchFilterOptions();
@@ -74,6 +78,23 @@ const UserCarCatalog: React.FC = () => {
   const fetchCars = async () => {
     try {
       setIsLoading(true);
+      console.log("Fetching cars with params:", {
+        search: searchTerm || undefined,
+        status: statusFilter || undefined,
+        category_id: categoryFilter || undefined,
+        make: makeFilter || undefined,
+        year: yearFilter || undefined,
+        transmission: transmissionFilter || undefined,
+        fuel: fuelFilter || undefined,
+        color: colorFilter || undefined,
+        price_from: priceRange.min || undefined,
+        price_to: priceRange.max || undefined,
+        sort_by: sortBy,
+        sort_direction: sortDirection,
+        per_page: perPage,
+        page: currentPage,
+      });
+
       const response = await carApi.getCars({
         search: searchTerm || undefined,
         status: statusFilter || undefined,
@@ -91,18 +112,34 @@ const UserCarCatalog: React.FC = () => {
         page: currentPage,
       });
 
-      if (response.success && response.data.cars) {
-        setCars(response.data.cars);
-        if (response.data.pagination) {
-          setTotalPages(response.data.pagination.last_page);
-          setTotalItems(response.data.pagination.total);
-        }
+      console.log("Cars API response:", response);
+
+      if (response.success && response.data.data) {
+        console.log("Setting cars:", response.data.data);
+        setCars(response.data.data);
+        setTotalPages(response.data.last_page || 1);
+        setTotalItems(response.data.total || 0);
       } else {
+        console.log("No cars found or invalid response structure");
         setCars([]);
+        setTotalPages(1);
+        setTotalItems(0);
       }
     } catch (error) {
       console.error("Error fetching cars:", error);
       setCars([]);
+      setTotalPages(1);
+      setTotalItems(0);
+      
+      // Show user-friendly error message
+      if (error instanceof Error) {
+        if (error.message.includes('401')) {
+          console.error("Authentication failed - redirecting to login");
+          // The API service should handle this automatically
+        } else if (error.message.includes('Network Error') || error.message.includes('fetch')) {
+          console.error("Network error - backend might be down");
+        }
+      }
     } finally {
       setIsLoading(false);
     }
@@ -133,6 +170,10 @@ const UserCarCatalog: React.FC = () => {
   const handleViewCar = (car: CarType) => {
     setSelectedCar(car);
     setShowCarModal(true);
+  };
+
+  const handleAddToCart = (car: CarType) => {
+    addToCart(car);
   };
 
   const handleCloseCarModal = () => {
@@ -363,6 +404,15 @@ const UserCarCatalog: React.FC = () => {
           </div>
         </div>
 
+        {/* Debug Info - Remove in production */}
+        <div className="mb-4 p-4 bg-gray-100 rounded-lg text-sm">
+          <p><strong>Debug Info:</strong></p>
+          <p>Cars loaded: {cars.length}</p>
+          <p>Total items: {totalItems}</p>
+          <p>Current page: {currentPage} of {totalPages}</p>
+          <p>Loading: {isLoading ? 'Yes' : 'No'}</p>
+        </div>
+
         {/* Cars Grid */}
         {isLoading ? (
           <div className="text-center py-12">
@@ -375,9 +425,26 @@ const UserCarCatalog: React.FC = () => {
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               No cars found
             </h3>
-            <p className="text-gray-500">
+            <p className="text-gray-500 mb-4">
               Try adjusting your filters or search terms
             </p>
+            <button
+              onClick={() => {
+                setSearchTerm("");
+                setStatusFilter("available");
+                setCategoryFilter("");
+                setMakeFilter("");
+                setYearFilter("");
+                setTransmissionFilter("");
+                setFuelFilter("");
+                setColorFilter("");
+                setPriceRange({ min: "", max: "" });
+                setCurrentPage(1);
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Clear All Filters
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -501,6 +568,13 @@ const UserCarCatalog: React.FC = () => {
                     >
                       <Eye className="w-4 h-4" />
                       View Details
+                    </button>
+                    <button
+                      onClick={() => handleAddToCart(car)}
+                      className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2"
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      Add to Cart
                     </button>
                     <button className="p-2 text-gray-400 hover:text-red-500 transition-colors">
                       <Heart className="w-5 h-5" />

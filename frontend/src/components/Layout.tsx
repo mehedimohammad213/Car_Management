@@ -100,7 +100,6 @@ const Layout: React.FC = () => {
   const userNavItems = [
     { path: "/dashboard", label: "Dashboard", icon: BarChartIcon },
     { path: "/cars", label: "Car Catalog", icon: CarIcon },
-    { path: "/browse", label: "Browse Cars", icon: HomeIcon },
     { path: "/wishlist", label: "Wishlist", icon: HeartIcon },
     { path: "/cart", label: "Cart", icon: ShoppingCartIcon },
     { path: "/orders", label: "My Orders", icon: UserIcon },

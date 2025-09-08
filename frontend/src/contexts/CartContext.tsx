@@ -1,17 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
-interface Car {
-  id: string;
-  brand: string;
-  model: string;
-  year: number;
-  price: number;
-  image: string;
-  category: string;
-  fuelType: string;
-  transmission: string;
-  mileage: number;
-}
+import { Car } from '../services/carApi';
 
 interface CartItem {
   car: Car;
@@ -102,7 +90,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   };
 
   const getTotalPrice = () => {
-    return items.reduce((total, item) => total + (item.car.price * item.quantity), 0);
+    return items.reduce((total, item) => total + ((item.car.price_amount || 0) * item.quantity), 0);
   };
 
   const value = {

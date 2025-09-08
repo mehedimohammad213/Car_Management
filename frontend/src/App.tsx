@@ -19,7 +19,6 @@ import ClientManagement from "./pages/ClientManagement";
 
 import Settings from "./pages/Settings";
 
-import CarCatalog from "./pages/car/CarCatalog";
 import CarDetails from "./pages/car/CarDetails";
 import UserCarCatalog from "./pages/car/UserCarCatalog";
 import Cart from "./pages/Cart";
@@ -136,7 +135,6 @@ function App() {
 
                   {/* User Routes */}
                   <Route path="/" element={<HomeRedirect />} />
-                  <Route path="/browse" element={<CarCatalog />} />
                   <Route path="/car/:id" element={<CarDetails />} />
                   <Route path="/cars" element={<UserCarCatalog />} />
                   <Route
