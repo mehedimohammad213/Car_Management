@@ -44,4 +44,9 @@ class CarDetail extends Model
             $this->attributes['images'] = $value;
         }
     }
+
+    public function subDetails()
+    {
+        return $this->hasMany(CarSubDetails::class);
+    }
 }

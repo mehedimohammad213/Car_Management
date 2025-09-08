@@ -12,6 +12,15 @@ export interface CarPhoto {
   updated_at: string;
 }
 
+export interface CarSubDetail {
+  id: number;
+  car_detail_id: number;
+  title?: string;
+  description?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CarDetail {
   id: number;
   car_id: number;
@@ -21,6 +30,7 @@ export interface CarDetail {
   images?: string[];
   created_at: string;
   updated_at: string;
+  sub_details?: CarSubDetail[];
 }
 
 export interface Car {
@@ -120,6 +130,10 @@ export interface CreateCarData {
     full_title?: string;
     description?: string;
     images?: string[];
+    sub_details?: {
+      title?: string;
+      description?: string;
+    }[];
   }[];
 
   detail?: {
@@ -127,6 +141,10 @@ export interface CreateCarData {
     full_title?: string;
     description?: string;
     images?: string[];
+    sub_details?: {
+      title?: string;
+      description?: string;
+    }[];
   }; // Keep for backward compatibility
 }
 
@@ -329,11 +347,15 @@ class CarApiService {
       full_title?: string;
       description?: string;
       images?: string[];
+      sub_details?: {
+        title?: string;
+        description?: string;
+      }[];
     }
   ): Promise<CarResponse> {
     return this.request<CarResponse>(`/cars/${carId}/details`, {
       method: "PUT",
-      data: { detail },
+      data: detail,
     });
   }
 

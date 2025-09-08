@@ -591,6 +591,33 @@ const ViewCar: React.FC = () => {
                       {detail.description}
                     </p>
                   )}
+                  {/* Sub Details */}
+                  {detail.sub_details && detail.sub_details.length > 0 && (
+                    <div className="mb-4">
+                      <h6 className="text-sm font-semibold text-gray-700 mb-2">Sub Details:</h6>
+                      <div className="space-y-2">
+                        {detail.sub_details.map((subDetail, subIndex) => (
+                          <div key={subIndex} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                            <div className="space-y-1">
+                              {subDetail.title && (
+                                <div>
+                                  <span className="text-xs font-medium text-gray-600">Title: </span>
+                                  <span className="text-sm text-gray-900">{subDetail.title}</span>
+                                </div>
+                              )}
+                              {subDetail.description && (
+                                <div>
+                                  <span className="text-xs font-medium text-gray-600">Description: </span>
+                                  <span className="text-sm text-gray-900">{subDetail.description}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {detail.images && detail.images.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                       {detail.images.map((image, imgIndex) => (

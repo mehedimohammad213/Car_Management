@@ -75,6 +75,12 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
         full_title: "",
         description: "",
         images: [],
+        sub_details: [
+          {
+            title: "",
+            description: "",
+          },
+        ],
       },
     ],
   });
@@ -129,12 +135,27 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
           full_title: d.full_title,
           description: d.description,
           images: d.images || [],
+          sub_details: d.sub_details?.map((sd) => ({
+            title: sd.title,
+            description: sd.description,
+          })) || [
+            {
+              title: "",
+              description: "",
+            },
+          ],
         })) || [
           {
             short_title: "",
             full_title: "",
             description: "",
             images: [],
+            sub_details: [
+              {
+                title: "",
+                description: "",
+              },
+            ],
           },
         ],
       });
@@ -252,6 +273,12 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
           full_title: "",
           description: "",
           images: [],
+          sub_details: [
+            {
+              title: "",
+              description: "",
+            },
+          ],
         },
       ],
     }));
@@ -273,6 +300,62 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
       ...prev,
       details: (prev.details || []).map((detail, index) =>
         index === detailIndex ? { ...detail, [field]: value } : detail
+      ),
+    }));
+  };
+
+  // Sub-details functions
+  const addSubDetail = (detailIndex: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      details: (prev.details || []).map((detail, index) =>
+        index === detailIndex
+          ? {
+              ...detail,
+              sub_details: [
+                ...(detail.sub_details || []),
+                {
+                  title: "",
+                  description: "",
+                },
+              ],
+            }
+          : detail
+      ),
+    }));
+  };
+
+  const removeSubDetail = (detailIndex: number, subDetailIndex: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      details: (prev.details || []).map((detail, index) =>
+        index === detailIndex
+          ? {
+              ...detail,
+              sub_details: detail.sub_details?.filter((_, i) => i !== subDetailIndex) || [],
+            }
+          : detail
+      ),
+    }));
+  };
+
+  const handleSubDetailChange = (
+    detailIndex: number,
+    subDetailIndex: number,
+    field: "title" | "description",
+    value: string
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      details: (prev.details || []).map((detail, index) =>
+        index === detailIndex
+          ? {
+              ...detail,
+              sub_details: (detail.sub_details || []).map((subDetail, subIndex) =>
+                subIndex === subDetailIndex ? { ...subDetail, [field]: value } : subDetail
+              ),
+            }
+          : detail
       ),
     }));
   };
@@ -535,6 +618,9 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
           onAddDetailImage={addDetailImage}
           onRemoveDetailImage={removeDetailImage}
           onDetailImageChange={handleDetailImageChange}
+          onAddSubDetail={addSubDetail}
+          onRemoveSubDetail={removeSubDetail}
+          onSubDetailChange={handleSubDetailChange}
         />
 
         {/* Form Actions */}

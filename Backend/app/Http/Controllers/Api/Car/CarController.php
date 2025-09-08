@@ -22,7 +22,7 @@ class CarController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $query = Car::with(['category', 'subcategory', 'photos', 'details']);
+        $query = Car::with(['category', 'subcategory', 'photos', 'details.subDetails']);
 
         if ($request->filled('search')) {
             $query->search($request->search);
@@ -161,6 +161,9 @@ class CarController extends Controller
             'details.*.description' => 'nullable|string',
             'details.*.images' => 'nullable|array',
             'details.*.images.*' => 'string|max:512',
+            'details.*.sub_details' => 'nullable|array',
+            'details.*.sub_details.*.title' => 'nullable|string|max:255',
+            'details.*.sub_details.*.description' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -198,13 +201,25 @@ class CarController extends Controller
 
             if ($request->filled('details')) {
                 foreach ($request->details as $detailData) {
-                    $car->details()->create($detailData);
+                    // Extract sub_details from detailData
+                    $subDetails = $detailData['sub_details'] ?? [];
+                    unset($detailData['sub_details']); // Remove sub_details from detailData
+                    
+                    // Create the car detail
+                    $carDetail = $car->details()->create($detailData);
+                    
+                    // Create sub-details if they exist
+                    if (!empty($subDetails)) {
+                        foreach ($subDetails as $subDetailData) {
+                            $carDetail->subDetails()->create($subDetailData);
+                        }
+                    }
                 }
             }
 
             DB::commit();
 
-            $car->load(['category', 'subcategory', 'photos', 'details']);
+            $car->load(['category', 'subcategory', 'photos', 'details.subDetails']);
 
             return response()->json([
                 'success' => true,
@@ -372,6 +387,9 @@ class CarController extends Controller
             'description' => 'nullable|string',
             'images' => 'nullable|array',
             'images.*' => 'string|max:512',
+            'sub_details' => 'nullable|array',
+            'sub_details.*.title' => 'nullable|string|max:255',
+            'sub_details.*.description' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -383,13 +401,36 @@ class CarController extends Controller
         }
 
         try {
+            DB::beginTransaction();
+            
+            // Extract sub_details from request
+            $subDetails = $request->input('sub_details', []);
+            $detailData = $request->except('sub_details');
+            
             if ($car->details()->count() > 0) {
-                $car->details()->first()->update($request->all());
+                $carDetail = $car->details()->first();
+                $carDetail->update($detailData);
+                
+                // Delete existing sub-details and create new ones
+                $carDetail->subDetails()->delete();
+                if (!empty($subDetails)) {
+                    foreach ($subDetails as $subDetailData) {
+                        $carDetail->subDetails()->create($subDetailData);
+                    }
+                }
             } else {
-                $car->details()->create($request->all());
+                $carDetail = $car->details()->create($detailData);
+                
+                // Create sub-details if they exist
+                if (!empty($subDetails)) {
+                    foreach ($subDetails as $subDetailData) {
+                        $carDetail->subDetails()->create($subDetailData);
+                    }
+                }
             }
 
-            $car->load('details');
+            DB::commit();
+            $car->load('details.subDetails');
 
             return response()->json([
                 'success' => true,
@@ -398,6 +439,7 @@ class CarController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update car details',
@@ -411,7 +453,7 @@ class CarController extends Controller
      */
     public function show(Car $car): JsonResponse
     {
-        $car->load(['category', 'subcategory', 'photos', 'details']);
+        $car->load(['category', 'subcategory', 'photos', 'details.subDetails']);
 
         return response()->json([
             'success' => true,
@@ -474,7 +516,7 @@ class CarController extends Controller
 
         try {
             $car->update($request->all());
-            $car->load(['category', 'subcategory', 'photos', 'details']);
+            $car->load(['category', 'subcategory', 'photos', 'details.subDetails']);
 
             return response()->json([
                 'success' => true,
