@@ -297,20 +297,8 @@ const ViewCar: React.FC = () => {
             )}
           </div>
 
-          {/* Right Column - Details */}
-          <div className="space-y-6">
-            {/* Price Card */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <div className="text-center">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  {formatPrice(car.price_amount, car.price_currency)}
-                </h3>
-                {car.price_basis && (
-                  <p className="text-gray-600 text-sm">{car.price_basis}</p>
-                )}
-              </div>
-            </div>
-
+          {/* Right Column - Key Specifications Only */}
+          <div>
             {/* Key Specifications */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -372,87 +360,98 @@ const ViewCar: React.FC = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Location & Status */}
+        {/* Additional Information Sections */}
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Price Card */}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                {formatPrice(car.price_amount, car.price_currency)}
+              </h3>
+              {car.price_basis && (
+                <p className="text-gray-600 text-sm">{car.price_basis}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Location & Status */}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-blue-600" />
+              Location & Status
+            </h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Location</span>
+                <span className="font-semibold">
+                  {car.location || "Not specified"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Country</span>
+                <span className="font-semibold">
+                  {car.country_origin || "Not specified"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Status</span>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                    car.status
+                  )}`}
+                >
+                  {car.status.replace("_", " ").toUpperCase()}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Grading */}
+          {car.grade_overall && (
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-blue-600" />
-                Location & Status
+                <Star className="w-5 h-5 text-blue-600" />
+                Grading
               </h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Location</span>
-                  <span className="font-semibold">
-                    {car.location || "Not specified"}
-                  </span>
+                  <span className="text-gray-600">Overall Grade</span>
+                  <div className="flex items-center gap-2">
+                    <div className="flex">
+                      {[...Array(10)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${
+                            i < Math.floor(car.grade_overall || 0)
+                              ? "text-yellow-400 fill-current"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="font-semibold">
+                      {car.grade_overall}/10
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Country</span>
-                  <span className="font-semibold">
-                    {car.country_origin || "Not specified"}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Status</span>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                      car.status
-                    )}`}
-                  >
-                    {car.status.replace("_", " ").toUpperCase()}
-                  </span>
-                </div>
+                {car.grade_exterior && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Exterior</span>
+                    <span className="font-semibold">{car.grade_exterior}</span>
+                  </div>
+                )}
+                {car.grade_interior && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Interior</span>
+                    <span className="font-semibold">{car.grade_interior}</span>
+                  </div>
+                )}
               </div>
             </div>
-
-            {/* Grading */}
-            {car.grade_overall && (
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                  <Star className="w-5 h-5 text-blue-600" />
-                  Grading
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Overall Grade</span>
-                    <div className="flex items-center gap-2">
-                      <div className="flex">
-                        {[...Array(10)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-4 h-4 ${
-                              i < Math.floor(car.grade_overall || 0)
-                                ? "text-yellow-400 fill-current"
-                                : "text-gray-300"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="font-semibold">
-                        {car.grade_overall}/10
-                      </span>
-                    </div>
-                  </div>
-                  {car.grade_exterior && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Exterior</span>
-                      <span className="font-semibold">
-                        {car.grade_exterior}
-                      </span>
-                    </div>
-                  )}
-                  {car.grade_interior && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Interior</span>
-                      <span className="font-semibold">
-                        {car.grade_interior}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+          )}
         </div>
 
         {/* Detailed Information */}
@@ -594,21 +593,34 @@ const ViewCar: React.FC = () => {
                   {/* Sub Details */}
                   {detail.sub_details && detail.sub_details.length > 0 && (
                     <div className="mb-4">
-                      <h6 className="text-sm font-semibold text-gray-700 mb-2">Sub Details:</h6>
+                      <h6 className="text-sm font-semibold text-gray-700 mb-2">
+                        Sub Details:
+                      </h6>
                       <div className="space-y-2">
                         {detail.sub_details.map((subDetail, subIndex) => (
-                          <div key={subIndex} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                          <div
+                            key={subIndex}
+                            className="bg-gray-50 border border-gray-200 rounded-lg p-3"
+                          >
                             <div className="space-y-1">
                               {subDetail.title && (
                                 <div>
-                                  <span className="text-xs font-medium text-gray-600">Title: </span>
-                                  <span className="text-sm text-gray-900">{subDetail.title}</span>
+                                  <span className="text-xs font-medium text-gray-600">
+                                    Title:{" "}
+                                  </span>
+                                  <span className="text-sm text-gray-900">
+                                    {subDetail.title}
+                                  </span>
                                 </div>
                               )}
                               {subDetail.description && (
                                 <div>
-                                  <span className="text-xs font-medium text-gray-600">Description: </span>
-                                  <span className="text-sm text-gray-900">{subDetail.description}</span>
+                                  <span className="text-xs font-medium text-gray-600">
+                                    Description:{" "}
+                                  </span>
+                                  <span className="text-sm text-gray-900">
+                                    {subDetail.description}
+                                  </span>
                                 </div>
                               )}
                             </div>
