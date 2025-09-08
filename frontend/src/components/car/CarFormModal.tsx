@@ -332,7 +332,9 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
         index === detailIndex
           ? {
               ...detail,
-              sub_details: detail.sub_details?.filter((_, i) => i !== subDetailIndex) || [],
+              sub_details:
+                detail.sub_details?.filter((_, i) => i !== subDetailIndex) ||
+                [],
             }
           : detail
       ),
@@ -351,8 +353,11 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
         index === detailIndex
           ? {
               ...detail,
-              sub_details: (detail.sub_details || []).map((subDetail, subIndex) =>
-                subIndex === subDetailIndex ? { ...subDetail, [field]: value } : subDetail
+              sub_details: (detail.sub_details || []).map(
+                (subDetail, subIndex) =>
+                  subIndex === subDetailIndex
+                    ? { ...subDetail, [field]: value }
+                    : subDetail
               ),
             }
           : detail
@@ -510,7 +515,7 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
       className={
         isModal
           ? "relative bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto"
-          : "bg-white rounded-2xl shadow-lg"
+          : "bg-white rounded-2xl shadow-lg w-full"
       }
     >
       {/* Header */}
