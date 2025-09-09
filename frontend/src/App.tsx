@@ -1,8 +1,11 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -22,8 +25,9 @@ import Settings from "./pages/Settings";
 import CarDetails from "./pages/car/CarDetails";
 import UserCarCatalog from "./pages/car/UserCarCatalog";
 import Cart from "./pages/Cart";
-import Wishlist from "./pages/Wishlist";
 import Orders from "./pages/Orders";
+import UserOrders from "./pages/UserOrders";
+import AdminOrders from "./pages/AdminOrders";
 import UserProfile from "./pages/UserProfile";
 import UserPassword from "./pages/UserPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -32,10 +36,11 @@ import AuthTest from "./pages/AuthTest";
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <CartProvider>
-          <Router>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <CartProvider>
+            <Router>
             <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
               <Routes>
                 <Route path="/login" element={<Login />} />
@@ -111,7 +116,7 @@ function App() {
                     path="/admin/orders"
                     element={
                       <ProtectedRoute role="admin">
-                        <OrderManagement />
+                        <AdminOrders />
                       </ProtectedRoute>
                     }
                   />
@@ -153,20 +158,12 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
-                  <Route
-                    path="/wishlist"
-                    element={
-                      <ProtectedRoute role="user">
-                        <Wishlist />
-                      </ProtectedRoute>
-                    }
-                  />
                   <Route path="/cart" element={<Cart />} />
                   <Route
                     path="/orders"
                     element={
                       <ProtectedRoute role="user">
-                        <Orders />
+                        <UserOrders />
                       </ProtectedRoute>
                     }
                   />
@@ -206,9 +203,26 @@ function App() {
               </Routes>
             </div>
           </Router>
-        </CartProvider>
-      </AuthProvider>
-    </ThemeProvider>
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+            className="toast-container"
+            toastClassName="custom-toast"
+            bodyClassName="custom-toast-body"
+            progressClassName="custom-toast-progress"
+          />
+          </CartProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

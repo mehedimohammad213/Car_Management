@@ -3,7 +3,6 @@ import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeftIcon,
   ShoppingCartIcon,
-  HeartIcon,
   StarIcon,
 } from "lucide-react";
 // Removed mockData import
@@ -15,7 +14,7 @@ const CarDetails: React.FC = () => {
   const [car, setCar] = useState<Car | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCart();
+  const { addToCart, isLoading: cartLoading } = useCart();
 
   useEffect(() => {
     const fetchCar = async () => {
@@ -82,11 +81,6 @@ const CarDetails: React.FC = () => {
               alt={`${car.brand} ${car.model}`}
               className="w-full h-64 sm:h-80 lg:h-96 object-cover rounded-lg shadow-lg"
             />
-            <div className="absolute top-4 right-4 flex space-x-2">
-              <button className="p-2 bg-white dark:bg-gray-800 rounded-full shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                <HeartIcon className="w-5 h-5 text-gray-400 hover:text-red-500" />
-              </button>
-            </div>
             {!car.isAvailable && (
               <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
                 <span className="text-white font-semibold text-xl">
@@ -224,11 +218,20 @@ const CarDetails: React.FC = () => {
 
             <button
               onClick={handleAddToCart}
-              disabled={!car.isAvailable}
+              disabled={!car.isAvailable || cartLoading}
               className="w-full flex items-center justify-center py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <ShoppingCartIcon className="w-5 h-5 mr-2" />
-              Add to Cart
+              {cartLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  Adding to Cart...
+                </>
+              ) : (
+                <>
+                  <ShoppingCartIcon className="w-5 h-5 mr-2" />
+                  Add to Cart
+                </>
+              )}
             </button>
           </div>
         </div>

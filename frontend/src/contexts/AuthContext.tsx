@@ -181,7 +181,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.removeItem("token");
       // Clear any other user-related data that might be stored
       localStorage.removeItem("cart");
-      localStorage.removeItem("wishlist");
       // You can add more cleanup here if needed
     } catch (error) {
       console.error("Error during logout:", error);

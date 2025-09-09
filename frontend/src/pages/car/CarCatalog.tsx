@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import {
   SearchIcon,
   FilterIcon,
-  HeartIcon,
   ShoppingCartIcon,
 } from "lucide-react";
 // Removed mockData import
@@ -17,7 +16,7 @@ const CarCatalog: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<FilterOptions>({});
   const [showFilters, setShowFilters] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, isLoading: cartLoading } = useCart();
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -336,11 +335,6 @@ const CarCatalog: React.FC = () => {
                     alt={`${car.brand} ${car.model}`}
                     className="w-full h-48 object-cover"
                   />
-                  <div className="absolute top-2 right-2">
-                    <button className="p-2 bg-white dark:bg-gray-800 rounded-full shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                      <HeartIcon className="w-5 h-5 text-gray-400 hover:text-red-500" />
-                    </button>
-                  </div>
                   {!car.isAvailable && (
                     <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                       <span className="text-white font-semibold">
@@ -386,10 +380,14 @@ const CarCatalog: React.FC = () => {
                     </Link>
                     <button
                       onClick={() => handleAddToCart(car)}
-                      disabled={!car.isAvailable}
+                      disabled={!car.isAvailable || cartLoading}
                       className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                      <ShoppingCartIcon className="w-5 h-5" />
+                      {cartLoading ? (
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      ) : (
+                        <ShoppingCartIcon className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
                 </div>

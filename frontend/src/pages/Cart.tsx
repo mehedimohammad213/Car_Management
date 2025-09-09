@@ -1,31 +1,61 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { TrashIcon, MinusIcon, PlusIcon, ArrowLeftIcon } from "lucide-react";
 import { useCart } from "../contexts/CartContext";
+import { orderApi } from "../services/orderApi";
+import { toast } from "react-toastify";
 
 const Cart: React.FC = () => {
-  const { items, removeFromCart, updateQuantity, getTotalPrice, clearCart } =
+  const { items, removeFromCart, updateQuantity, getTotalPrice, clearCart, isLoading, refreshCart, setItems } =
     useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [shippingAddress, setShippingAddress] = useState("");
+  const navigate = useNavigate();
 
-  const handleQuantityChange = (carId: string, newQuantity: number) => {
+  const handleQuantityChange = async (cartId: number, newQuantity: number) => {
     if (newQuantity <= 0) {
-      removeFromCart(carId);
+      await removeFromCart(cartId);
     } else {
-      updateQuantity(carId, newQuantity);
+      await updateQuantity(cartId, newQuantity);
     }
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
+    if (items.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
     setIsCheckingOut(true);
-    // Simulate checkout process
-    setTimeout(() => {
-      clearCart();
+    
+    try {
+      const response = await orderApi.createOrder({
+        shipping_address: shippingAddress || undefined
+      });
+
+      if (response.success) {
+        toast.success("🎉 Order created successfully! Your cart has been cleared.");
+        // Refresh cart to reflect the cleared state from backend
+        await refreshCart();
+        navigate("/orders");
+      } else {
+        toast.error(response.message || "Failed to create order");
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast.error("Failed to create order. Please try again.");
+    } finally {
       setIsCheckingOut(false);
-      // In a real app, you would redirect to a checkout page or payment gateway
-      alert("Order placed successfully!");
-    }, 2000);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -53,7 +83,7 @@ const Cart: React.FC = () => {
             Looks like you haven't added any cars to your cart yet.
           </p>
           <Link
-            to="/"
+            to="/cars"
             className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <ArrowLeftIcon className="w-5 h-5 mr-2" />
@@ -86,34 +116,34 @@ const Cart: React.FC = () => {
         <div className="lg:col-span-2 space-y-4">
           {items.map((item) => (
             <div
-              key={item.car.id}
+              key={item.id}
               className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
             >
               <div className="flex items-center space-x-4">
                 <img
-                  src={item.car.image}
-                  alt={`${item.car.brand} ${item.car.model}`}
+                  src={item.car.image || '/placeholder-car.jpg'}
+                  alt={`${item.car.make} ${item.car.model}`}
                   className="w-24 h-24 object-cover rounded-lg"
                 />
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {item.car.brand} {item.car.model}
+                    {item.car.make} {item.car.model} {item.car.variant}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">
-                    {item.car.year} • {item.car.mileage.toLocaleString()} miles
+                    {item.car.year} • {item.car.mileage_km?.toLocaleString()} km
                   </p>
                   <div className="flex items-center space-x-2 mt-2">
                     <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-300 rounded">
                       {item.car.category}
                     </span>
                     <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-300 rounded">
-                      {item.car.fuelType}
+                      {item.car.fuel}
                     </span>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                    ${item.car.price.toLocaleString()}
+                    ${item.car.price_amount?.toLocaleString()}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     per unit
@@ -125,7 +155,7 @@ const Cart: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() =>
-                      handleQuantityChange(item.car.id, item.quantity - 1)
+                      handleQuantityChange(item.id, item.quantity - 1)
                     }
                     className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
@@ -136,7 +166,7 @@ const Cart: React.FC = () => {
                   </span>
                   <button
                     onClick={() =>
-                      handleQuantityChange(item.car.id, item.quantity + 1)
+                      handleQuantityChange(item.id, item.quantity + 1)
                     }
                     className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
@@ -145,10 +175,10 @@ const Cart: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-4">
                   <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                    ${(item.car.price * item.quantity).toLocaleString()}
+                    ${((item.car.price_amount || 0) * item.quantity).toLocaleString()}
                   </p>
                   <button
-                    onClick={() => removeFromCart(item.car.id)}
+                    onClick={() => removeFromCart(item.id)}
                     className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
                   >
                     <TrashIcon className="w-5 h-5" />
@@ -189,6 +219,20 @@ const Cart: React.FC = () => {
               </div>
             </div>
 
+            {/* Shipping Address */}
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Shipping Address (Optional)
+              </label>
+              <textarea
+                value={shippingAddress}
+                onChange={(e) => setShippingAddress(e.target.value)}
+                placeholder="Enter your shipping address..."
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                rows={3}
+              />
+            </div>
+
             <div className="mt-6 space-y-3">
               <button
                 onClick={handleCheckout}
@@ -198,7 +242,7 @@ const Cart: React.FC = () => {
                 {isCheckingOut ? (
                   <div className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    Processing...
+                    Creating Order...
                   </div>
                 ) : (
                   "Proceed to Checkout"

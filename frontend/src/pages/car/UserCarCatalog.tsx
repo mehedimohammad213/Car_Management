@@ -3,7 +3,6 @@ import {
   Search,
   Filter,
   Eye,
-  Heart,
   Car,
   Calendar,
   Gauge,
@@ -53,7 +52,7 @@ const UserCarCatalog: React.FC = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [selectedCar, setSelectedCar] = useState<CarType | null>(null);
   const [showCarModal, setShowCarModal] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, isLoading: cartLoading } = useCart();
 
   useEffect(() => {
     console.log("UserCarCatalog: Component mounted, fetching data...");
@@ -571,13 +570,20 @@ const UserCarCatalog: React.FC = () => {
                     </button>
                     <button
                       onClick={() => handleAddToCart(car)}
-                      className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2"
+                      disabled={cartLoading}
+                      className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white px-4 py-2 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2"
                     >
-                      <ShoppingCart className="w-4 h-4" />
-                      Add to Cart
-                    </button>
-                    <button className="p-2 text-gray-400 hover:text-red-500 transition-colors">
-                      <Heart className="w-5 h-5" />
+                      {cartLoading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          Adding...
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingCart className="w-4 h-4" />
+                          Add to Cart
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
