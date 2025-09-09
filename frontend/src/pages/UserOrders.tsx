@@ -486,7 +486,6 @@ const UserOrders: React.FC = () => {
                       )}
                     </div>
                   </div>
-
                 </div>
               ))
             )}

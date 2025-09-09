@@ -17,6 +17,17 @@ import {
   Settings,
   X,
   ShoppingCart,
+  Grid,
+  List,
+  SlidersHorizontal,
+  TrendingUp,
+  Award,
+  Shield,
+  Heart,
+  Share2,
+  Download,
+  ChevronDown,
+  Sparkles,
 } from "lucide-react";
 import {
   carApi,
@@ -52,6 +63,9 @@ const UserCarCatalog: React.FC = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [selectedCar, setSelectedCar] = useState<CarType | null>(null);
   const [showCarModal, setShowCarModal] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [favorites, setFavorites] = useState<number[]>([]);
   const { addToCart, isLoading: cartLoading } = useCart();
 
   useEffect(() => {
@@ -129,13 +143,16 @@ const UserCarCatalog: React.FC = () => {
       setCars([]);
       setTotalPages(1);
       setTotalItems(0);
-      
+
       // Show user-friendly error message
       if (error instanceof Error) {
-        if (error.message.includes('401')) {
+        if (error.message.includes("401")) {
           console.error("Authentication failed - redirecting to login");
           // The API service should handle this automatically
-        } else if (error.message.includes('Network Error') || error.message.includes('fetch')) {
+        } else if (
+          error.message.includes("Network Error") ||
+          error.message.includes("fetch")
+        ) {
           console.error("Network error - backend might be down");
         }
       }
@@ -204,16 +221,24 @@ const UserCarCatalog: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case "available":
-        return "bg-green-100 text-green-800";
+        return "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800";
       case "sold":
-        return "bg-red-100 text-red-800";
+        return "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800";
       case "reserved":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800";
       case "in_transit":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-800";
     }
+  };
+
+  const toggleFavorite = (carId: number) => {
+    setFavorites((prev) =>
+      prev.includes(carId)
+        ? prev.filter((id) => id !== carId)
+        : [...prev, carId]
+    );
   };
 
   const getGradeColor = (grade?: string | number) => {
@@ -225,39 +250,43 @@ const UserCarCatalog: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              🚗 Car Catalog
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Discover your perfect vehicle from our extensive collection
-            </p>
-          </div>
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Filter className="w-5 h-5 text-blue-600" />
-            <h3 className="text-lg font-semibold text-gray-800">Filters</h3>
+        {/* Enhanced Filters */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+                <SlidersHorizontal className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Search & Filters
+              </h3>
+            </div>
+            <button
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+            >
+              <span>Advanced</span>
+              <ChevronDown
+                className={`w-4 h-4 transition-transform ${
+                  showAdvancedFilters ? "rotate-180" : ""
+                }`}
+              />
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Primary Filters */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {/* Search */}
             <div className="relative">
               <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search cars..."
+                placeholder="Search by make, model, year..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
               />
             </div>
 
@@ -265,7 +294,7 @@ const UserCarCatalog: React.FC = () => {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
             >
               <option value="">All Categories</option>
               {categories.map((category) => (
@@ -279,7 +308,7 @@ const UserCarCatalog: React.FC = () => {
             <select
               value={makeFilter}
               onChange={(e) => setMakeFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
             >
               <option value="">All Makes</option>
               {filterOptions?.makes?.map((make) => (
@@ -293,7 +322,7 @@ const UserCarCatalog: React.FC = () => {
             <select
               value={yearFilter}
               onChange={(e) => setYearFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
             >
               <option value="">All Years</option>
               {filterOptions?.years?.map((year) => (
@@ -302,88 +331,147 @@ const UserCarCatalog: React.FC = () => {
                 </option>
               ))}
             </select>
+          </div>
 
-            {/* Transmission */}
-            <select
-              value={transmissionFilter}
-              onChange={(e) => setTransmissionFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            >
-              <option value="">All Transmissions</option>
-              {filterOptions?.transmissions?.map((transmission) => (
-                <option key={transmission} value={transmission}>
-                  {transmission}
-                </option>
-              ))}
-            </select>
+          {/* Advanced Filters */}
+          {showAdvancedFilters && (
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Transmission */}
+                <select
+                  value={transmissionFilter}
+                  onChange={(e) => setTransmissionFilter(e.target.value)}
+                  className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
+                >
+                  <option value="">All Transmissions</option>
+                  {filterOptions?.transmissions?.map((transmission) => (
+                    <option key={transmission} value={transmission}>
+                      {transmission}
+                    </option>
+                  ))}
+                </select>
 
-            {/* Fuel */}
-            <select
-              value={fuelFilter}
-              onChange={(e) => setFuelFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            >
-              <option value="">All Fuels</option>
-              {filterOptions?.fuels?.map((fuel) => (
-                <option key={fuel} value={fuel}>
-                  {fuel}
-                </option>
-              ))}
-            </select>
+                {/* Fuel */}
+                <select
+                  value={fuelFilter}
+                  onChange={(e) => setFuelFilter(e.target.value)}
+                  className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
+                >
+                  <option value="">All Fuels</option>
+                  {filterOptions?.fuels?.map((fuel) => (
+                    <option key={fuel} value={fuel}>
+                      {fuel}
+                    </option>
+                  ))}
+                </select>
 
-            {/* Color */}
-            <select
-              value={colorFilter}
-              onChange={(e) => setColorFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            >
-              <option value="">All Colors</option>
-              {filterOptions?.colors?.map((color) => (
-                <option key={color} value={color}>
-                  {color}
-                </option>
-              ))}
-            </select>
+                {/* Color */}
+                <select
+                  value={colorFilter}
+                  onChange={(e) => setColorFilter(e.target.value)}
+                  className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
+                >
+                  <option value="">All Colors</option>
+                  {filterOptions?.colors?.map((color) => (
+                    <option key={color} value={color}>
+                      {color}
+                    </option>
+                  ))}
+                </select>
 
-            {/* Price Range */}
-            <div className="flex gap-2">
-              <input
-                type="number"
-                placeholder="Min Price"
-                value={priceRange.min}
-                onChange={(e) =>
-                  setPriceRange((prev) => ({ ...prev, min: e.target.value }))
-                }
-                className="flex-1 px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              />
-              <input
-                type="number"
-                placeholder="Max Price"
-                value={priceRange.max}
-                onChange={(e) =>
-                  setPriceRange((prev) => ({ ...prev, max: e.target.value }))
-                }
-                className="flex-1 px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              />
+                {/* Price Range */}
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    placeholder="Min Price"
+                    value={priceRange.min}
+                    onChange={(e) =>
+                      setPriceRange((prev) => ({
+                        ...prev,
+                        min: e.target.value,
+                      }))
+                    }
+                    className="flex-1 px-3 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max Price"
+                    value={priceRange.max}
+                    onChange={(e) =>
+                      setPriceRange((prev) => ({
+                        ...prev,
+                        max: e.target.value,
+                      }))
+                    }
+                    className="flex-1 px-3 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
+              </div>
             </div>
+          )}
 
-            {/* Clear Filters */}
+          {/* Filter Actions */}
+          <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
             <button
               onClick={clearFilters}
-              className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors font-medium"
+              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
+              <X className="w-4 h-4" />
               Clear All Filters
             </button>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              {cars.length} of {totalItems} cars found
+            </div>
           </div>
         </div>
 
-        {/* Results Count */}
+        {/* Results Controls */}
         <div className="flex items-center justify-between mb-6">
-          <p className="text-gray-600">
-            Showing {cars.length} of {totalItems} cars
-          </p>
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              Showing{" "}
+              <span className="font-semibold text-gray-900 dark:text-white">
+                {cars.length}
+              </span>{" "}
+              of{" "}
+              <span className="font-semibold text-gray-900 dark:text-white">
+                {totalItems}
+              </span>{" "}
+              cars
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                View:
+              </span>
+              <div className="flex border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-2 ${
+                    viewMode === "grid"
+                      ? "bg-blue-600 text-white"
+                      : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600"
+                  }`}
+                >
+                  <Grid className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`p-2 ${
+                    viewMode === "list"
+                      ? "bg-blue-600 text-white"
+                      : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600"
+                  }`}
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Sort by:</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Sort by:
+            </span>
             <select
               value={`${sortBy}-${sortDirection}`}
               onChange={(e) => {
@@ -391,7 +479,7 @@ const UserCarCatalog: React.FC = () => {
                 setSortBy(field);
                 setSortDirection(direction);
               }}
-              className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             >
               <option value="created_at-desc">Newest First</option>
               <option value="created_at-asc">Oldest First</option>
@@ -403,57 +491,55 @@ const UserCarCatalog: React.FC = () => {
           </div>
         </div>
 
-        {/* Debug Info - Remove in production */}
-        <div className="mb-4 p-4 bg-gray-100 rounded-lg text-sm">
-          <p><strong>Debug Info:</strong></p>
-          <p>Cars loaded: {cars.length}</p>
-          <p>Total items: {totalItems}</p>
-          <p>Current page: {currentPage} of {totalPages}</p>
-          <p>Loading: {isLoading ? 'Yes' : 'No'}</p>
-        </div>
-
-        {/* Cars Grid */}
+        {/* Cars Display */}
         {isLoading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="text-gray-600 mt-4">Loading cars...</p>
+          <div className="text-center py-16">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="text-gray-600 dark:text-gray-400 mt-4 text-lg">
+              Loading premium vehicles...
+            </p>
           </div>
         ) : cars.length === 0 ? (
-          <div className="text-center py-12">
-            <Car className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No cars found
+          <div className="text-center py-16">
+            <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Car className="w-16 h-16 text-gray-400" />
+            </div>
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-3">
+              No vehicles found
             </h3>
-            <p className="text-gray-500 mb-4">
-              Try adjusting your filters or search terms
+            <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
+              We couldn't find any vehicles matching your criteria. Try
+              adjusting your filters or search terms.
             </p>
             <button
-              onClick={() => {
-                setSearchTerm("");
-                setStatusFilter("available");
-                setCategoryFilter("");
-                setMakeFilter("");
-                setYearFilter("");
-                setTransmissionFilter("");
-                setFuelFilter("");
-                setColorFilter("");
-                setPriceRange({ min: "", max: "" });
-                setCurrentPage(1);
-              }}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={clearFilters}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
             >
+              <X className="w-4 h-4" />
               Clear All Filters
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div
+            className={`grid gap-6 ${
+              viewMode === "grid"
+                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                : "grid-cols-1"
+            }`}
+          >
             {cars.map((car) => (
               <div
                 key={car.id}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                className={`bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 ${
+                  viewMode === "list" ? "flex" : ""
+                }`}
               >
                 {/* Car Image */}
-                <div className="relative h-48 bg-gray-200">
+                <div
+                  className={`relative ${
+                    viewMode === "grid" ? "h-48" : "w-80 h-48 flex-shrink-0"
+                  } bg-gray-200 dark:bg-gray-700`}
+                >
                   {car.photos && car.photos.length > 0 ? (
                     <img
                       src={
@@ -472,7 +558,7 @@ const UserCarCatalog: React.FC = () => {
                   {/* Status Badge */}
                   <div className="absolute top-3 left-3">
                     <span
-                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(
                         car.status
                       )}`}
                     >
@@ -485,7 +571,7 @@ const UserCarCatalog: React.FC = () => {
                   {car.grade_overall && (
                     <div className="absolute top-3 right-3">
                       <span
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getGradeColor(
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getGradeColor(
                           car.grade_overall
                         )}`}
                       >
@@ -494,95 +580,117 @@ const UserCarCatalog: React.FC = () => {
                       </span>
                     </div>
                   )}
+
+                  {/* Favorite Button */}
+                  <button
+                    onClick={() => toggleFavorite(car.id)}
+                    className="absolute bottom-3 right-3 p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full hover:bg-white dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <Heart
+                      className={`w-4 h-4 ${
+                        favorites.includes(car.id)
+                          ? "text-red-500 fill-current"
+                          : "text-gray-600 dark:text-gray-400"
+                      }`}
+                    />
+                  </button>
                 </div>
 
                 {/* Car Info */}
-                <div className="p-4">
+                <div className={`${viewMode === "list" ? "flex-1" : ""} p-6`}>
                   {/* Basic Info */}
-                  <div className="mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      {car.make} {car.model}
-                    </h3>
-                    {car.variant && (
-                      <p className="text-sm text-gray-600 mb-1">
-                        {car.variant}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <Calendar className="w-4 h-4" />
-                      <span>{car.year}</span>
+                  <div className="mb-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                          {car.make} {car.model}
+                        </h3>
+                        {car.variant && (
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                            {car.variant}
+                          </p>
+                        )}
+                      </div>
+                      <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <Share2 className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        <span>{car.year}</span>
+                      </div>
                       {car.mileage_km && (
-                        <>
-                          <span>•</span>
+                        <div className="flex items-center gap-1">
                           <Gauge className="w-4 h-4" />
                           <span>{car.mileage_km.toLocaleString()} km</span>
-                        </>
+                        </div>
                       )}
                     </div>
                   </div>
 
                   {/* Specifications */}
-                  <div className="grid grid-cols-2 gap-2 mb-3 text-sm text-gray-600">
+                  <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
                     {car.transmission && (
-                      <div className="flex items-center gap-1">
-                        <Settings className="w-3 h-3" />
+                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                        <Settings className="w-4 h-4" />
                         <span>{car.transmission}</span>
                       </div>
                     )}
                     {car.fuel && (
-                      <div className="flex items-center gap-1">
-                        <Fuel className="w-3 h-3" />
+                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                        <Fuel className="w-4 h-4" />
                         <span>{car.fuel}</span>
                       </div>
                     )}
                     {car.color && (
-                      <div className="flex items-center gap-1">
-                        <Palette className="w-3 h-3" />
+                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                        <Palette className="w-4 h-4" />
                         <span>{car.color}</span>
                       </div>
                     )}
                     {car.seats && (
-                      <div className="flex items-center gap-1">
-                        <Users className="w-3 h-3" />
+                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                        <Users className="w-4 h-4" />
                         <span>{car.seats} seats</span>
                       </div>
                     )}
                   </div>
 
                   {/* Price */}
-                  <div className="mb-4">
-                    <div className="text-xl font-bold text-blue-600">
+                  <div className="mb-6">
+                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                       {formatPrice(car.price_amount, car.price_currency)}
                     </div>
                     {car.price_basis && (
-                      <p className="text-xs text-gray-500">{car.price_basis}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {car.price_basis}
+                      </p>
                     )}
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     <button
                       onClick={() => handleViewCar(car)}
-                      className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2"
+                      className="flex-1 group relative overflow-hidden bg-white dark:bg-gray-700 border-2 border-blue-600 text-blue-600 dark:text-blue-400 px-4 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg hover:shadow-blue-500/25"
+                      title="View Details"
                     >
-                      <Eye className="w-4 h-4" />
-                      View Details
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <Eye className="w-6 h-6 relative z-10 group-hover:scale-110 transition-transform duration-300" />
                     </button>
                     <button
                       onClick={() => handleAddToCart(car)}
                       disabled={cartLoading}
-                      className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white px-4 py-2 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2"
+                      className="flex-1 group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white px-4 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 disabled:shadow-none"
+                      title="Add to Cart"
                     >
+                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       {cartLoading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                          Adding...
-                        </>
+                        <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent relative z-10"></div>
                       ) : (
-                        <>
-                          <ShoppingCart className="w-4 h-4" />
-                          Add to Cart
-                        </>
+                        <ShoppingCart className="w-6 h-6 relative z-10 group-hover:scale-110 transition-transform duration-300" />
                       )}
                     </button>
                   </div>
@@ -592,14 +700,19 @@ const UserCarCatalog: React.FC = () => {
           </div>
         )}
 
-        {/* Pagination */}
+        {/* Enhanced Pagination */}
         {totalPages > 1 && (
-          <div className="mt-8 flex items-center justify-center">
+          <div className="mt-12 flex items-center justify-between">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              Showing page {currentPage} of {totalPages} ({totalItems} total
+              vehicles)
+            </div>
+
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -611,10 +724,10 @@ const UserCarCatalog: React.FC = () => {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-2 text-sm font-medium rounded-lg ${
+                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                       currentPage === page
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-50"
+                        ? "bg-blue-600 text-white shadow-lg"
+                        : "text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                     }`}
                   >
                     {page}
@@ -627,7 +740,7 @@ const UserCarCatalog: React.FC = () => {
                   setCurrentPage(Math.min(totalPages, currentPage + 1))
                 }
                 disabled={currentPage === totalPages}
-                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -636,38 +749,60 @@ const UserCarCatalog: React.FC = () => {
         )}
       </div>
 
-      {/* Car Detail Modal */}
+      {/* Enhanced Car Detail Modal */}
       {showCarModal && selectedCar && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop with blur effect */}
           <div
-            className="absolute inset-0 bg-white/30 backdrop-blur-md"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={handleCloseCarModal}
           />
 
           {/* Modal */}
-          <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden">
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6 rounded-t-3xl">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8">
               <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold">
-                    {selectedCar.make} {selectedCar.model}
-                  </h2>
-                  <p className="text-blue-100 mt-1">
-                    {selectedCar.variant && `${selectedCar.variant} • `}
-                    {selectedCar.year} •{" "}
-                    {selectedCar.mileage_km
-                      ? `${selectedCar.mileage_km.toLocaleString()} km`
-                      : "Mileage not specified"}
-                  </p>
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center">
+                    <Car className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-bold">
+                      {selectedCar.make} {selectedCar.model}
+                    </h2>
+                    <p className="text-blue-100 mt-2 text-lg">
+                      {selectedCar.variant && `${selectedCar.variant} • `}
+                      {selectedCar.year} •{" "}
+                      {selectedCar.mileage_km
+                        ? `${selectedCar.mileage_km.toLocaleString()} km`
+                        : "Mileage not specified"}
+                    </p>
+                  </div>
                 </div>
-                <button
-                  onClick={handleCloseCarModal}
-                  className="p-2 hover:bg-white/20 rounded-xl transition-colors"
-                >
-                  <X className="w-6 h-6" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => toggleFavorite(selectedCar.id)}
+                    className="p-3 hover:bg-white/20 rounded-xl transition-colors"
+                  >
+                    <Heart
+                      className={`w-6 h-6 ${
+                        favorites.includes(selectedCar.id)
+                          ? "text-red-400 fill-current"
+                          : "text-white"
+                      }`}
+                    />
+                  </button>
+                  <button className="p-3 hover:bg-white/20 rounded-xl transition-colors">
+                    <Share2 className="w-6 h-6" />
+                  </button>
+                  <button
+                    onClick={handleCloseCarModal}
+                    className="p-3 hover:bg-white/20 rounded-xl transition-colors"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -961,6 +1096,30 @@ const UserCarCatalog: React.FC = () => {
                       <p className="text-gray-700">{selectedCar.notes}</p>
                     </div>
                   )}
+
+                  {/* Actions */}
+                  <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <button
+                      onClick={() => handleAddToCart(selectedCar)}
+                      disabled={cartLoading}
+                      className="flex-1 group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white px-6 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 disabled:shadow-none"
+                      title="Add to Cart"
+                    >
+                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      {cartLoading ? (
+                        <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent relative z-10"></div>
+                      ) : (
+                        <ShoppingCart className="w-6 h-6 relative z-10 group-hover:scale-110 transition-transform duration-300" />
+                      )}
+                    </button>
+                    <button
+                      onClick={handleCloseCarModal}
+                      className="flex-1 group relative overflow-hidden bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                      title="Close"
+                    >
+                      <X className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

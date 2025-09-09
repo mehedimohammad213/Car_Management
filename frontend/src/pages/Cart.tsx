@@ -27,7 +27,7 @@ const Cart: React.FC = () => {
     }
 
     setIsCheckingOut(true);
-    
+
     try {
       const response = await orderApi.createOrder({
         shipping_address: shippingAddress || undefined
@@ -249,12 +249,6 @@ const Cart: React.FC = () => {
                 )}
               </button>
 
-              <Link
-                to="/"
-                className="block w-full py-3 px-4 text-center border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
-                Continue Shopping
-              </Link>
             </div>
 
             {/* Additional Info */}
