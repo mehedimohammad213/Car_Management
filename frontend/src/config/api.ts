@@ -26,4 +26,9 @@ export const API_ENDPOINTS = {
     STATS: `${API_BASE_URL}/stocks/stats/overview`,
     AVAILABLE_CARS: `${API_BASE_URL}/stocks/available/cars`,
   },
+  CART: {
+    BASE: `${API_BASE_URL}/cart`,
+    SUMMARY: `${API_BASE_URL}/cart/summary`,
+    CLEAR: `${API_BASE_URL}/cart/clear`,
+  },
 };

@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\Category\CategoryController;
 use App\Http\Controllers\Api\Car\CarController;
 use App\Http\Controllers\Api\Stock\StockController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\OrderController;
 
 // Auth routes (no middleware)
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -53,6 +55,29 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Additional endpoints
         Route::get('/filter/options', [CarController::class, 'getFilterOptions']);
+    });
+
+    // Cart API Routes
+    Route::prefix('cart')->group(function () {
+        Route::get('/', [CartController::class, 'index']);
+        Route::post('/', [CartController::class, 'store']);
+        Route::put('/{cart}', [CartController::class, 'update']);
+        Route::delete('/{cart}', [CartController::class, 'destroy']);
+        Route::delete('/clear', [CartController::class, 'clear']);
+        Route::get('/summary', [CartController::class, 'summary']);
+    });
+
+    // Order API Routes
+    Route::prefix('orders')->group(function () {
+        Route::post('/', [OrderController::class, 'createOrder']);
+        Route::get('/user', [OrderController::class, 'getUserOrders']);
+        Route::get('/{id}', [OrderController::class, 'getOrder']);
+        Route::put('/{id}/cancel', [OrderController::class, 'cancelOrder']);
+        
+        // Admin only routes
+        Route::get('/admin/all', [OrderController::class, 'getAllOrders']);
+        Route::put('/{id}/status', [OrderController::class, 'updateOrderStatus']);
+        Route::delete('/{id}', [OrderController::class, 'deleteOrder']);
     });
 });
 

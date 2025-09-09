@@ -15,7 +15,6 @@ import {
   PackageIcon,
   DollarSignIcon,
   UsersIcon,
-  HeartIcon,
   SettingsIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
@@ -100,7 +99,6 @@ const Layout: React.FC = () => {
   const userNavItems = [
     { path: "/dashboard", label: "Dashboard", icon: BarChartIcon },
     { path: "/cars", label: "Car Catalog", icon: CarIcon },
-    { path: "/wishlist", label: "Wishlist", icon: HeartIcon },
     { path: "/cart", label: "Cart", icon: ShoppingCartIcon },
     { path: "/orders", label: "My Orders", icon: UserIcon },
     {
