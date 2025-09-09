@@ -86,7 +86,6 @@ const Layout: React.FC = () => {
     { path: "/admin/categories", label: "Categories", icon: FolderIcon },
     { path: "/admin/stock", label: "Stock", icon: PackageIcon },
     { path: "/admin/orders", label: "Orders", icon: ShoppingCartIcon },
-    { path: "/admin/clients", label: "Clients", icon: UsersIcon },
 
     {
       path: "/admin/settings",

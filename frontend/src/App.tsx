@@ -17,7 +17,6 @@ import ViewCar from "./pages/car/ViewCar";
 import UpdateCar from "./pages/car/UpdateCar";
 import StockManagement from "./pages/stock/StockManagement";
 import OrderManagement from "./pages/OrderManagement";
-import ClientManagement from "./pages/ClientManagement";
 
 import Settings from "./pages/Settings";
 
@@ -108,14 +107,6 @@ function App() {
                       element={
                         <ProtectedRoute role="admin">
                           <AdminOrders />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/admin/clients"
-                      element={
-                        <ProtectedRoute role="admin">
-                          <ClientManagement />
                         </ProtectedRoute>
                       }
                     />
