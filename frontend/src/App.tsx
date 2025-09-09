@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -16,7 +16,6 @@ import CreateCar from "./pages/car/CreateCar";
 import ViewCar from "./pages/car/ViewCar";
 import UpdateCar from "./pages/car/UpdateCar";
 import StockManagement from "./pages/stock/StockManagement";
-import SellManagement from "./pages/SellManagement";
 import OrderManagement from "./pages/OrderManagement";
 import ClientManagement from "./pages/ClientManagement";
 
@@ -41,184 +40,176 @@ function App() {
         <AuthProvider>
           <CartProvider>
             <Router>
-            <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/auth-test" element={<AuthTest />} />
-                <Route path="/" element={<Layout />}>
-                  {/* Admin Routes */}
-                  <Route
-                    path="/admin"
-                    element={
-                      <ProtectedRoute role="admin">
-                        <Dashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/cars"
-                    element={
-                      <ProtectedRoute role="admin">
-                        <CarManagement />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/categories"
-                    element={
-                      <ProtectedRoute role="admin">
-                        <CategoryManagement />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/create-car"
-                    element={
-                      <ProtectedRoute role="admin">
-                        <CreateCar />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/view-car/:id"
-                    element={
-                      <ProtectedRoute role="admin">
-                        <ViewCar />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/update-car/:id"
-                    element={
-                      <ProtectedRoute role="admin">
-                        <UpdateCar />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/stock"
-                    element={
-                      <ProtectedRoute role="admin">
-                        <StockManagement />
-                      </ProtectedRoute>
-                    }
-                  />
+              <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/auth-test" element={<AuthTest />} />
+                  <Route path="/" element={<Layout />}>
+                    {/* Admin Routes */}
+                    <Route
+                      path="/admin"
+                      element={
+                        <ProtectedRoute role="admin">
+                          <Dashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/cars"
+                      element={
+                        <ProtectedRoute role="admin">
+                          <CarManagement />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/categories"
+                      element={
+                        <ProtectedRoute role="admin">
+                          <CategoryManagement />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/create-car"
+                      element={
+                        <ProtectedRoute role="admin">
+                          <CreateCar />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/view-car/:id"
+                      element={
+                        <ProtectedRoute role="admin">
+                          <ViewCar />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/update-car/:id"
+                      element={
+                        <ProtectedRoute role="admin">
+                          <UpdateCar />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/stock"
+                      element={
+                        <ProtectedRoute role="admin">
+                          <StockManagement />
+                        </ProtectedRoute>
+                      }
+                    />
 
-                  <Route
-                    path="/admin/sell"
-                    element={
-                      <ProtectedRoute role="admin">
-                        <SellManagement />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/orders"
-                    element={
-                      <ProtectedRoute role="admin">
-                        <AdminOrders />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/clients"
-                    element={
-                      <ProtectedRoute role="admin">
-                        <ClientManagement />
-                      </ProtectedRoute>
-                    }
-                  />
+                    <Route
+                      path="/admin/orders"
+                      element={
+                        <ProtectedRoute role="admin">
+                          <AdminOrders />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/clients"
+                      element={
+                        <ProtectedRoute role="admin">
+                          <ClientManagement />
+                        </ProtectedRoute>
+                      }
+                    />
 
-                  <Route
-                    path="/admin/settings"
-                    element={
-                      <ProtectedRoute role="admin">
-                        <Settings />
-                      </ProtectedRoute>
-                    }
-                  />
+                    <Route
+                      path="/admin/settings"
+                      element={
+                        <ProtectedRoute role="admin">
+                          <Settings />
+                        </ProtectedRoute>
+                      }
+                    />
 
-                  {/* User Routes */}
-                  <Route path="/" element={<HomeRedirect />} />
-                  <Route path="/car/:id" element={<CarDetails />} />
-                  <Route path="/cars" element={<UserCarCatalog />} />
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <ProtectedRoute role="user">
-                        <UserDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/user-dashboard"
-                    element={
-                      <ProtectedRoute role="user">
-                        <UserDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route
-                    path="/orders"
-                    element={
-                      <ProtectedRoute role="user">
-                        <UserOrders />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/profile"
-                    element={
-                      <ProtectedRoute role="user">
-                        <UserProfile />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/profile/edit"
-                    element={
-                      <ProtectedRoute role="user">
-                        <UserProfile />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/profile/password"
-                    element={
-                      <ProtectedRoute role="user">
-                        <UserPassword />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/user-dashboard"
-                    element={
-                      <ProtectedRoute role="user">
-                        <UserDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                </Route>
-              </Routes>
-            </div>
-          </Router>
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="colored"
-            className="toast-container"
-            toastClassName="custom-toast"
-            bodyClassName="custom-toast-body"
-            progressClassName="custom-toast-progress"
-          />
+                    {/* User Routes */}
+                    <Route path="/" element={<HomeRedirect />} />
+                    <Route path="/car/:id" element={<CarDetails />} />
+                    <Route path="/cars" element={<UserCarCatalog />} />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <ProtectedRoute role="user">
+                          <UserDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/user-dashboard"
+                      element={
+                        <ProtectedRoute role="user">
+                          <UserDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route
+                      path="/orders"
+                      element={
+                        <ProtectedRoute role="user">
+                          <UserOrders />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/profile"
+                      element={
+                        <ProtectedRoute role="user">
+                          <UserProfile />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/profile/edit"
+                      element={
+                        <ProtectedRoute role="user">
+                          <UserProfile />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/profile/password"
+                      element={
+                        <ProtectedRoute role="user">
+                          <UserPassword />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/user-dashboard"
+                      element={
+                        <ProtectedRoute role="user">
+                          <UserDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                  </Route>
+                </Routes>
+              </div>
+            </Router>
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored"
+              className="toast-container"
+              toastClassName="custom-toast"
+              bodyClassName="custom-toast-body"
+              progressClassName="custom-toast-progress"
+            />
           </CartProvider>
         </AuthProvider>
       </ThemeProvider>
