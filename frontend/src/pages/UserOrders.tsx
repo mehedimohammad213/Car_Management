@@ -487,34 +487,6 @@ const UserOrders: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center gap-4">
-                      <button
-                        onClick={() => setSelectedOrder(order)}
-                        className="flex items-center gap-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
-                      >
-                        <Eye className="w-4 h-4" />
-                        <span>View Details</span>
-                      </button>
-                      <button
-                        onClick={() => handleDownloadInvoice(order)}
-                        className="flex items-center gap-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 text-sm font-medium"
-                      >
-                        <Download className="w-4 h-4" />
-                        <span>Download Invoice</span>
-                      </button>
-                    </div>
-                    {order.status === "pending" && (
-                      <button
-                        onClick={() => handleCancelOrder(order.id)}
-                        className="flex items-center gap-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium"
-                      >
-                        <XCircle className="w-4 h-4" />
-                        <span>Cancel Order</span>
-                      </button>
-                    )}
-                  </div>
                 </div>
               ))
             )}
