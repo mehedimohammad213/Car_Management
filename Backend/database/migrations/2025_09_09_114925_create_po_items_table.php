@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('po_items', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('order_id')->constrained('orders');
+            $table->foreignId('car_id')->constrained('cars');
+            $table->integer('quantity');
+            $table->decimal('price', 10, 2);
+            $table->string('notes')->nullable();
             $table->timestamps();
         });
     }
