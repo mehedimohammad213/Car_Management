@@ -1,8 +1,14 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { toast } from 'react-toastify';
-import { Car } from '../services/carApi';
-import { cartApi, CartItem as ApiCartItem } from '../services/cartApi';
-import { useAuth } from './AuthContext';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { toast } from "react-toastify";
+import { Car } from "../services/carApi";
+import { cartApi, CartItem as ApiCartItem } from "../services/cartApi";
+import { useAuth } from "./AuthContext";
 
 interface CartItem {
   id: number; // Cart item ID from API
@@ -28,7 +34,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const useCart = () => {
   const context = useContext(CartContext);
   if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider');
+    throw new Error("useCart must be used within a CartProvider");
   }
   return context;
 };
@@ -81,7 +87,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     return {
       id: apiItem.id, // Store the cart item ID
       car: {
-        id: apiItem.car.id.toString(),
+        id: apiItem.car.id,
         make: apiItem.car.make,
         model: apiItem.car.model,
         variant: apiItem.car.variant,
@@ -93,11 +99,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         fuel: apiItem.car.fuel,
         color: apiItem.car.color,
         status: apiItem.car.status,
-        category: apiItem.car.category?.name || '',
-        image: apiItem.car.primary_photo?.image_url || '',
-        isAvailable: apiItem.car.status === 'available'
+        category: apiItem.car.category,
+        image: apiItem.car.primary_photo?.image_url || "",
+        isAvailable: apiItem.car.status === "available",
       },
-      quantity: apiItem.quantity
+      quantity: apiItem.quantity,
     };
   };
 
@@ -116,7 +122,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         setItems(convertedItems);
       }
     } catch (error) {
-      console.error('Failed to load cart:', error);
+      console.error("Failed to load cart:", error);
       // Don't show error to user on initial load, just log it
     } finally {
       setIsLoading(false);
@@ -129,25 +135,27 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const addToCart = async (car: Car, quantity: number = 1) => {
     if (!user) {
-      showErrorToast('Please log in to add items to your cart');
+      showErrorToast("Please log in to add items to your cart");
       return;
     }
 
     try {
       setIsLoading(true);
       const response = await cartApi.addToCart({
-        car_id: parseInt(car.id),
-        quantity
+        car_id: car.id,
+        quantity,
       });
 
       if (response.success) {
-        showSuccessToast(`🚗 ${car.make} ${car.model} added to cart successfully!`);
+        showSuccessToast(
+          `🚗 ${car.make} ${car.model} added to cart successfully!`
+        );
         // Reload cart to get updated data
         await loadCart();
       }
     } catch (error) {
-      console.error('Failed to add item to cart:', error);
-      showErrorToast('Failed to add item to cart. Please try again.');
+      console.error("Failed to add item to cart:", error);
+      showErrorToast("Failed to add item to cart. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -155,7 +163,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const removeFromCart = async (cartId: number) => {
     if (!user) {
-      console.error('User must be logged in to remove items from cart');
+      console.error("User must be logged in to remove items from cart");
       return;
     }
 
@@ -164,13 +172,13 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       const response = await cartApi.removeFromCart(cartId);
 
       if (response.success) {
-        showInfoToast('Item removed from cart');
+        showInfoToast("Item removed from cart");
         // Reload cart to get updated data
         await loadCart();
       }
     } catch (error) {
-      console.error('Failed to remove item from cart:', error);
-      showErrorToast('Failed to remove item from cart');
+      console.error("Failed to remove item from cart:", error);
+      showErrorToast("Failed to remove item from cart");
     } finally {
       setIsLoading(false);
     }
@@ -178,7 +186,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const updateQuantity = async (cartId: number, quantity: number) => {
     if (!user) {
-      console.error('User must be logged in to update cart');
+      console.error("User must be logged in to update cart");
       return;
     }
 
@@ -196,7 +204,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         await loadCart();
       }
     } catch (error) {
-      console.error('Failed to update cart item:', error);
+      console.error("Failed to update cart item:", error);
     } finally {
       setIsLoading(false);
     }
@@ -204,7 +212,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const clearCart = async () => {
     if (!user) {
-      console.error('User must be logged in to clear cart');
+      console.error("User must be logged in to clear cart");
       return;
     }
 
@@ -213,17 +221,17 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       const response = await cartApi.clearCart();
 
       if (response.success) {
-        showInfoToast('Cart cleared successfully');
+        showInfoToast("Cart cleared successfully");
         setItems([]);
       } else {
         // If API call fails, still clear local state
         setItems([]);
       }
     } catch (error) {
-      console.error('Failed to clear cart:', error);
+      console.error("Failed to clear cart:", error);
       // Even if API call fails, clear local state
       setItems([]);
-      showErrorToast('Failed to clear cart');
+      showErrorToast("Failed to clear cart");
     } finally {
       setIsLoading(false);
     }
@@ -238,7 +246,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   };
 
   const getTotalPrice = () => {
-    return items.reduce((total, item) => total + ((item.car.price_amount || 0) * item.quantity), 0);
+    return items.reduce(
+      (total, item) => total + (item.car.price_amount || 0) * item.quantity,
+      0
+    );
   };
 
   const value = {
@@ -251,12 +262,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     getTotalItems,
     getTotalPrice,
     refreshCart,
-    setItems
+    setItems,
   };
 
-  return (
-    <CartContext.Provider value={value}>
-      {children}
-    </CartContext.Provider>
-  );
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

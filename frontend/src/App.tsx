@@ -198,7 +198,6 @@ function App() {
               theme="colored"
               className="toast-container"
               toastClassName="custom-toast"
-              bodyClassName="custom-toast-body"
               progressClassName="custom-toast-progress"
             />
           </CartProvider>

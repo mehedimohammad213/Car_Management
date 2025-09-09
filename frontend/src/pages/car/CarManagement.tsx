@@ -29,6 +29,7 @@ import {
 import { categoryApi, Category } from "../../services/categoryApi";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 import ExcelImportModal from "../../components/ExcelImportModal";
+import MobileTable from "../../components/MobileTable";
 
 const CarManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -309,38 +310,40 @@ const CarManagement: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
           <div>
-            <h1 className="text-4xl font-bold text-gray-800">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">
               🚗 Car Management
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-sm sm:text-base text-gray-600 mt-2">
               Manage your vehicle inventory with advanced features
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
             <button
               onClick={handleImportExcel}
-              className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white px-4 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
+              className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 group touch-manipulation text-sm sm:text-base"
             >
-              <FileSpreadsheet className="w-5 h-5 group-hover:scale-110 transition-transform" />
-              Import Excel
+              <FileSpreadsheet className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
+              <span className="hidden sm:inline">Import Excel</span>
+              <span className="sm:hidden">Import</span>
             </button>
             <button
               onClick={handleExportExcel}
-              className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-4 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
+              className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 group touch-manipulation text-sm sm:text-base"
             >
-              <Download className="w-5 h-5 group-hover:scale-110 transition-transform" />
-              Export Excel
+              <Download className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
+              <span className="hidden sm:inline">Export Excel</span>
+              <span className="sm:hidden">Export</span>
             </button>
             <button
               onClick={handleCreateCar}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 group touch-manipulation text-sm sm:text-base"
             >
-              <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
               Add Car
             </button>
           </div>
@@ -363,18 +366,18 @@ const CarManagement: React.FC = () => {
       )}
 
       {/* Advanced Filters */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+      <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
         <div className="flex items-center gap-2 mb-4"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
           {/* Search */}
-          <div className="relative">
+          <div className="relative sm:col-span-2 lg:col-span-1">
             <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search cars..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base"
             />
           </div>
 
@@ -382,7 +385,7 @@ const CarManagement: React.FC = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+            className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base"
           >
             <option value="">All Status</option>
             {filterOptions?.statuses?.map((status) => (
@@ -396,7 +399,7 @@ const CarManagement: React.FC = () => {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+            className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base"
           >
             <option value="">All Categories</option>
             {categories.map((category) => (
@@ -410,7 +413,7 @@ const CarManagement: React.FC = () => {
           <select
             value={makeFilter}
             onChange={(e) => setMakeFilter(e.target.value)}
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+            className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base"
           >
             <option value="">All Makes</option>
             {filterOptions?.makes?.map((make) => (
@@ -433,7 +436,7 @@ const CarManagement: React.FC = () => {
               setColorFilter("");
               setCurrentPage(1);
             }}
-            className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors font-medium"
+            className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors font-medium touch-manipulation text-base"
           >
             Clear All Filters
           </button>
@@ -442,7 +445,8 @@ const CarManagement: React.FC = () => {
 
       {/* Cars Table */}
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Desktop Table */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full">
             <thead className="bg-blue-600 text-white">
               <tr>
@@ -675,6 +679,85 @@ const CarManagement: React.FC = () => {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Table */}
+        <div className="lg:hidden p-4">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-3 text-gray-600">Loading cars...</span>
+            </div>
+          ) : cars.length === 0 ? (
+            <div className="text-center py-12 text-gray-500">
+              <div className="space-y-2">
+                <p>No cars found</p>
+                <p className="text-sm text-gray-400">
+                  {isLoading
+                    ? "Loading..."
+                    : "Try refreshing the page or check your connection"}
+                </p>
+                <button
+                  onClick={() => {
+                    console.log("Manual refresh clicked");
+                    fetchCars();
+                    fetchCategories();
+                    fetchFilterOptions();
+                  }}
+                  className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-colors"
+                >
+                  Refresh Data
+                </button>
+              </div>
+            </div>
+          ) : (
+            <MobileTable
+              data={cars}
+              columns={[
+                {
+                  key: "id",
+                  label: "ID",
+                  render: (value) => `#${value}`,
+                },
+                {
+                  key: "make",
+                  label: "Car",
+                  render: (value, item) => (
+                    <div>
+                      <div className="font-semibold">
+                        {item.make} {item.model}
+                      </div>
+                      {item.variant && (
+                        <div className="text-xs text-gray-500">
+                          {item.variant}
+                        </div>
+                      )}
+                    </div>
+                  ),
+                },
+                {
+                  key: "price_amount",
+                  label: "Price",
+                  render: (value, item) =>
+                    formatPrice(value, item.price_currency),
+                },
+                {
+                  key: "status",
+                  label: "Status",
+                  render: (value) => (
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        value
+                      )}`}
+                    >
+                      {value?.charAt(0).toUpperCase() + value?.slice(1)}
+                    </span>
+                  ),
+                },
+              ]}
+              onRowClick={handleViewCar}
+            />
+          )}
         </div>
       </div>
 

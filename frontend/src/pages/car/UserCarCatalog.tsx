@@ -251,23 +251,23 @@ const UserCarCatalog: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
         {/* Enhanced Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
                 <SlidersHorizontal className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                 Search & Filters
               </h3>
             </div>
             <button
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors touch-manipulation self-start sm:self-auto"
             >
-              <span>Advanced</span>
+              <span className="text-sm sm:text-base">Advanced</span>
               <ChevronDown
                 className={`w-4 h-4 transition-transform ${
                   showAdvancedFilters ? "rotate-180" : ""
@@ -277,16 +277,16 @@ const UserCarCatalog: React.FC = () => {
           </div>
 
           {/* Primary Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
             {/* Search */}
-            <div className="relative">
+            <div className="relative sm:col-span-2 lg:col-span-1">
               <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search by make, model, year..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white text-base"
               />
             </div>
 
@@ -294,7 +294,7 @@ const UserCarCatalog: React.FC = () => {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
+              className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white text-base"
             >
               <option value="">All Categories</option>
               {categories.map((category) => (
@@ -308,7 +308,7 @@ const UserCarCatalog: React.FC = () => {
             <select
               value={makeFilter}
               onChange={(e) => setMakeFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
+              className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white text-base"
             >
               <option value="">All Makes</option>
               {filterOptions?.makes?.map((make) => (
@@ -322,7 +322,7 @@ const UserCarCatalog: React.FC = () => {
             <select
               value={yearFilter}
               onChange={(e) => setYearFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
+              className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white text-base"
             >
               <option value="">All Years</option>
               {filterOptions?.years?.map((year) => (
@@ -335,13 +335,13 @@ const UserCarCatalog: React.FC = () => {
 
           {/* Advanced Filters */}
           {showAdvancedFilters && (
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-4 sm:pt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {/* Transmission */}
                 <select
                   value={transmissionFilter}
                   onChange={(e) => setTransmissionFilter(e.target.value)}
-                  className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
+                  className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white text-base"
                 >
                   <option value="">All Transmissions</option>
                   {filterOptions?.transmissions?.map((transmission) => (
@@ -355,7 +355,7 @@ const UserCarCatalog: React.FC = () => {
                 <select
                   value={fuelFilter}
                   onChange={(e) => setFuelFilter(e.target.value)}
-                  className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
+                  className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white text-base"
                 >
                   <option value="">All Fuels</option>
                   {filterOptions?.fuels?.map((fuel) => (
@@ -369,7 +369,7 @@ const UserCarCatalog: React.FC = () => {
                 <select
                   value={colorFilter}
                   onChange={(e) => setColorFilter(e.target.value)}
-                  className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
+                  className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white text-base"
                 >
                   <option value="">All Colors</option>
                   {filterOptions?.colors?.map((color) => (
@@ -380,7 +380,7 @@ const UserCarCatalog: React.FC = () => {
                 </select>
 
                 {/* Price Range */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 sm:col-span-2 lg:col-span-1">
                   <input
                     type="number"
                     placeholder="Min Price"
@@ -391,7 +391,7 @@ const UserCarCatalog: React.FC = () => {
                         min: e.target.value,
                       }))
                     }
-                    className="flex-1 px-3 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
+                    className="flex-1 px-3 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white text-base"
                   />
                   <input
                     type="number"
@@ -403,7 +403,7 @@ const UserCarCatalog: React.FC = () => {
                         max: e.target.value,
                       }))
                     }
-                    className="flex-1 px-3 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white"
+                    className="flex-1 px-3 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white text-base"
                   />
                 </div>
               </div>
@@ -411,13 +411,13 @@ const UserCarCatalog: React.FC = () => {
           )}
 
           {/* Filter Actions */}
-          <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 sm:mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 gap-3 sm:gap-0">
             <button
               onClick={clearFilters}
-              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors touch-manipulation self-start sm:self-auto"
             >
               <X className="w-4 h-4" />
-              Clear All Filters
+              <span className="text-sm sm:text-base">Clear All Filters</span>
             </button>
             <div className="text-sm text-gray-500 dark:text-gray-400">
               {cars.length} of {totalItems} cars found
@@ -426,8 +426,8 @@ const UserCarCatalog: React.FC = () => {
         </div>
 
         {/* Results Controls */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
             <div className="text-sm text-gray-600 dark:text-gray-400">
               Showing{" "}
               <span className="font-semibold text-gray-900 dark:text-white">
@@ -446,7 +446,7 @@ const UserCarCatalog: React.FC = () => {
               <div className="flex border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-2 ${
+                  className={`p-2 touch-manipulation ${
                     viewMode === "grid"
                       ? "bg-blue-600 text-white"
                       : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -456,7 +456,7 @@ const UserCarCatalog: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`p-2 ${
+                  className={`p-2 touch-manipulation ${
                     viewMode === "list"
                       ? "bg-blue-600 text-white"
                       : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -479,7 +479,7 @@ const UserCarCatalog: React.FC = () => {
                 setSortBy(field);
                 setSortDirection(direction);
               }}
-              className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm sm:text-base"
             >
               <option value="created_at-desc">Newest First</option>
               <option value="created_at-asc">Oldest First</option>
@@ -521,9 +521,9 @@ const UserCarCatalog: React.FC = () => {
           </div>
         ) : (
           <div
-            className={`grid gap-6 ${
+            className={`grid gap-4 sm:gap-6 ${
               viewMode === "grid"
-                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                 : "grid-cols-1"
             }`}
           >
