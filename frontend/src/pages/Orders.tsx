@@ -96,22 +96,126 @@ const Orders: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="space-y-4">
-          {orders.map((order) => (
-            <div
-              key={order.id}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Order #{order.id}
-                  </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Placed on {new Date(order.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="flex items-center space-x-3">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+          {/* Desktop Table */}
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-blue-600 text-white">
+                <tr>
+                  <th className="px-6 py-4 text-left font-semibold">
+                    Order ID
+                  </th>
+                  <th className="px-6 py-4 text-left font-semibold">Items</th>
+                  <th className="px-6 py-4 text-left font-semibold">
+                    Total Amount
+                  </th>
+                  <th className="px-6 py-4 text-left font-semibold">Status</th>
+                  <th className="px-6 py-4 text-left font-semibold">Date</th>
+                  <th className="px-6 py-4 text-left font-semibold">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {orders.map((order) => (
+                  <tr
+                    key={order.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                      #{order.id}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="space-y-2">
+                        {order.items.slice(0, 2).map((item, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center space-x-3"
+                          >
+                            <img
+                              src={item.car.image}
+                              alt={`${item.car.brand} ${item.car.model}`}
+                              className="w-12 h-8 object-cover rounded border"
+                            />
+                            <div className="min-w-0">
+                              <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                {item.car.brand} {item.car.model}
+                              </div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400">
+                                Qty: {item.quantity}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        {order.items.length > 2 && (
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            +{order.items.length - 2} more items
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-right">
+                        <div className="font-semibold text-gray-900 dark:text-white">
+                          ${order.totalAmount.toLocaleString()}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {order.items.length} item
+                          {order.items.length !== 1 ? "s" : ""}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                          order.status
+                        )}`}
+                      >
+                        {order.status.charAt(0).toUpperCase() +
+                          order.status.slice(1)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => setSelectedOrder(order)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors"
+                          title="View Details"
+                        >
+                          <EyeIcon className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDownloadInvoice(order)}
+                          className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-md transition-colors"
+                          title="Download Invoice"
+                        >
+                          <DownloadIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="lg:hidden">
+            {orders.map((order) => (
+              <div
+                key={order.id}
+                className="p-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Order #{order.id}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
                   <span
                     className={`px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(
                       order.status
@@ -119,6 +223,37 @@ const Orders: React.FC = () => {
                   >
                     {order.status.charAt(0).toUpperCase() +
                       order.status.slice(1)}
+                  </span>
+                </div>
+
+                <div className="space-y-2 mb-3">
+                  {order.items.slice(0, 2).map((item, index) => (
+                    <div key={index} className="flex items-center space-x-3">
+                      <img
+                        src={item.car.image}
+                        alt={`${item.car.brand} ${item.car.model}`}
+                        className="w-12 h-8 object-cover rounded border"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                          {item.car.brand} {item.car.model}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          Qty: {item.quantity} • ${item.price.toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {order.items.length > 2 && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      +{order.items.length - 2} more items
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Total: ${order.totalAmount.toLocaleString()}
                   </span>
                   <div className="flex items-center space-x-2">
                     <button
@@ -136,48 +271,8 @@ const Orders: React.FC = () => {
                   </div>
                 </div>
               </div>
-
-              <div className="space-y-3">
-                {order.items.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center space-x-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
-                  >
-                    <img
-                      src={item.car.image}
-                      alt={`${item.car.brand} ${item.car.model}`}
-                      className="w-16 h-16 object-cover rounded-lg"
-                    />
-                    <div className="flex-1">
-                      <h4 className="font-medium text-gray-900 dark:text-white">
-                        {item.car.brand} {item.car.model}
-                      </h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {item.car.year} • {item.car.mileage.toLocaleString()}{" "}
-                        miles
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        Qty: {item.quantity}
-                      </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        ${item.price.toLocaleString()} each
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Total: ${order.totalAmount.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
