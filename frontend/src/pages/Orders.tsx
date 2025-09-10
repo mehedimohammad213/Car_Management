@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { DownloadIcon, EyeIcon } from "lucide-react";
+import { DownloadIcon, EyeIcon, ChevronUp, ChevronDown } from "lucide-react";
 // Removed mockData import
 import { Order } from "../types";
 import { useAuth } from "../contexts/AuthContext";
@@ -8,6 +8,8 @@ const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [sortField, setSortField] = useState<string>("id");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const { user } = useAuth();
 
   useEffect(() => {
@@ -47,6 +49,56 @@ const Orders: React.FC = () => {
     // In a real app, this would generate and download a PDF invoice
     alert(`Downloading invoice for order ${order.id}`);
   };
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const getSortIcon = (field: string) => {
+    if (sortField !== field) {
+      return <ChevronUp className="w-4 h-4 opacity-30" />;
+    }
+    return sortDirection === "asc" ? (
+      <ChevronUp className="w-4 h-4" />
+    ) : (
+      <ChevronDown className="w-4 h-4" />
+    );
+  };
+
+  const sortedOrders = [...orders].sort((a, b) => {
+    let aValue: any;
+    let bValue: any;
+
+    switch (sortField) {
+      case "id":
+        aValue = a.id;
+        bValue = b.id;
+        break;
+      case "totalAmount":
+        aValue = a.totalAmount;
+        bValue = b.totalAmount;
+        break;
+      case "status":
+        aValue = a.status;
+        bValue = b.status;
+        break;
+      case "createdAt":
+        aValue = new Date(a.createdAt).getTime();
+        bValue = new Date(b.createdAt).getTime();
+        break;
+      default:
+        return 0;
+    }
+
+    if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+    if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+    return 0;
+  });
 
   if (isLoading) {
     return (
@@ -102,20 +154,44 @@ const Orders: React.FC = () => {
             <table className="w-full">
               <thead className="bg-blue-600 text-white">
                 <tr>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    Order ID
+                  <th
+                    className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
+                    onClick={() => handleSort("id")}
+                  >
+                    <div className="flex items-center">
+                      Order ID {getSortIcon("id")}
+                    </div>
                   </th>
                   <th className="px-6 py-4 text-left font-semibold">Items</th>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    Total Amount
+                  <th
+                    className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
+                    onClick={() => handleSort("totalAmount")}
+                  >
+                    <div className="flex items-center">
+                      Total Amount {getSortIcon("totalAmount")}
+                    </div>
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold">Status</th>
-                  <th className="px-6 py-4 text-left font-semibold">Date</th>
+                  <th
+                    className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
+                    onClick={() => handleSort("status")}
+                  >
+                    <div className="flex items-center">
+                      Status {getSortIcon("status")}
+                    </div>
+                  </th>
+                  <th
+                    className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
+                    onClick={() => handleSort("createdAt")}
+                  >
+                    <div className="flex items-center">
+                      Date {getSortIcon("createdAt")}
+                    </div>
+                  </th>
                   <th className="px-6 py-4 text-left font-semibold">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {orders.map((order) => (
+                {sortedOrders.map((order) => (
                   <tr
                     key={order.id}
                     className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -202,7 +278,7 @@ const Orders: React.FC = () => {
 
           {/* Mobile Cards */}
           <div className="lg:hidden">
-            {orders.map((order) => (
+            {sortedOrders.map((order) => (
               <div
                 key={order.id}
                 className="p-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
