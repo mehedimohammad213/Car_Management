@@ -36,6 +36,8 @@ const UserOrders: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [sortField, setSortField] = useState<string>("id");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [showCancelPopup, setShowCancelPopup] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState<Order | null>(null);
 
   useEffect(() => {
     loadOrders();
@@ -59,16 +61,14 @@ const UserOrders: React.FC = () => {
   };
 
   const handleCancelOrder = async (orderId: number) => {
-    if (!window.confirm("Are you sure you want to cancel this order?")) {
-      return;
-    }
-
     try {
       const response = await orderApi.cancelOrder(orderId);
       if (response.success) {
         toast.success("Order canceled successfully");
         loadOrders();
         setSelectedOrder(null);
+        setShowCancelPopup(false);
+        setOrderToCancel(null);
       } else {
         toast.error(response.message || "Failed to cancel order");
       }
@@ -76,6 +76,16 @@ const UserOrders: React.FC = () => {
       console.error("Error canceling order:", error);
       toast.error("Failed to cancel order");
     }
+  };
+
+  const openCancelPopup = (order: Order) => {
+    setOrderToCancel(order);
+    setShowCancelPopup(true);
+  };
+
+  const closeCancelPopup = () => {
+    setShowCancelPopup(false);
+    setOrderToCancel(null);
   };
 
   const handleDownloadInvoice = (order: Order) => {
@@ -436,13 +446,17 @@ const UserOrders: React.FC = () => {
                           >
                             <Eye className="w-5 h-5" />
                           </button>
-                          <button
-                            onClick={() => handleDownloadInvoice(order)}
-                            className="p-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
-                            title="Download Invoice"
-                          >
-                            <Download className="w-5 h-5" />
-                          </button>
+                          {(order.status === "approved" ||
+                            order.status === "shipped" ||
+                            order.status === "delivered") && (
+                            <button
+                              onClick={() => handleDownloadInvoice(order)}
+                              className="p-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
+                              title="Download Invoice"
+                            >
+                              <Download className="w-5 h-5" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -519,12 +533,16 @@ const UserOrders: React.FC = () => {
                       >
                         <Eye className="w-5 h-5" />
                       </button>
-                      <button
-                        onClick={() => handleDownloadInvoice(order)}
-                        className="p-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
-                      >
-                        <Download className="w-5 h-5" />
-                      </button>
+                      {(order.status === "approved" ||
+                        order.status === "shipped" ||
+                        order.status === "delivered") && (
+                        <button
+                          onClick={() => handleDownloadInvoice(order)}
+                          className="p-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
+                        >
+                          <Download className="w-5 h-5" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -668,25 +686,6 @@ const UserOrders: React.FC = () => {
                         </div>
                       </div>
                     </div>
-
-                    {/* Shipping Information */}
-                    {selectedOrder.shipping_address && (
-                      <div className="bg-white dark:bg-gray-700 rounded-2xl border border-gray-200 dark:border-gray-600 overflow-hidden">
-                        <div className="bg-gray-50 dark:bg-gray-600 px-6 py-4 border-b border-gray-200 dark:border-gray-500">
-                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                            <MapPin className="w-5 h-5" />
-                            Shipping Information
-                          </h3>
-                        </div>
-                        <div className="p-6">
-                          <div className="bg-gray-50 dark:bg-gray-600 rounded-xl p-4">
-                            <p className="text-gray-900 dark:text-white whitespace-pre-line leading-relaxed">
-                              {selectedOrder.shipping_address}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   {/* Order Timeline & Actions */}
@@ -764,16 +763,20 @@ const UserOrders: React.FC = () => {
                         </h3>
                       </div>
                       <div className="p-6 space-y-3">
-                        <button
-                          onClick={() => handleDownloadInvoice(selectedOrder)}
-                          className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors font-medium"
-                        >
-                          <Download className="w-5 h-5" />
-                          Download Invoice
-                        </button>
+                        {(selectedOrder.status === "approved" ||
+                          selectedOrder.status === "shipped" ||
+                          selectedOrder.status === "delivered") && (
+                          <button
+                            onClick={() => handleDownloadInvoice(selectedOrder)}
+                            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors font-medium"
+                          >
+                            <Download className="w-5 h-5" />
+                            Download Invoice
+                          </button>
+                        )}
                         {selectedOrder.status === "pending" && (
                           <button
-                            onClick={() => handleCancelOrder(selectedOrder.id)}
+                            onClick={() => openCancelPopup(selectedOrder)}
                             className="w-full flex items-center justify-center gap-3 px-4 py-3 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 border border-red-300 dark:border-red-600 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-medium"
                           >
                             <XCircle className="w-5 h-5" />
@@ -784,6 +787,82 @@ const UserOrders: React.FC = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Order Confirmation Popup */}
+      {showCancelPopup && orderToCancel && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full mx-4">
+            {/* Popup Header */}
+            <div className="bg-gradient-to-r from-red-500 to-red-600 text-white p-6 rounded-t-3xl">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                  <XCircle className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold">Cancel Order</h2>
+                  <p className="text-red-100 text-sm">
+                    This action cannot be undone
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Popup Content */}
+            <div className="p-6">
+              <div className="mb-6">
+                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                  Are you sure you want to cancel this order?
+                </p>
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                      <Package className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                        Order #{orderToCancel.id}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {orderToCancel.items.length} item
+                        {orderToCancel.items.length !== 1 ? "s" : ""} • $
+                        {orderToCancel.total_amount.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <p>
+                      • Order placed on {formatDate(orderToCancel.created_at)}
+                    </p>
+                    <p>
+                      • Status:{" "}
+                      <span className="capitalize font-medium">
+                        {orderToCancel.status}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={closeCancelPopup}
+                  className="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl transition-colors font-medium"
+                >
+                  Keep Order
+                </button>
+                <button
+                  onClick={() => handleCancelOrder(orderToCancel.id)}
+                  className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-colors font-medium flex items-center justify-center gap-2"
+                >
+                  <XCircle className="w-4 h-4" />
+                  Cancel Order
+                </button>
               </div>
             </div>
           </div>
