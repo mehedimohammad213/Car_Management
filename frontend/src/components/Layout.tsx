@@ -208,8 +208,8 @@ const Layout: React.FC = () => {
           onClick={() => setSidebarMinimized(!sidebarMinimized)}
           className="hidden lg:flex fixed top-4 z-50 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-r-lg p-2 shadow-lg hover:bg-slate-50 dark:hover:bg-gray-700 transition-all duration-200"
           style={{
-            left: sidebarMinimized ? "4rem" : "18rem",
-            transform: "translateX(-50%)",
+            left: sidebarMinimized ? "3rem" : "18.5rem",
+            transform: "translateX(0%)",
           }}
           title={sidebarMinimized ? "Expand sidebar" : "Minimize sidebar"}
         >
