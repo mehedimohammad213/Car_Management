@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Professional Color Palette Reference - Car Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#f0f4ff",
+                100: "#e0e7ff",
+                200: "#c7d2fe",
+                300: "#a5b4fc",
+                400: "#818cf8",
+                500: "#6366f1",
+                600: "#4f46e5",
+                700: "#4338ca",
+                800: "#3730a3",
+                900: "#312e81",
+                950: "#1e1b4b",
+              },
+              secondary: {
+                50: "#f0fdfa",
+                100: "#ccfbf1",
+                200: "#99f6e4",
+                300: "#5eead4",
+                400: "#2dd4bf",
+                500: "#14b8a6",
+                600: "#0d9488",
+                700: "#0f766e",
+                800: "#115e59",
+                900: "#134e4a",
+                950: "#042f2e",
+              },
+              status: {
+                success: {
+                  50: "#f0fdf4",
+                  100: "#dcfce7",
+                  200: "#bbf7d0",
+                  300: "#86efac",
+                  400: "#4ade80",
+                  500: "#22c55e",
+                  600: "#16a34a",
+                  700: "#15803d",
+                  800: "#166534",
+                  900: "#14532d",
+                },
+                warning: {
+                  50: "#fffbeb",
+                  100: "#fef3c7",
+                  200: "#fde68a",
+                  300: "#fcd34d",
+                  400: "#fbbf24",
+                  500: "#f59e0b",
+                  600: "#d97706",
+                  700: "#b45309",
+                  800: "#92400e",
+                  900: "#78350f",
+                },
+                error: {
+                  50: "#fef2f2",
+                  100: "#fee2e2",
+                  200: "#fecaca",
+                  300: "#fca5a5",
+                  400: "#f87171",
+                  500: "#ef4444",
+                  600: "#dc2626",
+                  700: "#b91c1c",
+                  800: "#991b1b",
+                  900: "#7f1d1d",
+                },
+                info: {
+                  50: "#eff6ff",
+                  100: "#dbeafe",
+                  200: "#bfdbfe",
+                  300: "#93c5fd",
+                  400: "#60a5fa",
+                  500: "#3b82f6",
+                  600: "#2563eb",
+                  700: "#1d4ed8",
+                  800: "#1e40af",
+                  900: "#1e3a8a",
+                },
+              },
+              accent: {
+                orange: {
+                  50: "#fff7ed",
+                  100: "#ffedd5",
+                  200: "#fed7aa",
+                  300: "#fdba74",
+                  400: "#fb923c",
+                  500: "#f97316",
+                  600: "#ea580c",
+                  700: "#c2410c",
+                  800: "#9a3412",
+                  900: "#7c2d12",
+                },
+                purple: {
+                  50: "#faf5ff",
+                  100: "#f3e8ff",
+                  200: "#e9d5ff",
+                  300: "#d8b4fe",
+                  400: "#c084fc",
+                  500: "#a855f7",
+                  600: "#9333ea",
+                  700: "#7c3aed",
+                  800: "#6b21a8",
+                  900: "#581c87",
+                },
+              },
+              neutral: {
+                50: "#fafafa",
+                100: "#f5f5f5",
+                200: "#e5e5e5",
+                300: "#d4d4d4",
+                400: "#a3a3a3",
+                500: "#737373",
+                600: "#525252",
+                700: "#404040",
+                800: "#262626",
+                900: "#171717",
+                950: "#0a0a0a",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .color-swatch {
+        width: 100%;
+        height: 60px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 14px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+      }
+      .color-swatch:hover {
+        transform: scale(1.05);
+      }
+      .color-info {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #6b7280;
+      }
+      .gradient-demo {
+        height: 100px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 18px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 p-8">
+    <div class="max-w-7xl mx-auto">
+      <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+          Professional Color Palette
+        </h1>
+        <p class="text-xl text-gray-600">
+          Car Management System - Visual Reference
+        </p>
+      </header>
+
+      <!-- Primary Colors -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">
+          Primary Colors - Deep Navy Blue
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          <div class="text-center">
+            <div class="color-swatch bg-primary-50 text-primary-900">50</div>
+            <div class="color-info">#f0f4ff</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-primary-100 text-primary-900">100</div>
+            <div class="color-info">#e0e7ff</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-primary-200 text-primary-900">200</div>
+            <div class="color-info">#c7d2fe</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-primary-300 text-primary-900">300</div>
+            <div class="color-info">#a5b4fc</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-primary-400 text-white">400</div>
+            <div class="color-info">#818cf8</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-primary-500 text-white">500</div>
+            <div class="color-info">#6366f1</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-primary-600 text-white">600</div>
+            <div class="color-info">#4f46e5</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-primary-700 text-white">700</div>
+            <div class="color-info">#4338ca</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-primary-800 text-white">800</div>
+            <div class="color-info">#3730a3</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-primary-900 text-white">900</div>
+            <div class="color-info">#312e81</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-primary-950 text-white">950</div>
+            <div class="color-info">#1e1b4b</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Secondary Colors -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">
+          Secondary Colors - Sophisticated Teal
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          <div class="text-center">
+            <div class="color-swatch bg-secondary-50 text-secondary-900">
+              50
+            </div>
+            <div class="color-info">#f0fdfa</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-secondary-100 text-secondary-900">
+              100
+            </div>
+            <div class="color-info">#ccfbf1</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-secondary-200 text-secondary-900">
+              200
+            </div>
+            <div class="color-info">#99f6e4</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-secondary-300 text-secondary-900">
+              300
+            </div>
+            <div class="color-info">#5eead4</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-secondary-400 text-white">400</div>
+            <div class="color-info">#2dd4bf</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-secondary-500 text-white">500</div>
+            <div class="color-info">#14b8a6</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-secondary-600 text-white">600</div>
+            <div class="color-info">#0d9488</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-secondary-700 text-white">700</div>
+            <div class="color-info">#0f766e</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-secondary-800 text-white">800</div>
+            <div class="color-info">#115e59</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-secondary-900 text-white">900</div>
+            <div class="color-info">#134e4a</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-secondary-950 text-white">950</div>
+            <div class="color-info">#042f2e</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Status Colors -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">Status Colors</h2>
+
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">
+            Success (Green)
+          </h3>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="text-center">
+              <div
+                class="color-swatch bg-status-success-50 text-status-success-900"
+              >
+                50
+              </div>
+              <div class="color-info">#f0fdf4</div>
+            </div>
+            <div class="text-center">
+              <div class="color-swatch bg-status-success-500 text-white">
+                500
+              </div>
+              <div class="color-info">#22c55e</div>
+            </div>
+            <div class="text-center">
+              <div class="color-swatch bg-status-success-600 text-white">
+                600
+              </div>
+              <div class="color-info">#16a34a</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">
+            Warning (Amber)
+          </h3>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="text-center">
+              <div
+                class="color-swatch bg-status-warning-50 text-status-warning-900"
+              >
+                50
+              </div>
+              <div class="color-info">#fffbeb</div>
+            </div>
+            <div class="text-center">
+              <div class="color-swatch bg-status-warning-500 text-white">
+                500
+              </div>
+              <div class="color-info">#f59e0b</div>
+            </div>
+            <div class="text-center">
+              <div class="color-swatch bg-status-warning-600 text-white">
+                600
+              </div>
+              <div class="color-info">#d97706</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Error (Red)</h3>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="text-center">
+              <div
+                class="color-swatch bg-status-error-50 text-status-error-900"
+              >
+                50
+              </div>
+              <div class="color-info">#fef2f2</div>
+            </div>
+            <div class="text-center">
+              <div class="color-swatch bg-status-error-500 text-white">500</div>
+              <div class="color-info">#ef4444</div>
+            </div>
+            <div class="text-center">
+              <div class="color-swatch bg-status-error-600 text-white">600</div>
+              <div class="color-info">#dc2626</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Info (Blue)</h3>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="text-center">
+              <div class="color-swatch bg-status-info-50 text-status-info-900">
+                50
+              </div>
+              <div class="color-info">#eff6ff</div>
+            </div>
+            <div class="text-center">
+              <div class="color-swatch bg-status-info-500 text-white">500</div>
+              <div class="color-info">#3b82f6</div>
+            </div>
+            <div class="text-center">
+              <div class="color-swatch bg-status-info-600 text-white">600</div>
+              <div class="color-info">#2563eb</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Accent Colors -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">Accent Colors</h2>
+
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">
+            Orange Accent
+          </h3>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="text-center">
+              <div class="color-swatch bg-accent-orange-500 text-white">
+                500
+              </div>
+              <div class="color-info">#f97316</div>
+            </div>
+            <div class="text-center">
+              <div class="color-swatch bg-accent-orange-600 text-white">
+                600
+              </div>
+              <div class="color-info">#ea580c</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">
+            Purple Accent
+          </h3>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="text-center">
+              <div class="color-swatch bg-accent-purple-500 text-white">
+                500
+              </div>
+              <div class="color-info">#a855f7</div>
+            </div>
+            <div class="text-center">
+              <div class="color-swatch bg-accent-purple-600 text-white">
+                600
+              </div>
+              <div class="color-info">#9333ea</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Neutral Colors -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">Neutral Colors</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          <div class="text-center">
+            <div class="color-swatch bg-neutral-50 text-neutral-900">50</div>
+            <div class="color-info">#fafafa</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-neutral-100 text-neutral-900">100</div>
+            <div class="color-info">#f5f5f5</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-neutral-200 text-neutral-900">200</div>
+            <div class="color-info">#e5e5e5</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-neutral-300 text-neutral-900">300</div>
+            <div class="color-info">#d4d4d4</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-neutral-400 text-white">400</div>
+            <div class="color-info">#a3a3a3</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-neutral-500 text-white">500</div>
+            <div class="color-info">#737373</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-neutral-600 text-white">600</div>
+            <div class="color-info">#525252</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-neutral-700 text-white">700</div>
+            <div class="color-info">#404040</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-neutral-800 text-white">800</div>
+            <div class="color-info">#262626</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-neutral-900 text-white">900</div>
+            <div class="color-info">#171717</div>
+          </div>
+          <div class="text-center">
+            <div class="color-swatch bg-neutral-950 text-white">950</div>
+            <div class="color-info">#0a0a0a</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Gradient Examples -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">Gradient Examples</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="text-center">
+            <div
+              class="gradient-demo bg-gradient-to-r from-primary-600 to-primary-700"
+            >
+              Primary Gradient
+            </div>
+            <div class="color-info mt-2">from-primary-600 to-primary-700</div>
+          </div>
+          <div class="text-center">
+            <div
+              class="gradient-demo bg-gradient-to-r from-secondary-600 to-secondary-700"
+            >
+              Secondary Gradient
+            </div>
+            <div class="color-info mt-2">
+              from-secondary-600 to-secondary-700
+            </div>
+          </div>
+          <div class="text-center">
+            <div
+              class="gradient-demo bg-gradient-to-r from-primary-600 to-secondary-600"
+            >
+              Brand Gradient
+            </div>
+            <div class="color-info mt-2">from-primary-600 to-secondary-600</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Component Examples -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">
+          Component Examples
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Buttons -->
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-4">Buttons</h3>
+            <div class="space-y-3">
+              <button
+                class="w-full py-2 px-4 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              >
+                Primary Button
+              </button>
+              <button
+                class="w-full py-2 px-4 bg-secondary-600 text-white rounded-lg hover:bg-secondary-700 transition-colors"
+              >
+                Secondary Button
+              </button>
+              <button
+                class="w-full py-2 px-4 bg-status-success-500 text-white rounded-lg hover:bg-status-success-600 transition-colors"
+              >
+                Success Button
+              </button>
+              <button
+                class="w-full py-2 px-4 bg-status-error-500 text-white rounded-lg hover:bg-status-error-600 transition-colors"
+              >
+                Danger Button
+              </button>
+            </div>
+          </div>
+
+          <!-- Status Badges -->
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-4">Status Badges</h3>
+            <div class="space-y-3">
+              <div class="flex items-center space-x-2">
+                <span
+                  class="px-3 py-1 bg-status-success-100 text-status-success-800 rounded-full text-sm"
+                >
+                  Success
+                </span>
+                <span
+                  class="px-3 py-1 bg-status-warning-100 text-status-warning-800 rounded-full text-sm"
+                >
+                  Warning
+                </span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span
+                  class="px-3 py-1 bg-status-error-100 text-status-error-800 rounded-full text-sm"
+                >
+                  Error
+                </span>
+                <span
+                  class="px-3 py-1 bg-status-info-100 text-status-info-800 rounded-full text-sm"
+                >
+                  Info
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cards -->
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-4">Card Example</h3>
+            <div class="border border-neutral-200 rounded-lg p-4">
+              <h4 class="font-semibold text-neutral-900 mb-2">Card Title</h4>
+              <p class="text-neutral-600 text-sm mb-3">
+                This is a sample card with the professional color scheme.
+              </p>
+              <button
+                class="text-primary-600 hover:text-primary-700 text-sm font-medium"
+              >
+                Learn More →
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Usage Guidelines -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">Usage Guidelines</h2>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 class="text-lg font-semibold text-primary-600 mb-4">
+                Primary Colors
+              </h3>
+              <ul class="space-y-2 text-sm text-neutral-600">
+                <li>• Main brand color and navigation</li>
+                <li>• Primary buttons and CTAs</li>
+                <li>• Focus states and active elements</li>
+                <li>• Links and interactive elements</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-secondary-600 mb-4">
+                Secondary Colors
+              </h3>
+              <ul class="space-y-2 text-sm text-neutral-600">
+                <li>• Secondary buttons and actions</li>
+                <li>• Accent elements and highlights</li>
+                <li>• Success states and confirmations</li>
+                <li>• Progress indicators</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-status-warning-600 mb-4">
+                Status Colors
+              </h3>
+              <ul class="space-y-2 text-sm text-neutral-600">
+                <li>• Success: Completed actions</li>
+                <li>• Warning: Attention required</li>
+                <li>• Error: Failed states</li>
+                <li>• Info: General information</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-neutral-600 mb-4">
+                Neutral Colors
+              </h3>
+              <ul class="space-y-2 text-sm text-neutral-600">
+                <li>• Text colors and typography</li>
+                <li>• Background colors</li>
+                <li>• Borders and dividers</li>
+                <li>• Disabled states</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="text-center text-neutral-500 text-sm">
+        <p>Professional Color Palette for Car Management System</p>
+        <p class="mt-2">All colors meet WCAG 2.1 AA accessibility standards</p>
+      </footer>
+    </div>
+  </body>
+</html>
