@@ -73,7 +73,6 @@ const UserDashboard: React.FC = () => {
                 Here's what's happening with your car shopping experience
               </p>
             </div>
-           
           </div>
         </div>
 
@@ -344,7 +343,6 @@ const UserDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
