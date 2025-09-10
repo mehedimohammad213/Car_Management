@@ -99,6 +99,7 @@ class Car extends Model
     {
         return $query->where(function ($q) use ($search) {
             $q->where('ref_no', 'like', "%{$search}%")
+              ->orWhere('code', 'like', "%{$search}%")
               ->orWhere('make', 'like', "%{$search}%")
               ->orWhere('model', 'like', "%{$search}%")
               ->orWhere('variant', 'like', "%{$search}%")

@@ -122,6 +122,7 @@ class CarController extends Controller
             'category_id' => 'required|integer|exists:categories,id',
             'subcategory_id' => 'nullable|exists:categories,id',
             'ref_no' => 'nullable|string|max:32|unique:cars,ref_no',
+            'code' => 'nullable|string|max:50',
             'make' => 'required|string|max:64',
             'model' => 'required|string|max:64',
             'model_code' => 'nullable|string|max:32',
@@ -142,6 +143,8 @@ class CarController extends Controller
             'price_amount' => 'nullable|numeric|min:0',
             'price_currency' => 'nullable|string|max:3',
             'price_basis' => 'nullable|string|max:32',
+            'fob_value_usd' => 'nullable|numeric|min:0',
+            'freight_usd' => 'nullable|numeric|min:0',
             'chassis_no_masked' => 'nullable|string|max:32',
             'chassis_no_full' => 'nullable|string|max:64',
             'location' => 'nullable|string|max:128',
@@ -183,12 +186,12 @@ class CarController extends Controller
 
             // Create car
             $carData = $request->only([
-                'category_id', 'subcategory_id', 'ref_no', 'make', 'model', 'model_code',
+                'category_id', 'subcategory_id', 'ref_no', 'code', 'make', 'model', 'model_code',
                 'variant', 'year', 'reg_year_month', 'mileage_km', 'engine_cc',
                 'transmission', 'drive', 'steering', 'fuel', 'color', 'seats',
                 'grade_overall', 'grade_exterior', 'grade_interior', 'price_amount',
-                'price_currency', 'price_basis', 'chassis_no_masked', 'chassis_no_full',
-                'location', 'country_origin', 'status', 'notes'
+                'price_currency', 'price_basis', 'fob_value_usd', 'freight_usd',
+                'chassis_no_masked', 'chassis_no_full', 'location', 'country_origin', 'status', 'notes'
             ]);
 
             $car = Car::create($carData);
@@ -204,10 +207,10 @@ class CarController extends Controller
                     // Extract sub_details from detailData
                     $subDetails = $detailData['sub_details'] ?? [];
                     unset($detailData['sub_details']); // Remove sub_details from detailData
-                    
+
                     // Create the car detail
                     $carDetail = $car->details()->create($detailData);
-                    
+
                     // Create sub-details if they exist
                     if (!empty($subDetails)) {
                         foreach ($subDetails as $subDetailData) {
@@ -402,15 +405,15 @@ class CarController extends Controller
 
         try {
             DB::beginTransaction();
-            
+
             // Extract sub_details from request
             $subDetails = $request->input('sub_details', []);
             $detailData = $request->except('sub_details');
-            
+
             if ($car->details()->count() > 0) {
                 $carDetail = $car->details()->first();
                 $carDetail->update($detailData);
-                
+
                 // Delete existing sub-details and create new ones
                 $carDetail->subDetails()->delete();
                 if (!empty($subDetails)) {
@@ -420,7 +423,7 @@ class CarController extends Controller
                 }
             } else {
                 $carDetail = $car->details()->create($detailData);
-                
+
                 // Create sub-details if they exist
                 if (!empty($subDetails)) {
                     foreach ($subDetails as $subDetailData) {
@@ -478,6 +481,7 @@ class CarController extends Controller
                 'max:32',
                 Rule::unique('cars')->ignore($car->id)
             ],
+            'code' => 'nullable|string|max:50',
             'make' => 'sometimes|string|max:64',
             'model' => 'sometimes|string|max:64',
             'model_code' => 'nullable|string|max:32',
@@ -498,6 +502,8 @@ class CarController extends Controller
             'price_amount' => 'nullable|numeric|min:0',
             'price_currency' => 'nullable|string|max:3',
             'price_basis' => 'nullable|string|max:32',
+            'fob_value_usd' => 'nullable|numeric|min:0',
+            'freight_usd' => 'nullable|numeric|min:0',
             'chassis_no_masked' => 'nullable|string|max:32',
             'chassis_no_full' => 'nullable|string|max:64',
             'location' => 'nullable|string|max:128',
