@@ -7,6 +7,9 @@ interface InvoiceItem {
   car: Car;
   quantity: number;
   price: number;
+  code?: string;
+  fob_value_usd?: number;
+  freight_usd?: number;
 }
 
 interface InvoiceCreationModalProps {
@@ -50,7 +53,8 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
     (car) =>
       car.make.toLowerCase().includes(searchTerm.toLowerCase()) ||
       car.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      car.ref_no?.toLowerCase().includes(searchTerm.toLowerCase())
+      car.ref_no?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      car.code?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const addCarToInvoice = (car: Car) => {
@@ -59,7 +63,15 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
       setSelectedCars(
         selectedCars.map((item) =>
           item.car.id === car.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? {
+                ...item,
+                quantity: item.quantity + 1,
+                // Update fields with latest car data
+                code: car.code || "",
+                fob_value_usd: car.fob_value_usd || 0,
+                freight_usd: car.freight_usd || 0,
+                price: car.price_amount || 0,
+              }
             : item
         )
       );
@@ -69,7 +81,10 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
         {
           car,
           quantity: 1,
-          price: car.price || 0,
+          price: car.price_amount || 0,
+          code: car.code || "",
+          fob_value_usd: car.fob_value_usd || 0,
+          freight_usd: car.freight_usd || 0,
         },
       ]);
     }
@@ -91,6 +106,30 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
     setSelectedCars(
       selectedCars.map((item) =>
         item.car.id === carId ? { ...item, price } : item
+      )
+    );
+  };
+
+  const updateCode = (carId: number, code: string) => {
+    setSelectedCars(
+      selectedCars.map((item) =>
+        item.car.id === carId ? { ...item, code } : item
+      )
+    );
+  };
+
+  const updateFobValue = (carId: number, fob_value_usd: number) => {
+    setSelectedCars(
+      selectedCars.map((item) =>
+        item.car.id === carId ? { ...item, fob_value_usd } : item
+      )
+    );
+  };
+
+  const updateFreight = (carId: number, freight_usd: number) => {
+    setSelectedCars(
+      selectedCars.map((item) =>
+        item.car.id === carId ? { ...item, freight_usd } : item
       )
     );
   };
@@ -166,13 +205,13 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
 
         <div className="flex h-[calc(90vh-120px)]">
           {/* Left Panel - Car Selection */}
-          <div className="w-1/2 border-r border-gray-200 flex flex-col">
+          <div className="w-1/3 border-r border-gray-200 flex flex-col">
             <div className="p-4 border-b border-gray-200">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search cars by make, model, or ref no..."
+                  placeholder="Search cars by make, model, ref no, or code..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -194,32 +233,9 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <div className="flex items-center">
-                            <h3 className="font-semibold text-gray-900">
-                              {car.make} {car.model}
-                            </h3>
-                            {car.ref_no && (
-                              <span className="ml-2 px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
-                                {car.ref_no}
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-sm text-gray-600 mt-1">
-                            <span>Year: {car.year}</span>
-                            {car.engine_cc && (
-                              <span className="ml-3">
-                                Engine: {car.engine_cc}cc
-                              </span>
-                            )}
-                            {car.transmission && (
-                              <span className="ml-3">
-                                Trans: {car.transmission}
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-lg font-bold text-blue-600 mt-2">
-                            ${car.price?.toLocaleString() || "N/A"}
-                          </div>
+                          <h3 className="font-semibold text-gray-900">
+                            {car.make} {car.model}
+                          </h3>
                         </div>
                         <button
                           onClick={() => addCarToInvoice(car)}
@@ -242,7 +258,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
           </div>
 
           {/* Right Panel - Invoice Items */}
-          <div className="w-1/2 flex flex-col">
+          <div className="w-2/3 flex flex-col">
             <div className="p-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">
                 Invoice Items ({selectedCars.length})
@@ -270,9 +286,6 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                           <h4 className="font-semibold text-gray-900">
                             {item.car.make} {item.car.model}
                           </h4>
-                          <p className="text-sm text-gray-600">
-                            {item.car.ref_no && `Ref: ${item.car.ref_no}`}
-                          </p>
                         </div>
                         <button
                           onClick={() => removeCarFromInvoice(item.car.id)}
@@ -282,7 +295,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-6 gap-4 mb-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Quantity
@@ -321,7 +334,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Unit Price ($)
+                            Unit Price
                           </label>
                           <input
                             type="number"
@@ -340,10 +353,65 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Code
+                          </label>
+                          <input
+                            type="text"
+                            value={item.code || ""}
+                            onChange={(e) =>
+                              updateCode(item.car.id, e.target.value)
+                            }
+                            placeholder="Enter code"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            FOB Value
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={item.fob_value_usd || ""}
+                            onChange={(e) =>
+                              updateFobValue(
+                                item.car.id,
+                                parseFloat(e.target.value) || 0
+                              )
+                            }
+                            placeholder="0.00"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Freight
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={item.freight_usd || ""}
+                            onChange={(e) =>
+                              updateFreight(
+                                item.car.id,
+                                parseFloat(e.target.value) || 0
+                              )
+                            }
+                            placeholder="0.00"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
                             Total
                           </label>
                           <div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-right font-semibold">
-                            ${(item.price * item.quantity).toLocaleString()}
+                            {(item.price * item.quantity).toLocaleString()}
                           </div>
                         </div>
                       </div>
@@ -361,7 +429,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                     Total Amount:
                   </span>
                   <span className="text-2xl font-bold text-blue-600">
-                    ${calculateTotal().toLocaleString()}
+                    {calculateTotal().toLocaleString()}
                   </span>
                 </div>
                 <div className="flex gap-3">

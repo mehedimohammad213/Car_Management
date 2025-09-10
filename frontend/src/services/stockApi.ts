@@ -18,6 +18,9 @@ export interface Stock {
     model: string;
     year: number;
     ref_no?: string;
+    code?: string;
+    fob_value_usd?: number;
+    freight_usd?: number;
     category?: {
       id: number;
       name: string;
