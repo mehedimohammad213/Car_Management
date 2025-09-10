@@ -214,50 +214,6 @@ const UserDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Quick Actions
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Link
-            to="/browse"
-            className="flex flex-col items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-          >
-            <CarIcon className="w-8 h-8 text-blue-600 mb-2" />
-            <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
-              Browse Cars
-            </span>
-          </Link>
-          <Link
-            to="/cart"
-            className="flex flex-col items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
-          >
-            <ShoppingCartIcon className="w-8 h-8 text-green-600 mb-2" />
-            <span className="text-sm font-medium text-green-900 dark:text-green-100">
-              View Cart
-            </span>
-          </Link>
-          <Link
-            to="/profile"
-            className="flex flex-col items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
-          >
-            <UserIcon className="w-8 h-8 text-purple-600 mb-2" />
-            <span className="text-sm font-medium text-purple-900 dark:text-purple-100">
-              Edit Profile
-            </span>
-          </Link>
-          <Link
-            to="/orders"
-            className="flex flex-col items-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors"
-          >
-            <PackageIcon className="w-8 h-8 text-orange-600 mb-2" />
-            <span className="text-sm font-medium text-orange-900 dark:text-orange-100">
-              My Orders
-            </span>
-          </Link>
-        </div>
-      </div>
     </div>
   );
 };
