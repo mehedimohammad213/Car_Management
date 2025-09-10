@@ -26,7 +26,9 @@ class CartController extends Controller
 
             $total = 0;
             $cartItems->each(function ($item) use (&$total) {
-                $total += $item->car->price_amount * $item->quantity;
+                if ($item->car->price_amount) {
+                    $total += $item->car->price_amount * $item->quantity;
+                }
             });
 
             return response()->json([
@@ -68,6 +70,14 @@ class CartController extends Controller
                 ], 400);
             }
 
+            // Check if car has a valid price
+            if (!$car->price_amount || $car->price_amount <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This car does not have a valid price and cannot be added to cart'
+                ], 400);
+            }
+
             // Check if item already exists in cart
             $existingCartItem = Cart::where('user_id', $user->id)
                 ->where('car_id', $request->car_id)
@@ -77,7 +87,7 @@ class CartController extends Controller
                 // Update quantity
                 $existingCartItem->quantity += $request->quantity;
                 $existingCartItem->save();
-                
+
                 $cartItem = $existingCartItem;
             } else {
                 // Create new cart item
@@ -194,7 +204,7 @@ class CartController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             Cart::where('user_id', $user->id)->delete();
 
             return response()->json([
@@ -218,16 +228,18 @@ class CartController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             $cartItems = Cart::with('car')
                 ->where('user_id', $user->id)
                 ->get();
 
             $total = 0;
             $count = 0;
-            
+
             $cartItems->each(function ($item) use (&$total, &$count) {
-                $total += $item->car->price_amount * $item->quantity;
+                if ($item->car->price_amount) {
+                    $total += $item->car->price_amount * $item->quantity;
+                }
                 $count += $item->quantity;
             });
 

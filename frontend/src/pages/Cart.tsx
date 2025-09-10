@@ -37,9 +37,13 @@ const Cart: React.FC = () => {
     setIsCheckingOut(true);
 
     try {
-      const response = await orderApi.createOrder({
+      const orderData = {
         shipping_address: shippingAddress || undefined,
-      });
+      };
+
+      console.log("Sending order creation request with data:", orderData);
+
+      const response = await orderApi.createOrder(orderData);
 
       if (response.success) {
         toast.success(

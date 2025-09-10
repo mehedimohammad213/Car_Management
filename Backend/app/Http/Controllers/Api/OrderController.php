@@ -20,7 +20,7 @@ class OrderController extends Controller
     public function createOrder(Request $request)
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return response()->json([
                 'success' => false,
@@ -51,6 +51,9 @@ class OrderController extends Controller
             // Calculate total amount
             $totalAmount = 0;
             foreach ($cartItems as $cartItem) {
+                if (!$cartItem->car->price_amount) {
+                    throw new \Exception("Car with ID {$cartItem->car_id} does not have a valid price. Cannot create order.");
+                }
                 $totalAmount += $cartItem->car->price_amount * $cartItem->quantity;
             }
 
@@ -64,6 +67,11 @@ class OrderController extends Controller
 
             // Create order items from cart items
             foreach ($cartItems as $cartItem) {
+                // Ensure car has a valid price
+                if (!$cartItem->car->price_amount) {
+                    throw new \Exception("Car with ID {$cartItem->car_id} does not have a valid price. Cannot create order.");
+                }
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'car_id' => $cartItem->car_id,
@@ -104,7 +112,7 @@ class OrderController extends Controller
     public function getUserOrders()
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return response()->json([
                 'success' => false,
@@ -131,7 +139,7 @@ class OrderController extends Controller
     public function getAllOrders()
     {
         $user = Auth::user();
-        
+
         if (!$user || $user->role !== 'admin') {
             return response()->json([
                 'success' => false,
@@ -157,7 +165,7 @@ class OrderController extends Controller
     public function getOrder($id)
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return response()->json([
                 'success' => false,
@@ -196,7 +204,7 @@ class OrderController extends Controller
     public function updateOrderStatus(Request $request, $id)
     {
         $user = Auth::user();
-        
+
         if (!$user || $user->role !== 'admin') {
             return response()->json([
                 'success' => false,
@@ -238,7 +246,7 @@ class OrderController extends Controller
     public function cancelOrder($id)
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return response()->json([
                 'success' => false,
@@ -285,7 +293,7 @@ class OrderController extends Controller
     public function deleteOrder($id)
     {
         $user = Auth::user();
-        
+
         if (!$user || $user->role !== 'admin') {
             return response()->json([
                 'success' => false,

@@ -1,4 +1,4 @@
-import { apiClient } from './apiClient';
+import { apiClient } from "./apiClient";
 
 export interface OrderItem {
   id: number;
@@ -22,7 +22,7 @@ export interface Order {
   user_id: number;
   total_amount: number;
   shipping_address?: string;
-  status: 'pending' | 'approved' | 'shipped' | 'delivered' | 'canceled';
+  status: "pending" | "approved" | "shipped" | "delivered" | "canceled";
   created_at: string;
   updated_at: string;
   items: OrderItem[];
@@ -38,7 +38,7 @@ export interface CreateOrderRequest {
 }
 
 export interface UpdateOrderStatusRequest {
-  status: 'pending' | 'approved' | 'shipped' | 'delivered' | 'canceled';
+  status: "pending" | "approved" | "shipped" | "delivered" | "canceled";
 }
 
 export interface ApiResponse<T> {
@@ -49,20 +49,24 @@ export interface ApiResponse<T> {
 
 class OrderApi {
   // Create order from cart
-  async createOrder(data: CreateOrderRequest): Promise<ApiResponse<{ order: Order }>> {
-    const response = await apiClient.post('/orders', data);
+  async createOrder(
+    data: CreateOrderRequest
+  ): Promise<ApiResponse<{ order: Order }>> {
+    console.log("OrderApi: Creating order with data:", data);
+    const response = await apiClient.post("/orders", data);
+    console.log("OrderApi: Response received:", response.data);
     return response.data;
   }
 
   // Get user's orders
   async getUserOrders(): Promise<ApiResponse<{ orders: Order[] }>> {
-    const response = await apiClient.get('/orders/user');
+    const response = await apiClient.get("/orders/user");
     return response.data;
   }
 
   // Get all orders (Admin only)
   async getAllOrders(): Promise<ApiResponse<{ orders: Order[] }>> {
-    const response = await apiClient.get('/orders/admin/all');
+    const response = await apiClient.get("/orders/admin/all");
     return response.data;
   }
 
@@ -73,7 +77,10 @@ class OrderApi {
   }
 
   // Update order status (Admin only)
-  async updateOrderStatus(id: number, data: UpdateOrderStatusRequest): Promise<ApiResponse<{ order: Order }>> {
+  async updateOrderStatus(
+    id: number,
+    data: UpdateOrderStatusRequest
+  ): Promise<ApiResponse<{ order: Order }>> {
     const response = await apiClient.put(`/orders/${id}/status`, data);
     return response.data;
   }
