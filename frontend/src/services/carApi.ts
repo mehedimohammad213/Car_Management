@@ -38,6 +38,7 @@ export interface Car {
   category_id: number;
   subcategory_id?: number;
   ref_no?: string;
+  code?: string;
   make: string;
   model: string;
   model_code?: string;
@@ -58,6 +59,8 @@ export interface Car {
   price_amount?: number;
   price_currency: string;
   price_basis?: string;
+  fob_value_usd?: number;
+  freight_usd?: number;
   chassis_no_masked?: string;
   chassis_no_full?: string;
   location?: string;
@@ -91,6 +94,7 @@ export interface CreateCarData {
   category_id: number;
   subcategory_id?: number;
   ref_no?: string;
+  code?: string;
   make: string;
   model: string;
   model_code?: string;
@@ -111,6 +115,8 @@ export interface CreateCarData {
   price_amount?: number;
   price_currency?: string;
   price_basis?: string;
+  fob_value_usd?: number;
+  freight_usd?: number;
   chassis_no_masked?: string;
   chassis_no_full?: string;
   location?: string;

@@ -71,6 +71,35 @@ const PricingSection: React.FC<PricingSectionProps> = ({
           onChange={(value) => onInputChange("price_basis", value)}
         />
       </div>
+
+      {/* Additional Price Fields */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        {/* FOB Value USD */}
+        <FormField
+          label="FOB Value (USD)"
+          field="fob_value_usd"
+          type="number"
+          placeholder="e.g., 20000.00"
+          required={false}
+          value={formData.fob_value_usd}
+          error={errors.fob_value_usd}
+          isViewMode={isViewMode}
+          onChange={(value) => onInputChange("fob_value_usd", value)}
+        />
+
+        {/* Freight USD */}
+        <FormField
+          label="Freight (USD)"
+          field="freight_usd"
+          type="number"
+          placeholder="e.g., 5000.00"
+          required={false}
+          value={formData.freight_usd}
+          error={errors.freight_usd}
+          isViewMode={isViewMode}
+          onChange={(value) => onInputChange("freight_usd", value)}
+        />
+      </div>
     </div>
   );
 };

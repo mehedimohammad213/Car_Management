@@ -77,6 +77,20 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
           onChange={(value) => onInputChange("ref_no", value)}
         />
 
+        {/* Code */}
+        <FormField
+          label="Code"
+          field="code"
+          type="text"
+          placeholder="e.g., CAR001"
+          required={false}
+          maxLength={50}
+          value={formData.code}
+          error={errors.code}
+          isViewMode={isViewMode}
+          onChange={(value) => onInputChange("code", value)}
+        />
+
         {/* Make */}
         <FormField
           label="Make"

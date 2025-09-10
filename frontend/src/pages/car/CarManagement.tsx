@@ -215,17 +215,17 @@ const CarManagement: React.FC = () => {
     setShowExcelModal(false);
   };
 
-  const handleExcelImportSubmit = async (file: File) => {
-    try {
-      await carApi.importFromExcel(file);
-      showMessage("success", "Cars imported successfully");
-      handleExcelImportClose();
-      fetchCars(); // Refresh the list
-    } catch (error) {
-      console.error("Error importing cars:", error);
-      showMessage("error", "Failed to import cars");
-    }
-  };
+  // const handleExcelImportSubmit = async (file: File) => {
+  //   try {
+  //     await carApi.importFromExcel(file);
+  //     showMessage("success", "Cars imported successfully");
+  //     handleExcelImportClose();
+  //     fetchCars(); // Refresh the list
+  //   } catch (error) {
+  //     console.error("Error importing cars:", error);
+  //     showMessage("error", "Failed to import cars");
+  //   }
+  // };
 
   const handleExportExcel = async () => {
     try {
@@ -323,14 +323,14 @@ const CarManagement: React.FC = () => {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-            <button
+            {/* <button
               onClick={handleImportExcel}
               className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 group touch-manipulation text-sm sm:text-base"
             >
               <FileSpreadsheet className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
               <span className="hidden sm:inline">Import Excel</span>
               <span className="sm:hidden">Import</span>
-            </button>
+            </button> */}
             <button
               onClick={handleExportExcel}
               className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 group touch-manipulation text-sm sm:text-base"
@@ -822,11 +822,11 @@ const CarManagement: React.FC = () => {
       />
 
       {/* Excel Import Modal */}
-      <ExcelImportModal
+      {/* <ExcelImportModal
         isOpen={showExcelModal}
         onClose={handleExcelImportClose}
         onSubmit={handleExcelImportSubmit}
-      />
+      /> */}
     </div>
   );
 };
