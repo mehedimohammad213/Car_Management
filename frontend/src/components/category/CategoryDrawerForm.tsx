@@ -100,8 +100,8 @@ const CategoryDrawerForm: React.FC<CategoryDrawerFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Name, Type, and Status Fields - 3 Columns */}
-      <div className="grid grid-cols-3 gap-4">
+      {/* Name and Status Fields - 2 Columns */}
+      <div className="grid grid-cols-2 gap-4">
         <div>
           <label
             htmlFor="name"
@@ -121,7 +121,7 @@ const CategoryDrawerForm: React.FC<CategoryDrawerFormProps> = ({
           />
         </div>
 
-        <div>
+        {/* <div>
           <label
             htmlFor="type"
             className="block text-sm font-medium text-gray-700 mb-2"
@@ -137,7 +137,7 @@ const CategoryDrawerForm: React.FC<CategoryDrawerFormProps> = ({
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             placeholder="Enter category type"
           />
-        </div>
+        </div> */}
 
         <div>
           <label
@@ -159,33 +159,53 @@ const CategoryDrawerForm: React.FC<CategoryDrawerFormProps> = ({
         </div>
       </div>
 
-      {/* Description and Image Upload - 2 Columns */}
-      <div className="grid grid-cols-2 gap-4">
-        {/* Description Field */}
-        <div>
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="Enter category description"
-          />
-        </div>
+      {/* Description Field */}
+      <div>
+        <label
+          htmlFor="description"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Description
+        </label>
+        <input
+          type="text"
+          id="description"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          placeholder="Enter category description"
+        />
+      </div>
 
-        {/* Image Upload Section */}
+      {/* Action Buttons */}
+      <div className="flex gap-3 pt-4">
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={isLoading}
+          className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:border-gray-500 disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="flex-1 px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
+        >
+          {isLoading
+            ? "Saving..."
+            : category
+            ? "Update Category"
+            : "Create Category"}
+        </button>
+      </div>
+
+      {/* Image Upload Section - COMMENTED OUT */}
+      {/* <div className="grid grid-cols-2 gap-4">
         <div className="space-y-4">
           <div className="flex gap-4">
-            {/* Left Side - Upload Controls */}
             <div className="flex-1 space-y-4">
-              {/* File Upload */}
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-2">
                   Upload Image File
@@ -215,32 +235,8 @@ const CategoryDrawerForm: React.FC<CategoryDrawerFormProps> = ({
                   </p>
                 )}
               </div>
-
-              {/* Action Buttons - Under Image Upload */}
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={onCancel}
-                  disabled={isLoading}
-                  className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:border-gray-500 disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="flex-1 px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
-                >
-                  {isLoading
-                    ? "Saving..."
-                    : category
-                    ? "Update Category"
-                    : "Create Category"}
-                </button>
-              </div>
             </div>
 
-            {/* Right Side - Image Preview */}
             <div className="flex-1 flex justify-center items-start">
               {imagePreview ? (
                 <div className="relative">
@@ -268,7 +264,7 @@ const CategoryDrawerForm: React.FC<CategoryDrawerFormProps> = ({
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </form>
   );
 };
