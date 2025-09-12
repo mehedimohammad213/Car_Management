@@ -202,7 +202,7 @@ const CategoryManagement: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
       <CategoryHeader onCreateCategory={handleCreateCategory} />
 
       <MessageDisplay message={message} />
@@ -228,15 +228,13 @@ const CategoryManagement: React.FC = () => {
         onRefresh={fetchCategories}
       />
 
-      <div className="bg-white rounded-lg shadow-sm p-4 mt-6">
-        <CategoryPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          perPage={perPage}
-          onPageChange={setCurrentPage}
-        />
-      </div>
+      <CategoryPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        perPage={perPage}
+        onPageChange={setCurrentPage}
+      />
 
       <CategoryDrawer
         isOpen={showDrawer}

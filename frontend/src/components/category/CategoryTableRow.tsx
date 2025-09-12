@@ -15,10 +15,6 @@ const CategoryTableRow: React.FC<CategoryTableRowProps> = ({
   onDelete,
   onView,
 }) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
   return (
     <tr className="hover:bg-gray-50 transition-colors">
       <td className="px-6 py-4 font-medium text-gray-900">#{category.id}</td>
@@ -31,19 +27,6 @@ const CategoryTableRow: React.FC<CategoryTableRowProps> = ({
             </div>
           )}
         </div>
-      </td>
-      <td className="px-6 py-4">
-        {category.image ? (
-          <img
-            src={category.image}
-            alt={category.name}
-            className="w-12 h-12 rounded-lg object-cover border-2 border-gray-200"
-          />
-        ) : (
-          <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-            <span className="text-gray-400 text-xs">No Image</span>
-          </div>
-        )}
       </td>
       <td className="px-6 py-4">
         {category.parent_category ? (
@@ -66,19 +49,6 @@ const CategoryTableRow: React.FC<CategoryTableRowProps> = ({
         >
           {category.status.charAt(0).toUpperCase() + category.status.slice(1)}
         </span>
-      </td>
-      <td className="px-6 py-4 text-center">
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
-          {category.children_count}
-        </span>
-      </td>
-      <td className="px-6 py-4 text-center">
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
-          {category.cars_count}
-        </span>
-      </td>
-      <td className="px-6 py-4 text-sm text-gray-500">
-        {formatDate(category.created_at)}
       </td>
       <td className="px-6 py-4">
         <div className="flex items-center gap-2">
