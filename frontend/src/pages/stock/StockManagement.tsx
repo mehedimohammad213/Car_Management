@@ -187,7 +187,7 @@ const StockManagement: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
       <StockHeader onCreateStock={handleCreateStock} />
 
       <MessageDisplay message={message} />
@@ -211,18 +211,16 @@ const StockManagement: React.FC = () => {
         onRefresh={fetchStocks}
       />
 
-      <div className="bg-white rounded-lg shadow-sm p-4 mt-6">
-        <StockPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          perPage={perPage}
-          onPageChange={(page) => {
-            console.log("Page changed to:", page);
-            setCurrentPage(page);
-          }}
-        />
-      </div>
+      <StockPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        perPage={perPage}
+        onPageChange={(page) => {
+          console.log("Page changed to:", page);
+          setCurrentPage(page);
+        }}
+      />
 
       <StockDrawer
         isOpen={showDrawer}

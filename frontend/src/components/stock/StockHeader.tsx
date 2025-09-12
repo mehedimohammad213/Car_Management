@@ -68,35 +68,30 @@ export const StockHeader: React.FC<StockHeaderProps> = ({ onCreateStock }) => {
   };
 
   return (
-    <div className="mb-8">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center">
-          <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mr-4">
-            <PackageIcon className="w-6 h-6 text-blue-600" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Stock Management
-            </h1>
-            <p className="text-gray-600 mt-1">
-              View and manage your vehicle inventory stock levels
-            </p>
-          </div>
+    <div className="mb-6 sm:mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
+        <div>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">
+            Stock Management
+          </h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-2">
+            View and manage your vehicle inventory stock levels
+          </p>
         </div>
-
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <button
             onClick={() => setShowInvoiceModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm"
           >
-            <FileTextIcon className="w-4 h-4 mr-2" />
-            Create Invoice
+            <FileTextIcon className="w-4 h-4" />
+            <span className="hidden sm:inline">Create Invoice</span>
+            <span className="sm:hidden">Invoice</span>
           </button>
           <button
             onClick={onCreateStock}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm"
           >
-            <PlusIcon className="w-4 h-4 mr-2" />
+            <PlusIcon className="w-4 h-4" />
             Add Stock
           </button>
         </div>

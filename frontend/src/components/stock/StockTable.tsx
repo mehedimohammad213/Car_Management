@@ -37,21 +37,21 @@ const StockTable: React.FC<StockTableProps> = ({
 
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-      <div className="overflow-x-auto">
+      {/* Desktop Table */}
+      <div className="hidden lg:block overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+          <thead className="bg-blue-600 text-white">
             <tr>
               <th
-                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
                 onClick={() => onSort("id")}
               >
                 <div className="flex items-center">
                   Stock ID {getSortIcon("id")}
                 </div>
               </th>
-              <th className="px-6 py-4 text-left font-semibold">Car Image</th>
               <th
-                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
                 onClick={() => onSort("car.make")}
               >
                 <div className="flex items-center">
@@ -59,7 +59,7 @@ const StockTable: React.FC<StockTableProps> = ({
                 </div>
               </th>
               <th
-                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
                 onClick={() => onSort("quantity")}
               >
                 <div className="flex items-center">
@@ -67,7 +67,7 @@ const StockTable: React.FC<StockTableProps> = ({
                 </div>
               </th>
               <th
-                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
                 onClick={() => onSort("price")}
               >
                 <div className="flex items-center">
@@ -75,19 +75,11 @@ const StockTable: React.FC<StockTableProps> = ({
                 </div>
               </th>
               <th
-                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
                 onClick={() => onSort("status")}
               >
                 <div className="flex items-center">
                   Status {getSortIcon("status")}
-                </div>
-              </th>
-              <th
-                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
-                onClick={() => onSort("created_at")}
-              >
-                <div className="flex items-center">
-                  Created {getSortIcon("created_at")}
                 </div>
               </th>
               <th className="px-6 py-4 text-left font-semibold">Actions</th>
@@ -96,7 +88,7 @@ const StockTable: React.FC<StockTableProps> = ({
           <tbody className="divide-y divide-gray-100">
             {isLoading ? (
               <tr>
-                <td colSpan={8} className="px-6 py-12 text-center">
+                <td colSpan={6} className="px-6 py-12 text-center">
                   <div className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                     <span className="ml-3 text-gray-600">
@@ -108,7 +100,7 @@ const StockTable: React.FC<StockTableProps> = ({
             ) : stocks.length === 0 ? (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={6}
                   className="px-6 py-12 text-center text-gray-500"
                 >
                   <div className="space-y-2">
@@ -120,7 +112,7 @@ const StockTable: React.FC<StockTableProps> = ({
                     </p>
                     <button
                       onClick={onRefresh}
-                      className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                      className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium text-sm"
                     >
                       Refresh Data
                     </button>
@@ -140,6 +132,76 @@ const StockTable: React.FC<StockTableProps> = ({
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Table */}
+      <div className="lg:hidden p-4">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-3 text-gray-600">Loading stocks...</span>
+          </div>
+        ) : stocks.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            <div className="space-y-2">
+              <p>No stocks found</p>
+              <p className="text-sm text-gray-400">
+                {isLoading
+                  ? "Loading..."
+                  : "Try refreshing the page or check your connection"}
+              </p>
+              <button
+                onClick={onRefresh}
+                className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium text-sm"
+              >
+                Refresh Data
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {stocks.map((stock) => (
+              <div
+                key={stock.id}
+                className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-gray-900">
+                    Stock #{stock.id}
+                  </h3>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      stock.status === "available"
+                        ? "bg-green-100 text-green-800"
+                        : stock.status === "sold"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-yellow-100 text-yellow-800"
+                    }`}
+                  >
+                    {stock.status}
+                  </span>
+                </div>
+                <div className="text-sm text-gray-600 mb-3">
+                  {stock.car?.make} {stock.car?.model} - Qty: {stock.quantity}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => onEdit(stock)}
+                    className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => onDelete(stock)}
+                    className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

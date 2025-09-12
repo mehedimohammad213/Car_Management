@@ -1,5 +1,5 @@
 import React from "react";
-import { Pencil, Trash2, Eye, PackageIcon } from "lucide-react";
+import { Pencil, Trash2, Eye } from "lucide-react";
 import { Stock } from "../../services/stockApi";
 
 interface StockTableRowProps {
@@ -15,10 +15,6 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
   onDelete,
   onView,
 }) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
   const formatPrice = (price?: number) => {
     if (!price) return "N/A";
     return `$${price.toLocaleString()}`;
@@ -66,22 +62,6 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
     <tr className="hover:bg-gray-50 transition-colors">
       <td className="px-6 py-4 font-medium text-gray-900">#{stock.id}</td>
       <td className="px-6 py-4">
-        {stock.car?.photos && stock.car.photos.length > 0 ? (
-          <img
-            src={
-              stock.car.photos.find((photo) => photo.is_primary)?.url ||
-              stock.car.photos[0].url
-            }
-            alt={`${stock.car.make} ${stock.car.model}`}
-            className="w-16 h-16 rounded-lg object-cover border-2 border-gray-200"
-          />
-        ) : (
-          <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-            <PackageIcon className="w-8 h-8 text-gray-400" />
-          </div>
-        )}
-      </td>
-      <td className="px-6 py-4">
         <div>
           <div className="font-semibold text-gray-900">
             {stock.car?.make} {stock.car?.model}
@@ -113,9 +93,6 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
           <span className="mr-1">{getStatusIcon(stock.status)}</span>
           {stock.status.charAt(0).toUpperCase() + stock.status.slice(1)}
         </span>
-      </td>
-      <td className="px-6 py-4 text-sm text-gray-500">
-        {formatDate(stock.created_at)}
       </td>
       <td className="px-6 py-4">
         <div className="flex items-center gap-2">
