@@ -21,7 +21,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
   onInputChange,
 }) => {
   return (
-    <div className="bg-gray-50 rounded-xl p-4">
+    <div className="rounded-xl p-4">
       <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
         <Car className="w-5 h-5 text-blue-600" />
         Basic Information

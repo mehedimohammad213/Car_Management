@@ -44,7 +44,7 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
 }) => {
   if (isViewMode && formData.details && formData.details.length > 0) {
     return (
-      <div className="bg-gray-50 rounded-xl p-4">
+      <div className="rounded-xl p-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
           <FileText className="w-5 h-5 text-blue-600" />
           Car Details
@@ -92,18 +92,29 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
                     </label>
                     <div className="space-y-3">
                       {detail.sub_details.map((subDetail, subDetailIndex) => (
-                        <div key={subDetailIndex} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                        <div
+                          key={subDetailIndex}
+                          className="border border-gray-200 rounded-lg p-3"
+                        >
                           <div className="space-y-2">
                             {subDetail.title && (
                               <div>
-                                <span className="text-sm font-medium text-gray-600">Title: </span>
-                                <span className="text-sm text-gray-900">{subDetail.title}</span>
+                                <span className="text-sm font-medium text-gray-600">
+                                  Title:{" "}
+                                </span>
+                                <span className="text-sm text-gray-900">
+                                  {subDetail.title}
+                                </span>
                               </div>
                             )}
                             {subDetail.description && (
                               <div>
-                                <span className="text-sm font-medium text-gray-600">Description: </span>
-                                <span className="text-sm text-gray-900">{subDetail.description}</span>
+                                <span className="text-sm font-medium text-gray-600">
+                                  Description:{" "}
+                                </span>
+                                <span className="text-sm text-gray-900">
+                                  {subDetail.description}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -149,7 +160,7 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
   }
 
   return (
-    <div className="bg-gray-50 rounded-xl p-4">
+    <div className="rounded-xl p-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
           <FileText className="w-5 h-5 text-blue-600" />
@@ -222,23 +233,24 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
                   {detail.sub_details?.map((subDetail, subDetailIndex) => (
                     <div
                       key={subDetailIndex}
-                      className="border border-gray-200 rounded-lg p-3 bg-gray-50"
+                      className="border border-gray-200 rounded-lg p-3"
                     >
                       <div className="flex items-center justify-between mb-3">
                         <h5 className="text-sm font-medium text-gray-700">
                           Sub Detail {subDetailIndex + 1}
                         </h5>
-                        {detail.sub_details && detail.sub_details.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              onRemoveSubDetail(detailIndex, subDetailIndex)
-                            }
-                            className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        )}
+                        {detail.sub_details &&
+                          detail.sub_details.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                onRemoveSubDetail(detailIndex, subDetailIndex)
+                              }
+                              className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
                       </div>
                       <div className="space-y-3">
                         <div>

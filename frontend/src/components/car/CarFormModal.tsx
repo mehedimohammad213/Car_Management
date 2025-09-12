@@ -517,141 +517,165 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
     <div
       className={
         isModal
-          ? "relative bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto"
-          : "bg-white rounded-2xl shadow-lg w-full"
+          ? "relative w-full max-w-6xl max-h-[90vh] overflow-y-auto"
+          : "w-full"
       }
     >
       {/* Header */}
       {isModal && (
-        <div className="bg-gray-800 text-white p-6 rounded-t-3xl">
+        <div className="bg-gradient-to-r from-gray-800 to-gray-900 text-white p-8 rounded-t-3xl">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold">
+              <h2 className="text-3xl font-bold mb-2">
                 {isEditMode
-                  ? "Edit Car"
+                  ? "Edit Vehicle"
                   : isViewMode
-                  ? "View Car"
-                  : "Create New Car"}
+                  ? "View Vehicle Details"
+                  : "Create New Vehicle"}
               </h2>
-              <p className="text-gray-300 mt-1">
+              <p className="text-gray-300 text-lg">
                 {isEditMode
-                  ? "Update car information"
+                  ? "Update vehicle information and specifications"
                   : isViewMode
-                  ? "View car details"
-                  : "Add a new car to your inventory"}
+                  ? "Review comprehensive vehicle details"
+                  : "Add a new vehicle to your inventory management system"}
               </p>
             </div>
             <button
               onClick={handleClose}
-              className="p-2 hover:bg-white/20 rounded-xl transition-colors"
+              className="p-3 hover:bg-white/20 rounded-xl transition-all duration-200 hover:scale-105"
             >
-              <X className="w-6 h-6" />
+              <X className="w-7 h-7" />
             </button>
           </div>
         </div>
       )}
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="p-6 space-y-6">
+      <form onSubmit={handleSubmit} className="p-8 space-y-8">
+
         {/* Basic Information Section */}
-        <BasicInfoSection
-          formData={formData}
-          errors={errors}
-          categories={categories}
-          // subcategories={subcategories}
-          isViewMode={isViewMode}
-          onInputChange={handleInputChange}
-        />
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6">
+            <BasicInfoSection
+              formData={formData}
+              errors={errors}
+              categories={categories}
+              isViewMode={isViewMode}
+              onInputChange={handleInputChange}
+            />
+          </div>
+        </div>
 
         {/* Technical Specifications Section */}
-        <TechnicalSpecsSection
-          formData={formData}
-          errors={errors}
-          isViewMode={isViewMode}
-          onInputChange={handleInputChange}
-        />
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6">
+            <TechnicalSpecsSection
+              formData={formData}
+              errors={errors}
+              isViewMode={isViewMode}
+              onInputChange={handleInputChange}
+            />
+          </div>
+        </div>
 
         {/* Grading Section */}
-        <GradingSection
-          formData={formData}
-          errors={errors}
-          isViewMode={isViewMode}
-          onInputChange={handleInputChange}
-        />
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6">
+            <GradingSection
+              formData={formData}
+              errors={errors}
+              isViewMode={isViewMode}
+              onInputChange={handleInputChange}
+            />
+          </div>
+        </div>
 
         {/* Pricing Section */}
-        <PricingSection
-          formData={formData}
-          errors={errors}
-          isViewMode={isViewMode}
-          onInputChange={handleInputChange}
-        />
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6">
+            <PricingSection
+              formData={formData}
+              errors={errors}
+              isViewMode={isViewMode}
+              onInputChange={handleInputChange}
+            />
+          </div>
+        </div>
 
         {/* Location & Status Section */}
-        <LocationStatusSection
-          formData={formData}
-          errors={errors}
-          isViewMode={isViewMode}
-          onInputChange={handleInputChange}
-        />
-
-        {/* Notes Section */}
-        {/* <NotesSection
-          formData={formData}
-          errors={errors}
-          isViewMode={isViewMode}
-          onInputChange={handleInputChange}
-        /> */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6">
+            <LocationStatusSection
+              formData={formData}
+              errors={errors}
+              isViewMode={isViewMode}
+              onInputChange={handleInputChange}
+            />
+          </div>
+        </div>
 
         {/* Photos Section */}
-        <PhotoSection
-          formData={formData}
-          isViewMode={isViewMode}
-          onAddPhoto={addPhoto}
-          onRemovePhoto={removePhoto}
-          onUpdatePhoto={(index, photo) => {
-            const newPhotos = [...(formData.photos || [])];
-            newPhotos[index] = photo;
-            setFormData((prev) => ({ ...prev, photos: newPhotos }));
-          }}
-        />
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6">
+            <PhotoSection
+              formData={formData}
+              isViewMode={isViewMode}
+              onAddPhoto={addPhoto}
+              onRemovePhoto={removePhoto}
+              onUpdatePhoto={(index, photo) => {
+                const newPhotos = [...(formData.photos || [])];
+                newPhotos[index] = photo;
+                setFormData((prev) => ({ ...prev, photos: newPhotos }));
+              }}
+            />
+          </div>
+        </div>
 
         {/* Car Details Section */}
-        <CarDetailsSection
-          formData={formData}
-          isViewMode={isViewMode}
-          onAddDetail={addDetail}
-          onRemoveDetail={removeDetail}
-          onDetailChange={handleDetailChange}
-          onAddDetailImage={addDetailImage}
-          onRemoveDetailImage={removeDetailImage}
-          onDetailImageChange={handleDetailImageChange}
-          onAddSubDetail={addSubDetail}
-          onRemoveSubDetail={removeSubDetail}
-          onSubDetailChange={handleSubDetailChange}
-        />
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6">
+            <CarDetailsSection
+              formData={formData}
+              isViewMode={isViewMode}
+              onAddDetail={addDetail}
+              onRemoveDetail={removeDetail}
+              onDetailChange={handleDetailChange}
+              onAddDetailImage={addDetailImage}
+              onRemoveDetailImage={removeDetailImage}
+              onDetailImageChange={handleDetailImageChange}
+              onAddSubDetail={addSubDetail}
+              onRemoveSubDetail={removeSubDetail}
+              onSubDetailChange={handleSubDetailChange}
+            />
+          </div>
+        </div>
 
         {/* Form Actions */}
         {!isViewMode && (
-          <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="px-6 py-3 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl font-semibold transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting
-                ? "Saving..."
-                : isEditMode
-                ? "Update Car"
-                : "Create Car"}
-            </button>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-center justify-end gap-4">
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="px-8 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-semibold transition-all duration-200 border border-gray-200 hover:border-gray-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                >
+                  {isSubmitting
+                    ? "Saving..."
+                    : isEditMode
+                    ? "Update Vehicle"
+                    : "Create Vehicle"}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </form>
