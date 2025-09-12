@@ -428,7 +428,7 @@ const CarManagement: React.FC = () => {
               setColorFilter("");
               setCurrentPage(1);
             }}
-            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium text-sm"
+            className="px-4 py-2.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors font-medium text-sm shadow-sm"
           >
             Clear All Filters
           </button>
