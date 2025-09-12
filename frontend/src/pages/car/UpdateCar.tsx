@@ -58,13 +58,17 @@ const UpdateCar: React.FC = () => {
     if (!car) return;
 
     setIsSaving(true);
+    setError(null);
     try {
-      await carApi.updateCar({ id: car.id, ...formData });
+      console.log("Updating car data:", formData);
+      const response = await carApi.updateCar({ id: car.id, ...formData });
+      console.log("Car update response:", response);
       navigate("/admin/cars", {
         state: { message: "Car updated successfully!" },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating car:", error);
+      setError(error.message || "Failed to update car. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -109,23 +113,53 @@ const UpdateCar: React.FC = () => {
       <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => navigate(`/view-car/${car.id}`)}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-            >
-              <ArrowLeftIcon className="w-5 h-5" />
-            </button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Edit {car.make} {car.model}
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Update car information
-              </p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate("/admin/cars")}
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors border border-gray-200 dark:border-gray-700 shadow-sm"
+              >
+                <ArrowLeftIcon className="w-4 h-4" />
+                <span className="font-medium">Back</span>
+              </button>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Edit {car.make} {car.model}
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Update car information and specifications
+                </p>
+              </div>
+            </div>
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+              <CarIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-800">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Form */}
         <CarFormModal

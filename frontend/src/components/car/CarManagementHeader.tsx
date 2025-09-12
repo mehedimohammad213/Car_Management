@@ -15,7 +15,7 @@ const CarManagementHeader: React.FC<CarManagementHeaderProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
         <div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">
-            🚗 Car Management
+             Car Management
           </h1>
           <p className="text-sm sm:text-base text-gray-600 mt-2">
             Manage your vehicle inventory with advanced features

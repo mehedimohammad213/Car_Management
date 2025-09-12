@@ -179,9 +179,10 @@ const ViewCar: React.FC = () => {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate("/admin/cars")}
-                className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors border border-gray-200 dark:border-gray-700 shadow-sm"
               >
-                <ArrowLeftIcon className="w-5 h-5" />
+                <ArrowLeftIcon className="w-4 h-4" />
+                <span className="font-medium">Back</span>
               </button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
