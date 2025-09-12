@@ -24,6 +24,7 @@ import {
 import { orderApi, Order } from "../services/orderApi";
 import { InvoiceService } from "../services/invoiceService";
 import { toast } from "react-toastify";
+import Pagination from "../components/common/Pagination";
 
 const AdminOrders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -36,6 +37,10 @@ const AdminOrders: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage] = useState(10);
 
   useEffect(() => {
     loadOrders();
@@ -180,6 +185,18 @@ const AdminOrders: React.FC = () => {
     return matchesStatus && matchesSearch && matchesDate;
   });
 
+  // Pagination logic
+  const totalItems = filteredOrders.length;
+  const totalPages = Math.ceil(totalItems / perPage);
+  const startIndex = (currentPage - 1) * perPage;
+  const endIndex = startIndex + perPage;
+  const paginatedOrders = filteredOrders.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, searchTerm, dateFilter]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -195,7 +212,7 @@ const AdminOrders: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
           <div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">
-              📦 Order Management
+              Order Management
             </h1>
             <p className="text-sm sm:text-base text-gray-600 mt-2">
               Monitor and manage all customer orders
@@ -209,7 +226,7 @@ const AdminOrders: React.FC = () => {
         <div className="flex items-center gap-2 mb-4"></div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {/* Search */}
-          <div className="relative">
+          <div className="relative sm:col-span-2 lg:col-span-1">
             <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
@@ -249,7 +266,7 @@ const AdminOrders: React.FC = () => {
               setSearchTerm("");
               setStatusFilter("all");
             }}
-            className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors font-medium touch-manipulation text-base"
+            className="px-4 py-2.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors font-medium text-sm shadow-sm"
           >
             Clear All Filters
           </button>
@@ -257,20 +274,26 @@ const AdminOrders: React.FC = () => {
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
-        {filteredOrders.length === 0 ? (
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        {paginatedOrders.length === 0 ? (
           <div className="text-center py-16">
-            <div className="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+            <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
               <Package className="w-12 h-12 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
               No orders found
             </h3>
-            <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+            <p className="text-gray-500 max-w-sm mx-auto">
               {statusFilter === "all"
                 ? "No orders have been placed yet. Orders will appear here once customers start making purchases."
                 : `No orders with status "${statusFilter}" found. Try adjusting your filters.`}
             </p>
+            <button
+              onClick={loadOrders}
+              className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium text-sm mt-4"
+            >
+              Refresh Data
+            </button>
           </div>
         ) : (
           <>
@@ -299,24 +322,24 @@ const AdminOrders: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {filteredOrders.map((order) => (
+                  {paginatedOrders.map((order) => (
                     <tr
                       key={order.id}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      className="hover:bg-gray-50 transition-colors"
                     >
-                      <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                      <td className="px-6 py-4 font-medium text-gray-900">
                         #{order.id}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
-                            <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <User className="w-4 h-4 text-blue-600" />
                           </div>
                           <div>
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            <div className="text-sm font-medium text-gray-900">
                               {order.user?.name || "Unknown User"}
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                            <div className="text-xs text-gray-500">
                               ID: {order.user_id}
                             </div>
                           </div>
@@ -337,17 +360,17 @@ const AdminOrders: React.FC = () => {
                                 className="w-12 h-8 object-cover rounded border"
                               />
                               <div className="min-w-0">
-                                <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                <div className="text-sm font-medium text-gray-900 truncate">
                                   {item.car.make} {item.car.model}
                                 </div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                <div className="text-xs text-gray-500">
                                   Qty: {item.quantity}
                                 </div>
                               </div>
                             </div>
                           ))}
                           {order.items.length > 2 && (
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                            <div className="text-xs text-gray-500">
                               +{order.items.length - 2} more items
                             </div>
                           )}
@@ -355,10 +378,10 @@ const AdminOrders: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-right">
-                          <div className="font-semibold text-gray-900 dark:text-white">
+                          <div className="font-semibold text-gray-900">
                             ${order.total_amount.toLocaleString()}
                           </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                          <div className="text-xs text-gray-500">
                             {order.items.length} item
                             {order.items.length !== 1 ? "s" : ""}
                           </div>
@@ -376,14 +399,14 @@ const AdminOrders: React.FC = () => {
                           </div>
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      <td className="px-6 py-4 text-sm text-gray-500">
                         {formatDate(order.created_at)}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-1">
                           <button
                             onClick={() => setSelectedOrder(order)}
-                            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                            className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                             title="View Details"
                           >
                             <Eye className="w-4 h-4" />
@@ -393,7 +416,7 @@ const AdminOrders: React.FC = () => {
                             order.status === "delivered") && (
                             <button
                               onClick={() => handleDownloadInvoice(order)}
-                              className="p-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
+                              className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
                               title="Download Invoice"
                             >
                               <Download className="w-4 h-4" />
@@ -401,7 +424,7 @@ const AdminOrders: React.FC = () => {
                           )}
                           <button
                             onClick={() => openDeletePopup(order)}
-                            className="p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                            className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                             title="Delete Order"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -415,98 +438,71 @@ const AdminOrders: React.FC = () => {
             </div>
 
             {/* Mobile Cards */}
-            <div className="lg:hidden">
-              {filteredOrders.map((order) => (
-                <div
-                  key={order.id}
-                  className="p-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <div className="lg:hidden p-4">
+              <div className="space-y-4">
+                {paginatedOrders.map((order) => (
+                  <div
+                    key={order.id}
+                    className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-gray-900">
                         Order #{order.id}
                       </h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {order.user?.name || "Unknown User"} •{" "}
-                        {formatDate(order.created_at)}
-                      </p>
-                    </div>
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                        order.status
-                      )}`}
-                    >
-                      <div className="flex items-center space-x-1">
-                        {getStatusIcon(order.status)}
-                        <span className="capitalize">{order.status}</span>
-                      </div>
-                    </span>
-                  </div>
-
-                  <div className="space-y-2 mb-3">
-                    {order.items.slice(0, 2).map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex items-center space-x-3"
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                          order.status
+                        )}`}
                       >
-                        <img
-                          src={item.car.image_url || "/placeholder-car.jpg"}
-                          alt={`${item.car.make} ${item.car.model}`}
-                          className="w-12 h-8 object-cover rounded border"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                            {item.car.make} {item.car.model}
-                          </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
-                            Qty: {item.quantity} • $
-                            {item.price.toLocaleString()}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    {order.items.length > 2 && (
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        +{order.items.length - 2} more items
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                      Total: ${order.total_amount.toLocaleString()}
-                    </span>
-                    <div className="flex items-center gap-1">
+                        {order.status}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-600 mb-3">
+                      {order.user?.name || "Unknown User"} • $
+                      {order.total_amount.toLocaleString()}
+                    </div>
+                    <div className="flex items-center gap-2">
                       <button
                         onClick={() => setSelectedOrder(order)}
-                        className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                        className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
                       >
-                        <Eye className="w-4 h-4" />
+                        View
                       </button>
                       {(order.status === "approved" ||
                         order.status === "shipped" ||
                         order.status === "delivered") && (
                         <button
                           onClick={() => handleDownloadInvoice(order)}
-                          className="p-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
+                          className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700 transition-colors"
                         >
-                          <Download className="w-4 h-4" />
+                          Invoice
                         </button>
                       )}
                       <button
                         onClick={() => openDeletePopup(order)}
-                        className="p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                        className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition-colors"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        Delete
                       </button>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </>
         )}
       </div>
+
+      {/* Pagination */}
+      {totalItems > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          perPage={perPage}
+          onPageChange={setCurrentPage}
+        />
+      )}
 
       {/* Professional Order Modal */}
       {selectedOrder && (
