@@ -558,7 +558,7 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
           formData={formData}
           errors={errors}
           categories={categories}
-          subcategories={subcategories}
+          // subcategories={subcategories}
           isViewMode={isViewMode}
           onInputChange={handleInputChange}
         />
@@ -596,12 +596,12 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
         />
 
         {/* Notes Section */}
-        <NotesSection
+        {/* <NotesSection
           formData={formData}
           errors={errors}
           isViewMode={isViewMode}
           onInputChange={handleInputChange}
-        />
+        /> */}
 
         {/* Photos Section */}
         <PhotoSection

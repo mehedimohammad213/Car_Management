@@ -190,7 +190,7 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
               {/* Short Title */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Short Title
+                  Title
                 </label>
                 <input
                   type="text"
@@ -200,38 +200,6 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
                   }
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="Brief title for the car"
-                />
-              </div>
-
-              {/* Full Title */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Full Title
-                </label>
-                <input
-                  type="text"
-                  value={detail.full_title || ""}
-                  onChange={(e) =>
-                    onDetailChange(detailIndex, "full_title", e.target.value)
-                  }
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Complete title for the car"
-                />
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  value={detail.description || ""}
-                  onChange={(e) =>
-                    onDetailChange(detailIndex, "description", e.target.value)
-                  }
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Detailed description of the car..."
                 />
               </div>
 
@@ -314,54 +282,6 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
-
-              {/* Detail Images */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Detail Images
-                </label>
-                <div className="space-y-3">
-                  {detail.images?.map((image, imageIndex) => (
-                    <div
-                      key={imageIndex}
-                      className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg"
-                    >
-                      <div className="flex-1">
-                        <input
-                          type="text"
-                          value={image}
-                          onChange={(e) =>
-                            onDetailImageChange(
-                              detailIndex,
-                              imageIndex,
-                              e.target.value
-                            )
-                          }
-                          placeholder="Detail image URL"
-                          className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          onRemoveDetailImage(detailIndex, imageIndex)
-                        }
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => onAddDetailImage(detailIndex)}
-                    className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-500 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add Detail Image
-                  </button>
                 </div>
               </div>
             </div>

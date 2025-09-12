@@ -11,6 +11,7 @@ interface FormFieldProps {
   error?: string;
   isViewMode?: boolean;
   onChange: (value: any) => void;
+  inline?: boolean;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -24,10 +25,11 @@ const FormField: React.FC<FormFieldProps> = ({
   error,
   isViewMode = false,
   onChange,
+  inline = false,
 }) => {
   if (isViewMode) {
     return (
-      <div>
+      <div className={inline ? "flex-1" : ""}>
         <label className="block text-sm font-semibold text-gray-700 mb-2">
           {label}
         </label>
@@ -39,7 +41,7 @@ const FormField: React.FC<FormFieldProps> = ({
   }
 
   return (
-    <div>
+    <div className={inline ? "flex-1" : ""}>
       <label className="block text-sm font-semibold text-gray-700 mb-2">
         {label} {required && <span className="text-red-500">*</span>}
       </label>

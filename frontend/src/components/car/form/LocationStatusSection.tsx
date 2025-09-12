@@ -30,75 +30,75 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
         <MapPin className="w-5 h-5 text-blue-600" />
         Location & Status
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Chassis Number (Masked) */}
-        <FormField
-          label="Chassis Number (Masked)"
-          field="chassis_no_masked"
-          type="text"
-          placeholder="e.g., ABC123******XYZ789"
-          required={false}
-          maxLength={32}
-          value={formData.chassis_no_masked}
-          error={errors.chassis_no_masked}
-          isViewMode={isViewMode}
-          onChange={(value) => onInputChange("chassis_no_masked", value)}
-        />
-
-        {/* Chassis Number (Full) */}
-        <FormField
-          label="Chassis Number (Full)"
-          field="chassis_no_full"
-          type="text"
-          placeholder="Complete chassis number"
-          required={false}
-          maxLength={64}
-          value={formData.chassis_no_full}
-          error={errors.chassis_no_full}
-          isViewMode={isViewMode}
-          onChange={(value) => onInputChange("chassis_no_full", value)}
-        />
-
-        {/* Location */}
-        <FormField
-          label="Location"
-          field="location"
-          type="text"
-          placeholder="e.g., Tokyo, Japan"
-          required={false}
-          maxLength={128}
-          value={formData.location}
-          error={errors.location}
-          isViewMode={isViewMode}
-          onChange={(value) => onInputChange("location", value)}
-        />
-
-        {/* Country of Origin */}
-        <FormField
-          label="Country of Origin"
-          field="country_origin"
-          type="text"
-          placeholder="e.g., Japan, Germany, USA, UK"
-          required={false}
-          maxLength={64}
-          value={formData.country_origin}
-          error={errors.country_origin}
-          isViewMode={isViewMode}
-          onChange={(value) => onInputChange("country_origin", value)}
-        />
-
-        {/* Status */}
-        <SelectField
-          label="Status"
-          field="status"
-          options={statusOptions}
-          required={false}
-          placeholder="Select Status"
-          value={formData.status}
-          error={errors.status}
-          isViewMode={isViewMode}
-          onChange={(value) => onInputChange("status", value)}
-        />
+      <div className="space-y-6">
+        {/* First row - 5 fields */}
+        <div className="flex gap-4">
+          <FormField
+            label="Chassis Number (Masked)"
+            field="chassis_no_masked"
+            type="text"
+            placeholder="e.g., ABC123******XYZ789"
+            required={false}
+            maxLength={32}
+            value={formData.chassis_no_masked}
+            error={errors.chassis_no_masked}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("chassis_no_masked", value)}
+            inline={true}
+          />
+          <FormField
+            label="Chassis Number (Full)"
+            field="chassis_no_full"
+            type="text"
+            placeholder="Complete chassis number"
+            required={false}
+            maxLength={64}
+            value={formData.chassis_no_full}
+            error={errors.chassis_no_full}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("chassis_no_full", value)}
+            inline={true}
+          />
+          <FormField
+            label="Location"
+            field="location"
+            type="text"
+            placeholder="e.g., Tokyo, Japan"
+            required={false}
+            maxLength={128}
+            value={formData.location}
+            error={errors.location}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("location", value)}
+            inline={true}
+          />
+          <FormField
+            label="Country of Origin"
+            field="country_origin"
+            type="text"
+            placeholder="e.g., Japan, Germany, USA, UK"
+            required={false}
+            maxLength={64}
+            value={formData.country_origin}
+            error={errors.country_origin}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("country_origin", value)}
+            inline={true}
+          />
+          <div className="flex-1">
+            <SelectField
+              label="Status"
+              field="status"
+              options={statusOptions}
+              required={false}
+              placeholder="Select Status"
+              value={formData.status}
+              error={errors.status}
+              isViewMode={isViewMode}
+              onChange={(value) => onInputChange("status", value)}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
