@@ -66,7 +66,7 @@ const UserCarCatalog: React.FC = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [favorites, setFavorites] = useState<number[]>([]);
-  const { addToCart, isLoading: cartLoading } = useCart();
+  const { addToCart, isCarLoading } = useCart();
 
   useEffect(() => {
     console.log("UserCarCatalog: Component mounted, fetching data...");
@@ -682,12 +682,12 @@ const UserCarCatalog: React.FC = () => {
                     </button>
                     <button
                       onClick={() => handleAddToCart(car)}
-                      disabled={cartLoading}
+                      disabled={isCarLoading(car.id)}
                       className="flex-1 group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white px-4 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 disabled:shadow-none"
                       title="Add to Cart"
                     >
                       <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      {cartLoading ? (
+                      {isCarLoading(car.id) ? (
                         <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent relative z-10"></div>
                       ) : (
                         <ShoppingCart className="w-6 h-6 relative z-10 group-hover:scale-110 transition-transform duration-300" />

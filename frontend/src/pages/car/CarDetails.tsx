@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import {
-  ArrowLeftIcon,
-  ShoppingCartIcon,
-  StarIcon,
-} from "lucide-react";
+import { ArrowLeftIcon, ShoppingCartIcon, StarIcon } from "lucide-react";
 // Removed mockData import
 import { Car } from "../../types";
 import { useCart } from "../../contexts/CartContext";
@@ -14,7 +10,7 @@ const CarDetails: React.FC = () => {
   const [car, setCar] = useState<Car | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const { addToCart, isLoading: cartLoading } = useCart();
+  const { addToCart, isCarLoading } = useCart();
 
   useEffect(() => {
     const fetchCar = async () => {
@@ -218,10 +214,10 @@ const CarDetails: React.FC = () => {
 
             <button
               onClick={handleAddToCart}
-              disabled={!car.isAvailable || cartLoading}
+              disabled={!car.isAvailable || isCarLoading(car.id)}
               className="w-full flex items-center justify-center py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {cartLoading ? (
+              {isCarLoading(car.id) ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                   Adding to Cart...

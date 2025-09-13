@@ -19,6 +19,7 @@ interface CartItem {
 interface CartContextType {
   items: CartItem[];
   isLoading: boolean;
+  loadingCars: Set<number>; // Track which cars are being added to cart
   addToCart: (car: Car, quantity?: number) => Promise<void>;
   removeFromCart: (cartId: number) => Promise<void>;
   updateQuantity: (cartId: number, quantity: number) => Promise<void>;
@@ -27,6 +28,7 @@ interface CartContextType {
   getTotalPrice: () => number;
   refreshCart: () => Promise<void>;
   setItems: (items: CartItem[]) => void;
+  isCarLoading: (carId: number) => boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -46,6 +48,7 @@ interface CartProviderProps {
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingCars, setLoadingCars] = useState<Set<number>>(new Set());
   const { user } = useAuth();
 
   // Toast notification functions
@@ -139,6 +142,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       return;
     }
 
+    // Add car to loading set
+    setLoadingCars((prev) => new Set(prev).add(car.id));
+
     try {
       setIsLoading(true);
       const response = await cartApi.addToCart({
@@ -158,6 +164,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       showErrorToast("Failed to add item to cart. Please try again.");
     } finally {
       setIsLoading(false);
+      // Remove car from loading set
+      setLoadingCars((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(car.id);
+        return newSet;
+      });
     }
   };
 
@@ -252,9 +264,14 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     );
   };
 
+  const isCarLoading = (carId: number) => {
+    return loadingCars.has(carId);
+  };
+
   const value = {
     items,
     isLoading,
+    loadingCars,
     addToCart,
     removeFromCart,
     updateQuantity,
@@ -263,6 +280,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     getTotalPrice,
     refreshCart,
     setItems,
+    isCarLoading,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

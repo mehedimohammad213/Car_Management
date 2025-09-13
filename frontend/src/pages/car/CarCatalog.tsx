@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {
-  SearchIcon,
-  FilterIcon,
-  ShoppingCartIcon,
-} from "lucide-react";
+import { SearchIcon, FilterIcon, ShoppingCartIcon } from "lucide-react";
 // Removed mockData import
 import { Car, FilterOptions } from "../../types";
 import { useCart } from "../../contexts/CartContext";
@@ -16,7 +12,7 @@ const CarCatalog: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<FilterOptions>({});
   const [showFilters, setShowFilters] = useState(false);
-  const { addToCart, isLoading: cartLoading } = useCart();
+  const { addToCart, isCarLoading } = useCart();
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -380,10 +376,10 @@ const CarCatalog: React.FC = () => {
                     </Link>
                     <button
                       onClick={() => handleAddToCart(car)}
-                      disabled={!car.isAvailable || cartLoading}
+                      disabled={!car.isAvailable || isCarLoading(car.id)}
                       className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                      {cartLoading ? (
+                      {isCarLoading(car.id) ? (
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                       ) : (
                         <ShoppingCartIcon className="w-5 h-5" />
