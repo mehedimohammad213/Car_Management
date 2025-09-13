@@ -56,9 +56,11 @@ export const StockHeader: React.FC<StockHeaderProps> = ({ onCreateStock }) => {
         })),
       };
 
-      // Import and use the InvoiceService
-      const { InvoiceService } = await import("../../services/invoiceService");
-      InvoiceService.generateInvoice(mockOrder);
+      // Import and use the StockInvoiceService
+      const { StockInvoiceService } = await import(
+        "../../services/stockInvoiceService"
+      );
+      StockInvoiceService.generateStockInvoice(items);
 
       console.log("Invoice created successfully with items:", items);
     } catch (error) {
