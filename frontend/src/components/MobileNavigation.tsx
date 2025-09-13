@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useCart } from "../contexts/CartContext";
+import { usePendingOrders } from "../hooks/usePendingOrders";
 import {
   HomeIcon,
   CarIcon,
@@ -16,6 +17,7 @@ import {
 const MobileNavigation: React.FC = () => {
   const { user } = useAuth();
   const { getTotalItems } = useCart();
+  const { pendingCount } = usePendingOrders();
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path;
@@ -46,7 +48,10 @@ const MobileNavigation: React.FC = () => {
           const Icon = item.icon;
           const isActiveRoute = isActive(item.path);
           const isCart = item.path === "/cart";
+          const isAdminOrders =
+            item.path === "/admin/orders" && user?.role === "admin";
           const cartCount = isCart ? getTotalItems() : 0;
+          const ordersCount = isAdminOrders ? pendingCount : 0;
 
           return (
             <Link
@@ -63,6 +68,11 @@ const MobileNavigation: React.FC = () => {
                 {isCart && cartCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                     {cartCount > 9 ? "9+" : cartCount}
+                  </span>
+                )}
+                {isAdminOrders && ordersCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {ordersCount > 9 ? "9+" : ordersCount}
                   </span>
                 )}
               </div>

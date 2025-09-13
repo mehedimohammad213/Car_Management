@@ -2,6 +2,7 @@ import React from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useCart } from "../contexts/CartContext";
+import { usePendingOrders } from "../hooks/usePendingOrders";
 import MobileNavigation from "./MobileNavigation";
 import {
   HomeIcon,
@@ -26,6 +27,7 @@ import {
 const Layout: React.FC = () => {
   const { user, logout } = useAuth();
   const { getTotalItems, clearCart } = useCart();
+  const { pendingCount } = usePendingOrders();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
@@ -183,6 +185,15 @@ const Layout: React.FC = () => {
                             {getTotalItems() > 9 ? "9+" : getTotalItems()}
                           </span>
                         )}
+                      {/* Pending orders badge for minimized view */}
+                      {sidebarMinimized &&
+                        item.path === "/admin/orders" &&
+                        user?.role === "admin" &&
+                        pendingCount > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                            {pendingCount > 9 ? "9+" : pendingCount}
+                          </span>
+                        )}
                     </div>
                     {!sidebarMinimized && (
                       <>
@@ -194,6 +205,13 @@ const Layout: React.FC = () => {
                             {getTotalItems()}
                           </span>
                         )}
+                        {item.path === "/admin/orders" &&
+                          user?.role === "admin" &&
+                          pendingCount > 0 && (
+                            <span className="ml-2 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-1 min-w-[20px] text-center">
+                              {pendingCount}
+                            </span>
+                          )}
                       </>
                     )}
                   </Link>
