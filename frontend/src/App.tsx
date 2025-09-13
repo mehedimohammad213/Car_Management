@@ -22,7 +22,7 @@ import Settings from "./pages/Settings";
 
 import CarDetails from "./pages/car/CarDetails";
 import UserCarCatalog from "./pages/car/UserCarCatalog";
-import Cart from "./pages/Cart";
+import Cart from "./pages/cart/Cart";
 import Orders from "./pages/order/Orders";
 import UserOrders from "./pages/order/UserOrders";
 import AdminOrders from "./pages/order/AdminOrders";

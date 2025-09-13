@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { TrashIcon, MinusIcon, PlusIcon, ArrowLeftIcon } from "lucide-react";
-import { useCart } from "../contexts/CartContext";
-import { orderApi } from "../services/orderApi";
+import { useCart } from "../../contexts/CartContext";
+import { orderApi } from "../../services/orderApi";
 import { toast } from "react-toastify";
 
 const Cart: React.FC = () => {
