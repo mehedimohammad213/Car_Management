@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Clock, CheckCircle, Truck, XCircle } from "lucide-react";
-import { orderApi, Order } from "../services/orderApi";
-import { InvoiceService } from "../services/invoiceService";
+import { orderApi, Order } from "../../services/orderApi";
+import { InvoiceService } from "../../services/invoiceService";
 import { toast } from "react-toastify";
-import Pagination from "../components/common/Pagination";
+import Pagination from "../../components/common/Pagination";
 import {
   OrderManagementHeader,
   OrderFilters,
   OrderTable,
   OrderModal,
   DeleteOrderModal,
-} from "../components/order";
+} from "../../components/order";
 
 const AdminOrders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);

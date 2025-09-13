@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { DownloadIcon, EyeIcon, ChevronUp, ChevronDown } from "lucide-react";
 // Removed mockData import
-import { Order } from "../types";
-import { useAuth } from "../contexts/AuthContext";
+import { Order } from "../../types";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);

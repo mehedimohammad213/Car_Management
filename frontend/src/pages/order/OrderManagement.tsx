@@ -7,7 +7,7 @@ import {
   EditIcon,
 } from "lucide-react";
 // Removed mockData import
-import { Order } from "../types";
+import { Order } from "../../types";
 
 const OrderManagement: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);

@@ -23,8 +23,8 @@ import {
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
-import { orderApi, Order } from "../services/orderApi";
-import { InvoiceService } from "../services/invoiceService";
+import { orderApi, Order } from "../../services/orderApi";
+import { InvoiceService } from "../../services/invoiceService";
 import { toast } from "react-toastify";
 
 const UserOrders: React.FC = () => {

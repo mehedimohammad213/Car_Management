@@ -48,7 +48,7 @@ import {
   SettingsIcon,
   BellIcon,
 } from "lucide-react";
-import { dashboardApi, DashboardData } from "../services/dashboardApi";
+import { dashboardApi, DashboardData } from "../../services/dashboardApi";
 
 const Dashboard: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(
@@ -581,7 +581,6 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-
     </div>
   );
 };
