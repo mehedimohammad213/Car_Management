@@ -15,16 +15,46 @@ const Cart: React.FC = () => {
     isLoading,
     refreshCart,
     setItems,
+    isCarLoading,
   } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [shippingAddress, setShippingAddress] = useState("");
+  const [loadingItems, setLoadingItems] = useState<Set<number>>(new Set());
   const navigate = useNavigate();
 
   const handleQuantityChange = async (cartId: number, newQuantity: number) => {
-    if (newQuantity <= 0) {
+    // Add loading state for this specific item
+    setLoadingItems((prev) => new Set(prev).add(cartId));
+
+    try {
+      if (newQuantity <= 0) {
+        await removeFromCart(cartId);
+      } else {
+        await updateQuantity(cartId, newQuantity);
+      }
+    } finally {
+      // Remove loading state
+      setLoadingItems((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(cartId);
+        return newSet;
+      });
+    }
+  };
+
+  const handleRemoveItem = async (cartId: number) => {
+    // Add loading state for this specific item
+    setLoadingItems((prev) => new Set(prev).add(cartId));
+
+    try {
       await removeFromCart(cartId);
-    } else {
-      await updateQuantity(cartId, newQuantity);
+    } finally {
+      // Remove loading state
+      setLoadingItems((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(cartId);
+        return newSet;
+      });
     }
   };
 
@@ -63,13 +93,7 @@ const Cart: React.FC = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  // Remove full page loading - show content immediately
 
   if (items.length === 0) {
     return (
@@ -168,23 +192,39 @@ const Cart: React.FC = () => {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 gap-3 sm:gap-0">
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={() =>
-                      handleQuantityChange(item.id, item.quantity - 1)
-                    }
-                    className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors touch-manipulation"
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleQuantityChange(item.id, item.quantity - 1);
+                    }}
+                    disabled={loadingItems.has(item.id)}
+                    className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <MinusIcon className="w-4 h-4" />
+                    {loadingItems.has(item.id) ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+                    ) : (
+                      <MinusIcon className="w-4 h-4" />
+                    )}
                   </button>
                   <span className="w-12 text-center font-medium text-gray-900 dark:text-white">
                     {item.quantity}
                   </span>
                   <button
-                    onClick={() =>
-                      handleQuantityChange(item.id, item.quantity + 1)
-                    }
-                    className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors touch-manipulation"
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleQuantityChange(item.id, item.quantity + 1);
+                    }}
+                    disabled={loadingItems.has(item.id)}
+                    className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <PlusIcon className="w-4 h-4" />
+                    {loadingItems.has(item.id) ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+                    ) : (
+                      <PlusIcon className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
                 <div className="flex items-center justify-between sm:justify-end space-x-4">
@@ -195,10 +235,20 @@ const Cart: React.FC = () => {
                     ).toLocaleString()}
                   </p>
                   <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors touch-manipulation"
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleRemoveItem(item.id);
+                    }}
+                    disabled={loadingItems.has(item.id)}
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <TrashIcon className="w-5 h-5" />
+                    {loadingItems.has(item.id) ? (
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-500"></div>
+                    ) : (
+                      <TrashIcon className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -252,7 +302,12 @@ const Cart: React.FC = () => {
 
             <div className="mt-6 space-y-3">
               <button
-                onClick={handleCheckout}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleCheckout();
+                }}
                 disabled={isCheckingOut}
                 className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation text-base font-medium"
               >
