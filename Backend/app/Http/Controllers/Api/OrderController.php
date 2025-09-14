@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Cart;
 use App\Models\Car;
+use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -216,7 +217,7 @@ class OrderController extends Controller
             'status' => ['required', Rule::in(['pending', 'approved', 'shipped', 'delivered', 'canceled'])]
         ]);
 
-        $order = Order::find($id);
+        $order = Order::with(['items.car'])->find($id);
 
         if (!$order) {
             return response()->json([
@@ -225,19 +226,70 @@ class OrderController extends Controller
             ], 404);
         }
 
-        $order->update([
-            'status' => $request->status
-        ]);
+        try {
+            DB::beginTransaction();
 
-        $order->load(['items.car', 'user']);
+            // If status is being changed to 'delivered', reduce stock
+            if ($request->status === 'delivered' && $order->status !== 'delivered') {
+                $this->reduceStockForOrder($order);
+            }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Order status updated successfully',
-            'data' => [
-                'order' => $order
-            ]
-        ]);
+            // Update order status
+            $order->update([
+                'status' => $request->status
+            ]);
+
+            DB::commit();
+
+            $order->load(['items.car', 'user']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order status updated successfully',
+                'data' => [
+                    'order' => $order
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update order status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Reduce stock when order is delivered
+     */
+    private function reduceStockForOrder(Order $order)
+    {
+        foreach ($order->items as $orderItem) {
+            $stock = Stock::where('car_id', $orderItem->car_id)->first();
+
+            if (!$stock) {
+                throw new \Exception("Stock not found for car ID: {$orderItem->car_id}");
+            }
+
+            if ($stock->quantity < $orderItem->quantity) {
+                throw new \Exception("Insufficient stock for car ID: {$orderItem->car_id}. Available: {$stock->quantity}, Required: {$orderItem->quantity}");
+            }
+
+            // Reduce stock quantity
+            $newQuantity = $stock->quantity - $orderItem->quantity;
+            $stock->update(['quantity' => $newQuantity]);
+
+            // Update stock status to 'sold' if quantity becomes 0
+            if ($newQuantity === 0) {
+                $stock->update(['status' => 'sold']);
+
+                // Also update car status to 'sold'
+                if ($stock->car) {
+                    $stock->car->update(['status' => 'sold']);
+                }
+            }
+        }
     }
 
     /**
@@ -254,7 +306,7 @@ class OrderController extends Controller
             ], 401);
         }
 
-        $order = Order::where('id', $id)
+        $order = Order::with(['items.car'])->where('id', $id)
             ->where('user_id', $user->id)
             ->first();
 
@@ -285,6 +337,96 @@ class OrderController extends Controller
                 'order' => $order
             ]
         ]);
+    }
+
+    /**
+     * Admin cancel order with stock restoration (if delivered)
+     */
+    public function adminCancelOrder(Request $request, $id)
+    {
+        $user = Auth::user();
+
+        if (!$user || $user->role !== 'admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access'
+            ], 403);
+        }
+
+        $order = Order::with(['items.car'])->find($id);
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order not found'
+            ], 404);
+        }
+
+        if ($order->status === 'canceled') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order is already canceled'
+            ], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // If order was delivered, restore stock
+            if ($order->status === 'delivered') {
+                $this->restoreStockForOrder($order);
+            }
+
+            // Update order status to canceled
+            $order->update([
+                'status' => 'canceled'
+            ]);
+
+            DB::commit();
+
+            $order->load(['items.car', 'user']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order canceled successfully',
+                'data' => [
+                    'order' => $order
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to cancel order: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Restore stock when order is canceled after delivery
+     */
+    private function restoreStockForOrder(Order $order)
+    {
+        foreach ($order->items as $orderItem) {
+            $stock = Stock::where('car_id', $orderItem->car_id)->first();
+
+            if ($stock) {
+                // Restore stock quantity
+                $newQuantity = $stock->quantity + $orderItem->quantity;
+                $stock->update(['quantity' => $newQuantity]);
+
+                // Update stock status back to 'available' if it was 'sold'
+                if ($stock->status === 'sold') {
+                    $stock->update(['status' => 'available']);
+
+                    // Also update car status back to 'available'
+                    if ($stock->car) {
+                        $stock->car->update(['status' => 'available']);
+                    }
+                }
+            }
+        }
     }
 
     /**
