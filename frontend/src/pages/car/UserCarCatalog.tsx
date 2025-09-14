@@ -759,7 +759,7 @@ const UserCarCatalog: React.FC = () => {
           />
 
           {/* Modal */}
-          <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden">
+          <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-6xl max-h-[95vh] flex flex-col overflow-hidden">
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8">
               <div className="flex items-center justify-between">
@@ -807,7 +807,7 @@ const UserCarCatalog: React.FC = () => {
             </div>
 
             {/* Content */}
-            <div className="p-6">
+            <div className="flex-1 overflow-y-auto p-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left Column - Photos */}
                 <div>
@@ -1096,31 +1096,34 @@ const UserCarCatalog: React.FC = () => {
                       <p className="text-gray-700">{selectedCar.notes}</p>
                     </div>
                   )}
-
-                  {/* Actions */}
-                  <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-                    <button
-                      onClick={() => handleAddToCart(selectedCar)}
-                      disabled={cartLoading}
-                      className="flex-1 group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white px-6 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 disabled:shadow-none"
-                      title="Add to Cart"
-                    >
-                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      {cartLoading ? (
-                        <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent relative z-10"></div>
-                      ) : (
-                        <ShoppingCart className="w-6 h-6 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-                      )}
-                    </button>
-                    <button
-                      onClick={handleCloseCarModal}
-                      className="flex-1 group relative overflow-hidden bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
-                      title="Close"
-                    >
-                      <X className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
-                    </button>
-                  </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Fixed Actions Footer */}
+            <div className="border-t border-gray-200 dark:border-gray-700 p-6 bg-gray-50 dark:bg-gray-900">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={() => handleAddToCart(selectedCar)}
+                  disabled={isCarLoading(selectedCar.id)}
+                  className="flex-1 group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white px-6 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 disabled:shadow-none"
+                  title="Add to Cart"
+                >
+                  <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  {isCarLoading(selectedCar.id) ? (
+                    <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent relative z-10"></div>
+                  ) : (
+                    <ShoppingCart className="w-6 h-6 relative z-10 group-hover:scale-110 transition-transform duration-300" />
+                  )}
+                  <span className="ml-2 relative z-10">Add to Cart</span>
+                </button>
+                <button
+                  onClick={handleCloseCarModal}
+                  className="flex-1 group relative overflow-hidden bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                  title="Close"
+                >
+                  <X className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
+                </button>
               </div>
             </div>
           </div>
