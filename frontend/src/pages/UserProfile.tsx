@@ -1,35 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  UserIcon,
-  MailIcon,
-  PhoneIcon,
-  CameraIcon,
-  SaveIcon,
-  MapPinIcon,
-} from "lucide-react";
+import { UserIcon, MailIcon, SaveIcon, ShieldIcon } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 
 const UserProfile: React.FC = () => {
   const { user } = useAuth();
   const [name, setName] = useState(user?.name || "John Doe");
   const [email, setEmail] = useState(user?.email || "john.doe@example.com");
-  const [phone, setPhone] = useState("+1-555-123-4567");
-  const [address, setAddress] = useState("123 Main Street, City, State 12345");
-  const [profileImage, setProfileImage] = useState("/api/placeholder/150/150");
+  const [role, setRole] = useState<"user" | "admin">(user?.role || "user");
   const [isLoading, setIsLoading] = useState(false);
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfileImage(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleSaveProfile = async () => {
     setIsLoading(true);
@@ -56,39 +36,9 @@ const UserProfile: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Profile Picture Section */}
-        <div className="lg:col-span-1">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Profile Picture
-            </h3>
-            <div className="text-center">
-              <div className="relative inline-block">
-                <img
-                  src={profileImage}
-                  alt="Profile"
-                  className="w-32 h-32 rounded-full object-cover border-4 border-gray-200 dark:border-gray-700"
-                />
-                <label className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition-colors">
-                  <CameraIcon className="w-4 h-4" />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                Click the camera icon to upload a new photo
-              </p>
-            </div>
-          </div>
-        </div>
-
+      <div className="max-w-2xl">
         {/* Profile Information Section */}
-        <div className="lg:col-span-2">
+        <div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Personal Information
@@ -129,46 +79,22 @@ const UserProfile: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Phone Number
+                    Role
                   </label>
                   <div className="relative">
-                    <PhoneIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                      placeholder="Enter your phone number"
-                    />
+                    <ShieldIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <select
+                      value={role}
+                      onChange={(e) =>
+                        setRole(e.target.value as "user" | "admin")
+                      }
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white appearance-none"
+                    >
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                    </select>
                   </div>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Address
-                  </label>
-                  <div className="relative">
-                    <MapPinIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="text"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                      placeholder="Enter your address"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Bio
-                </label>
-                <textarea
-                  rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                  placeholder="Tell us about yourself..."
-                />
               </div>
 
               <div className="flex justify-end">

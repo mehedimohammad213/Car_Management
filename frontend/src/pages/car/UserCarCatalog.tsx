@@ -351,19 +351,7 @@ const UserCarCatalog: React.FC = () => {
                   ))}
                 </select>
 
-                {/* Fuel */}
-                <select
-                  value={fuelFilter}
-                  onChange={(e) => setFuelFilter(e.target.value)}
-                  className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-700 dark:text-white text-base"
-                >
-                  <option value="">All Fuels</option>
-                  {filterOptions?.fuels?.map((fuel) => (
-                    <option key={fuel} value={fuel}>
-                      {fuel}
-                    </option>
-                  ))}
-                </select>
+         
 
                 {/* Color */}
                 <select
