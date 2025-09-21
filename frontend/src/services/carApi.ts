@@ -305,8 +305,8 @@ class CarApiService {
 
   async updateCar(data: UpdateCarData): Promise<CarResponse> {
     const { id, ...updateData } = data;
-    return this.request<CarResponse>(`/cars/${id}`, {
-      method: "PUT",
+    return this.request<CarResponse>(`/cars/${id}/update`, {
+      method: "POST",
       data: updateData,
     });
   }

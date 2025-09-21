@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Stock;
 use App\Http\Controllers\Controller;
 use App\Models\Stock;
 use App\Models\Car;
+use App\Jobs\SendStockUpdateNotification;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
@@ -193,6 +194,20 @@ class StockController extends Controller
                 'stock_id' => $stock->id,
                 'updated_fields' => array_keys($updateData)
             ]);
+
+            // Dispatch email notification job to queue (don't wait for it)
+            try {
+                SendStockUpdateNotification::dispatch($stock, $updateData);
+                \Log::info('Stock update notification job dispatched', [
+                    'stock_id' => $stock->id
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Failed to dispatch stock update notification job', [
+                    'stock_id' => $stock->id,
+                    'error' => $e->getMessage()
+                ]);
+                // Don't fail the main request if email dispatch fails
+            }
 
             return response()->json([
                 'success' => true,

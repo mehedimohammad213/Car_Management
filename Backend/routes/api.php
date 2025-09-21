@@ -29,6 +29,7 @@ Route::prefix('categories')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/user', [AuthController::class, 'user']);
+    Route::get('/auth/users', [AuthController::class, 'getAllUsers']);
 
     // Category API Routes
 
@@ -39,7 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [CarController::class, 'index']);
         Route::post('/', [CarController::class, 'store']);
         Route::get('/{car}', [CarController::class, 'show']);
-        Route::put('/{car}', [CarController::class, 'update']);
+        Route::post('/{car}/update', [CarController::class, 'update']);
         Route::delete('/{car}', [CarController::class, 'destroy']);
 
         // Excel import/export

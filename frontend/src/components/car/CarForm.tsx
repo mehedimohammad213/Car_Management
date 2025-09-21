@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   SaveIcon,
   UploadIcon,
@@ -9,9 +9,12 @@ import {
   GaugeIcon,
   SettingsIcon,
   FileTextIcon,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { Car, Brand, Category } from "../../types";
 import { categoryApi } from "../../services/categoryApi";
+import { imgbbApi } from "../../services/imgbbApi";
 
 interface CarFormProps {
   mode: "create" | "update";
@@ -47,6 +50,9 @@ const CarForm: React.FC<CarFormProps> = ({
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [newFeature, setNewFeature] = useState("");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+  const imageFileInputRef = useRef<HTMLInputElement>(null);
 
   const fuelTypes = [
     "Gasoline",
@@ -158,6 +164,50 @@ const CarForm: React.FC<CarFormProps> = ({
       ...prev,
       features: prev.features.filter((f) => f !== feature),
     }));
+  };
+
+  const handleImageUpload = async (file: File) => {
+    // Validate file
+    const validation = imgbbApi.validateImageFile(file);
+    if (!validation.isValid) {
+      setImageUploadError(validation.error || 'Invalid file');
+      return;
+    }
+
+    setIsUploadingImage(true);
+    setImageUploadError(null);
+
+    try {
+      const response = await imgbbApi.uploadImage(file, {
+        name: `car-main-image-${Date.now()}`,
+      });
+
+      // Update the form data with the uploaded URL
+      setFormData((prev) => ({
+        ...prev,
+        image: response.data.url,
+      }));
+    } catch (error) {
+      console.error('Image upload error:', error);
+      setImageUploadError('Failed to upload image. Please try again.');
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  const handleImageFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleImageUpload(file);
+    }
+    // Reset input
+    event.target.value = '';
+  };
+
+  const triggerImageFileInput = () => {
+    if (imageFileInputRef.current) {
+      imageFileInputRef.current.click();
+    }
   };
 
   return (
@@ -444,17 +494,51 @@ const CarForm: React.FC<CarFormProps> = ({
           {/* Image URL */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Image URL
+              Main Image
             </label>
-            <div className="relative">
-              <UploadIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="url"
-                value={formData.image}
-                onChange={(e) => handleInputChange("image", e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-200"
-                placeholder="https://example.com/car-image.jpg"
-              />
+            
+            {/* Image Upload Error */}
+            {imageUploadError && (
+              <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-red-600" />
+                <span className="text-sm text-red-600">{imageUploadError}</span>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              {/* Image Preview */}
+              {formData.image && (
+                <div className="w-full h-32 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                  <img
+                    src={formData.image}
+                    alt="Car preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* URL Input */}
+              <div className="relative">
+                <UploadIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="url"
+                  value={formData.image}
+                  onChange={(e) => handleInputChange("image", e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-200 cursor-pointer"
+                  placeholder="https://example.com/car-image.jpg or click to select image"
+                  onClick={triggerImageFileInput}
+                  readOnly
+                />
+                {isUploadingImage && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -557,6 +641,15 @@ const CarForm: React.FC<CarFormProps> = ({
           )}
         </button>
       </div>
+
+      {/* Hidden file input for image upload */}
+      <input
+        ref={imageFileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageFileSelect}
+        className="hidden"
+      />
     </form>
   );
 };

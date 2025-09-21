@@ -472,6 +472,13 @@ class CarController extends Controller
      */
     public function update(Request $request, Car $car): JsonResponse
     {
+        // Debug: Log the request data
+        Log::info('Car update request', [
+            'car_id' => $car->id,
+            'request_data' => $request->all(),
+            'headers' => $request->headers->all()
+        ]);
+
         $validator = Validator::make($request->all(), [
             'category_id' => 'sometimes|exists:categories,id',
             'subcategory_id' => 'nullable|exists:categories,id',
@@ -510,9 +517,30 @@ class CarController extends Controller
             'country_origin' => 'nullable|string|max:64',
             'status' => 'nullable|string|max:32',
             'notes' => 'nullable|string',
+
+            'photos' => 'nullable|array',
+            'photos.*.url' => 'required_with:photos|string|max:512',
+            'photos.*.is_primary' => 'boolean',
+            'photos.*.sort_order' => 'integer|min:0',
+            'photos.*.is_hidden' => 'boolean',
+
+            'details' => 'nullable|array',
+            'details.*.short_title' => 'nullable|string|max:255',
+            'details.*.full_title' => 'nullable|string|max:255',
+            'details.*.description' => 'nullable|string',
+            'details.*.images' => 'nullable|array',
+            'details.*.images.*' => 'string|max:512',
+            'details.*.sub_details' => 'nullable|array',
+            'details.*.sub_details.*.title' => 'nullable|string|max:255',
+            'details.*.sub_details.*.description' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
+            Log::error('Car update validation failed', [
+                'car_id' => $car->id,
+                'errors' => $validator->errors()->toArray()
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
@@ -521,8 +549,58 @@ class CarController extends Controller
         }
 
         try {
-            $car->update($request->all());
+            DB::beginTransaction();
+
+            // Update car basic data
+            $carData = $request->only([
+                'category_id', 'subcategory_id', 'ref_no', 'code', 'make', 'model', 'model_code',
+                'variant', 'year', 'reg_year_month', 'mileage_km', 'engine_cc',
+                'transmission', 'drive', 'steering', 'fuel', 'color', 'seats',
+                'grade_overall', 'grade_exterior', 'grade_interior', 'price_amount',
+                'price_currency', 'price_basis', 'fob_value_usd', 'freight_usd',
+                'chassis_no_masked', 'chassis_no_full', 'location', 'country_origin', 'status', 'notes'
+            ]);
+
+            $car->update($carData);
+
+            // Update photos if provided
+            if ($request->filled('photos')) {
+                // Delete existing photos
+                $car->photos()->delete();
+                
+                // Create new photos
+                foreach ($request->photos as $photoData) {
+                    $car->photos()->create($photoData);
+                }
+            }
+
+            // Update details if provided
+            if ($request->filled('details')) {
+                // Delete existing details
+                $car->details()->delete();
+                
+                foreach ($request->details as $detailData) {
+                    // Extract sub_details from detailData
+                    $subDetails = $detailData['sub_details'] ?? [];
+                    unset($detailData['sub_details']); // Remove sub_details from detailData
+
+                    // Create the car detail
+                    $carDetail = $car->details()->create($detailData);
+
+                    // Create sub-details if they exist
+                    if (!empty($subDetails)) {
+                        foreach ($subDetails as $subDetailData) {
+                            $carDetail->subDetails()->create($subDetailData);
+                        }
+                    }
+                }
+            }
+
+            DB::commit();
+
             $car->load(['category', 'subcategory', 'photos', 'details.subDetails']);
+
+            Log::info('Car updated successfully', ['car_id' => $car->id]);
 
             return response()->json([
                 'success' => true,
@@ -533,6 +611,13 @@ class CarController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Car update failed', [
+                'car_id' => $car->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update car',

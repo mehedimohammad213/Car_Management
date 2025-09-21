@@ -130,4 +130,65 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get all users except the logged in user with pagination
+     */
+    public function getAllUsers(Request $request): JsonResponse
+    {
+        try {
+            $currentUser = $request->user();
+            
+            if (!$currentUser) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated'
+                ], 401);
+            }
+
+            // Get pagination parameters
+            $perPage = $request->get('per_page', 10);
+            $page = $request->get('page', 1);
+            $search = $request->get('search', '');
+
+            // Build query to exclude current user
+            $query = User::where('id', '!=', $currentUser->id);
+
+            // Add search functionality
+            if (!empty($search)) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('username', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+            }
+
+            // Get paginated results
+            $users = $query->select('id', 'name', 'username', 'email', 'role', 'created_at')
+                          ->orderBy('created_at', 'desc')
+                          ->paginate($perPage, ['*'], 'page', $page);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'users' => $users->items(),
+                    'pagination' => [
+                        'current_page' => $users->currentPage(),
+                        'last_page' => $users->lastPage(),
+                        'per_page' => $users->perPage(),
+                        'total' => $users->total(),
+                        'from' => $users->firstItem(),
+                        'to' => $users->lastItem(),
+                    ]
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get users',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
