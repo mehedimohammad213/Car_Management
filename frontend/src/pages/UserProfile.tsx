@@ -8,7 +8,6 @@ const UserProfile: React.FC = () => {
   const { user } = useAuth();
   const [name, setName] = useState(user?.name || "John Doe");
   const [email, setEmail] = useState(user?.email || "john.doe@example.com");
-  const [role, setRole] = useState<"user" | "admin">(user?.role || "user");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSaveProfile = async () => {
@@ -83,16 +82,12 @@ const UserProfile: React.FC = () => {
                   </label>
                   <div className="relative">
                     <ShieldIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <select
-                      value={role}
-                      onChange={(e) =>
-                        setRole(e.target.value as "user" | "admin")
-                      }
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white appearance-none"
-                    >
-                      <option value="user">User</option>
-                      <option value="admin">Admin</option>
-                    </select>
+                    <input
+                      type="text"
+                      value={user?.role || "user"}
+                      readOnly
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                    />
                   </div>
                 </div>
               </div>

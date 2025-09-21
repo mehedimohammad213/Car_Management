@@ -11,7 +11,6 @@ const Settings: React.FC = () => {
   // Profile settings state
   const [name, setName] = useState(user?.name || "Admin User");
   const [email, setEmail] = useState(user?.email || "admin@carselling.com");
-  const [role, setRole] = useState<"user" | "admin">(user?.role || "admin");
   const [isProfileLoading, setIsProfileLoading] = useState(false);
 
   const tabs = [{ id: "profile", label: "Profile", icon: UserIcon }];
@@ -108,16 +107,12 @@ const Settings: React.FC = () => {
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           Role
                         </label>
-                        <select
-                          value={role}
-                          onChange={(e) =>
-                            setRole(e.target.value as "user" | "admin")
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                        >
-                          <option value="user">User</option>
-                          <option value="admin">Admin</option>
-                        </select>
+                        <input
+                          type="text"
+                          value={user?.role || "user"}
+                          readOnly
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                        />
                       </div>
                     </div>
                   </div>
