@@ -475,7 +475,7 @@ const Orders: React.FC = () => {
                       </p>
                       <div className="flex items-center space-x-2 mt-1">
                         <span className="px-2 py-1 bg-gray-100 dark:bg-gray-600 text-xs text-gray-600 dark:text-gray-300 rounded">
-                          {item.car.category}
+                          {item.car.category?.name}
                         </span>
                         <span className="px-2 py-1 bg-gray-100 dark:bg-gray-600 text-xs text-gray-600 dark:text-gray-300 rounded">
                           {item.car.fuelType}

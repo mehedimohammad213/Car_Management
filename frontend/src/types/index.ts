@@ -1,11 +1,13 @@
 export interface Car {
-  id: string;
+  id: number;
+  category_id: number;
   brand: string;
   model: string;
+  make: string;
   year: number;
   price: number;
   image: string;
-  category: string;
+  category?: { id: number; name: string; };
   fuelType: string;
   transmission: string;
   mileage: number;
@@ -13,6 +15,16 @@ export interface Car {
   features?: string[];
   stock: number;
   isAvailable: boolean;
+  // Additional properties from API
+  mileage_km?: number;
+  fuel?: string;
+  color?: string;
+  status: string;
+  // Properties that might be used in different contexts
+  price_currency: string;
+  // Timestamp properties
+  created_at: string;
+  updated_at: string;
 }
 
 export interface User {

@@ -207,12 +207,13 @@ export class InvoiceService {
         fontSize: 8,
         color: secondaryColor,
       });
-      addText(
-        `Mileage: ${item.car.mileage_km?.toLocaleString()} km`,
-        40,
-        itemY + 10,
-        { fontSize: 8, color: secondaryColor }
-      );
+      // Note: mileage_km is not available in the car object from OrderItem
+      // addText(
+      //   `Mileage: ${item.car.mileage_km?.toLocaleString()} km`,
+      //   40,
+      //   itemY + 10,
+      //   { fontSize: 8, color: secondaryColor }
+      // );
 
       // Quantity
       addText(item.quantity.toString(), pageWidth - 80, itemY + 5, {

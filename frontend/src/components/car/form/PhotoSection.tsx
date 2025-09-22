@@ -3,12 +3,22 @@ import { Image, Plus, X, Loader2, AlertCircle } from "lucide-react";
 import { CreateCarData } from "../../../services/carApi";
 import { imgbbApi } from "../../../services/imgbbApi";
 
+interface PhotoWithDisplayUrl {
+  url: string;
+  display_url?: string;
+  thumb_url?: string;
+  medium_url?: string;
+  is_primary?: boolean;
+  sort_order?: number;
+  is_hidden?: boolean;
+}
+
 interface PhotoSectionProps {
   formData: CreateCarData;
   isViewMode: boolean;
   onAddPhoto: () => void;
   onRemovePhoto: (index: number) => void;
-  onUpdatePhoto: (index: number, photo: any) => void;
+  onUpdatePhoto: (index: number, photo: PhotoWithDisplayUrl) => void;
 }
 
 const PhotoSection: React.FC<PhotoSectionProps> = ({
@@ -40,7 +50,7 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
 
       // Update the photo with the uploaded URL
       onUpdatePhoto(index, {
-        ...formData.photos[index],
+        ...formData.photos?.[index],
         url: response.data.url,
         display_url: response.data.display_url,
         thumb_url: response.data.thumb.url,
@@ -78,10 +88,10 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
           Photos
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {formData.photos.map((photo, index) => (
+          {formData.photos?.map((photo, index) => (
             <div key={index} className="relative group">
               <img
-                src={photo.display_url || photo.url}
+                src={(photo as PhotoWithDisplayUrl).display_url || photo.url}
                 alt={`Car photo ${index + 1}`}
                 className="w-full h-32 object-cover rounded-lg border border-gray-200"
                 onError={(e) => {
@@ -133,7 +143,7 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
             <div className="w-20 h-20 flex-shrink-0">
               {photo.url ? (
                 <img
-                  src={photo.display_url || photo.url}
+                  src={(photo as PhotoWithDisplayUrl).display_url || photo.url}
                   alt={`Preview ${index + 1}`}
                   className="w-full h-full object-cover rounded-lg border border-gray-200"
                   onError={(e) => {

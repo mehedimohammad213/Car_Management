@@ -39,7 +39,7 @@ const CarCatalog: React.FC = () => {
         (car) =>
           car.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
           car.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          car.category.toLowerCase().includes(searchTerm.toLowerCase())
+          car.category?.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -50,7 +50,7 @@ const CarCatalog: React.FC = () => {
 
     // Category filter
     if (filters.category) {
-      filtered = filtered.filter((car) => car.category === filters.category);
+      filtered = filtered.filter((car) => car.category?.name === filters.category);
     }
 
     // Price range filter
@@ -357,7 +357,7 @@ const CarCatalog: React.FC = () => {
 
                   <div className="flex flex-wrap gap-2 mb-4">
                     <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-300 rounded">
-                      {car.category}
+                      {car.category?.name}
                     </span>
                     <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-300 rounded">
                       {car.fuelType}

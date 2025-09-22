@@ -99,7 +99,7 @@ const CarForm: React.FC<CarFormProps> = ({
             model: initialData.model,
             year: initialData.year,
             price: initialData.price,
-            category: initialData.category,
+            category: initialData.category?.name || "",
             fuelType: initialData.fuelType,
             transmission: initialData.transmission,
             mileage: initialData.mileage,

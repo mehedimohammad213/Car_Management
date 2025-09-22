@@ -122,7 +122,7 @@ const CarDetails: React.FC = () => {
                 Category
               </p>
               <p className="font-semibold text-gray-900 dark:text-white">
-                {car.category}
+                {car.category?.name}
               </p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">

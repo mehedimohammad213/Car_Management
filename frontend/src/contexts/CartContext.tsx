@@ -91,20 +91,26 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       id: apiItem.id, // Store the cart item ID
       car: {
         id: apiItem.car.id,
-        make: apiItem.car.make,
+        category_id: apiItem.car.category?.id || 0,
+        // brand: apiItem.car.make, // Removed as it's not in the Car interface
         model: apiItem.car.model,
-        variant: apiItem.car.variant,
+        make: apiItem.car.make,
         year: apiItem.car.year,
-        price_amount: apiItem.car.price_amount,
-        price_currency: apiItem.car.price_currency,
+        // price: apiItem.car.price_amount, // Removed as it's not in the Car interface
+        // image: apiItem.car.primary_photo?.image_url || "", // Removed as it's not in the Car interface
+        category: apiItem.car.category,
+        // fuelType: apiItem.car.fuel || "", // Removed as it's not in the Car interface
+        transmission: apiItem.car.transmission || "",
+        // mileage: apiItem.car.mileage_km || 0, // Removed as it's not in the Car interface
+        // stock: 1, // Default stock // Removed as it's not in the Car interface
+        // isAvailable: apiItem.car.status === "available", // Removed as it's not in the Car interface
         mileage_km: apiItem.car.mileage_km,
-        transmission: apiItem.car.transmission,
         fuel: apiItem.car.fuel,
         color: apiItem.car.color,
         status: apiItem.car.status,
-        category: apiItem.car.category,
-        image: apiItem.car.primary_photo?.image_url || "",
-        isAvailable: apiItem.car.status === "available",
+        price_currency: apiItem.car.price_currency,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       },
       quantity: apiItem.quantity,
     };
