@@ -16,7 +16,7 @@ const CategoryHeader: React.FC<CategoryHeaderProps> = ({
             Category Management
           </h1>
           <p className="text-sm sm:text-base text-gray-600 mt-2">
-            Manage your vehicle categories and subcategories
+            Manage your vehicle categories
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">

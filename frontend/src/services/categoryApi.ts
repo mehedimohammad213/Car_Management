@@ -125,7 +125,18 @@ class CategoryApiService {
 
     const url = `/categories?${searchParams.toString()}`;
     console.log("Making request to:", url);
-    return this.request<CategoryResponse>(url);
+
+    // For categories, we don't need authentication, so let's make a simple request
+    try {
+      const response = await axios.get(`${API_BASE_URL}${url}`);
+      console.log("Categories API response:", response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error("Categories API error:", error);
+      throw new Error(
+        `HTTP error! status: ${error.response?.status}, body: ${error.response?.data}`
+      );
+    }
   }
 
   async getCategory(id: number): Promise<CategoryResponse> {

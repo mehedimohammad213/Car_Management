@@ -20,6 +20,12 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
   isViewMode,
   onInputChange,
 }) => {
+  console.log("BasicInfoSection received categories:", categories);
+  console.log(
+    "Filtered categories:",
+    (categories || []).filter((category) => category.status === "active")
+  );
+
   return (
     <div className="rounded-xl p-4">
       <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -141,7 +147,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
               label="Category"
               field="category_id"
               options={(categories || [])
-                .filter((category) => category.children_count > 0)
+                .filter((category) => category.status === "active")
                 .map((category) => ({
                   value: category.id,
                   label: category.name,
