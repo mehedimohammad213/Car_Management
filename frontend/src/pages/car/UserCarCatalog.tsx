@@ -871,7 +871,7 @@ const UserCarCatalog: React.FC = () => {
           />
 
           {/* Modal */}
-          <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-6xl max-h-[95vh] flex flex-col overflow-hidden">
+          <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-7xl max-h-[98vh] flex flex-col overflow-hidden">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
               <div className="flex items-center gap-3">
