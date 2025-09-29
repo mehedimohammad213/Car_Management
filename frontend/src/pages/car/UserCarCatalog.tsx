@@ -657,7 +657,8 @@ const UserCarCatalog: React.FC = () => {
               {cars.map((car) => (
                 <div
                   key={car.id}
-                  className="grid grid-cols-12 gap-3 p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 border-l-4 border-transparent hover:border-blue-500"
+                  onClick={() => handleViewCar(car)}
+                  className="grid grid-cols-12 gap-3 p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 border-l-4 border-transparent hover:border-blue-500 cursor-pointer"
                 >
                   {/* Car Information */}
                   <div className="col-span-3 flex items-center gap-4">
@@ -788,7 +789,10 @@ const UserCarCatalog: React.FC = () => {
                   </div>
 
                   {/* Action */}
-                  <div className="col-span-1 flex items-center justify-center gap-2">
+                  <div
+                    className="col-span-1 flex items-center justify-center gap-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <button
                       onClick={() => handleViewCar(car)}
                       className="p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
