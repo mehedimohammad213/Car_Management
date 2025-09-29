@@ -8,8 +8,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
-import Dashboard from "./pages/dashboard/Dashboard";
-import UserDashboard from "./pages/dashboard/UserDashboard";
+import Dashboard from "./components/Dashboard";
 import CarManagement from "./pages/car/CarManagement";
 import CategoryManagement from "./pages/category/CategoryManagement";
 import CreateCar from "./pages/car/CreateCar";
@@ -135,7 +134,7 @@ function App() {
                       path="/dashboard"
                       element={
                         <ProtectedRoute role="user">
-                          <UserDashboard />
+                          <Dashboard />
                         </ProtectedRoute>
                       }
                     />
@@ -143,7 +142,7 @@ function App() {
                       path="/user-dashboard"
                       element={
                         <ProtectedRoute role="user">
-                          <UserDashboard />
+                          <Dashboard />
                         </ProtectedRoute>
                       }
                     />
@@ -176,7 +175,7 @@ function App() {
                       path="/user-dashboard"
                       element={
                         <ProtectedRoute role="user">
-                          <UserDashboard />
+                          <Dashboard />
                         </ProtectedRoute>
                       }
                     />
