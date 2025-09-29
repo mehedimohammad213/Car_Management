@@ -253,20 +253,6 @@ const UserOrders: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
-      {/* Header */}
-      <div className="mb-6 sm:mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
-          <div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">
-              📦 My Orders
-            </h1>
-            <p className="text-sm sm:text-base text-gray-600 mt-2">
-              Track and manage your vehicle orders
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* Advanced Filters */}
       <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
         <div className="flex items-center gap-2 mb-4"></div>
@@ -387,13 +373,6 @@ const UserOrders: React.FC = () => {
                               key={item.id}
                               className="flex items-center space-x-3"
                             >
-                              <img
-                                src={
-                                  item.car.image_url || "/placeholder-car.jpg"
-                                }
-                                alt={`${item.car.make} ${item.car.model}`}
-                                className="w-12 h-8 object-cover rounded border"
-                              />
                               <div className="min-w-0">
                                 <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
                                   {item.car.make} {item.car.model}
@@ -499,11 +478,6 @@ const UserOrders: React.FC = () => {
                         key={item.id}
                         className="flex items-center space-x-3"
                       >
-                        <img
-                          src={item.car.image_url || "/placeholder-car.jpg"}
-                          alt={`${item.car.make} ${item.car.model}`}
-                          className="w-12 h-8 object-cover rounded border"
-                        />
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
                             {item.car.make} {item.car.model}
@@ -641,18 +615,6 @@ const UserOrders: React.FC = () => {
                               key={item.id}
                               className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-600 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors"
                             >
-                              <div className="relative">
-                                <img
-                                  src={
-                                    item.car.image_url || "/placeholder-car.jpg"
-                                  }
-                                  alt={`${item.car.make} ${item.car.model}`}
-                                  className="w-16 h-16 object-cover rounded-lg"
-                                />
-                                <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
-                                  {item.quantity}
-                                </div>
-                              </div>
                               <div className="flex-1 min-w-0">
                                 <h4 className="font-semibold text-gray-900 dark:text-white text-lg">
                                   {item.car.make} {item.car.model}

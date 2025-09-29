@@ -139,16 +139,6 @@ const Cart: React.FC = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6 px-3 sm:px-4 md:px-6 lg:px-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-          Shopping Cart
-        </h1>
-        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-          {items.length} item{items.length !== 1 ? "s" : ""} in your cart
-        </p>
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-3 sm:space-y-4">
@@ -158,11 +148,6 @@ const Cart: React.FC = () => {
               className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6"
             >
               <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                <img
-                  src={item.car.photos?.[0]?.url || "/placeholder-car.jpg"}
-                  alt={`${item.car.make} ${item.car.model}`}
-                  className="w-full sm:w-24 h-32 sm:h-24 object-cover rounded-lg"
-                />
                 <div className="flex-1">
                   <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                     {item.car.make} {item.car.model} {item.car.variant}
@@ -286,20 +271,6 @@ const Cart: React.FC = () => {
               </div>
             </div>
 
-            {/* Shipping Address */}
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Shipping Address (Optional)
-              </label>
-              <textarea
-                value={shippingAddress}
-                onChange={(e) => setShippingAddress(e.target.value)}
-                placeholder="Enter your shipping address..."
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-base"
-                rows={3}
-              />
-            </div>
-
             <div className="mt-6 space-y-3">
               <button
                 type="button"
@@ -320,19 +291,6 @@ const Cart: React.FC = () => {
                   "Proceed to Checkout"
                 )}
               </button>
-            </div>
-
-            {/* Additional Info */}
-            <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
-                What's included:
-              </h3>
-              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                <li>• 3-year comprehensive warranty</li>
-                <li>• Free delivery within 50 miles</li>
-                <li>• 30-day return policy</li>
-                <li>• 24/7 customer support</li>
-              </ul>
             </div>
           </div>
         </div>
