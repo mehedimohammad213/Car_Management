@@ -66,6 +66,7 @@ const UserCarCatalog: React.FC = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [favorites, setFavorites] = useState<number[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { addToCart, isCarLoading } = useCart();
 
   useEffect(() => {
@@ -195,6 +196,27 @@ const UserCarCatalog: React.FC = () => {
   const handleCloseCarModal = () => {
     setShowCarModal(false);
     setSelectedCar(null);
+    setCurrentImageIndex(0);
+  };
+
+  const handleNextImage = () => {
+    if (selectedCar?.photos && selectedCar.photos.length > 0) {
+      setCurrentImageIndex((prev) => 
+        prev === selectedCar.photos!.length - 1 ? 0 : prev + 1
+      );
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (selectedCar?.photos && selectedCar.photos.length > 0) {
+      setCurrentImageIndex((prev) => 
+        prev === 0 ? selectedCar.photos!.length - 1 : prev - 1
+      );
+    }
+  };
+
+  const handleThumbnailClick = (index: number) => {
+    setCurrentImageIndex(index);
   };
 
   const clearFilters = () => {
@@ -823,311 +845,221 @@ const UserCarCatalog: React.FC = () => {
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Left Column - Photos */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                    Photos
-                  </h3>
-                  {selectedCar.photos && selectedCar.photos.length > 0 ? (
-                    <div className="space-y-4">
-                      {selectedCar.photos.map((photo: any, index: number) => (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column - Photos (2/3 width) */}
+                <div className="lg:col-span-2">
+                  {/* Main Photo */}
+                  <div className="relative mb-4">
+                    {selectedCar.photos && selectedCar.photos.length > 0 ? (
+                      <img
+                        src={selectedCar.photos[currentImageIndex].url}
+                        alt={`${selectedCar.make} ${selectedCar.model}`}
+                        className="w-full h-96 object-cover rounded-xl"
+                      />
+                    ) : (
+                      <div className="h-96 bg-gray-100 rounded-xl flex items-center justify-center">
+                        <Car className="w-24 h-24 text-gray-400" />
+                        <p className="text-gray-500 ml-4 text-lg">No photos available</p>
+                      </div>
+                    )}
+                    
+                    {/* Photo Navigation Arrows */}
+                    {selectedCar.photos && selectedCar.photos.length > 1 && (
+                      <>
+                        <button 
+                          onClick={handlePrevImage}
+                          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
+                        >
+                          <ChevronLeft className="w-6 h-6" />
+                        </button>
+                        <button 
+                          onClick={handleNextImage}
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
+                        >
+                          <ChevronRight className="w-6 h-6" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Thumbnail Gallery */}
+                  {selectedCar.photos && selectedCar.photos.length > 0 && (
+                    <div className="flex gap-2 mb-4">
+                      {selectedCar.photos.slice(0, 4).map((photo: any, index: number) => (
                         <img
                           key={index}
                           src={photo.url}
-                          alt={`${selectedCar.make} ${
-                            selectedCar.model
-                          } photo ${index + 1}`}
-                          className="w-full h-64 object-cover rounded-xl"
+                          alt={`${selectedCar.make} ${selectedCar.model} thumbnail ${index + 1}`}
+                          onClick={() => handleThumbnailClick(index)}
+                          className={`w-20 h-16 object-cover rounded-md cursor-pointer transition-all ${
+                            currentImageIndex === index 
+                              ? 'ring-2 ring-blue-500 opacity-100' 
+                              : 'hover:opacity-80 opacity-70'
+                          }`}
                         />
                       ))}
-                    </div>
-                  ) : (
-                    <div className="h-64 bg-gray-100 rounded-xl flex items-center justify-center">
-                      <Car className="w-16 h-16 text-gray-400" />
-                      <p className="text-gray-500 ml-2">No photos available</p>
+                      {selectedCar.photos.length > 4 && (
+                        <div className="w-20 h-16 bg-gray-200 rounded-md flex items-center justify-center text-xs text-gray-500">
+                          +{selectedCar.photos.length - 4} more
+                        </div>
+                      )}
                     </div>
                   )}
+
                 </div>
 
-                {/* Right Column - Details */}
+                {/* Right Column - Details (1/3 width) */}
                 <div className="space-y-6">
-                  {/* Basic Information */}
+                  {/* Score/Grade Section */}
+                  <div className="grid grid-cols-4 gap-2">
+                    <div className="bg-gray-100 rounded-lg p-3 text-center">
+                      <Star className="w-5 h-5 text-gray-600 mx-auto mb-1" />
+                      <div className="text-xs text-gray-600">Score</div>
+                    </div>
+                    <div className="bg-gray-100 rounded-lg p-3 text-center">
+                      <div className="text-lg font-bold text-gray-800">
+                        {selectedCar.grade_overall || 'N/A'}
+                      </div>
+                      <div className="text-xs text-gray-600">Grade</div>
+                    </div>
+                    <div className="bg-gray-100 rounded-lg p-3 text-center">
+                      <div className="text-lg font-bold text-gray-800">
+                        {selectedCar.grade_exterior || 'N/A'}
+                      </div>
+                      <div className="text-xs text-gray-600">Exterior</div>
+                    </div>
+                    <div className="bg-gray-100 rounded-lg p-3 text-center">
+                      <div className="text-lg font-bold text-gray-800">
+                        {selectedCar.grade_interior || 'N/A'}
+                      </div>
+                      <div className="text-xs text-gray-600">Interior</div>
+                    </div>
+                  </div>
+
+                  {/* Starting Price Section */}
+                  <div className="border-b border-gray-200 pb-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <DollarSign className="w-5 h-5 text-red-500" />
+                      <span className="font-medium text-gray-800">Starting Price</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-red-500 text-lg font-bold">
+                        {selectedCar.price_amount ? 
+                          formatPrice(selectedCar.price_amount, selectedCar.price_currency) : 
+                          'Please select Country and Port'
+                        }
+                      </span>
+                      {!selectedCar.price_amount && (
+                        <span className="text-red-500">⚠️</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Specifications Section */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                      Basic Information
-                    </h3>
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div>
-                        <span className="font-medium text-gray-600">Make:</span>
-                        <span className="ml-2 text-gray-900">
-                          {selectedCar.make}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-600">
-                          Model:
-                        </span>
-                        <span className="ml-2 text-gray-900">
-                          {selectedCar.model}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-600">Year:</span>
-                        <span className="ml-2 text-gray-900">
-                          {selectedCar.year}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-600">
-                          Status:
-                        </span>
-                        <span
-                          className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                            selectedCar.status
-                          )}`}
-                        >
-                          {selectedCar.status?.charAt(0).toUpperCase() +
-                            selectedCar.status?.slice(1)}
-                        </span>
-                      </div>
-                      {selectedCar.variant && (
-                        <div>
-                          <span className="font-medium text-gray-600">
-                            Variant:
-                          </span>
-                          <span className="ml-2 text-gray-900">
-                            {selectedCar.variant}
+                    <div className="flex items-center gap-2 mb-4">
+                      <SlidersHorizontal className="w-5 h-5 text-gray-600" />
+                      <h3 className="text-lg font-semibold text-gray-800">Specifications</h3>
+                    </div>
+                    <div className="space-y-3">
+                      {/* Single Column Specifications */}
+                      <div className="space-y-3 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Mileage:</span>
+                          <span className="font-semibold text-gray-900">
+                            {selectedCar.mileage_km ? `${selectedCar.mileage_km.toLocaleString()} km` : 'N/A'}
                           </span>
                         </div>
-                      )}
-                      {selectedCar.ref_no && (
-                        <div>
-                          <span className="font-medium text-gray-600">
-                            Ref No:
-                          </span>
-                          <span className="ml-2 text-gray-900">
-                            {selectedCar.ref_no}
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Year:</span>
+                          <span className="font-semibold text-gray-900">
+                            {selectedCar.year || 'N/A'}
                           </span>
                         </div>
-                      )}
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Engine:</span>
+                          <span className="font-semibold text-gray-900">
+                            {selectedCar.engine_cc ? `${selectedCar.engine_cc.toLocaleString()} cc` : 'N/A'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Trans.:</span>
+                          <span className="font-semibold text-gray-900">
+                            {selectedCar.transmission || 'N/A'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Drivetrain:</span>
+                          <span className="font-semibold text-gray-900">
+                            {(selectedCar as any).drive_type || (selectedCar as any).drivetrain || 'N/A'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Steering:</span>
+                          <span className="font-semibold text-gray-900">
+                            {selectedCar.steering || '-'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Fuel:</span>
+                          <span className="font-semibold text-gray-900">
+                            {selectedCar.fuel || 'N/A'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Ref No.:</span>
+                          <span className="font-semibold text-gray-900">
+                            {selectedCar.ref_no || `AA${selectedCar.id.toString().padStart(6, '0')}`}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Registration:</span>
+                          <span className="font-semibold text-gray-900">
+                            {selectedCar.year || 'N/A'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Color:</span>
+                          <span className="font-semibold text-gray-900">
+                            {selectedCar.color || 'N/A'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Seats:</span>
+                          <span className="font-semibold text-gray-900">
+                            {selectedCar.seats || 'N/A'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Status:</span>
+                          <span
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                              selectedCar.status
+                            )}`}
+                          >
+                            {selectedCar.status?.charAt(0).toUpperCase() +
+                              selectedCar.status?.slice(1)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Chassis Number with View Button */}
                       {(selectedCar as any).chassis_no && (
-                        <div>
-                          <span className="font-medium text-gray-600">
-                            Chassis No:
-                          </span>
-                          <span className="ml-2 text-gray-900">
-                            {(selectedCar as any).chassis_no}
-                          </span>
-                        </div>
-                      )}
-                      {(selectedCar as any).vin && (
-                        <div>
-                          <span className="font-medium text-gray-600">
-                            VIN:
-                          </span>
-                          <span className="ml-2 text-gray-900">
-                            {(selectedCar as any).vin}
-                          </span>
+                        <div className="flex justify-between items-center pt-3 border-t border-gray-200">
+                          <span className="text-gray-600">Chassis No.:</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-900">
+                              {(selectedCar as any).chassis_no}
+                            </span>
+                            <button className="text-blue-600 hover:text-blue-700 text-xs font-medium">
+                              View
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
                   </div>
 
-                  {/* Specifications */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                      Specifications
-                    </h3>
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      {selectedCar.transmission && (
-                        <div>
-                          <span className="font-medium text-gray-600">
-                            Transmission:
-                          </span>
-                          <span className="ml-2 text-gray-900">
-                            {selectedCar.transmission}
-                          </span>
-                        </div>
-                      )}
-                      {selectedCar.fuel && (
-                        <div>
-                          <span className="font-medium text-gray-600">
-                            Fuel:
-                          </span>
-                          <span className="ml-2 text-gray-900">
-                            {selectedCar.fuel}
-                          </span>
-                        </div>
-                      )}
-                      {selectedCar.color && (
-                        <div>
-                          <span className="font-medium text-gray-600">
-                            Color:
-                          </span>
-                          <span className="ml-2 text-gray-900">
-                            {selectedCar.color}
-                          </span>
-                        </div>
-                      )}
-                      {selectedCar.seats && (
-                        <div>
-                          <span className="font-medium text-gray-600">
-                            Seats:
-                          </span>
-                          <span className="ml-2 text-gray-900">
-                            {selectedCar.seats}
-                          </span>
-                        </div>
-                      )}
-                      {selectedCar.mileage_km && (
-                        <div>
-                          <span className="font-medium text-gray-600">
-                            Mileage:
-                          </span>
-                          <span className="ml-2 text-gray-900">
-                            {selectedCar.mileage_km.toLocaleString()} km
-                          </span>
-                        </div>
-                      )}
-                      {selectedCar.engine_cc && (
-                        <div>
-                          <span className="font-medium text-gray-600">
-                            Engine:
-                          </span>
-                          <span className="ml-2 text-gray-900">
-                            {selectedCar.engine_cc.toLocaleString()} cc
-                          </span>
-                        </div>
-                      )}
-                      {(selectedCar as any).drive_type && (
-                        <div>
-                          <span className="font-medium text-gray-600">
-                            Drive Type:
-                          </span>
-                          <span className="ml-2 text-gray-900">
-                            {(selectedCar as any).drive_type}
-                          </span>
-                        </div>
-                      )}
-                      {(selectedCar as any).drivetrain && (
-                        <div>
-                          <span className="font-medium text-gray-600">
-                            Drivetrain:
-                          </span>
-                          <span className="ml-2 text-gray-900">
-                            {(selectedCar as any).drivetrain}
-                          </span>
-                        </div>
-                      )}
-                      {(selectedCar as any).body_type && (
-                        <div>
-                          <span className="font-medium text-gray-600">
-                            Body Type:
-                          </span>
-                          <span className="ml-2 text-gray-900">
-                            {(selectedCar as any).body_type}
-                          </span>
-                        </div>
-                      )}
-                      {(selectedCar as any).doors && (
-                        <div>
-                          <span className="font-medium text-gray-600">
-                            Doors:
-                          </span>
-                          <span className="ml-2 text-gray-900">
-                            {(selectedCar as any).doors}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Pricing */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                      Pricing
-                    </h3>
-                    <div className="bg-blue-50 rounded-xl p-4">
-                      <div className="text-2xl font-bold text-blue-600 mb-2">
-                        {formatPrice(
-                          selectedCar.price_amount,
-                          selectedCar.price_currency
-                        )}
-                      </div>
-                      {selectedCar.price_basis && (
-                        <p className="text-sm text-gray-600">
-                          Basis: {selectedCar.price_basis}
-                        </p>
-                      )}
-                      {(selectedCar as any).auction_date && (
-                        <p className="text-sm text-gray-600">
-                          Auction Date: {new Date((selectedCar as any).auction_date).toLocaleDateString()}
-                        </p>
-                      )}
-                      {(selectedCar as any).starting_price && (
-                        <p className="text-sm text-gray-600">
-                          Starting Price: {formatPrice((selectedCar as any).starting_price, selectedCar.price_currency)}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Grading */}
-                  {(selectedCar.grade_overall ||
-                    selectedCar.grade_exterior ||
-                    selectedCar.grade_interior) && (
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                        Grading
-                      </h3>
-                      <div className="grid grid-cols-3 gap-3">
-                        {selectedCar.grade_overall && (
-                          <div className="text-center">
-                            <div
-                              className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getGradeColor(
-                                selectedCar.grade_overall
-                              )}`}
-                            >
-                              <Star className="w-4 h-4 mr-1" />
-                              {selectedCar.grade_overall}/10
-                            </div>
-                            <p className="text-xs text-gray-500 mt-1">
-                              Overall
-                            </p>
-                          </div>
-                        )}
-                        {selectedCar.grade_exterior && (
-                          <div className="text-center">
-                            <div
-                              className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getGradeColor(
-                                selectedCar.grade_exterior
-                              )}`}
-                            >
-                              {selectedCar.grade_exterior}
-                            </div>
-                            <p className="text-xs text-gray-500 mt-1">
-                              Exterior
-                            </p>
-                          </div>
-                        )}
-                        {selectedCar.grade_interior && (
-                          <div className="text-center">
-                            <div
-                              className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getGradeColor(
-                                selectedCar.grade_interior
-                              )}`}
-                            >
-                              {selectedCar.grade_interior}
-                            </div>
-                            <p className="text-xs text-gray-500 mt-1">
-                              Interior
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
 
                   {/* Additional Details */}
                   {selectedCar.detail && (
