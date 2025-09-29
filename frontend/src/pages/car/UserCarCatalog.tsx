@@ -872,50 +872,22 @@ const UserCarCatalog: React.FC = () => {
 
           {/* Modal */}
           <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-6xl max-h-[95vh] flex flex-col overflow-hidden">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center">
-                    <Car className="w-8 h-8" />
-                  </div>
-                  <div>
-                    <h2 className="text-3xl font-bold">
-                      {selectedCar.make} {selectedCar.model}
-                    </h2>
-                    <p className="text-blue-100 mt-2 text-lg">
-                      {selectedCar.variant && `${selectedCar.variant} • `}
-                      {selectedCar.year} •{" "}
-                      {selectedCar.mileage_km
-                        ? `${selectedCar.mileage_km.toLocaleString()} km`
-                        : "Mileage not specified"}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => toggleFavorite(selectedCar.id)}
-                    className="p-3 hover:bg-white/20 rounded-xl transition-colors"
-                  >
-                    <Heart
-                      className={`w-6 h-6 ${
-                        favorites.includes(selectedCar.id)
-                          ? "text-red-400 fill-current"
-                          : "text-white"
-                      }`}
-                    />
-                  </button>
-                  <button className="p-3 hover:bg-white/20 rounded-xl transition-colors">
-                    <Share2 className="w-6 h-6" />
-                  </button>
-                  <button
-                    onClick={handleCloseCarModal}
-                    className="p-3 hover:bg-white/20 rounded-xl transition-colors"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
-                </div>
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
+              <div className="flex items-center gap-3">
+                <Car className="w-6 h-6 text-blue-600" />
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {selectedCar?.year} {selectedCar?.make} {selectedCar?.model}
+                  {selectedCar?.variant && ` - ${selectedCar.variant}`}
+                </h2>
               </div>
+              <button
+                onClick={handleCloseCarModal}
+                className="p-2 hover:bg-gray-200 rounded-full transition-colors duration-200 group"
+                title="Close"
+              >
+                <X className="w-6 h-6 text-gray-500 group-hover:text-gray-700" />
+              </button>
             </div>
 
             {/* Content */}
@@ -990,55 +962,6 @@ const UserCarCatalog: React.FC = () => {
 
                 {/* Right Column - Details (1/3 width) */}
                 <div className="space-y-6">
-                  {/* Score/Grade Section */}
-                  <div className="grid grid-cols-4 gap-2">
-                    <div className="bg-gray-100 rounded-lg p-3 text-center">
-                      <Star className="w-5 h-5 text-gray-600 mx-auto mb-1" />
-                      <div className="text-xs text-gray-600">Score</div>
-                    </div>
-                    <div className="bg-gray-100 rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-gray-800">
-                        {selectedCar.grade_overall || "N/A"}
-                      </div>
-                      <div className="text-xs text-gray-600">Grade</div>
-                    </div>
-                    <div className="bg-gray-100 rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-gray-800">
-                        {selectedCar.grade_exterior || "N/A"}
-                      </div>
-                      <div className="text-xs text-gray-600">Exterior</div>
-                    </div>
-                    <div className="bg-gray-100 rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-gray-800">
-                        {selectedCar.grade_interior || "N/A"}
-                      </div>
-                      <div className="text-xs text-gray-600">Interior</div>
-                    </div>
-                  </div>
-
-                  {/* Starting Price Section */}
-                  <div className="border-b border-gray-200 pb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <DollarSign className="w-5 h-5 text-red-500" />
-                      <span className="font-medium text-gray-800">
-                        Starting Price
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-red-500 text-lg font-bold">
-                        {selectedCar.price_amount
-                          ? formatPrice(
-                              selectedCar.price_amount,
-                              selectedCar.price_currency
-                            )
-                          : "Please select Country and Port"}
-                      </span>
-                      {!selectedCar.price_amount && (
-                        <span className="text-red-500">⚠️</span>
-                      )}
-                    </div>
-                  </div>
-
                   {/* Specifications Section */}
                   <div>
                     <div className="flex items-center gap-2 mb-4">
@@ -1262,33 +1185,6 @@ const UserCarCatalog: React.FC = () => {
                     </div>
                   )}
                 </div>
-              </div>
-            </div>
-
-            {/* Fixed Actions Footer */}
-            <div className="border-t border-gray-200 dark:border-gray-700 p-6 bg-gray-50 dark:bg-gray-900">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button
-                  onClick={() => handleAddToCart(selectedCar)}
-                  disabled={isCarLoading(selectedCar.id)}
-                  className="flex-1 group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white px-6 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 disabled:shadow-none"
-                  title="Add to Cart"
-                >
-                  <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  {isCarLoading(selectedCar.id) ? (
-                    <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent relative z-10"></div>
-                  ) : (
-                    <ShoppingCart className="w-6 h-6 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-                  )}
-                  <span className="ml-2 relative z-10">Add to Cart</span>
-                </button>
-                <button
-                  onClick={handleCloseCarModal}
-                  className="flex-1 group relative overflow-hidden bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
-                  title="Close"
-                >
-                  <X className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
-                </button>
               </div>
             </div>
           </div>
