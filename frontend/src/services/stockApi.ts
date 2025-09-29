@@ -3,9 +3,9 @@ import { API_BASE_URL } from "../config/api";
 
 export interface Stock {
   id: number;
-  car_id: number;
+  car_id: number | string; // Can be string from API
   quantity: number;
-  price?: number;
+  price?: number | string; // Can be string from API
   status: "available" | "sold" | "reserved" | "damaged" | "lost" | "stolen";
   notes?: string;
   created_at: string;
@@ -14,25 +14,63 @@ export interface Stock {
   // Relationships
   car?: {
     id: number;
+    category_id: string;
+    subcategory_id?: string | null;
+    ref_no?: string;
+    code?: string | null;
     make: string;
     model: string;
+    model_code?: string;
+    variant?: string;
     year: number;
-    ref_no?: string;
-    code?: string;
-    fob_value_usd?: number;
-    freight_usd?: number;
+    reg_year_month?: string;
+    mileage_km?: number;
+    engine_cc?: number;
+    transmission?: string;
+    drive?: string;
+    steering?: string;
+    fuel?: string;
+    color?: string;
+    seats?: number;
+    grade_overall?: string;
+    grade_exterior?: string;
+    grade_interior?: string;
+    price_amount?: string;
+    price_currency?: string;
+    price_basis?: string;
+    fob_value_usd?: number | null;
+    freight_usd?: number | null;
+    chassis_no_masked?: string;
+    chassis_no_full?: string | null;
+    location?: string;
+    country_origin?: string;
+    status: string;
+    notes?: string;
+    created_at: string;
+    updated_at: string;
     category?: {
       id: number;
       name: string;
+      image?: string | null;
+      parent_category_id?: number | null;
+      status: string;
+      short_des?: string;
+      created_at: string;
+      updated_at: string;
     };
     subcategory?: {
       id: number;
       name: string;
-    };
+    } | null;
     photos?: Array<{
       id: number;
+      car_id: string;
       url: string;
       is_primary: boolean;
+      sort_order: number;
+      is_hidden: boolean;
+      created_at: string;
+      updated_at: string;
     }>;
   };
 }

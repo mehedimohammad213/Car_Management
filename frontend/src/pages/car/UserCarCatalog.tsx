@@ -35,6 +35,7 @@ import {
   CarFilterOptions,
 } from "../../services/carApi";
 import { categoryApi } from "../../services/categoryApi";
+import { stockApi, Stock } from "../../services/stockApi";
 import { useCart } from "../../contexts/CartContext";
 
 const UserCarCatalog: React.FC = () => {
@@ -67,6 +68,7 @@ const UserCarCatalog: React.FC = () => {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [favorites, setFavorites] = useState<number[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [stockData, setStockData] = useState<Map<number, Stock>>(new Map());
   const { addToCart, isCarLoading } = useCart();
 
   useEffect(() => {
@@ -74,6 +76,7 @@ const UserCarCatalog: React.FC = () => {
     fetchCars();
     fetchCategories();
     fetchFilterOptions();
+    fetchStockData();
   }, [
     currentPage,
     searchTerm,
@@ -184,6 +187,24 @@ const UserCarCatalog: React.FC = () => {
     }
   };
 
+  const fetchStockData = async () => {
+    try {
+      const response = await stockApi.getStocks({ per_page: 1000 });
+      if (response.success && response.data) {
+        const stockMap = new Map<number, Stock>();
+        response.data.forEach((stock: Stock) => {
+          // Convert car_id to number since it comes as string from API
+          const carId = typeof stock.car_id === 'string' ? parseInt(stock.car_id) : stock.car_id;
+          stockMap.set(carId, stock);
+        });
+        setStockData(stockMap);
+        console.log("Stock data loaded:", stockMap.size, "items");
+      }
+    } catch (error) {
+      console.error("Error fetching stock data:", error);
+    }
+  };
+
   const handleViewCar = (car: CarType) => {
     setSelectedCar(car);
     setShowCarModal(true);
@@ -269,6 +290,18 @@ const UserCarCatalog: React.FC = () => {
     if (numGrade >= 8) return "bg-green-100 text-green-800";
     if (numGrade >= 6) return "bg-yellow-100 text-yellow-800";
     return "bg-red-100 text-red-800";
+  };
+
+  const getStockStatusColor = (quantity: number, status: string) => {
+    if (quantity === 0) return "text-red-600";
+    if (quantity <= 2) return "text-amber-600";
+    return "text-green-600";
+  };
+
+  const getStockStatusTextColor = (quantity: number, status: string) => {
+    if (quantity === 0) return "text-red-500";
+    if (quantity <= 2) return "text-amber-500";
+    return "text-green-500";
   };
 
   return (
@@ -543,8 +576,32 @@ const UserCarCatalog: React.FC = () => {
 
           {/* Results Count and Advanced Search */}
           <div className="flex items-center justify-between">
-            <div className="text-red-600 font-medium text-lg">
-              {totalItems} Matches
+            <div className="flex items-center gap-6">
+              <div className="text-red-600 font-medium text-lg">
+                {totalItems} Matches
+              </div>
+              {stockData.size > 0 && (
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-gray-600">
+                      In Stock: {Array.from(stockData.values()).filter(s => s.quantity > 0).length}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+                    <span className="text-gray-600">
+                      Low Stock: {Array.from(stockData.values()).filter(s => s.quantity > 0 && s.quantity <= 2).length}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <span className="text-gray-600">
+                      Out of Stock: {Array.from(stockData.values()).filter(s => s.quantity === 0).length}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
             <button
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
@@ -590,25 +647,21 @@ const UserCarCatalog: React.FC = () => {
         ) : (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             {/* Table Header */}
-            <div className="bg-gray-50 border-b border-gray-200">
-              <div className="grid grid-cols-12 gap-6 p-6 text-sm font-medium text-gray-700">
-                <div className="col-span-3">Car Information</div>
-                <div className="col-span-1">Mileage</div>
-                <div className="col-span-1">Engine</div>
-                <div className="col-span-1">Trans.</div>
-                <div className="col-span-1">Drive.</div>
-                <div className="col-span-1">Steering</div>
-                <div className="col-span-1">Color</div>
-                <div className="col-span-1">Cut-off Time</div>
-                <div className="col-span-1">Starting Price</div>
-                <div className="col-span-1">Actions</div>
-              </div>
-            </div>
+             <div className="bg-gray-50 border-b border-gray-200">
+               <div className="grid grid-cols-8 gap-4 p-6 text-sm font-medium text-gray-700">
+                 <div className="col-span-3">Car Information</div>
+                 <div className="col-span-1">Mileage</div>
+                 <div className="col-span-1">Engine</div>
+                 <div className="col-span-1">Trans.</div>
+                 <div className="col-span-1">Starting Price</div>
+                 <div className="col-span-1">Action</div>
+               </div>
+             </div>
 
             {/* Table Body */}
             <div className="divide-y divide-gray-200">
               {cars.map((car) => (
-                <div key={car.id} className="grid grid-cols-12 gap-6 p-6 hover:bg-gray-50 transition-colors">
+                <div key={car.id} className="grid grid-cols-8 gap-4 p-6 hover:bg-gray-50 transition-colors">
                   {/* Car Information */}
                   <div className="col-span-3 flex items-center gap-4">
                     <div className="w-24 h-20 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
@@ -641,6 +694,17 @@ const UserCarCatalog: React.FC = () => {
                         Status: <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(car.status)}`}>
                           {car.status?.charAt(0).toUpperCase() + car.status?.slice(1)}
                         </span>
+                        {(() => {
+                          const stock = stockData.get(car.id);
+                          if (stock) {
+                            return (
+                              <span className={`ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${getStockStatusColor(stock.quantity, stock.status)}`}>
+                                Stock: {stock.quantity}
+                              </span>
+                            );
+                          }
+                          return null;
+                        })()}
                       </div>
                     </div>
                   </div>
@@ -659,51 +723,14 @@ const UserCarCatalog: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Transmission */}
-                  <div className="col-span-1 flex items-center">
-                    <span className="text-sm text-gray-900">
-                      {car.transmission || 'N/A'}
-                    </span>
-                  </div>
+                   {/* Transmission */}
+                   <div className="col-span-1 flex items-center">
+                     <span className="text-sm text-gray-900">
+                       {car.transmission || 'N/A'}
+                     </span>
+                   </div>
 
-                  {/* Drive */}
-                  <div className="col-span-1 flex items-center">
-                    <span className="text-sm text-gray-900">
-                      {(car as any).drive_type || (car as any).drivetrain || 'N/A'}
-                    </span>
-                  </div>
-
-                  {/* Steering */}
-                  <div className="col-span-1 flex items-center">
-                    <span className="text-sm text-gray-900">
-                      {car.steering || 'N/A'}
-                    </span>
-                  </div>
-
-                  {/* Color */}
-                  <div className="col-span-1 flex items-center">
-                    <span className="text-sm text-gray-900">
-                      {car.color || 'N/A'}
-                    </span>
-                  </div>
-
-                  {/* Cut-off Time */}
-                  <div className="col-span-1 flex items-center">
-                    <span className="text-sm text-gray-900">
-                      {(car as any).auction_date ? 
-                        new Date((car as any).auction_date).toLocaleDateString('en-US', {
-                          month: '2-digit',
-                          day: '2-digit', 
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        }) + ' (JST)' : 
-                        'TBD'
-                      }
-                    </span>
-                  </div>
-
-                  {/* Starting Price */}
+                   {/* Starting Price */}
                   <div className="col-span-1 flex items-center">
                     <span className="text-sm text-gray-900">
                       {car.price_amount ? 
@@ -713,28 +740,28 @@ const UserCarCatalog: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Actions */}
-                  <div className="col-span-1 flex items-center gap-2">
-                    <button
-                      onClick={() => handleViewCar(car)}
-                      className="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                      title="View Details"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleAddToCart(car)}
-                      disabled={isCarLoading(car.id)}
-                      className="p-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                      title="Add to Cart"
-                    >
-                      {isCarLoading(car.id) ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border border-white border-t-transparent"></div>
-                      ) : (
-                        <ShoppingCart className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
+                   {/* Action */}
+                   <div className="col-span-1 flex items-center justify-center gap-2">
+                     <button
+                       onClick={() => handleViewCar(car)}
+                       className="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                       title="View Details"
+                     >
+                       <Eye className="w-4 h-4" />
+                     </button>
+                     <button
+                       onClick={() => handleAddToCart(car)}
+                       disabled={isCarLoading(car.id)}
+                       className="p-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                       title="Add to Cart"
+                     >
+                       {isCarLoading(car.id) ? (
+                         <div className="animate-spin rounded-full h-4 w-4 border border-white border-t-transparent"></div>
+                       ) : (
+                         <ShoppingCart className="w-4 h-4" />
+                       )}
+                     </button>
+                   </div>
                 </div>
               ))}
             </div>
@@ -1041,6 +1068,36 @@ const UserCarCatalog: React.FC = () => {
                               selectedCar.status?.slice(1)}
                           </span>
                         </div>
+                        {(() => {
+                          const stock = stockData.get(selectedCar.id);
+                          if (stock) {
+                            const stockPrice = typeof stock.price === 'string' ? parseFloat(stock.price) : stock.price;
+                            return (
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Stock:</span>
+                                <div className="flex flex-col items-end">
+                                  <span className={`text-sm font-medium ${getStockStatusColor(stock.quantity, stock.status)}`}>
+                                    {stock.quantity}
+                                  </span>
+                                  <span className={`text-xs ${getStockStatusTextColor(stock.quantity, stock.status)}`}>
+                                    {stock.status}
+                                  </span>
+                                  {stockPrice && (
+                                    <span className="text-xs text-gray-500">
+                                      Stock Price: ${stockPrice.toLocaleString()}
+                                    </span>
+                                  )}
+                                  {stock.notes && (
+                                    <span className="text-xs text-gray-500 italic">
+                                      {stock.notes}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
                       </div>
 
                       {/* Chassis Number with View Button */}
