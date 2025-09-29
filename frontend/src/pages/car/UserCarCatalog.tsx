@@ -260,20 +260,53 @@ const UserCarCatalog: React.FC = () => {
             <span className="hover:text-blue-600 cursor-pointer">Japanese Car Auction</span>
             <span className="mx-2">&gt;</span>
             <span className="hover:text-blue-600 cursor-pointer">List</span>
-            <span className="mx-2">&gt;</span>
-            <span className="hover:text-blue-600 cursor-pointer">Toyota</span>
-            <span className="mx-2">&gt;</span>
-            <span className="text-gray-900 font-medium">Alphard</span>
+            {makeFilter && (
+              <>
+                <span className="mx-2">&gt;</span>
+                <span className="hover:text-blue-600 cursor-pointer">{makeFilter}</span>
+              </>
+            )}
+            {categoryFilter && categories.find(c => c.id.toString() === categoryFilter) && (
+              <>
+                <span className="mx-2">&gt;</span>
+                <span className="text-gray-900 font-medium">
+                  {categories.find(c => c.id.toString() === categoryFilter)?.name}
+                </span>
+              </>
+            )}
           </div>
         </nav>
 
         {/* Page Title */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Used Toyota Alphard at Auction</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            {makeFilter && categoryFilter && categories.find(c => c.id.toString() === categoryFilter) 
+              ? `Used ${makeFilter} ${categories.find(c => c.id.toString() === categoryFilter)?.name} at Auction`
+              : makeFilter 
+                ? `Used ${makeFilter} Cars at Auction`
+                : categoryFilter && categories.find(c => c.id.toString() === categoryFilter)
+                  ? `Used ${categories.find(c => c.id.toString() === categoryFilter)?.name} at Auction`
+                  : 'Japanese Used Cars at Auction'
+            }
+          </h1>
         </div>
 
         {/* Search Filters */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          {/* Search Input */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search cars by make, model, year, or any keyword..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+              />
+            </div>
+          </div>
+
           {/* Filter Grid with Search Button on Same Line */}
           <div className="flex items-start gap-4 mb-4">
             {/* Filter Grid */}
@@ -285,7 +318,7 @@ const UserCarCatalog: React.FC = () => {
                   onChange={(e) => setMakeFilter(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">Toyota</option>
+                  <option value="">All Makes</option>
                   {filterOptions?.makes?.map((make) => (
                     <option key={make} value={make}>
                       {make}
@@ -298,7 +331,7 @@ const UserCarCatalog: React.FC = () => {
                   onChange={(e) => setCategoryFilter(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">Alphard</option>
+                  <option value="">All Categories</option>
                   {categories.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
@@ -320,7 +353,7 @@ const UserCarCatalog: React.FC = () => {
                   onChange={(e) => setYearFilter(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">2025</option>
+                  <option value="">All Years</option>
                   {filterOptions?.years?.map((year) => (
                     <option key={year} value={year}>
                       {year}
@@ -408,11 +441,12 @@ const UserCarCatalog: React.FC = () => {
                       onChange={(e) => setFuelFilter(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
-                      <option value="">Fuel</option>
-                      <option value="gasoline">Gasoline</option>
-                      <option value="diesel">Diesel</option>
-                      <option value="hybrid">Hybrid</option>
-                      <option value="electric">Electric</option>
+                      <option value="">All Fuel Types</option>
+                      {filterOptions?.fuels?.map((fuel) => (
+                        <option key={fuel} value={fuel}>
+                          {fuel}
+                        </option>
+                      ))}
                     </select>
 
                     <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -468,7 +502,10 @@ const UserCarCatalog: React.FC = () => {
 
             {/* Search Button - On Same Line */}
             <div className="flex items-center gap-4">
-              <button className="flex items-center gap-2 px-8 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-medium">
+              <button 
+                onClick={fetchCars}
+                className="flex items-center gap-2 px-8 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-medium"
+              >
                 <Search className="w-5 h-5" />
                 Search
               </button>
@@ -573,10 +610,15 @@ const UserCarCatalog: React.FC = () => {
                         Ref No. {car.ref_no || `AA${car.id.toString().padStart(6, '0')}`}
                       </div>
                       <div className="text-sm text-gray-600">
-                        {car.year} {car.make} {car.model}
+                        {car.year} {car.make} {car.model} {car.variant && `- ${car.variant}`}
                       </div>
                       <div className="text-xs text-gray-500">
-                        Chassis No. {(car as any).chassis_no || `${car.make?.substring(0, 3).toUpperCase()}${car.year?.toString().substring(2)}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}***`}
+                        Chassis No. {(car as any).chassis_no || (car as any).vin || 'N/A'}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Status: <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(car.status)}`}>
+                          {car.status?.charAt(0).toUpperCase() + car.status?.slice(1)}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -598,21 +640,21 @@ const UserCarCatalog: React.FC = () => {
                   {/* Transmission */}
                   <div className="col-span-1 flex items-center">
                     <span className="text-sm text-gray-900">
-                      {car.transmission || 'AT'}
+                      {car.transmission || 'N/A'}
                     </span>
                   </div>
 
                   {/* Drive */}
                   <div className="col-span-1 flex items-center">
                     <span className="text-sm text-gray-900">
-                      {(car as any).drive_type || '2WD'}
+                      {(car as any).drive_type || (car as any).drivetrain || 'N/A'}
                     </span>
                   </div>
 
                   {/* Steering */}
                   <div className="col-span-1 flex items-center">
                     <span className="text-sm text-gray-900">
-                      {car.steering || '-'}
+                      {car.steering || 'N/A'}
                     </span>
                   </div>
 
@@ -626,14 +668,26 @@ const UserCarCatalog: React.FC = () => {
                   {/* Cut-off Time */}
                   <div className="col-span-1 flex items-center">
                     <span className="text-sm text-gray-900">
-                      09/29/2025 19:00 (JST)
+                      {(car as any).auction_date ? 
+                        new Date((car as any).auction_date).toLocaleDateString('en-US', {
+                          month: '2-digit',
+                          day: '2-digit', 
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        }) + ' (JST)' : 
+                        'TBD'
+                      }
                     </span>
                   </div>
 
                   {/* Starting Price */}
                   <div className="col-span-1 flex items-center">
                     <span className="text-sm text-gray-900">
-                      Please input country and port
+                      {car.price_amount ? 
+                        formatPrice(car.price_amount, car.price_currency) : 
+                        'Price on request'
+                      }
                     </span>
                   </div>
 
@@ -857,6 +911,26 @@ const UserCarCatalog: React.FC = () => {
                           </span>
                         </div>
                       )}
+                      {(selectedCar as any).chassis_no && (
+                        <div>
+                          <span className="font-medium text-gray-600">
+                            Chassis No:
+                          </span>
+                          <span className="ml-2 text-gray-900">
+                            {(selectedCar as any).chassis_no}
+                          </span>
+                        </div>
+                      )}
+                      {(selectedCar as any).vin && (
+                        <div>
+                          <span className="font-medium text-gray-600">
+                            VIN:
+                          </span>
+                          <span className="ml-2 text-gray-900">
+                            {(selectedCar as any).vin}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -926,6 +1000,46 @@ const UserCarCatalog: React.FC = () => {
                           </span>
                         </div>
                       )}
+                      {(selectedCar as any).drive_type && (
+                        <div>
+                          <span className="font-medium text-gray-600">
+                            Drive Type:
+                          </span>
+                          <span className="ml-2 text-gray-900">
+                            {(selectedCar as any).drive_type}
+                          </span>
+                        </div>
+                      )}
+                      {(selectedCar as any).drivetrain && (
+                        <div>
+                          <span className="font-medium text-gray-600">
+                            Drivetrain:
+                          </span>
+                          <span className="ml-2 text-gray-900">
+                            {(selectedCar as any).drivetrain}
+                          </span>
+                        </div>
+                      )}
+                      {(selectedCar as any).body_type && (
+                        <div>
+                          <span className="font-medium text-gray-600">
+                            Body Type:
+                          </span>
+                          <span className="ml-2 text-gray-900">
+                            {(selectedCar as any).body_type}
+                          </span>
+                        </div>
+                      )}
+                      {(selectedCar as any).doors && (
+                        <div>
+                          <span className="font-medium text-gray-600">
+                            Doors:
+                          </span>
+                          <span className="ml-2 text-gray-900">
+                            {(selectedCar as any).doors}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -944,6 +1058,16 @@ const UserCarCatalog: React.FC = () => {
                       {selectedCar.price_basis && (
                         <p className="text-sm text-gray-600">
                           Basis: {selectedCar.price_basis}
+                        </p>
+                      )}
+                      {(selectedCar as any).auction_date && (
+                        <p className="text-sm text-gray-600">
+                          Auction Date: {new Date((selectedCar as any).auction_date).toLocaleDateString()}
+                        </p>
+                      )}
+                      {(selectedCar as any).starting_price && (
+                        <p className="text-sm text-gray-600">
+                          Starting Price: {formatPrice((selectedCar as any).starting_price, selectedCar.price_currency)}
                         </p>
                       )}
                     </div>
@@ -1030,20 +1154,30 @@ const UserCarCatalog: React.FC = () => {
                   )}
 
                   {/* Location */}
-                  {(selectedCar.location || selectedCar.country_origin) && (
+                  {(selectedCar.location || selectedCar.country_origin || (selectedCar as any).port) && (
                     <div>
                       <h3 className="text-lg font-semibold text-gray-800 mb-3">
                         Location
                       </h3>
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <MapPin className="w-4 h-4" />
-                        <span>
-                          {selectedCar.location}
-                          {selectedCar.location &&
-                            selectedCar.country_origin &&
-                            ", "}
-                          {selectedCar.country_origin}
-                        </span>
+                      <div className="space-y-2">
+                        {(selectedCar as any).port && (
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <MapPin className="w-4 h-4" />
+                            <span>Port: {(selectedCar as any).port}</span>
+                          </div>
+                        )}
+                        {selectedCar.location && (
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <MapPin className="w-4 h-4" />
+                            <span>Location: {selectedCar.location}</span>
+                          </div>
+                        )}
+                        {selectedCar.country_origin && (
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <MapPin className="w-4 h-4" />
+                            <span>Country: {selectedCar.country_origin}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
