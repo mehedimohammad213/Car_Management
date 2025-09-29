@@ -308,26 +308,26 @@ const UserCarCatalog: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-full mx-auto px-2 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="max-w-full mx-auto px-4 py-6">
         {/* Search Filters */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-4">
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-6">
           {/* Search Input */}
-          <div className="mb-3">
+          <div className="mb-6">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search cars by make, model, year, or any keyword..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
+                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-lg bg-gray-50 focus:bg-white transition-all duration-200"
               />
             </div>
           </div>
 
           {/* Filter Grid with Search Button on Same Line */}
-          <div className="flex items-start gap-3 mb-3">
+          <div className="flex items-start gap-4 mb-6">
             {/* Filter Grid */}
             <div
               className={`flex-1 transition-all duration-300 ${
@@ -337,11 +337,11 @@ const UserCarCatalog: React.FC = () => {
               }`}
             >
               {/* First Row - Always Visible */}
-              <div className="grid grid-cols-5 gap-3 mb-3">
+              <div className="grid grid-cols-5 gap-4 mb-4">
                 <select
                   value={makeFilter}
                   onChange={(e) => setMakeFilter(e.target.value)}
-                  className="w-full px-2 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
                 >
                   <option value="">All Makes</option>
                   {filterOptions?.makes?.map((make) => (
@@ -354,7 +354,7 @@ const UserCarCatalog: React.FC = () => {
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="w-full px-2 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
                 >
                   <option value="">All Categories</option>
                   {categories.map((category) => (
@@ -364,7 +364,7 @@ const UserCarCatalog: React.FC = () => {
                   ))}
                 </select>
 
-                <select className="w-full px-2 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-100 text-sm">
+                <select className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 bg-gray-100 text-sm transition-all duration-200">
                   <option value="">Body Type</option>
                   <option value="sedan">Sedan</option>
                   <option value="suv">SUV</option>
@@ -376,7 +376,7 @@ const UserCarCatalog: React.FC = () => {
                 <select
                   value={yearFilter}
                   onChange={(e) => setYearFilter(e.target.value)}
-                  className="w-full px-2 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
                 >
                   <option value="">All Years</option>
                   {filterOptions?.years?.map((year) => (
@@ -386,7 +386,7 @@ const UserCarCatalog: React.FC = () => {
                   ))}
                 </select>
 
-                <select className="w-full px-2 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                <select className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200">
                   <option value="">Max Year</option>
                   {filterOptions?.years?.map((year) => (
                     <option key={year} value={year}>
@@ -526,29 +526,29 @@ const UserCarCatalog: React.FC = () => {
             </div>
 
             {/* Search Button - On Same Line */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <button
                 onClick={fetchCars}
-                className="flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-medium text-sm"
+                className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold text-base shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 <Search className="w-5 h-5" />
-                Search
+                Search Cars
               </button>
-              <span className="text-gray-500">or</span>
+              <span className="text-gray-500 font-medium">or</span>
               <button
                 onClick={clearFilters}
-                className="text-blue-600 hover:text-blue-700 underline font-medium text-sm"
+                className="text-blue-600 hover:text-blue-800 underline font-semibold text-base transition-colors"
               >
-                Reset
+                Reset Filters
               </button>
             </div>
           </div>
 
           {/* Results Count and Advanced Search */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="text-red-600 font-medium text-base">
-                {totalItems} Matches
+          <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+            <div className="flex items-center gap-6">
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">
+                {totalItems} Matches Found
               </div>
               {stockData.size > 0 && (
                 <div className="flex items-center gap-4 text-sm">
@@ -590,7 +590,7 @@ const UserCarCatalog: React.FC = () => {
             </div>
             <button
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="flex items-center gap-2 px-3 py-1.5 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors text-sm"
+              className="flex items-center gap-3 px-6 py-3 text-blue-600 border-2 border-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-200 font-semibold text-base shadow-md hover:shadow-lg"
             >
               <span>Advanced Search</span>
               <span className="text-lg">{showAdvancedFilters ? "−" : "+"}</span>
@@ -600,37 +600,45 @@ const UserCarCatalog: React.FC = () => {
 
         {/* Cars Table Display */}
         {isLoading ? (
-          <div className="text-center py-16">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="text-gray-600 mt-4 text-lg">
+          <div className="text-center py-20">
+            <div className="relative">
+              <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Car className="w-8 h-8 text-blue-600 animate-pulse" />
+              </div>
+            </div>
+            <p className="text-gray-600 mt-6 text-xl font-semibold">
               Loading premium vehicles...
+            </p>
+            <p className="text-gray-500 mt-2">
+              Please wait while we fetch the latest inventory
             </p>
           </div>
         ) : cars.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Car className="w-16 h-16 text-gray-400" />
+          <div className="text-center py-20">
+            <div className="w-40 h-40 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+              <Car className="w-20 h-20 text-blue-600" />
             </div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">
               No vehicles found
             </h3>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+            <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
               We couldn't find any vehicles matching your criteria. Try
-              adjusting your filters or search terms.
+              adjusting your filters or search terms to discover more options.
             </p>
             <button
               onClick={clearFilters}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
               Clear All Filters
             </button>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
             {/* Table Header */}
-            <div className="bg-gray-50 border-b border-gray-200">
-              <div className="grid grid-cols-12 gap-2 p-4 text-sm font-medium text-gray-700">
+            <div className="bg-gradient-to-r from-gray-50 to-blue-50 border-b-2 border-blue-200">
+              <div className="grid grid-cols-12 gap-3 p-6 text-sm font-bold text-gray-800 uppercase tracking-wide">
                 <div className="col-span-3">Car Information</div>
                 <div className="col-span-1">Mileage</div>
                 <div className="col-span-1">Engine</div>
@@ -638,22 +646,22 @@ const UserCarCatalog: React.FC = () => {
                 <div className="col-span-1">Drive.</div>
                 <div className="col-span-1">Steering</div>
                 <div className="col-span-1">Color</div>
-                <div className="col-span-1">Cut-off Time</div>
-                <div className="col-span-1">Starting Price</div>
+                <div className="col-span-1">Cut-off </div>
+                <div className="col-span-1">Price</div>
                 <div className="col-span-1">Action</div>
               </div>
             </div>
 
             {/* Table Body */}
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-gray-100">
               {cars.map((car) => (
                 <div
                   key={car.id}
-                  className="grid grid-cols-12 gap-2 p-4 hover:bg-gray-50 transition-colors"
+                  className="grid grid-cols-12 gap-3 p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 border-l-4 border-transparent hover:border-blue-500"
                 >
                   {/* Car Information */}
-                  <div className="col-span-3 flex items-center gap-3">
-                    <div className="w-20 h-16 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
+                  <div className="col-span-3 flex items-center gap-4">
+                    <div className="w-24 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden flex-shrink-0 shadow-md">
                       {car.photos && car.photos.length > 0 ? (
                         <img
                           src={
@@ -780,24 +788,24 @@ const UserCarCatalog: React.FC = () => {
                   </div>
 
                   {/* Action */}
-                  <div className="col-span-1 flex items-center justify-center gap-1">
+                  <div className="col-span-1 flex items-center justify-center gap-2">
                     <button
                       onClick={() => handleViewCar(car)}
-                      className="p-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                      className="p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                       title="View Details"
                     >
-                      <Eye className="w-3 h-3" />
+                      <Eye className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleAddToCart(car)}
                       disabled={isCarLoading(car.id)}
-                      className="p-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                      className="p-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
                       title="Add to Cart"
                     >
                       {isCarLoading(car.id) ? (
-                        <div className="animate-spin rounded-full h-3 w-3 border border-white border-t-transparent"></div>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                       ) : (
-                        <ShoppingCart className="w-3 h-3" />
+                        <ShoppingCart className="w-4 h-4" />
                       )}
                     </button>
                   </div>
@@ -809,43 +817,45 @@ const UserCarCatalog: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-6 flex items-center justify-center">
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
+          <div className="mt-8 flex items-center justify-center">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-4">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-50 border-2 border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
 
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const page =
-                  Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
-                return (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-                      currentPage === page
-                        ? "bg-blue-600 text-white shadow-lg"
-                        : "text-gray-600 bg-white border border-gray-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                );
-              })}
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  const page =
+                    Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`px-4 py-2 text-sm font-bold rounded-xl transition-all duration-200 ${
+                        currentPage === page
+                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg transform scale-105"
+                          : "text-gray-600 bg-gray-50 border-2 border-gray-200 hover:bg-blue-50 hover:border-blue-300 hover:shadow-md"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
 
-              <button
-                onClick={() =>
-                  setCurrentPage(Math.min(totalPages, currentPage + 1))
-                }
-                disabled={currentPage === totalPages}
-                className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
+                <button
+                  onClick={() =>
+                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-50 border-2 border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         )}
