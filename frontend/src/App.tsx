@@ -19,16 +19,13 @@ import StockManagement from "./pages/stock/StockManagement";
 import OrderManagement from "./pages/order/OrderManagement";
 import UserManagement from "./pages/user/UserManagement";
 
-import Settings from "./pages/Settings";
-
 import CarDetails from "./pages/car/CarDetails";
 import UserCarCatalog from "./pages/car/UserCarCatalog";
 import Cart from "./pages/cart/Cart";
 import Orders from "./pages/order/Orders";
 import UserOrders from "./pages/order/UserOrders";
 import AdminOrders from "./pages/order/AdminOrders";
-import UserProfile from "./pages/UserProfile";
-import UserPassword from "./pages/UserPassword";
+import Profile from "./components/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HomeRedirect from "./components/HomeRedirect";
 import AuthTest from "./pages/AuthTest";
@@ -122,10 +119,10 @@ function App() {
                     />
 
                     <Route
-                      path="/admin/settings"
+                      path="/admin/profile"
                       element={
                         <ProtectedRoute role="admin">
-                          <Settings />
+                          <Profile />
                         </ProtectedRoute>
                       }
                     />
@@ -163,7 +160,7 @@ function App() {
                       path="/profile"
                       element={
                         <ProtectedRoute role="user">
-                          <UserProfile />
+                          <Profile />
                         </ProtectedRoute>
                       }
                     />
@@ -171,15 +168,7 @@ function App() {
                       path="/profile/edit"
                       element={
                         <ProtectedRoute role="user">
-                          <UserProfile />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/profile/password"
-                      element={
-                        <ProtectedRoute role="user">
-                          <UserPassword />
+                          <Profile />
                         </ProtectedRoute>
                       }
                     />
