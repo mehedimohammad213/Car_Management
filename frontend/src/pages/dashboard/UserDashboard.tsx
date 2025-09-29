@@ -62,19 +62,7 @@ const UserDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-gray-900 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Professional Header */}
-        <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-8 text-white shadow-xl">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold mb-2">
-                Welcome back, {user?.name}! 👋
-              </h1>
-              <p className="text-primary-100 text-lg">
-                Here's what's happening with your car shopping experience
-              </p>
-            </div>
-          </div>
-        </div>
+        
 
         {/* Enhanced Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
