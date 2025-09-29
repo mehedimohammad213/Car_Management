@@ -298,15 +298,6 @@ const UserOrders: React.FC = () => {
               <option value="canceled">Canceled</option>
             </select>
 
-            {/* Search Button */}
-            <button
-              onClick={loadOrders}
-              className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-            >
-              <Search className="w-4 h-4" />
-              Search
-            </button>
-
             {/* Reset Button */}
             <button
               onClick={() => {
