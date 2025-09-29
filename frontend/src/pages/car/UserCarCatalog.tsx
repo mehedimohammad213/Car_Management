@@ -253,7 +253,10 @@ const UserCarCatalog: React.FC = () => {
     setFuelFilter("");
     setColorFilter("");
     setPriceRange({ min: "", max: "" });
+    setSortBy("created_at");
+    setSortDirection("desc");
     setCurrentPage(1);
+    setShowAdvancedFilters(false);
   };
 
   const formatPrice = (amount?: number, currency?: string) => {
@@ -505,41 +508,25 @@ const UserCarCatalog: React.FC = () => {
                     </select>
                   </div>
 
-                  {/* Fourth Row */}
+                  {/* Fourth Row - Removed date inputs */}
                   <div className="grid grid-cols-5 gap-4">
                     <div></div>
                     <div></div>
                     <div></div>
-                    <input
-                      type="date"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Date From"
-                    />
-                    <input
-                      type="date"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Date To"
-                    />
+                    <div></div>
+                    <div></div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Search Button - On Same Line */}
+            {/* Reset Button */}
             <div className="flex items-center gap-4">
               <button
-                onClick={fetchCars}
-                className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold text-base shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
-                <Search className="w-5 h-5" />
-                Search Cars
-              </button>
-              <span className="text-gray-500 font-medium">or</span>
-              <button
                 onClick={clearFilters}
-                className="text-blue-600 hover:text-blue-800 underline font-semibold text-base transition-colors"
+                className="px-4 py-3 text-blue-600 hover:text-blue-800 border border-blue-300 hover:bg-blue-50 rounded-xl font-semibold text-sm transition-all duration-200"
               >
-                Reset Filters
+                Reset
               </button>
             </div>
           </div>
