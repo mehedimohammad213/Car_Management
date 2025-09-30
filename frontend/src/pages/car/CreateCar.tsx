@@ -51,7 +51,7 @@ const CreateCar: React.FC = () => {
     fetchCategories();
   }, []);
 
-  const handleSubmit = async (formData: CreateCarData) => {
+  const handleSubmit = async (formData: CreateCarData | FormData) => {
     setIsLoading(true);
     setError(null);
     try {

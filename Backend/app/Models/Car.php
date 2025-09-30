@@ -43,6 +43,7 @@ class Car extends Model
         'country_origin',
         'status',
         'notes',
+        'attached_file',
     ];
 
     protected $casts = [

@@ -15,6 +15,7 @@ import {
   NotesSection,
   PhotoSection,
   CarDetailsSection,
+  AttachedFileSection,
 } from "./form";
 
 interface CarFormModalProps {
@@ -22,7 +23,7 @@ interface CarFormModalProps {
   car?: CarType | null;
   categories: Category[];
   filterOptions: CarFilterOptions | null;
-  onSubmit?: (data: CreateCarData) => void;
+  onSubmit?: (data: CreateCarData | FormData) => void;
   onCancel?: () => void;
   isSubmitting?: boolean;
   isModal?: boolean;
@@ -501,7 +502,31 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
 
     console.log("Submitting form data:", formData);
     try {
-      await onSubmit(formData);
+      // If there's an attached file and it's a File object, we need to handle it differently
+      if (formData.attached_file && formData.attached_file instanceof File) {
+        // Create FormData for file upload
+        const submitData = new FormData();
+        
+        // Add all form fields except the file
+        Object.keys(formData).forEach(key => {
+          if (key !== 'attached_file' && formData[key as keyof CreateCarData] !== undefined) {
+            const value = formData[key as keyof CreateCarData];
+            if (key === 'photos' || key === 'details') {
+              submitData.append(key, JSON.stringify(value));
+            } else {
+              submitData.append(key, String(value));
+            }
+          }
+        });
+        
+        // Add the file
+        submitData.append('attached_file', formData.attached_file);
+        
+        await onSubmit(submitData as any);
+      } else {
+        console.log("No file attached, submitting regular form data");
+        await onSubmit(formData);
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -647,6 +672,18 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
               onAddSubDetail={addSubDetail}
               onRemoveSubDetail={removeSubDetail}
               onSubDetailChange={handleSubDetailChange}
+            />
+          </div>
+        </div>
+
+        {/* Attached File Section */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6">
+            <AttachedFileSection
+              formData={formData}
+              errors={errors}
+              isViewMode={isViewMode}
+              onInputChange={handleInputChange}
             />
           </div>
         </div>

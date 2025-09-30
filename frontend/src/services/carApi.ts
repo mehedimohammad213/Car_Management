@@ -67,6 +67,7 @@ export interface Car {
   country_origin?: string;
   status: string;
   notes?: string;
+  attached_file?: string;
   created_at: string;
   updated_at: string;
 
@@ -123,6 +124,7 @@ export interface CreateCarData {
   country_origin?: string;
   status?: string;
   notes?: string;
+  attached_file?: File | string;
 
   photos?: {
     url: string;
@@ -296,19 +298,30 @@ class CarApiService {
     return this.request<CarResponse>(`/cars/${id}`);
   }
 
-  async createCar(data: CreateCarData): Promise<CarResponse> {
+  async createCar(data: CreateCarData | FormData): Promise<CarResponse> {
     return this.request<CarResponse>("/cars", {
       method: "POST",
       data: data,
     });
   }
 
-  async updateCar(data: UpdateCarData): Promise<CarResponse> {
-    const { id, ...updateData } = data;
-    return this.request<CarResponse>(`/cars/${id}/update`, {
-      method: "POST",
-      data: updateData,
-    });
+  async updateCar(data: UpdateCarData | FormData): Promise<CarResponse> {
+    if (data instanceof FormData) {
+      // For FormData, extract the ID and send the rest
+      const id = data.get('id');
+      data.delete('id'); // Remove id from FormData as it's in the URL
+      return this.request<CarResponse>(`/cars/${id}/update`, {
+        method: "POST",
+        data: data,
+      });
+    } else {
+      // For regular objects, handle as before
+      const { id, ...updateData } = data;
+      return this.request<CarResponse>(`/cars/${id}/update`, {
+        method: "POST",
+        data: updateData,
+      });
+    }
   }
 
   async deleteCar(id: number): Promise<CarResponse> {
@@ -387,6 +400,29 @@ class CarApiService {
   async exportToExcel(): Promise<Blob> {
     const token = localStorage.getItem("token");
     const response = await axios.get(API_ENDPOINTS.CARS.EXPORT_EXCEL, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    });
+
+    return response.data;
+  }
+
+  async getAttachedFile(carId: number): Promise<{
+    success: boolean;
+    data: {
+      url: string;
+      type: 'image' | 'pdf';
+      filename: string;
+    };
+  }> {
+    return this.request(`/cars/${carId}/attached-file`);
+  }
+
+  async downloadAttachedFile(carId: number): Promise<Blob> {
+    const token = localStorage.getItem("token");
+    const response = await axios.get(`${API_BASE_URL}/api/cars/${carId}/attached-file/download`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

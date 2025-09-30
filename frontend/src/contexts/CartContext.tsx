@@ -89,23 +89,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const convertApiCartItem = (apiItem: ApiCartItem): CartItem => {
     return {
       id: apiItem.id, // Store the cart item ID
-      car: {
-        id: apiItem.car.id,
-        make: apiItem.car.make,
-        model: apiItem.car.model,
-        variant: apiItem.car.variant,
-        year: apiItem.car.year,
-        price_amount: apiItem.car.price_amount,
-        price_currency: apiItem.car.price_currency,
-        mileage_km: apiItem.car.mileage_km,
-        transmission: apiItem.car.transmission,
-        fuel: apiItem.car.fuel,
-        color: apiItem.car.color,
-        status: apiItem.car.status,
-        category: apiItem.car.category,
-        image: apiItem.car.primary_photo?.image_url || "",
-        isAvailable: apiItem.car.status === "available",
-      },
+      car: apiItem.car as any, // Use the car object as-is from the API
       quantity: apiItem.quantity,
     };
   };

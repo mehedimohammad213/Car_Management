@@ -7,6 +7,7 @@ use App\Models\Car;
 use App\Models\CarPhoto;
 use App\Models\CarDetail;
 use App\Models\Category;
+use App\Services\ImageBBService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +20,44 @@ use App\Imports\CarsImport;
 
 class CarController extends Controller
 {
+    private $imageBBService;
+
+    public function __construct(ImageBBService $imageBBService)
+    {
+        $this->imageBBService = $imageBBService;
+    }
+
+    /**
+     * Handle file upload for attached files
+     */
+    private function handleFileUpload($file)
+    {
+        if (!$file) {
+            return null;
+        }
+
+        $extension = strtolower($file->getClientOriginalExtension());
+        $filename = time() . '_' . $file->getClientOriginalName();
+
+        // Check if it's an image
+        if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+            // Upload to ImageBB
+            $uploadResult = $this->imageBBService->uploadImage($file->getPathname(), $filename);
+            if ($uploadResult && $uploadResult['success']) {
+                return $uploadResult['url'];
+            }
+            return null;
+        }
+
+        // Check if it's a PDF
+        if ($extension === 'pdf') {
+            // Store in local storage
+            $path = $file->storeAs('attachments', $filename, 'public');
+            return Storage::url($path);
+        }
+
+        return null;
+    }
 
     public function index(Request $request): JsonResponse
     {
@@ -112,13 +151,19 @@ class CarController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        // Debug: Log the request data
-        Log::info('Car creation request', [
-            'request_data' => $request->all(),
-            'headers' => $request->headers->all()
-        ]);
 
-        $validator = Validator::make($request->all(), [
+        // Prepare validation data - handle JSON strings from FormData
+        $validationData = $request->all();
+        
+        // Convert JSON strings to arrays for validation if they exist
+        if (isset($validationData['photos']) && is_string($validationData['photos'])) {
+            $validationData['photos'] = json_decode($validationData['photos'], true) ?? [];
+        }
+        if (isset($validationData['details']) && is_string($validationData['details'])) {
+            $validationData['details'] = json_decode($validationData['details'], true) ?? [];
+        }
+
+        $validator = Validator::make($validationData, [
             'category_id' => 'required|integer|exists:categories,id',
             'subcategory_id' => 'nullable|exists:categories,id',
             'ref_no' => 'nullable|string|max:32|unique:cars,ref_no',
@@ -151,6 +196,7 @@ class CarController extends Controller
             'country_origin' => 'nullable|string|max:64',
             'status' => 'nullable|string|max:32',
             'notes' => 'nullable|string',
+            'attached_file' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:10240', // 10MB max
 
             'photos' => 'nullable|array',
             'photos.*.url' => 'required_with:photos|string|max:512',
@@ -184,26 +230,37 @@ class CarController extends Controller
         try {
             DB::beginTransaction();
 
+            // Handle file upload
+            $attachedFileUrl = null;
+            if ($request->hasFile('attached_file')) {
+                $attachedFileUrl = $this->handleFileUpload($request->file('attached_file'));
+            }
+
             // Create car
-            $carData = $request->only([
+            $carData = collect($validationData)->only([
                 'category_id', 'subcategory_id', 'ref_no', 'code', 'make', 'model', 'model_code',
                 'variant', 'year', 'reg_year_month', 'mileage_km', 'engine_cc',
                 'transmission', 'drive', 'steering', 'fuel', 'color', 'seats',
                 'grade_overall', 'grade_exterior', 'grade_interior', 'price_amount',
                 'price_currency', 'price_basis', 'fob_value_usd', 'freight_usd',
                 'chassis_no_masked', 'chassis_no_full', 'location', 'country_origin', 'status', 'notes'
-            ]);
+            ])->toArray();
+
+            // Add attached file URL if uploaded
+            if ($attachedFileUrl) {
+                $carData['attached_file'] = $attachedFileUrl;
+            }
 
             $car = Car::create($carData);
 
-            if ($request->filled('photos')) {
-                foreach ($request->photos as $photoData) {
+            if (!empty($validationData['photos'])) {
+                foreach ($validationData['photos'] as $photoData) {
                     $car->photos()->create($photoData);
                 }
             }
 
-            if ($request->filled('details')) {
-                foreach ($request->details as $detailData) {
+            if (!empty($validationData['details'])) {
+                foreach ($validationData['details'] as $detailData) {
                     // Extract sub_details from detailData
                     $subDetails = $detailData['sub_details'] ?? [];
                     unset($detailData['sub_details']); // Remove sub_details from detailData
@@ -472,14 +529,19 @@ class CarController extends Controller
      */
     public function update(Request $request, Car $car): JsonResponse
     {
-        // Debug: Log the request data
-        Log::info('Car update request', [
-            'car_id' => $car->id,
-            'request_data' => $request->all(),
-            'headers' => $request->headers->all()
-        ]);
 
-        $validator = Validator::make($request->all(), [
+        // Prepare validation data - handle JSON strings from FormData
+        $validationData = $request->all();
+        
+        // Convert JSON strings to arrays for validation if they exist
+        if (isset($validationData['photos']) && is_string($validationData['photos'])) {
+            $validationData['photos'] = json_decode($validationData['photos'], true) ?? [];
+        }
+        if (isset($validationData['details']) && is_string($validationData['details'])) {
+            $validationData['details'] = json_decode($validationData['details'], true) ?? [];
+        }
+
+        $validator = Validator::make($validationData, [
             'category_id' => 'sometimes|exists:categories,id',
             'subcategory_id' => 'nullable|exists:categories,id',
             'ref_no' => [
@@ -517,6 +579,7 @@ class CarController extends Controller
             'country_origin' => 'nullable|string|max:64',
             'status' => 'nullable|string|max:32',
             'notes' => 'nullable|string',
+            'attached_file' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:10240', // 10MB max
 
             'photos' => 'nullable|array',
             'photos.*.url' => 'required_with:photos|string|max:512',
@@ -551,35 +614,46 @@ class CarController extends Controller
         try {
             DB::beginTransaction();
 
+            // Handle file upload
+            $attachedFileUrl = null;
+            if ($request->hasFile('attached_file')) {
+                $attachedFileUrl = $this->handleFileUpload($request->file('attached_file'));
+            }
+
             // Update car basic data
-            $carData = $request->only([
+            $carData = collect($validationData)->only([
                 'category_id', 'subcategory_id', 'ref_no', 'code', 'make', 'model', 'model_code',
                 'variant', 'year', 'reg_year_month', 'mileage_km', 'engine_cc',
                 'transmission', 'drive', 'steering', 'fuel', 'color', 'seats',
                 'grade_overall', 'grade_exterior', 'grade_interior', 'price_amount',
                 'price_currency', 'price_basis', 'fob_value_usd', 'freight_usd',
                 'chassis_no_masked', 'chassis_no_full', 'location', 'country_origin', 'status', 'notes'
-            ]);
+            ])->toArray();
+
+            // Add attached file URL if uploaded
+            if ($attachedFileUrl) {
+                $carData['attached_file'] = $attachedFileUrl;
+            }
 
             $car->update($carData);
 
             // Update photos if provided
-            if ($request->filled('photos')) {
+            if (!empty($validationData['photos'])) {
                 // Delete existing photos
                 $car->photos()->delete();
                 
                 // Create new photos
-                foreach ($request->photos as $photoData) {
+                foreach ($validationData['photos'] as $photoData) {
                     $car->photos()->create($photoData);
                 }
             }
 
             // Update details if provided
-            if ($request->filled('details')) {
+            if (!empty($validationData['details'])) {
                 // Delete existing details
                 $car->details()->delete();
                 
-                foreach ($request->details as $detailData) {
+                foreach ($validationData['details'] as $detailData) {
                     // Extract sub_details from detailData
                     $subDetails = $detailData['sub_details'] ?? [];
                     unset($detailData['sub_details']); // Remove sub_details from detailData
@@ -764,5 +838,58 @@ class CarController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Get attached file for a car
+     */
+    public function getAttachedFile(Car $car): JsonResponse
+    {
+        if (!$car->attached_file) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No attached file found for this car'
+            ], 404);
+        }
+
+        // Check if it's an image (ImageBB URL) or PDF (local storage)
+        $isImage = filter_var($car->attached_file, FILTER_VALIDATE_URL) && 
+                   !str_contains($car->attached_file, '/storage/');
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'url' => $car->attached_file,
+                'type' => $isImage ? 'image' : 'pdf',
+                'filename' => basename($car->attached_file)
+            ],
+            'message' => 'Attached file retrieved successfully'
+        ]);
+    }
+
+    /**
+     * Download attached file for a car
+     */
+    public function downloadAttachedFile(Car $car)
+    {
+        if (!$car->attached_file) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No attached file found for this car'
+            ], 404);
+        }
+
+        // Check if it's a local PDF file
+        if (str_contains($car->attached_file, '/storage/')) {
+            $filePath = str_replace('/storage/', '', $car->attached_file);
+            $fullPath = storage_path('app/public/' . $filePath);
+            
+            if (file_exists($fullPath)) {
+                return response()->download($fullPath, basename($car->attached_file));
+            }
+        }
+
+        // For ImageBB URLs, redirect to the URL
+        return redirect($car->attached_file);
     }
 }
