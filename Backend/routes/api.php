@@ -56,6 +56,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Additional endpoints
         Route::get('/filter/options', [CarController::class, 'getFilterOptions']);
+        
+        // File serving routes
+        Route::get('/{car}/attached-file', [CarController::class, 'getAttachedFile']);
+        Route::get('/{car}/attached-file/download', [CarController::class, 'downloadAttachedFile']);
     });
 
     // Cart API Routes

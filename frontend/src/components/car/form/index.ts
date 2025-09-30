@@ -9,3 +9,4 @@ export { default as LocationStatusSection } from "./LocationStatusSection";
 export { default as NotesSection } from "./NotesSection";
 export { default as PhotoSection } from "./PhotoSection";
 export { default as CarDetailsSection } from "./CarDetailsSection";
+export { default as AttachedFileSection } from "./AttachedFileSection";

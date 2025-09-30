@@ -40,11 +40,8 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
 
       // Update the photo with the uploaded URL
       onUpdatePhoto(index, {
-        ...formData.photos[index],
+        ...formData.photos![index],
         url: response.data.url,
-        display_url: response.data.display_url,
-        thumb_url: response.data.thumb.url,
-        medium_url: response.data.medium.url,
       });
     } catch (error) {
       console.error('Upload error:', error);
@@ -78,14 +75,14 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
           Photos
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {formData.photos.map((photo, index) => (
+          {formData.photos?.map((photo, index) => (
             <div key={index} className="relative group">
               <img
-                src={photo.display_url || photo.url}
+                src={photo.url}
                 alt={`Car photo ${index + 1}`}
                 className="w-full h-32 object-cover rounded-lg border border-gray-200"
                 onError={(e) => {
-                  // Fallback to original URL if display_url fails
+                  // Fallback to original URL if image fails to load
                   const target = e.target as HTMLImageElement;
                   if (photo.url && target.src !== photo.url) {
                     target.src = photo.url;
@@ -133,7 +130,7 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
             <div className="w-20 h-20 flex-shrink-0">
               {photo.url ? (
                 <img
-                  src={photo.display_url || photo.url}
+                  src={photo.url}
                   alt={`Preview ${index + 1}`}
                   className="w-full h-full object-cover rounded-lg border border-gray-200"
                   onError={(e) => {

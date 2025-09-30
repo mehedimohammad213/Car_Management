@@ -19,6 +19,9 @@ import {
   ChevronRight,
   Eye,
   EyeOff,
+  Download,
+  File,
+  Image,
 } from "lucide-react";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 import { carApi, Car } from "../../services/carApi";
@@ -34,6 +37,12 @@ const ViewCar: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [attachedFileInfo, setAttachedFileInfo] = useState<{
+    url: string;
+    type: 'image' | 'pdf';
+    filename: string;
+  } | null>(null);
+  const [isLoadingFile, setIsLoadingFile] = useState(false);
 
   useEffect(() => {
     const fetchCar = async () => {
@@ -58,6 +67,18 @@ const ViewCar: React.FC = () => {
         }
         setCar(car);
         setCategories(categoriesData.data.categories || []);
+
+        // Fetch attached file info if car has attached_file
+        if (car && car.attached_file) {
+          try {
+            const fileInfo = await carApi.getAttachedFile(car.id);
+            if (fileInfo.success) {
+              setAttachedFileInfo(fileInfo.data);
+            }
+          } catch (error) {
+            console.error("Error fetching attached file info:", error);
+          }
+        }
       } catch (error) {
         console.error("Error fetching car:", error);
       } finally {
@@ -69,6 +90,37 @@ const ViewCar: React.FC = () => {
 
   const handleDelete = () => {
     setShowDeleteModal(true);
+  };
+
+  const handleViewFile = () => {
+    if (attachedFileInfo) {
+      window.open(attachedFileInfo.url, '_blank');
+    }
+  };
+
+  const handleDownloadFile = async () => {
+    if (!car || !attachedFileInfo) return;
+    
+    try {
+      setIsLoadingFile(true);
+      const blob = await carApi.downloadAttachedFile(car.id);
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = attachedFileInfo.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      // Fallback: open in new tab
+      window.open(attachedFileInfo.url, '_blank');
+    } finally {
+      setIsLoadingFile(false);
+    }
   };
 
   const confirmDelete = async () => {
@@ -565,6 +617,54 @@ const ViewCar: React.FC = () => {
               Additional Notes
             </h3>
             <p className="text-gray-700 leading-relaxed">{car.notes}</p>
+          </div>
+        )}
+
+        {/* Attached File */}
+        {attachedFileInfo && (
+          <div className="mt-8 bg-white rounded-2xl shadow-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              {attachedFileInfo.type === 'image' ? (
+                <Image className="w-5 h-5 text-green-600" />
+              ) : (
+                <File className="w-5 h-5 text-red-600" />
+              )}
+              Attached File
+            </h3>
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-3">
+                {attachedFileInfo.type === 'image' ? (
+                  <Image className="w-8 h-8 text-green-600" />
+                ) : (
+                  <File className="w-8 h-8 text-red-600" />
+                )}
+                <div>
+                  <p className="font-medium text-gray-900">{attachedFileInfo.filename}</p>
+                  <p className="text-sm text-gray-500 capitalize">{attachedFileInfo.type} file</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleViewFile}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Eye className="w-4 h-4" />
+                  View
+                </button>
+                <button
+                  onClick={handleDownloadFile}
+                  disabled={isLoadingFile}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
+                >
+                  {isLoadingFile ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4" />
+                  )}
+                  Download
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

@@ -54,14 +54,22 @@ const UpdateCar: React.FC = () => {
     fetchData();
   }, [id]);
 
-  const handleSubmit = async (formData: CreateCarData) => {
+  const handleSubmit = async (formData: CreateCarData | FormData) => {
     if (!car) return;
 
     setIsSaving(true);
     setError(null);
     try {
       console.log("Updating car data:", formData);
-      const response = await carApi.updateCar({ id: car.id, ...formData });
+      
+      // Handle FormData differently
+      let response;
+      if (formData instanceof FormData) {
+        formData.append('id', car.id.toString());
+        response = await carApi.updateCar(formData);
+      } else {
+        response = await carApi.updateCar({ id: car.id, ...formData });
+      }
       console.log("Car update response:", response);
       navigate("/admin/cars", {
         state: { message: "Car updated successfully!" },

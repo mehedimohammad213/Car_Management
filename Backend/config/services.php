@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'imagebb' => [
+        'api_key' => env('IMAGEBB_API_KEY'),
+    ],
+
 ];
