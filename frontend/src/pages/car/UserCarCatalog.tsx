@@ -69,6 +69,10 @@ const UserCarCatalog: React.FC = () => {
   const [favorites, setFavorites] = useState<number[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [stockData, setStockData] = useState<Map<number, Stock>>(new Map());
+  const [pdfFiles, setPdfFiles] = useState<
+    Map<number, Array<{ name: string; url: string }>>
+  >(new Map());
+  const [pdfLoading, setPdfLoading] = useState<Map<number, boolean>>(new Map());
   const { addToCart, isCarLoading } = useCart();
 
   useEffect(() => {
@@ -208,9 +212,115 @@ const UserCarCatalog: React.FC = () => {
     }
   };
 
+  const fetchPdfFiles = async (car: CarType) => {
+    try {
+      // Set loading state
+      setPdfLoading((prev) => {
+        const newMap = new Map(prev);
+        newMap.set(car.id, true);
+        return newMap;
+      });
+
+      // Check if car has attached_file
+      if (car.attached_file) {
+        try {
+          // Try to get file info from API first
+          const fileInfo = await carApi.getAttachedFile(car.id);
+
+          if (fileInfo.success && fileInfo.data) {
+            const pdfFiles = [
+              {
+                name: fileInfo.data.filename,
+                url: fileInfo.data.url,
+              },
+            ];
+
+            setPdfFiles((prev) => {
+              const newMap = new Map(prev);
+              newMap.set(car.id, pdfFiles);
+              return newMap;
+            });
+          } else {
+            // Fallback to direct file path
+            const fileName =
+              car.attached_file.split("/").pop() || "Vehicle Document.pdf";
+            const baseUrl = "http://localhost:8000";
+            const pdfUrl = car.attached_file.startsWith("http")
+              ? car.attached_file
+              : `${baseUrl}${car.attached_file}`;
+
+            console.log("PDF URL constructed:", pdfUrl);
+
+            const pdfFiles = [
+              {
+                name: fileName,
+                url: pdfUrl,
+              },
+            ];
+
+            setPdfFiles((prev) => {
+              const newMap = new Map(prev);
+              newMap.set(car.id, pdfFiles);
+              return newMap;
+            });
+          }
+        } catch (apiError) {
+          console.log("API call failed, using direct file path:", apiError);
+
+          // Fallback to direct file path
+          const fileName =
+            car.attached_file.split("/").pop() || "Vehicle Document.pdf";
+          const baseUrl = "http://localhost:8000";
+          const pdfUrl = car.attached_file.startsWith("http")
+            ? car.attached_file
+            : `${baseUrl}${car.attached_file}`;
+
+          console.log("PDF URL constructed (fallback):", pdfUrl);
+
+          const pdfFiles = [
+            {
+              name: fileName,
+              url: pdfUrl,
+            },
+          ];
+
+          setPdfFiles((prev) => {
+            const newMap = new Map(prev);
+            newMap.set(car.id, pdfFiles);
+            return newMap;
+          });
+        }
+      } else {
+        // No PDF file attached
+        setPdfFiles((prev) => {
+          const newMap = new Map(prev);
+          newMap.set(car.id, []);
+          return newMap;
+        });
+      }
+    } catch (error) {
+      console.error("Error processing PDF files:", error);
+
+      // Set empty array on error
+      setPdfFiles((prev) => {
+        const newMap = new Map(prev);
+        newMap.set(car.id, []);
+        return newMap;
+      });
+    } finally {
+      // Clear loading state
+      setPdfLoading((prev) => {
+        const newMap = new Map(prev);
+        newMap.set(car.id, false);
+        return newMap;
+      });
+    }
+  };
+
   const handleViewCar = (car: CarType) => {
     setSelectedCar(car);
     setShowCarModal(true);
+    fetchPdfFiles(car);
   };
 
   const handleAddToCart = (car: CarType) => {
@@ -241,6 +351,84 @@ const UserCarCatalog: React.FC = () => {
 
   const handleThumbnailClick = (index: number) => {
     setCurrentImageIndex(index);
+  };
+
+  const handleDownloadPdf = async (
+    pdfUrl: string,
+    fileName: string,
+    carId?: number
+  ) => {
+    try {
+      console.log("Attempting to download PDF:", { pdfUrl, fileName, carId });
+
+      // First try: Use the API download method if available
+      if (carId && selectedCar) {
+        try {
+          console.log("Trying API download method...");
+          const blob = await carApi.downloadAttachedFile(carId);
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = fileName;
+          link.style.display = "none";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+          console.log("API download successful");
+          return;
+        } catch (apiError) {
+          console.log("API download failed, trying direct URL:", apiError);
+        }
+      }
+
+      // Second try: Direct URL download with proper headers
+      try {
+        console.log("Trying direct URL download...");
+        const response = await fetch(pdfUrl, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = fileName;
+          link.style.display = "none";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+          console.log("Direct URL download successful");
+          return;
+        } else {
+          console.log("Direct fetch failed, trying simple link...");
+        }
+      } catch (fetchError) {
+        console.log("Direct fetch failed, trying simple link:", fetchError);
+      }
+
+      // Third try: Simple link download
+      console.log("Trying simple link download...");
+      const link = document.createElement("a");
+      link.href = pdfUrl;
+      link.download = fileName;
+      link.target = "_blank";
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      console.log("Simple link download attempted");
+    } catch (error) {
+      console.error("All download methods failed:", error);
+      // Final fallback: open in new tab
+      console.log("Opening in new tab as fallback...");
+      window.open(pdfUrl, "_blank");
+    }
   };
 
   const clearFilters = () => {
@@ -947,6 +1135,33 @@ const UserCarCatalog: React.FC = () => {
                           +{selectedCar.photos.length - 4} more
                         </div>
                       )}
+
+                      {/* PDF Documents at the end of the row */}
+                      {!pdfLoading.get(selectedCar.id) &&
+                        pdfFiles.get(selectedCar.id) &&
+                        pdfFiles.get(selectedCar.id)!.length > 0 && (
+                          <>
+                            {pdfFiles.get(selectedCar.id)!.map((pdf, index) => (
+                              <div
+                                key={`pdf-${index}`}
+                                className="w-20 h-16 bg-red-100 rounded-md flex flex-col items-center justify-center cursor-pointer hover:bg-red-200 transition-colors group ml-auto"
+                                onClick={() =>
+                                  handleDownloadPdf(
+                                    pdf.url,
+                                    pdf.name,
+                                    selectedCar.id
+                                  )
+                                }
+                                title="Download PDF Document"
+                              >
+                                <Download className="w-4 h-4 text-red-600 group-hover:text-red-700 mb-1" />
+                                <span className="text-xs text-red-600 font-medium">
+                                  Document
+                                </span>
+                              </div>
+                            ))}
+                          </>
+                        )}
                     </div>
                   )}
                 </div>
