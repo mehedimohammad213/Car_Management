@@ -7,21 +7,31 @@ const HomeRedirect: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoading && user) {
-      console.log("HomeRedirect: User authenticated, redirecting to dashboard");
-      // Redirect authenticated users to their dashboard
-      if (user.role === "admin") {
-        console.log("HomeRedirect: Redirecting admin to /admin");
-        navigate("/admin");
+    if (!isLoading) {
+      if (user) {
+        console.log(
+          "HomeRedirect: User authenticated, redirecting to dashboard"
+        );
+        // Redirect authenticated users to their dashboard
+        if (user.role === "admin") {
+          console.log("HomeRedirect: Redirecting admin to /admin");
+          navigate("/admin");
+        } else {
+          console.log("HomeRedirect: Redirecting user to /dashboard");
+          navigate("/dashboard");
+        }
       } else {
-        console.log("HomeRedirect: Redirecting user to /dashboard");
-        navigate("/dashboard");
+        console.log(
+          "HomeRedirect: User not authenticated, redirecting to login"
+        );
+        // Redirect unauthenticated users to login page
+        navigate("/login");
       }
     }
   }, [user, isLoading, navigate]);
 
   // Show loading while determining redirect
-  if (isLoading || user) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-gray-900">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -29,7 +39,7 @@ const HomeRedirect: React.FC = () => {
     );
   }
 
-  // If not authenticated, show the car catalog
+  // This should not be reached as we redirect in useEffect
   return null;
 };
 

@@ -855,16 +855,16 @@ const UserCarCatalog: React.FC = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium text-gray-900">
-                        Ref No.{" "}
-                        {car.ref_no ||
-                          `AA${car.id.toString().padStart(6, "0")}`}
-                      </div>
-                      <div className="text-sm text-gray-600">
                         {car.year} {car.make} {car.model}{" "}
                         {car.variant && `- ${car.variant}`}
                       </div>
+                      <div className="text-sm text-gray-600">
+                        Ref No :{" "}
+                        {car.ref_no ||
+                          `AA${car.id.toString().padStart(6, "0")}`}
+                      </div>
                       <div className="text-xs text-gray-500">
-                        Chassis No.{" "}
+                        Chassis No :{" "}
                         {(car as any).chassis_no || (car as any).vin || "N/A"}
                       </div>
                       <div className="text-xs text-gray-500">
@@ -1177,137 +1177,147 @@ const UserCarCatalog: React.FC = () => {
                       </h3>
                     </div>
                     <div className="space-y-3">
-                      {/* Single Column Specifications */}
-                      <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Mileage:</span>
-                          <span className="font-semibold text-gray-900">
-                            {selectedCar.mileage_km
-                              ? `${selectedCar.mileage_km.toLocaleString()} km`
-                              : "N/A"}
-                          </span>
+                      {/* Two Column Specifications Grid */}
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        {/* Left Column */}
+                        <div className="space-y-3">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Mileage:</span>
+                            <span className="font-semibold text-gray-900">
+                              {selectedCar.mileage_km
+                                ? `${selectedCar.mileage_km.toLocaleString()} km`
+                                : "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Year:</span>
+                            <span className="font-semibold text-gray-900">
+                              {selectedCar.year || "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Engine:</span>
+                            <span className="font-semibold text-gray-900">
+                              {selectedCar.engine_cc
+                                ? `${selectedCar.engine_cc.toLocaleString()} cc`
+                                : "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Trans.:</span>
+                            <span className="font-semibold text-gray-900">
+                              {selectedCar.transmission || "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Drivetrain:</span>
+                            <span className="font-semibold text-gray-900">
+                              {(selectedCar as any).drive_type ||
+                                (selectedCar as any).drivetrain ||
+                                "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Steering:</span>
+                            <span className="font-semibold text-gray-900">
+                              {selectedCar.steering || "-"}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Year:</span>
-                          <span className="font-semibold text-gray-900">
-                            {selectedCar.year || "N/A"}
-                          </span>
+
+                        {/* Right Column */}
+                        <div className="space-y-3">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Fuel:</span>
+                            <span className="font-semibold text-gray-900">
+                              {selectedCar.fuel || "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Ref No.:</span>
+                            <span className="font-semibold text-gray-900">
+                              {selectedCar.ref_no ||
+                                `AA${selectedCar.id
+                                  .toString()
+                                  .padStart(6, "0")}`}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Registration:</span>
+                            <span className="font-semibold text-gray-900">
+                              {selectedCar.year || "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Color:</span>
+                            <span className="font-semibold text-gray-900">
+                              {selectedCar.color || "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Seats:</span>
+                            <span className="font-semibold text-gray-900">
+                              {selectedCar.seats || "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Status:</span>
+                            <span
+                              className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                                selectedCar.status
+                              )}`}
+                            >
+                              {selectedCar.status?.charAt(0).toUpperCase() +
+                                selectedCar.status?.slice(1)}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Engine:</span>
-                          <span className="font-semibold text-gray-900">
-                            {selectedCar.engine_cc
-                              ? `${selectedCar.engine_cc.toLocaleString()} cc`
-                              : "N/A"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Trans.:</span>
-                          <span className="font-semibold text-gray-900">
-                            {selectedCar.transmission || "N/A"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Drivetrain:</span>
-                          <span className="font-semibold text-gray-900">
-                            {(selectedCar as any).drive_type ||
-                              (selectedCar as any).drivetrain ||
-                              "N/A"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Steering:</span>
-                          <span className="font-semibold text-gray-900">
-                            {selectedCar.steering || "-"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Fuel:</span>
-                          <span className="font-semibold text-gray-900">
-                            {selectedCar.fuel || "N/A"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Ref No.:</span>
-                          <span className="font-semibold text-gray-900">
-                            {selectedCar.ref_no ||
-                              `AA${selectedCar.id.toString().padStart(6, "0")}`}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Registration:</span>
-                          <span className="font-semibold text-gray-900">
-                            {selectedCar.year || "N/A"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Color:</span>
-                          <span className="font-semibold text-gray-900">
-                            {selectedCar.color || "N/A"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Seats:</span>
-                          <span className="font-semibold text-gray-900">
-                            {selectedCar.seats || "N/A"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Status:</span>
-                          <span
-                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                              selectedCar.status
-                            )}`}
-                          >
-                            {selectedCar.status?.charAt(0).toUpperCase() +
-                              selectedCar.status?.slice(1)}
-                          </span>
-                        </div>
-                        {(() => {
-                          const stock = stockData.get(selectedCar.id);
-                          if (stock) {
-                            const stockPrice =
-                              typeof stock.price === "string"
-                                ? parseFloat(stock.price)
-                                : stock.price;
-                            return (
-                              <div className="flex justify-between">
-                                <span className="text-gray-600">Stock:</span>
-                                <div className="flex flex-col items-end">
-                                  <span
-                                    className={`text-sm font-medium ${getStockStatusColor(
-                                      stock.quantity,
-                                      stock.status
-                                    )}`}
-                                  >
-                                    {stock.quantity}
-                                  </span>
-                                  <span
-                                    className={`text-xs ${getStockStatusTextColor(
-                                      stock.quantity,
-                                      stock.status
-                                    )}`}
-                                  >
-                                    {stock.status}
-                                  </span>
-                                  {stockPrice && (
-                                    <span className="text-xs text-gray-500">
-                                      Stock Price: $
-                                      {stockPrice.toLocaleString()}
-                                    </span>
-                                  )}
-                                  {stock.notes && (
-                                    <span className="text-xs text-gray-500 italic">
-                                      {stock.notes}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          }
-                          return null;
-                        })()}
                       </div>
+
+                      {/* Stock Information - Full Width */}
+                      {(() => {
+                        const stock = stockData.get(selectedCar.id);
+                        if (stock) {
+                          const stockPrice =
+                            typeof stock.price === "string"
+                              ? parseFloat(stock.price)
+                              : stock.price;
+                          return (
+                            <div className="flex justify-between pt-3 border-t border-gray-200">
+                              <span className="text-gray-600">Stock:</span>
+                              <div className="flex flex-col items-end">
+                                <span
+                                  className={`text-sm font-medium ${getStockStatusColor(
+                                    stock.quantity,
+                                    stock.status
+                                  )}`}
+                                >
+                                  {stock.quantity}
+                                </span>
+                                <span
+                                  className={`text-xs ${getStockStatusTextColor(
+                                    stock.quantity,
+                                    stock.status
+                                  )}`}
+                                >
+                                  {stock.status}
+                                </span>
+                                {stockPrice && (
+                                  <span className="text-xs text-gray-500">
+                                    Stock Price: ${stockPrice.toLocaleString()}
+                                  </span>
+                                )}
+                                {stock.notes && (
+                                  <span className="text-xs text-gray-500 italic">
+                                    {stock.notes}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
 
                       {/* Chassis Number with View Button */}
                       {(selectedCar as any).chassis_no && (
