@@ -897,52 +897,6 @@ const UserCarCatalog: React.FC = () => {
               </button>
             </div>
           </div>
-
-          {/* Results Count */}
-          <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-            <div className="flex items-center gap-6">
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">
-                {totalItems} Matches Found
-              </div>
-              {stockData.size > 0 && (
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-gray-600">
-                      In Stock:{" "}
-                      {
-                        Array.from(stockData.values()).filter(
-                          (s) => s.quantity > 0
-                        ).length
-                      }
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-                    <span className="text-gray-600">
-                      Low Stock:{" "}
-                      {
-                        Array.from(stockData.values()).filter(
-                          (s) => s.quantity > 0 && s.quantity <= 2
-                        ).length
-                      }
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <span className="text-gray-600">
-                      Out of Stock:{" "}
-                      {
-                        Array.from(stockData.values()).filter(
-                          (s) => s.quantity === 0
-                        ).length
-                      }
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Cars Table Display */}
