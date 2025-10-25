@@ -813,15 +813,13 @@ const UserCarCatalog: React.FC = () => {
           <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
             {/* Table Header */}
             <div className="bg-gradient-to-r from-gray-50 to-blue-50 border-b-2 border-blue-200">
-              <div className="grid grid-cols-12 gap-3 p-6 text-sm font-bold text-gray-800 uppercase tracking-wide">
+              <div className="grid grid-cols-10 gap-3 p-6 text-sm font-bold text-gray-800 uppercase tracking-wide">
                 <div className="col-span-3">Car Information</div>
                 <div className="col-span-1">Mileage</div>
                 <div className="col-span-1">Engine</div>
-                <div className="col-span-1">Trans.</div>
-                <div className="col-span-1">Drive.</div>
-                <div className="col-span-1">Steering</div>
                 <div className="col-span-1">Color</div>
-                <div className="col-span-1">Cut-off </div>
+                <div className="col-span-1">AA Score</div>
+                <div className="col-span-1">Key Features</div>
                 <div className="col-span-1">Price</div>
                 <div className="col-span-1">Action</div>
               </div>
@@ -833,7 +831,7 @@ const UserCarCatalog: React.FC = () => {
                 <div
                   key={car.id}
                   onClick={() => handleViewCar(car)}
-                  className="grid grid-cols-12 gap-3 p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 border-l-4 border-transparent hover:border-blue-500 cursor-pointer"
+                  className="grid grid-cols-10 gap-3 p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 border-l-4 border-transparent hover:border-blue-500 cursor-pointer"
                 >
                   {/* Car Information */}
                   <div className="col-span-3 flex items-center gap-4">
@@ -915,29 +913,6 @@ const UserCarCatalog: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Transmission */}
-                  <div className="col-span-1 flex items-center">
-                    <span className="text-sm text-gray-900">
-                      {car.transmission || "N/A"}
-                    </span>
-                  </div>
-
-                  {/* Drive */}
-                  <div className="col-span-1 flex items-center">
-                    <span className="text-sm text-gray-900">
-                      {(car as any).drive_type ||
-                        (car as any).drivetrain ||
-                        "N/A"}
-                    </span>
-                  </div>
-
-                  {/* Steering */}
-                  <div className="col-span-1 flex items-center">
-                    <span className="text-sm text-gray-900">
-                      {car.steering || "N/A"}
-                    </span>
-                  </div>
-
                   {/* Color */}
                   <div className="col-span-1 flex items-center">
                     <span className="text-sm text-gray-900">
@@ -945,13 +920,68 @@ const UserCarCatalog: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Cut-off Time */}
+                  {/* AA Score */}
                   <div className="col-span-1 flex items-center">
-                    <span className="text-sm text-gray-900">
-                      {(car as any).cutoff_time ||
-                        (car as any).auction_date ||
-                        "N/A"}
-                    </span>
+                    <div className="flex flex-col items-center">
+                      {car.grade_overall && (
+                        <div className="flex items-center gap-1">
+                          <span
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold ${getGradeColor(
+                              car.grade_overall
+                            )}`}
+                          >
+                            {car.grade_overall}
+                          </span>
+                        </div>
+                      )}
+                      {car.grade_exterior && (
+                        <span className="text-xs text-gray-600 mt-1">
+                          Ext: {car.grade_exterior}
+                        </span>
+                      )}
+                      {car.grade_interior && (
+                        <span className="text-xs text-gray-600">
+                          Int: {car.grade_interior}
+                        </span>
+                      )}
+                      {!car.grade_overall &&
+                        !car.grade_exterior &&
+                        !car.grade_interior && (
+                          <span className="text-xs text-gray-500">N/A</span>
+                        )}
+                    </div>
+                  </div>
+
+                  {/* Key Features */}
+                  <div className="col-span-1 flex items-center">
+                    <div className="flex flex-wrap gap-1">
+                      {car.fuel && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {car.fuel}
+                        </span>
+                      )}
+                      {car.seats && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          {car.seats} Seats
+                        </span>
+                      )}
+                      {car.steering && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          {car.steering}
+                        </span>
+                      )}
+                      {(car as any).drive_type && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                          {(car as any).drive_type}
+                        </span>
+                      )}
+                      {!car.fuel &&
+                        !car.seats &&
+                        !car.steering &&
+                        !(car as any).drive_type && (
+                          <span className="text-xs text-gray-500">N/A</span>
+                        )}
+                    </div>
                   </div>
 
                   {/* Starting Price */}
