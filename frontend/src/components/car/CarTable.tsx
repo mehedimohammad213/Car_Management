@@ -1,5 +1,5 @@
 import React from "react";
-import { Car, Eye, ShoppingCart } from "lucide-react";
+import { Car, Eye, ShoppingCart, Edit, Trash2 } from "lucide-react";
 import { Car as CarType } from "../../services/carApi";
 import { Stock } from "../../services/stockApi";
 
@@ -8,11 +8,14 @@ interface CarTableProps {
   stockData: Map<number, Stock>;
   onViewCar: (car: CarType) => void;
   onAddToCart: (car: CarType) => void;
+  onEditCar?: (car: CarType) => void;
+  onDeleteCar?: (car: CarType) => void;
   isCarLoading: (carId: number) => boolean;
   getStatusColor: (status: string) => string;
   getGradeColor: (grade?: string | number) => string;
   getStockStatusColor: (quantity: number, status: string) => string;
   formatPrice: (amount?: number, currency?: string) => string;
+  isAdmin?: boolean;
 }
 
 const CarTable: React.FC<CarTableProps> = ({
@@ -20,11 +23,14 @@ const CarTable: React.FC<CarTableProps> = ({
   stockData,
   onViewCar,
   onAddToCart,
+  onEditCar,
+  onDeleteCar,
   isCarLoading,
   getStatusColor,
   getGradeColor,
   getStockStatusColor,
   formatPrice,
+  isAdmin = false,
 }) => {
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
@@ -218,18 +224,44 @@ const CarTable: React.FC<CarTableProps> = ({
               >
                 <Eye className="w-4 h-4" />
               </button>
-              <button
-                onClick={() => onAddToCart(car)}
-                disabled={isCarLoading(car.id)}
-                className="p-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
-                title="Add to Cart"
-              >
-                {isCarLoading(car.id) ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                ) : (
-                  <ShoppingCart className="w-4 h-4" />
-                )}
-              </button>
+
+              {/* Edit button for admin */}
+              {isAdmin && onEditCar && (
+                <button
+                  onClick={() => onEditCar(car)}
+                  className="p-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  title="Edit Car"
+                >
+                  <Edit className="w-4 h-4" />
+                </button>
+              )}
+
+              {/* Delete button for admin */}
+              {isAdmin && onDeleteCar && (
+                <button
+                  onClick={() => onDeleteCar(car)}
+                  className="p-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  title="Delete Car"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+
+              {/* Add to Cart button - hidden for admin */}
+              {!isAdmin && (
+                <button
+                  onClick={() => onAddToCart(car)}
+                  disabled={isCarLoading(car.id)}
+                  className="p-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
+                  title="Add to Cart"
+                >
+                  {isCarLoading(car.id) ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                  ) : (
+                    <ShoppingCart className="w-4 h-4" />
+                  )}
+                </button>
+              )}
             </div>
           </div>
         ))}

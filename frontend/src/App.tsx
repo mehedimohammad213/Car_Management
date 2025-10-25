@@ -54,7 +54,7 @@ function App() {
                       path="/admin/cars"
                       element={
                         <ProtectedRoute role="admin">
-                          <CarManagement />
+                          <UserCarCatalog />
                         </ProtectedRoute>
                       }
                     />

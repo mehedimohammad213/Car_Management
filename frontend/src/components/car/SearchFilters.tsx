@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, Download, X } from "lucide-react";
+import { Search, Download, X, Plus } from "lucide-react";
 
 interface SearchFiltersProps {
   searchTerm: string;
@@ -21,33 +21,38 @@ interface SearchFiltersProps {
   isGeneratingPDF: boolean;
   onGeneratePDF: () => void;
   onClearFilters: () => void;
+  onAddCar?: () => void;
+  isAdmin?: boolean;
   filterOptions: any;
   categories: Array<{ id: number; name: string }>;
 }
 
-const SearchFilters: React.FC<SearchFiltersProps> = ({
-  searchTerm,
-  setSearchTerm,
-  makeFilter,
-  setMakeFilter,
-  categoryFilter,
-  setCategoryFilter,
-  yearFilter,
-  setYearFilter,
-  transmissionFilter,
-  setTransmissionFilter,
-  colorFilter,
-  setColorFilter,
-  fuelFilter,
-  setFuelFilter,
-  showAdvancedFilters,
-  setShowAdvancedFilters,
-  isGeneratingPDF,
-  onGeneratePDF,
-  onClearFilters,
-  filterOptions,
-  categories,
-}) => {
+const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
+  const {
+    searchTerm,
+    setSearchTerm,
+    makeFilter,
+    setMakeFilter,
+    categoryFilter,
+    setCategoryFilter,
+    yearFilter,
+    setYearFilter,
+    transmissionFilter,
+    setTransmissionFilter,
+    colorFilter,
+    setColorFilter,
+    fuelFilter,
+    setFuelFilter,
+    showAdvancedFilters,
+    setShowAdvancedFilters,
+    isGeneratingPDF,
+    onGeneratePDF,
+    onClearFilters,
+    onAddCar,
+    isAdmin,
+    filterOptions,
+    categories,
+  } = props;
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-6">
       {/* Search Input with Buttons */}
@@ -95,6 +100,17 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                 </>
               )}
             </button>
+
+            {/* Add New Car Button - Admin Only */}
+            {isAdmin && onAddCar && (
+              <button
+                onClick={onAddCar}
+                className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold text-sm shadow-md hover:shadow-lg"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Add New Car</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

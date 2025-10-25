@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { Car, X } from "lucide-react";
+import { Car, X, Plus, Edit, Trash2 } from "lucide-react";
 import {
   carApi,
   Car as CarType,
@@ -10,10 +11,12 @@ import {
 import { categoryApi } from "../../services/categoryApi";
 import { stockApi, Stock } from "../../services/stockApi";
 import { useCart } from "../../contexts/CartContext";
+import { useAuth } from "../../contexts/AuthContext";
 import SearchFilters from "../../components/car/SearchFilters";
 import CarTable from "../../components/car/CarTable";
 import CarModal from "../../components/car/CarModal";
 import Pagination from "../../components/car/Pagination";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 import {
   formatPrice,
   getStatusColor,
@@ -23,6 +26,8 @@ import {
 } from "../../utils/carUtils";
 
 const UserCarCatalog: React.FC = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [cars, setCars] = useState<CarType[]>([]);
   const [categories, setCategories] = useState<
     Array<{ id: number; name: string }>
@@ -58,6 +63,12 @@ const UserCarCatalog: React.FC = () => {
   >(new Map());
   const [pdfLoading, setPdfLoading] = useState<Map<number, boolean>>(new Map());
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  // Delete modal states
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [carToDelete, setCarToDelete] = useState<CarType | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const { addToCart, isCarLoading } = useCart();
 
   useEffect(() => {
@@ -310,6 +321,38 @@ const UserCarCatalog: React.FC = () => {
 
   const handleAddToCart = (car: CarType) => {
     addToCart(car);
+  };
+
+  // Admin button handlers
+  const handleAddCar = () => {
+    navigate("/create-car");
+  };
+
+  const handleEditCar = (car: CarType) => {
+    navigate(`/update-car/${car.id}`);
+  };
+
+  const handleDeleteCar = (car: CarType) => {
+    setCarToDelete(car);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!carToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await carApi.deleteCar(carToDelete.id);
+      setCars(cars.filter((car) => car.id !== carToDelete.id));
+      setShowDeleteModal(false);
+      setCarToDelete(null);
+      // You could add a success message here if needed
+    } catch (error) {
+      console.error("Error deleting car:", error);
+      // You could add an error message here if needed
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleCloseCarModal = () => {
@@ -603,6 +646,10 @@ const UserCarCatalog: React.FC = () => {
           isGeneratingPDF={isGeneratingPDF}
           onGeneratePDF={generatePDF}
           onClearFilters={clearFilters}
+          {...(user?.role === "admin" && {
+            onAddCar: handleAddCar,
+            isAdmin: true,
+          })}
           filterOptions={filterOptions}
           categories={categories}
         />
@@ -649,11 +696,16 @@ const UserCarCatalog: React.FC = () => {
             stockData={stockData}
             onViewCar={handleViewCar}
             onAddToCart={handleAddToCart}
+            {...(user?.role === "admin" && {
+              onEditCar: handleEditCar,
+              onDeleteCar: handleDeleteCar,
+            })}
             isCarLoading={isCarLoading}
             getStatusColor={getStatusColor}
             getGradeColor={getGradeColor}
             getStockStatusColor={getStockStatusColor}
             formatPrice={formatPrice}
+            isAdmin={user?.role === "admin"}
           />
         )}
 
@@ -681,6 +733,16 @@ const UserCarCatalog: React.FC = () => {
         getStatusColor={getStatusColor}
         getStockStatusColor={getStockStatusColor}
         getStockStatusTextColor={getStockStatusTextColor}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Car"
+        message={`Are you sure you want to delete "${carToDelete?.make} ${carToDelete?.model}"? This action cannot be undone.`}
+        isLoading={isDeleting}
       />
     </div>
   );
