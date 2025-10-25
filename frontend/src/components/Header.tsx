@@ -256,7 +256,7 @@ const Header: React.FC = () => {
             {/* Header Section */}
             <div className="relative p-6 pb-4">
               <div className="flex items-center space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg">
                   <LogOutIcon className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1">
@@ -272,16 +272,16 @@ const Header: React.FC = () => {
 
             {/* Content Section */}
             <div className="px-6 pb-6">
-              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6">
+              <div className="bg-status-warning-50 dark:bg-status-warning-900/20 border border-status-warning-200 dark:border-status-warning-800 rounded-xl p-4 mb-6">
                 <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center mt-0.5">
+                  <div className="flex-shrink-0 w-5 h-5 bg-status-warning-500 rounded-full flex items-center justify-center mt-0.5">
                     <span className="text-white text-xs font-bold">!</span>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-amber-800 dark:text-amber-200 mb-1">
+                    <p className="text-sm font-medium text-status-warning-800 dark:text-status-warning-200 mb-1">
                       Important Notice
                     </p>
-                    <p className="text-sm text-amber-700 dark:text-amber-300">
+                    <p className="text-sm text-status-warning-700 dark:text-status-warning-300">
                       Any unsaved changes will be lost. Make sure to save your
                       work before logging out.
                     </p>
@@ -292,7 +292,7 @@ const Header: React.FC = () => {
               {/* User Info */}
               <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 mb-6">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-semibold text-sm">
+                  <div className="w-10 h-10 bg-gradient-to-br from-secondary-500 to-accent-purple-600 rounded-lg flex items-center justify-center text-white font-semibold text-sm">
                     {user?.name?.charAt(0)?.toUpperCase() || "U"}
                   </div>
                   <div className="flex-1">
@@ -303,7 +303,7 @@ const Header: React.FC = () => {
                       {user?.email || "user@example.com"}
                     </p>
                   </div>
-                  <div className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full text-xs font-medium">
+                  <div className="px-3 py-1 bg-secondary-100 dark:bg-secondary-900/30 text-secondary-800 dark:text-secondary-300 rounded-full text-xs font-medium">
                     {user?.role?.charAt(0)?.toUpperCase() +
                       user?.role?.slice(1) || "User"}
                   </div>
@@ -324,7 +324,7 @@ const Header: React.FC = () => {
                 <button
                   onClick={handleLogout}
                   disabled={isLoggingOut}
-                  className="flex-1 px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 rounded-xl hover:from-red-600 hover:to-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:hover:scale-100"
+                  className="flex-1 px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl hover:from-primary-600 hover:to-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:hover:scale-100"
                 >
                   {isLoggingOut ? (
                     <div className="flex items-center justify-center space-x-2">
