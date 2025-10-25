@@ -136,7 +136,7 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-gray-900 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Enhanced Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Cart Items */}
           <div className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl border border-blue-200 dark:border-blue-800 p-6 hover:shadow-lg transition-all duration-300">
             <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 rounded-full -translate-y-10 translate-x-10"></div>
