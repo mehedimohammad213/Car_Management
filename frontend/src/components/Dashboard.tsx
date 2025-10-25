@@ -55,6 +55,7 @@ import {
   HeartIcon,
 } from "lucide-react";
 import { dashboardApi, DashboardData } from "../services/dashboardApi";
+import { orderApi, Order } from "../services/orderApi";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -66,41 +67,8 @@ const Dashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [timeRange, setTimeRange] = useState("30d");
-
-  // Mock data for user dashboard
-  const [recentOrders, setRecentOrders] = useState([
-    {
-      id: "1",
-      car: "Toyota Camry 2023",
-      status: "Delivered",
-      date: "2024-01-15",
-      amount: 25000,
-    },
-    {
-      id: "2",
-      car: "Honda Civic 2022",
-      status: "In Transit",
-      date: "2024-01-10",
-      amount: 22000,
-    },
-  ]);
-
-  const [recentViews, setRecentViews] = useState([
-    {
-      id: "1",
-      car: "Audi A4 2023",
-      price: 45000,
-      image:
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    },
-    {
-      id: "2",
-      car: "Volkswagen Golf 2022",
-      price: 28000,
-      image:
-        "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    },
-  ]);
+  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
   const fetchData = async (showRefresh = false) => {
     try {
@@ -125,8 +93,29 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const fetchUserOrders = async () => {
+    if (user?.role === "admin") {
+      return; // Don't fetch for admin
+    }
+
+    try {
+      setLoadingOrders(true);
+      const response = await orderApi.getUserOrders();
+      if (response.success && response.data?.orders) {
+        // Get the 3 most recent orders
+        const orders = response.data.orders.slice(0, 3);
+        setRecentOrders(orders);
+      }
+    } catch (error) {
+      console.error("Error fetching user orders:", error);
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    fetchUserOrders();
   }, [user?.role]);
 
   const handleRefresh = () => {
@@ -201,33 +190,6 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {/* Wishlist */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20 rounded-xl border border-pink-200 dark:border-pink-800 p-6 hover:shadow-lg transition-all duration-300">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-pink-500/10 rounded-full -translate-y-10 translate-x-10"></div>
-            <div className="relative">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-pink-500 rounded-xl shadow-lg">
-                  <HeartIcon className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex items-center text-green-600 dark:text-green-400">
-                  <ArrowUpRightIcon className="w-4 h-4 mr-1" />
-                  <span className="text-sm font-semibold">+1</span>
-                </div>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-pink-600 dark:text-pink-400 mb-1">
-                  Wishlist
-                </p>
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">
-                  5
-                </p>
-                <p className="text-xs text-slate-500 dark:text-gray-400 mt-2">
-                  saved cars
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Enhanced Recent Orders */}
@@ -258,57 +220,98 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="p-6">
             <div className="space-y-4">
-              {recentOrders.map((order) => (
-                <div
-                  key={order.id}
-                  className="group p-5 bg-slate-50 dark:bg-gray-700/50 rounded-xl border border-slate-200 dark:border-gray-600 hover:bg-slate-100 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-xl">
-                        <CarIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-slate-900 dark:text-white text-lg">
-                          {order.car}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-sm text-slate-600 dark:text-gray-400">
-                            Order #{order.id}
-                          </span>
-                          <span className="text-slate-400">•</span>
-                          <span className="text-sm text-slate-600 dark:text-gray-400 flex items-center gap-1">
-                            <CalendarIcon className="w-3 h-3" />
-                            {order.date}
+              {loadingOrders ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-primary-600"></div>
+                </div>
+              ) : recentOrders.length === 0 ? (
+                <div className="text-center py-8">
+                  <PackageIcon className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+                  <p className="text-slate-600 dark:text-gray-400">
+                    No recent orders
+                  </p>
+                </div>
+              ) : (
+                recentOrders.map((order) => {
+                  // Get the first car from order items for display
+                  const firstCar =
+                    order.items && order.items.length > 0
+                      ? order.items[0].car
+                      : null;
+                  const carName = firstCar
+                    ? `${firstCar.make} ${firstCar.model} ${
+                        firstCar.year || ""
+                      }`
+                    : `Order #${order.id}`;
+                  const carCount = order.items?.length || 0;
+                  const orderDate = new Date(
+                    order.created_at
+                  ).toLocaleDateString();
+
+                  return (
+                    <div
+                      key={order.id}
+                      className="group p-5 bg-slate-50 dark:bg-gray-700/50 rounded-xl border border-slate-200 dark:border-gray-600 hover:bg-slate-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-xl">
+                            <CarIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-slate-900 dark:text-white text-lg">
+                              {carName}
+                              {carCount > 1 && ` + ${carCount - 1} more`}
+                            </p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-sm text-slate-600 dark:text-gray-400">
+                                Order #{order.id}
+                              </span>
+                              <span className="text-slate-400">•</span>
+                              <span className="text-sm text-slate-600 dark:text-gray-400 flex items-center gap-1">
+                                <CalendarIcon className="w-3 h-3" />
+                                {orderDate}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="flex items-center gap-2 mb-2">
+                            <DollarSignIcon className="w-4 h-4 text-green-600" />
+                            <p className="font-bold text-slate-900 dark:text-white text-lg">
+                              ${order.total_amount.toLocaleString()}
+                            </p>
+                          </div>
+                          <span
+                            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium ${
+                              order.status === "delivered"
+                                ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                                : order.status === "shipped"
+                                ? "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+                                : order.status === "approved"
+                                ? "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
+                                : order.status === "canceled"
+                                ? "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+                                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
+                            }`}
+                          >
+                            {order.status === "delivered" ? (
+                              <CheckCircleIcon className="w-3 h-3" />
+                            ) : order.status === "shipped" ||
+                              order.status === "approved" ? (
+                              <TruckIcon className="w-3 h-3" />
+                            ) : (
+                              <ClockIcon className="w-3 h-3" />
+                            )}
+                            {order.status.charAt(0).toUpperCase() +
+                              order.status.slice(1)}
                           </span>
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="flex items-center gap-2 mb-2">
-                        <DollarSignIcon className="w-4 h-4 text-green-600" />
-                        <p className="font-bold text-slate-900 dark:text-white text-lg">
-                          ${order.amount.toLocaleString()}
-                        </p>
-                      </div>
-                      <span
-                        className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium ${
-                          order.status === "Delivered"
-                            ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                            : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
-                        }`}
-                      >
-                        {order.status === "Delivered" ? (
-                          <CheckCircleIcon className="w-3 h-3" />
-                        ) : (
-                          <TruckIcon className="w-3 h-3" />
-                        )}
-                        {order.status}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  );
+                })
+              )}
             </div>
           </div>
         </div>
