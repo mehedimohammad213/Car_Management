@@ -319,6 +319,11 @@ const UserCarCatalog: React.FC = () => {
     fetchPdfFiles(car);
   };
 
+  // Admin view handler - redirect to view page
+  const handleViewCarAdmin = (car: CarType) => {
+    navigate(`/view-car/${car.id}`);
+  };
+
   const handleAddToCart = (car: CarType) => {
     addToCart(car);
   };
@@ -697,6 +702,7 @@ const UserCarCatalog: React.FC = () => {
             onViewCar={handleViewCar}
             onAddToCart={handleAddToCart}
             {...(user?.role === "admin" && {
+              onViewCarAdmin: handleViewCarAdmin,
               onEditCar: handleEditCar,
               onDeleteCar: handleDeleteCar,
             })}
