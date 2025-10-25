@@ -15,9 +15,10 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
   onDelete,
   onView,
 }) => {
-  const formatPrice = (price?: number) => {
+  const formatPrice = (price?: number | string) => {
     if (!price) return "N/A";
-    return `$${price.toLocaleString()}`;
+    const numPrice = typeof price === "string" ? parseFloat(price) : price;
+    return `$${numPrice.toLocaleString()}`;
   };
 
   const getStatusColor = (status: string) => {

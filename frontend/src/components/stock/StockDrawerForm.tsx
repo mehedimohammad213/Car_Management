@@ -62,9 +62,15 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
   useEffect(() => {
     if (stock) {
       setFormData({
-        car_id: stock.car_id,
+        car_id:
+          typeof stock.car_id === "string"
+            ? parseInt(stock.car_id, 10)
+            : stock.car_id,
         quantity: stock.quantity,
-        price: stock.price || 0,
+        price:
+          typeof stock.price === "string"
+            ? parseFloat(stock.price)
+            : stock.price || 0,
         status: stock.status,
         notes: stock.notes || "",
       });

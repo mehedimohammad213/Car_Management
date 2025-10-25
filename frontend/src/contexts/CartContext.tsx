@@ -28,7 +28,7 @@ interface CartContextType {
   getTotalPrice: () => number;
   refreshCart: () => Promise<void>;
   setItems: (items: CartItem[]) => void;
-  isCarLoading: (carId: number) => boolean;
+  isCarLoading: (carId: number | string) => boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -248,8 +248,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     );
   };
 
-  const isCarLoading = (carId: number) => {
-    return loadingCars.has(carId);
+  const isCarLoading = (carId: number | string) => {
+    const numericId = typeof carId === "string" ? Number(carId) : carId;
+    return loadingCars.has(numericId);
   };
 
   const value = {

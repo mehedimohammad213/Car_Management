@@ -207,12 +207,15 @@ export class InvoiceService {
         fontSize: 8,
         color: secondaryColor,
       });
-      addText(
-        `Mileage: ${item.car.mileage_km?.toLocaleString()} km`,
-        40,
-        itemY + 10,
-        { fontSize: 8, color: secondaryColor }
-      );
+      // Check if mileage exists on car object
+      const mileage =
+        "mileage_km" in item.car ? item.car.mileage_km : undefined;
+      if (mileage) {
+        addText(`Mileage: ${mileage.toLocaleString()} km`, 40, itemY + 10, {
+          fontSize: 8,
+          color: secondaryColor,
+        });
+      }
 
       // Quantity
       addText(item.quantity.toString(), pageWidth - 80, itemY + 5, {

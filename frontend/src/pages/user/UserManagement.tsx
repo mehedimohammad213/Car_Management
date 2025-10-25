@@ -18,7 +18,7 @@ const UserManagement: React.FC = () => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await userApi.getAllUsers({
         page: currentPage,
         per_page: perPage,
@@ -105,7 +105,10 @@ const UserManagement: React.FC = () => {
 
       {/* Search and Filters */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-slate-200 dark:border-gray-700 p-6">
-        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
+        <form
+          onSubmit={handleSearch}
+          className="flex flex-col sm:flex-row gap-4"
+        >
           <div className="flex-1 relative">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
@@ -148,7 +151,9 @@ const UserManagement: React.FC = () => {
             <div className="text-center">
               <UsersIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
               <p className="text-slate-500 dark:text-gray-400">
-                {searchTerm ? "No users found matching your search" : "No users found"}
+                {searchTerm
+                  ? "No users found matching your search"
+                  : "No users found"}
               </p>
             </div>
           </div>
@@ -178,7 +183,10 @@ const UserManagement: React.FC = () => {
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-slate-200 dark:divide-gray-700">
                   {users.map((user) => (
-                    <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-gray-700">
+                    <tr
+                      key={user.id}
+                      className="hover:bg-slate-50 dark:hover:bg-gray-700"
+                    >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
@@ -268,6 +276,8 @@ const UserManagement: React.FC = () => {
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
+            totalItems={totalItems}
+            perPage={perPage}
             onPageChange={handlePageChange}
           />
         </div>

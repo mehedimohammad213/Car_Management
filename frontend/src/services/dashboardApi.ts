@@ -175,9 +175,13 @@ class DashboardApiService {
       if (stock.status === "sold" && stock.car) {
         const carId = stock.car.id;
         const existing = carSales.get(carId) || { totalSold: 0, revenue: 0 };
+        const stockPrice =
+          typeof stock.price === "string"
+            ? parseFloat(stock.price)
+            : stock.price || 0;
         carSales.set(carId, {
           totalSold: existing.totalSold + stock.quantity,
-          revenue: existing.revenue + (stock.price || 0) * stock.quantity,
+          revenue: existing.revenue + stockPrice * stock.quantity,
         });
       }
     });

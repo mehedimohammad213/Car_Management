@@ -5,6 +5,8 @@ import {
   DownloadIcon,
   EyeIcon,
   EditIcon,
+  Package,
+  X,
 } from "lucide-react";
 // Removed mockData import
 import { Order } from "../../types";
@@ -81,6 +83,15 @@ const OrderManagement: React.FC = () => {
     orders.filter((order) => order.status === "pending").length;
   const getDeliveredOrders = () =>
     orders.filter((order) => order.status === "delivered").length;
+
+  // Format date helper function
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   if (isLoading) {
     return (
@@ -279,7 +290,7 @@ const OrderManagement: React.FC = () => {
                       Order #{selectedOrder.id}
                     </h2>
                     <p className="text-blue-100 mt-1">
-                      {formatDate(selectedOrder.created_at)} •{" "}
+                      {formatDate(selectedOrder.createdAt)} •{" "}
                       {selectedOrder.items.length} item
                       {selectedOrder.items.length !== 1 ? "s" : ""}
                     </p>
