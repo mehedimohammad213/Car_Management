@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   Search,
   Filter,
@@ -73,6 +75,7 @@ const UserCarCatalog: React.FC = () => {
     Map<number, Array<{ name: string; url: string }>>
   >(new Map());
   const [pdfLoading, setPdfLoading] = useState<Map<number, boolean>>(new Map());
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { addToCart, isCarLoading } = useCart();
 
   useEffect(() => {
@@ -331,6 +334,145 @@ const UserCarCatalog: React.FC = () => {
     setShowCarModal(false);
     setSelectedCar(null);
     setCurrentImageIndex(0);
+  };
+
+  const generatePDF = () => {
+    if (isGeneratingPDF) return;
+
+    try {
+      setIsGeneratingPDF(true);
+      console.log("Generating PDF...", { carsCount: cars.length });
+
+      if (cars.length === 0) {
+        alert("No cars to export. Please load some cars first.");
+        return;
+      }
+
+      const doc = new jsPDF();
+
+      // Add title
+      doc.setFontSize(20);
+      doc.text("Car Catalog Report", 14, 22);
+
+      // Add date
+      doc.setFontSize(10);
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+
+      // Prepare table data
+      const tableColumns = [
+        "Car Info",
+        "Mileage",
+        "Engine",
+        "Color",
+        "AA Score",
+        "Key Features",
+        "Price",
+      ];
+
+      const tableData = cars.map((car) => {
+        try {
+          const keyFeatures = [];
+          if (car.fuel) keyFeatures.push(car.fuel);
+          if (car.seats) keyFeatures.push(`${car.seats} Seats`);
+          if (car.steering) keyFeatures.push(car.steering);
+          if ((car as any).drive_type)
+            keyFeatures.push((car as any).drive_type);
+
+          const aaScore = [];
+          if (car.grade_overall) aaScore.push(car.grade_overall);
+          if (car.grade_exterior) aaScore.push(`Ext: ${car.grade_exterior}`);
+          if (car.grade_interior) aaScore.push(`Int: ${car.grade_interior}`);
+
+          return [
+            `${car.year || "N/A"} ${car.make || "N/A"} ${car.model || "N/A"}${
+              car.variant ? ` - ${car.variant}` : ""
+            }`,
+            car.mileage_km ? `${car.mileage_km.toLocaleString()} km` : "N/A",
+            car.engine_cc ? `${car.engine_cc.toLocaleString()} cc` : "N/A",
+            car.color || "N/A",
+            aaScore.length > 0 ? aaScore.join(" ") : "N/A",
+            keyFeatures.length > 0 ? keyFeatures.join(", ") : "N/A",
+            car.price_amount
+              ? `$${car.price_amount.toLocaleString()}`
+              : "Price on request",
+          ];
+        } catch (error) {
+          console.error("Error processing car data:", error, car);
+          return [
+            "Error",
+            "Error",
+            "Error",
+            "Error",
+            "Error",
+            "Error",
+            "Error",
+          ];
+        }
+      });
+
+      // Add table
+      try {
+        autoTable(doc, {
+          head: [tableColumns],
+          body: tableData,
+          startY: 40,
+          styles: {
+            fontSize: 8,
+            cellPadding: 3,
+          },
+          headStyles: {
+            fillColor: [41, 128, 185],
+            textColor: 255,
+            fontStyle: "bold",
+          },
+          alternateRowStyles: {
+            fillColor: [245, 245, 245],
+          },
+          columnStyles: {
+            0: { cellWidth: 40 },
+            1: { cellWidth: 20 },
+            2: { cellWidth: 20 },
+            3: { cellWidth: 15 },
+            4: { cellWidth: 25 },
+            5: { cellWidth: 30 },
+            6: { cellWidth: 25 },
+          },
+          didDrawPage: function (data: any) {
+            // Add page numbers
+            const pageCount = doc.getNumberOfPages();
+            const currentPage = data.pageNumber;
+            doc.setFontSize(8);
+            doc.text(
+              `Page ${currentPage} of ${pageCount}`,
+              14,
+              doc.internal.pageSize.height - 10
+            );
+          },
+        });
+      } catch (tableError) {
+        console.error("Error creating table:", tableError);
+        // Fallback: Add simple text list
+        let yPosition = 40;
+        doc.setFontSize(10);
+        tableData.forEach((row, index) => {
+          if (yPosition > 280) {
+            doc.addPage();
+            yPosition = 20;
+          }
+          doc.text(`${index + 1}. ${row[0]}`, 14, yPosition);
+          yPosition += 10;
+        });
+      }
+
+      // Save the PDF
+      doc.save(`car-catalog-${new Date().toISOString().split("T")[0]}.pdf`);
+      console.log("PDF generated successfully!");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Error generating PDF. Please try again.");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   const handleNextImage = () => {
@@ -763,13 +905,39 @@ const UserCarCatalog: React.FC = () => {
                 </div>
               )}
             </div>
-            <button
-              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="flex items-center gap-3 px-6 py-3 text-blue-600 border-2 border-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-200 font-semibold text-base shadow-md hover:shadow-lg"
-            >
-              <span>Advanced Search</span>
-              <span className="text-lg">{showAdvancedFilters ? "−" : "+"}</span>
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                className="flex items-center gap-3 px-6 py-3 text-blue-600 border-2 border-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-200 font-semibold text-base shadow-md hover:shadow-lg"
+              >
+                <span>Advanced Search</span>
+                <span className="text-lg">
+                  {showAdvancedFilters ? "−" : "+"}
+                </span>
+              </button>
+
+              <button
+                onClick={generatePDF}
+                disabled={isGeneratingPDF}
+                className={`flex items-center gap-3 px-6 py-3 border-2 rounded-xl transition-all duration-200 font-semibold text-base shadow-md hover:shadow-lg ${
+                  isGeneratingPDF
+                    ? "text-gray-400 border-gray-400 cursor-not-allowed"
+                    : "text-green-600 border-green-600 hover:bg-green-50"
+                }`}
+              >
+                {isGeneratingPDF ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-400 border-t-transparent"></div>
+                    <span>Generating...</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-5 h-5" />
+                    <span>Download PDF</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
