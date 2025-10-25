@@ -655,7 +655,7 @@ const UserCarCatalog: React.FC = () => {
                   placeholder="Search cars by make, model, year, or any keyword..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-lg bg-gray-50 focus:bg-white transition-all duration-200"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
                 />
               </div>
 
@@ -663,7 +663,7 @@ const UserCarCatalog: React.FC = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                  className="flex items-center gap-3 px-6 py-4 text-blue-600 border-2 border-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-200 font-semibold text-base shadow-md hover:shadow-lg"
+                  className="flex items-center gap-3 px-6 py-3 text-blue-600 border-2 border-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-200 font-semibold text-sm shadow-md hover:shadow-lg"
                 >
                   <span>Advanced Search</span>
                   <span className="text-lg">
@@ -674,7 +674,7 @@ const UserCarCatalog: React.FC = () => {
                 <button
                   onClick={generatePDF}
                   disabled={isGeneratingPDF}
-                  className={`flex items-center gap-3 px-6 py-4 border-2 rounded-xl transition-all duration-200 font-semibold text-base shadow-md hover:shadow-lg ${
+                  className={`flex items-center gap-3 px-6 py-3 border-2 rounded-xl transition-all duration-200 font-semibold text-sm shadow-md hover:shadow-lg ${
                     isGeneratingPDF
                       ? "text-gray-400 border-gray-400 cursor-not-allowed"
                       : "text-green-600 border-green-600 hover:bg-green-50"
