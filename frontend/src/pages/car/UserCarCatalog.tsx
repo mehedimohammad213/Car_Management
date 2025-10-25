@@ -645,17 +645,54 @@ const UserCarCatalog: React.FC = () => {
       <div className="max-w-full mx-auto px-4 py-6">
         {/* Search Filters */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-6">
-          {/* Search Input */}
+          {/* Search Input with Buttons */}
           <div className="mb-6">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search cars by make, model, year, or any keyword..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-lg bg-gray-50 focus:bg-white transition-all duration-200"
-              />
+            <div className="flex gap-4 items-center">
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search cars by make, model, year, or any keyword..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-lg bg-gray-50 focus:bg-white transition-all duration-200"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                  className="flex items-center gap-3 px-6 py-4 text-blue-600 border-2 border-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-200 font-semibold text-base shadow-md hover:shadow-lg"
+                >
+                  <span>Advanced Search</span>
+                  <span className="text-lg">
+                    {showAdvancedFilters ? "−" : "+"}
+                  </span>
+                </button>
+
+                <button
+                  onClick={generatePDF}
+                  disabled={isGeneratingPDF}
+                  className={`flex items-center gap-3 px-6 py-4 border-2 rounded-xl transition-all duration-200 font-semibold text-base shadow-md hover:shadow-lg ${
+                    isGeneratingPDF
+                      ? "text-gray-400 border-gray-400 cursor-not-allowed"
+                      : "text-green-600 border-green-600 hover:bg-green-50"
+                  }`}
+                >
+                  {isGeneratingPDF ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-400 border-t-transparent"></div>
+                      <span>Generating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-5 h-5" />
+                      <span>Download PDF</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -861,7 +898,7 @@ const UserCarCatalog: React.FC = () => {
             </div>
           </div>
 
-          {/* Results Count and Advanced Search */}
+          {/* Results Count */}
           <div className="flex items-center justify-between pt-4 border-t border-gray-200">
             <div className="flex items-center gap-6">
               <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">
@@ -904,39 +941,6 @@ const UserCarCatalog: React.FC = () => {
                   </div>
                 </div>
               )}
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                className="flex items-center gap-3 px-6 py-3 text-blue-600 border-2 border-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-200 font-semibold text-base shadow-md hover:shadow-lg"
-              >
-                <span>Advanced Search</span>
-                <span className="text-lg">
-                  {showAdvancedFilters ? "−" : "+"}
-                </span>
-              </button>
-
-              <button
-                onClick={generatePDF}
-                disabled={isGeneratingPDF}
-                className={`flex items-center gap-3 px-6 py-3 border-2 rounded-xl transition-all duration-200 font-semibold text-base shadow-md hover:shadow-lg ${
-                  isGeneratingPDF
-                    ? "text-gray-400 border-gray-400 cursor-not-allowed"
-                    : "text-green-600 border-green-600 hover:bg-green-50"
-                }`}
-              >
-                {isGeneratingPDF ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-400 border-t-transparent"></div>
-                    <span>Generating...</span>
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-5 h-5" />
-                    <span>Download PDF</span>
-                  </>
-                )}
-              </button>
             </div>
           </div>
         </div>
