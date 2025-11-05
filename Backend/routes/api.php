@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\Stock\StockController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\PurchaseHistory\PurchaseHistoryController;
+use App\Http\Controllers\Api\PaymentHistory\PaymentHistoryController;
 
 // Auth routes (no middleware)
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -83,6 +85,24 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/all', [OrderController::class, 'getAllOrders']);
         Route::put('/{id}/status', [OrderController::class, 'updateOrderStatus']);
         Route::delete('/{id}', [OrderController::class, 'deleteOrder']);
+    });
+
+    // Purchase History API Routes
+    Route::prefix('purchase-history')->group(function () {
+        Route::get('/', [PurchaseHistoryController::class, 'index']);
+        Route::post('/', [PurchaseHistoryController::class, 'store']);
+        Route::get('/{id}', [PurchaseHistoryController::class, 'show']);
+        Route::put('/{id}', [PurchaseHistoryController::class, 'update']);
+        Route::delete('/{id}', [PurchaseHistoryController::class, 'destroy']);
+    });
+
+    // Payment History API Routes
+    Route::prefix('payment-history')->group(function () {
+        Route::get('/', [PaymentHistoryController::class, 'index']);
+        Route::post('/', [PaymentHistoryController::class, 'store']);
+        Route::get('/{id}', [PaymentHistoryController::class, 'show']);
+        Route::put('/{id}', [PaymentHistoryController::class, 'update']);
+        Route::delete('/{id}', [PaymentHistoryController::class, 'destroy']);
     });
 });
 

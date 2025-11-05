@@ -42,6 +42,12 @@ class Car extends Model
         'location',
         'country_origin',
         'status',
+        'package',
+        'body',
+        'type',
+        'engine_number',
+        'number_of_keys',
+        'keys_feature',
         'notes',
         'attached_file',
     ];
@@ -51,6 +57,7 @@ class Car extends Model
         'mileage_km' => 'integer',
         'engine_cc' => 'integer',
         'seats' => 'integer',
+        'number_of_keys' => 'integer',
         'grade_overall' => 'decimal:1',
         'price_amount' => 'decimal:2',
         'fob_value_usd' => 'decimal:2',
@@ -269,6 +276,11 @@ class Car extends Model
     public function setSeatsAttribute($value)
     {
         $this->attributes['seats'] = $value ? (int) $value : null;
+    }
+
+    public function setNumberOfKeysAttribute($value)
+    {
+        $this->attributes['number_of_keys'] = $value ? (int) $value : null;
     }
 
     public function setYearAttribute($value)

@@ -1,0 +1,458 @@
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  ArrowLeft,
+  Edit,
+  Trash2,
+  FileText,
+  Download,
+  Calendar,
+  DollarSign,
+  Building2,
+  FileCheck,
+  Receipt,
+  AlertCircle,
+} from "lucide-react";
+import { toast } from "react-toastify";
+import {
+  purchaseHistoryApi,
+  PurchaseHistory,
+} from "../../services/purchaseHistoryApi";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
+
+const PurchaseHistoryDetails: React.FC = () => {
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const [purchaseHistory, setPurchaseHistory] = useState<PurchaseHistory | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    fetchPurchaseHistory();
+  }, [id]);
+
+  const fetchPurchaseHistory = async () => {
+    if (!id) return;
+
+    try {
+      setLoading(true);
+      const response = await purchaseHistoryApi.getPurchaseHistory(parseInt(id));
+      if (response.success && response.data) {
+        setPurchaseHistory(response.data);
+      } else {
+        toast.error("Purchase history not found");
+        navigate("/admin/purchase-history");
+      }
+    } catch (error) {
+      console.error("Error fetching purchase history:", error);
+      toast.error("Failed to load purchase history");
+      navigate("/admin/purchase-history");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!purchaseHistory) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await purchaseHistoryApi.deletePurchaseHistory(
+        purchaseHistory.id
+      );
+      if (response.success) {
+        toast.success("Purchase history deleted successfully");
+        navigate("/admin/purchase-history");
+      } else {
+        toast.error(response.message || "Failed to delete purchase history");
+      }
+    } catch (error) {
+      console.error("Error deleting purchase history:", error);
+      toast.error("Failed to delete purchase history");
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const formatCurrency = (amount: number | null) => {
+    if (amount === null) return "N/A";
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
+  };
+
+  const getPdfUrl = (path: string | null) => {
+    if (!path) return null;
+    if (path.startsWith("http")) return path;
+    const baseUrl = import.meta.env?.VITE_API_BASE_URL?.replace("/api", "") || "http://localhost:8000";
+    return `${baseUrl}${path}`;
+  };
+
+  const handleViewPdf = (path: string | null) => {
+    const url = getPdfUrl(path);
+    if (url) {
+      window.open(url, "_blank");
+    } else {
+      toast.error("PDF file not available");
+    }
+  };
+
+  const handleDownloadPdf = (path: string | null, filename: string) => {
+    const url = getPdfUrl(path);
+    if (url) {
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      toast.error("PDF file not available");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!purchaseHistory) {
+    return (
+      <div className="text-center py-12">
+        <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+        <p className="text-gray-500 text-lg">Purchase history not found</p>
+        <button
+          onClick={() => navigate("/admin/purchase-history")}
+          className="mt-4 text-blue-600 hover:text-blue-700"
+        >
+          Back to Purchase History
+        </button>
+      </div>
+    );
+  }
+
+  const pdfFields = [
+    { key: "bill_of_lading", label: "Bill of Lading" },
+    { key: "invoice_number", label: "Invoice Number" },
+    { key: "export_certificate", label: "Export Certificate" },
+    { key: "export_certificate_translated", label: "Export Certificate (Translated)" },
+    { key: "bill_of_exchange_amount", label: "Bill of Exchange Amount" },
+    { key: "custom_duty_copy_3pages", label: "Custom Duty Copy (3 Pages)" },
+    { key: "cheque_copy", label: "Cheque Copy" },
+    { key: "certificate", label: "Certificate" },
+    { key: "custom_one", label: "Custom One" },
+    { key: "custom_two", label: "Custom Two" },
+    { key: "custom_three", label: "Custom Three" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
+      {/* Header */}
+      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate("/admin/purchase-history")}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-6 h-6 text-gray-600" />
+            </button>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Purchase History #{purchaseHistory.id}
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Created: {formatDate(purchaseHistory.created_at)}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate("/admin/purchase-history")}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+            >
+              <Edit className="w-5 h-5" />
+              Back to List
+            </button>
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors"
+            >
+              <Trash2 className="w-5 h-5" />
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Content */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Purchase Information */}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <Receipt className="w-6 h-6 text-blue-600" />
+              Purchase Information
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  Purchase Date
+                </label>
+                <div className="flex items-center gap-2 text-gray-900 font-medium">
+                  <Calendar className="w-4 h-4 text-gray-400" />
+                  {formatDate(purchaseHistory.purchase_date)}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  Purchase Amount
+                </label>
+                <div className="flex items-center gap-2 text-gray-900 font-medium">
+                  <DollarSign className="w-4 h-4 text-gray-400" />
+                  {formatCurrency(purchaseHistory.purchase_amount)}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  Govt Duty
+                </label>
+                <p className="text-gray-900 font-medium">
+                  {purchaseHistory.govt_duty || "N/A"}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  CNF Amount
+                </label>
+                <div className="flex items-center gap-2 text-gray-900 font-medium">
+                  <DollarSign className="w-4 h-4 text-gray-400" />
+                  {formatCurrency(purchaseHistory.cnf_amount)}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  Miscellaneous
+                </label>
+                <p className="text-gray-900 font-medium">
+                  {purchaseHistory.miscellaneous || "N/A"}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  Total Units per LC
+                </label>
+                <p className="text-gray-900 font-medium">
+                  {purchaseHistory.total_units_per_lc || "N/A"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* LC Information */}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <Building2 className="w-6 h-6 text-blue-600" />
+              Letter of Credit (LC) Information
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  LC Date
+                </label>
+                <div className="flex items-center gap-2 text-gray-900 font-medium">
+                  <Calendar className="w-4 h-4 text-gray-400" />
+                  {formatDate(purchaseHistory.lc_date)}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  LC Number
+                </label>
+                <p className="text-gray-900 font-medium">
+                  {purchaseHistory.lc_number || "N/A"}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  LC Bank Name
+                </label>
+                <p className="text-gray-900 font-medium">
+                  {purchaseHistory.lc_bank_name || "N/A"}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  LC Bank Branch Name
+                </label>
+                <p className="text-gray-900 font-medium">
+                  {purchaseHistory.lc_bank_branch_name || "N/A"}
+                </p>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  LC Bank Branch Address
+                </label>
+                <p className="text-gray-900 font-medium">
+                  {purchaseHistory.lc_bank_branch_address || "N/A"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* PDF Documents */}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <FileText className="w-6 h-6 text-blue-600" />
+              PDF Documents
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {pdfFields.map((field) => {
+                const filePath = purchaseHistory[field.key as keyof PurchaseHistory] as string | null;
+                const hasFile = !!filePath;
+
+                return (
+                  <div
+                    key={field.key}
+                    className={`border-2 rounded-xl p-4 ${
+                      hasFile
+                        ? "border-blue-200 bg-blue-50"
+                        : "border-gray-200 bg-gray-50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium text-gray-900">{field.label}</h3>
+                      {hasFile && (
+                        <FileCheck className="w-5 h-5 text-green-500" />
+                      )}
+                    </div>
+                    {hasFile ? (
+                      <div className="flex items-center gap-2 mt-3">
+                        <button
+                          onClick={() => handleViewPdf(filePath)}
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                        >
+                          <FileText className="w-4 h-4" />
+                          View
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleDownloadPdf(
+                              filePath,
+                              `${field.label.replace(/\s+/g, "_")}.pdf`
+                            )
+                          }
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                        >
+                          <Download className="w-4 h-4" />
+                          Download
+                        </button>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500 mt-2">No file uploaded</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Quick Info */}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Info</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  Record ID
+                </label>
+                <p className="text-gray-900 font-semibold">#{purchaseHistory.id}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  Created At
+                </label>
+                <p className="text-gray-900">
+                  {formatDate(purchaseHistory.created_at)}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  Last Updated
+                </label>
+                <p className="text-gray-900">
+                  {formatDate(purchaseHistory.updated_at)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Statistics */}
+          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl shadow-lg p-6 text-white">
+            <h3 className="text-lg font-bold mb-4">Summary</h3>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-blue-100">Purchase Amount:</span>
+                <span className="font-bold">
+                  {formatCurrency(purchaseHistory.purchase_amount)}
+                </span>
+              </div>
+              {purchaseHistory.cnf_amount && (
+                <div className="flex justify-between">
+                  <span className="text-blue-100">CNF Amount:</span>
+                  <span className="font-bold">
+                    {formatCurrency(purchaseHistory.cnf_amount)}
+                  </span>
+                </div>
+              )}
+              <div className="pt-3 border-t border-blue-400">
+                <div className="flex justify-between">
+                  <span className="text-blue-100">PDF Documents:</span>
+                  <span className="font-bold">
+                    {pdfFields.filter(
+                      (field) =>
+                        purchaseHistory[
+                          field.key as keyof PurchaseHistory
+                        ] as string | null
+                    ).length}{" "}
+                    / {pdfFields.length}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        title="Delete Purchase History"
+        message={`Are you sure you want to delete purchase history #${purchaseHistory.id}? This action cannot be undone and will delete all associated PDF files.`}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+      />
+    </div>
+  );
+};
+
+export default PurchaseHistoryDetails;
+

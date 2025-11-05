@@ -16,6 +16,10 @@ import UpdateCar from "./pages/car/UpdateCar";
 import StockManagement from "./pages/stock/StockManagement";
 import OrderManagement from "./pages/order/OrderManagement";
 import UserManagement from "./pages/user/UserManagement";
+import PurchaseHistory from "./pages/purchase-history/PurchaseHistory";
+import PurchaseHistoryDetails from "./pages/purchase-history/PurchaseHistoryDetails";
+import PaymentHistory from "./pages/payment-history/PaymentHistory";
+import PaymentHistoryDetails from "./pages/payment-history/PaymentHistoryDetails";
 
 import CarDetails from "./pages/car/CarDetails";
 import UserCarCatalog from "./pages/car/UserCarCatalog";
@@ -112,6 +116,40 @@ function App() {
                       element={
                         <ProtectedRoute role="admin">
                           <UserManagement />
+                        </ProtectedRoute>
+                      }
+                    />
+
+                    <Route
+                      path="/admin/purchase-history"
+                      element={
+                        <ProtectedRoute role="admin">
+                          <PurchaseHistory />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/purchase-history/view/:id"
+                      element={
+                        <ProtectedRoute role="admin">
+                          <PurchaseHistoryDetails />
+                        </ProtectedRoute>
+                      }
+                    />
+
+                    <Route
+                      path="/admin/payment-history"
+                      element={
+                        <ProtectedRoute role="admin">
+                          <PaymentHistory />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/payment-history/view/:id"
+                      element={
+                        <ProtectedRoute role="admin">
+                          <PaymentHistoryDetails />
                         </ProtectedRoute>
                       }
                     />

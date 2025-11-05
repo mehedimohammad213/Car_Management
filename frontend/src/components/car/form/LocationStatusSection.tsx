@@ -99,6 +99,91 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
             />
           </div>
         </div>
+
+        {/* Second row - New fields */}
+        <div className="flex gap-4">
+          <FormField
+            label="Package"
+            field="package"
+            type="text"
+            placeholder="e.g., Premium, Standard"
+            required={false}
+            maxLength={255}
+            value={formData.package}
+            error={errors.package}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("package", value)}
+            inline={true}
+          />
+          <FormField
+            label="Body"
+            field="body"
+            type="text"
+            placeholder="e.g., Sedan, SUV, Hatchback"
+            required={false}
+            maxLength={64}
+            value={formData.body}
+            error={errors.body}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("body", value)}
+            inline={true}
+          />
+          <FormField
+            label="Type"
+            field="type"
+            type="text"
+            placeholder="e.g., Standard, Luxury, Sport"
+            required={false}
+            maxLength={64}
+            value={formData.type}
+            error={errors.type}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("type", value)}
+            inline={true}
+          />
+          <FormField
+            label="Engine Number"
+            field="engine_number"
+            type="text"
+            placeholder="Engine identification number"
+            required={false}
+            maxLength={64}
+            value={formData.engine_number}
+            error={errors.engine_number}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("engine_number", value)}
+            inline={true}
+          />
+        </div>
+
+        {/* Third row - Keys fields */}
+        <div className="flex gap-4">
+          <FormField
+            label="Number of Keys"
+            field="number_of_keys"
+            type="number"
+            placeholder="e.g., 2, 3"
+            required={false}
+            value={formData.number_of_keys}
+            error={errors.number_of_keys}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("number_of_keys", value ? Number(value) : undefined)}
+            inline={true}
+          />
+          <div className="flex-1">
+            <FormField
+              label="Keys Feature"
+              field="keys_feature"
+              type="text"
+              placeholder="e.g., Keyless entry, Remote start"
+              required={false}
+              value={formData.keys_feature}
+              error={errors.keys_feature}
+              isViewMode={isViewMode}
+              onChange={(value) => onInputChange("keys_feature", value)}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

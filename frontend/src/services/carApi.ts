@@ -66,6 +66,12 @@ export interface Car {
   location?: string;
   country_origin?: string;
   status: string;
+  package?: string;
+  body?: string;
+  type?: string;
+  engine_number?: string;
+  number_of_keys?: number;
+  keys_feature?: string;
   notes?: string;
   attached_file?: string;
   created_at: string;
@@ -123,6 +129,12 @@ export interface CreateCarData {
   location?: string;
   country_origin?: string;
   status?: string;
+  package?: string;
+  body?: string;
+  type?: string;
+  engine_number?: string;
+  number_of_keys?: number;
+  keys_feature?: string;
   notes?: string;
   attached_file?: File | string;
 

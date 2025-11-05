@@ -195,6 +195,12 @@ class CarController extends Controller
             'location' => 'nullable|string|max:128',
             'country_origin' => 'nullable|string|max:64',
             'status' => 'nullable|string|max:32',
+            'package' => 'nullable|string|max:255',
+            'body' => 'nullable|string|max:64',
+            'type' => 'nullable|string|max:64',
+            'engine_number' => 'nullable|string|max:64',
+            'number_of_keys' => 'nullable|integer|min:0',
+            'keys_feature' => 'nullable|string',
             'notes' => 'nullable|string',
             'attached_file' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:10240', // 10MB max
 
@@ -243,7 +249,8 @@ class CarController extends Controller
                 'transmission', 'drive', 'steering', 'fuel', 'color', 'seats',
                 'grade_overall', 'grade_exterior', 'grade_interior', 'price_amount',
                 'price_currency', 'price_basis', 'fob_value_usd', 'freight_usd',
-                'chassis_no_masked', 'chassis_no_full', 'location', 'country_origin', 'status', 'notes'
+                'chassis_no_masked', 'chassis_no_full', 'location', 'country_origin', 'status',
+                'package', 'body', 'type', 'engine_number', 'number_of_keys', 'keys_feature', 'notes'
             ])->toArray();
 
             // Add attached file URL if uploaded
@@ -578,6 +585,12 @@ class CarController extends Controller
             'location' => 'nullable|string|max:128',
             'country_origin' => 'nullable|string|max:64',
             'status' => 'nullable|string|max:32',
+            'package' => 'nullable|string|max:255',
+            'body' => 'nullable|string|max:64',
+            'type' => 'nullable|string|max:64',
+            'engine_number' => 'nullable|string|max:64',
+            'number_of_keys' => 'nullable|integer|min:0',
+            'keys_feature' => 'nullable|string',
             'notes' => 'nullable|string',
             'attached_file' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:10240', // 10MB max
 
@@ -627,7 +640,8 @@ class CarController extends Controller
                 'transmission', 'drive', 'steering', 'fuel', 'color', 'seats',
                 'grade_overall', 'grade_exterior', 'grade_interior', 'price_amount',
                 'price_currency', 'price_basis', 'fob_value_usd', 'freight_usd',
-                'chassis_no_masked', 'chassis_no_full', 'location', 'country_origin', 'status', 'notes'
+                'chassis_no_masked', 'chassis_no_full', 'location', 'country_origin', 'status',
+                'package', 'body', 'type', 'engine_number', 'number_of_keys', 'keys_feature', 'notes'
             ])->toArray();
 
             // Add attached file URL if uploaded

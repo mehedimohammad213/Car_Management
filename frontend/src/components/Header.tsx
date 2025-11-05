@@ -18,6 +18,8 @@ import {
   SettingsIcon,
   ChevronDownIcon,
   FolderIcon,
+  ReceiptIcon,
+  CreditCard,
 } from "lucide-react";
 
 const Header: React.FC = () => {
@@ -80,6 +82,8 @@ const Header: React.FC = () => {
     { path: "/admin/categories", label: "Categories", icon: FolderIcon },
     { path: "/admin/stock", label: "Stock", icon: PackageIcon },
     { path: "/admin/orders", label: "Orders", icon: ShoppingCartIcon },
+    { path: "/admin/purchase-history", label: "Purchase History", icon: ReceiptIcon },
+    { path: "/admin/payment-history", label: "Payment History", icon: CreditCard },
     { path: "/admin/users", label: "Users", icon: UsersIcon },
   ];
 

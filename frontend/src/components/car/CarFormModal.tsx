@@ -71,6 +71,12 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
     location: "",
     country_origin: "",
     status: "available",
+    package: "",
+    body: "",
+    type: "",
+    engine_number: "",
+    number_of_keys: undefined,
+    keys_feature: "",
     notes: "",
     photos: [],
     details: [
@@ -126,6 +132,12 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
         location: car.location || "",
         country_origin: car.country_origin || "",
         status: car.status || "available",
+        package: car.package || "",
+        body: car.body || "",
+        type: car.type || "",
+        engine_number: car.engine_number || "",
+        number_of_keys: car.number_of_keys || undefined,
+        keys_feature: car.keys_feature || "",
         notes: car.notes || "",
         photos:
           car.photos?.map((p) => ({
