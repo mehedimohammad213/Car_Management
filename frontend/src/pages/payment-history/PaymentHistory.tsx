@@ -375,7 +375,7 @@ const PaymentHistoryPage: React.FC = () => {
           setPaymentHistoryToDelete(null);
         }}
         onConfirm={confirmDelete}
-        isDeleting={isDeleting}
+        isLoading={isDeleting}
       />
     </div>
   );

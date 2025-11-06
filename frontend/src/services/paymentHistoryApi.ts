@@ -20,6 +20,17 @@ export interface Car {
   make: string;
   model: string;
   ref_no?: string;
+  year?: number;
+  package?: string;
+  fuel?: string;
+  color?: string;
+  transmission?: string;
+  seats?: number;
+  chassis_no_full?: string;
+  chassis_no_masked?: string;
+  engine_cc?: number;
+  drive?: string;
+  mileage_km?: number;
 }
 
 export interface PaymentHistory {

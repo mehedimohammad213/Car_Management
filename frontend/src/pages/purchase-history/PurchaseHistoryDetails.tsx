@@ -96,7 +96,7 @@ const PurchaseHistoryDetails: React.FC = () => {
   const getPdfUrl = (path: string | null) => {
     if (!path) return null;
     if (path.startsWith("http")) return path;
-    const baseUrl = import.meta.env?.VITE_API_BASE_URL?.replace("/api", "") || "http://localhost:8000";
+    const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace("/api", "") || "http://localhost:8000";
     return `${baseUrl}${path}`;
   };
 
@@ -448,7 +448,7 @@ const PurchaseHistoryDetails: React.FC = () => {
         message={`Are you sure you want to delete purchase history #${purchaseHistory.id}? This action cannot be undone and will delete all associated PDF files.`}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDelete}
-        isDeleting={isDeleting}
+        isLoading={isDeleting}
       />
     </div>
   );

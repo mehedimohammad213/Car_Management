@@ -523,7 +523,7 @@ const PaymentHistoryDetails: React.FC = () => {
         message={`Are you sure you want to delete payment history #${paymentHistory.id}? This action will also delete all associated installments and cannot be undone.`}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDelete}
-        isDeleting={isDeleting}
+        isLoading={isDeleting}
       />
     </div>
   );
