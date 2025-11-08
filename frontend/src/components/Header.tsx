@@ -18,9 +18,24 @@ import {
   SettingsIcon,
   ChevronDownIcon,
   FolderIcon,
-  ReceiptIcon,
   CreditCard,
 } from "lucide-react";
+
+type NavItem = {
+  path: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+};
+
+const BdtIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <span
+    className={`inline-flex items-center justify-center font-extrabold leading-none text-lg text-gray-500 dark:text-gray-300 ${
+      className ?? ""
+    }`}
+  >
+    ৳
+  </span>
+);
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
@@ -76,18 +91,26 @@ const Header: React.FC = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const adminNavItems = [
+  const adminNavItems: NavItem[] = [
     { path: "/admin", label: "Dashboard", icon: BarChartIcon },
-    { path: "/admin/cars", label: "Cars", icon: CarIcon },
-    { path: "/admin/categories", label: "Categories", icon: FolderIcon },
+    { path: "/admin/categories", label: "Category", icon: FolderIcon },
+    { path: "/admin/cars", label: "Car", icon: CarIcon },
+    {
+      path: "/admin/purchase-history",
+      label: "Purchase History",
+      icon: BdtIcon,
+    },
+    {
+      path: "/admin/payment-history",
+      label: "Payment History",
+      icon: CreditCard,
+    },
     { path: "/admin/stock", label: "Stock", icon: PackageIcon },
-    { path: "/admin/orders", label: "Orders", icon: ShoppingCartIcon },
-    { path: "/admin/purchase-history", label: "Purchase History", icon: ReceiptIcon },
-    { path: "/admin/payment-history", label: "Payment History", icon: CreditCard },
-    { path: "/admin/users", label: "Users", icon: UsersIcon },
+    { path: "/admin/orders", label: "Order", icon: ShoppingCartIcon },
+    { path: "/admin/users", label: "User", icon: UsersIcon },
   ];
 
-  const userNavItems = [
+  const userNavItems: NavItem[] = [
     { path: "/dashboard", label: "Dashboard", icon: BarChartIcon },
     { path: "/cars", label: "Cars", icon: CarIcon },
     { path: "/cart", label: "Cart", icon: ShoppingCartIcon },
