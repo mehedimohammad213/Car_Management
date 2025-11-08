@@ -20,7 +20,6 @@ import {
   AreaChart,
 } from "recharts";
 import {
-  DollarSignIcon,
   ShoppingCartIcon,
   CarIcon,
   UsersIcon,
@@ -57,6 +56,16 @@ import {
 } from "lucide-react";
 import { dashboardApi, DashboardData } from "../services/dashboardApi";
 import { orderApi, Order } from "../services/orderApi";
+
+const BdtIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <span
+    className={`inline-flex items-center justify-center font-extrabold leading-none text-lg text-current ${
+      className ?? ""
+    }`}
+  >
+    ৳
+  </span>
+);
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -278,7 +287,7 @@ const Dashboard: React.FC = () => {
                         </div>
                         <div className="text-right">
                           <div className="flex items-center gap-2 mb-2">
-                            <DollarSignIcon className="w-4 h-4 text-green-600" />
+                            <BdtIcon className="text-green-600 text-base" />
                             <p className="font-bold text-slate-900 dark:text-white text-lg">
                               BDT {order.total_amount.toLocaleString()}
                             </p>
@@ -370,7 +379,7 @@ const Dashboard: React.FC = () => {
               <div className="relative">
                 <div className="flex items-center justify-between mb-4">
                   <div className="p-3 bg-primary-500 rounded-xl shadow-lg">
-                    <DollarSignIcon className="w-6 h-6 text-white" />
+                    <BdtIcon className="text-white text-2xl" />
                   </div>
                   <div className="flex items-center text-green-600 dark:text-green-400">
                     <ArrowUpRightIcon className="w-4 h-4 mr-1" />
