@@ -29,7 +29,9 @@ import { PaymentHistoryInvoiceService } from "../../services/paymentHistoryInvoi
 const PaymentHistoryDetails: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [paymentHistory, setPaymentHistory] = useState<PaymentHistory | null>(null);
+  const [paymentHistory, setPaymentHistory] = useState<PaymentHistory | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -105,9 +107,10 @@ const PaymentHistoryDetails: React.FC = () => {
 
   const formatCurrency = (amount: number | null) => {
     if (amount === null) return "N/A";
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "BDT",
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
@@ -134,12 +137,21 @@ const PaymentHistoryDetails: React.FC = () => {
     );
   }
 
-  const totalInstallmentAmount = paymentHistory.installments?.reduce(
-    (sum, inst) => sum + (inst.amount || 0),
-    0
-  ) || 0;
+  const totalInstallmentAmount =
+    paymentHistory.installments?.reduce(
+      (sum, inst) => sum + (inst.amount || 0),
+      0
+    ) || 0;
 
-  const remainingBalance = paymentHistory.installments?.[paymentHistory.installments.length - 1]?.balance || paymentHistory.purchase_amount || 0;
+  const firstInstallmentAmount =
+    paymentHistory.installments?.[0]?.amount ?? null;
+  const secondInstallmentAmount =
+    paymentHistory.installments?.[1]?.amount ?? null;
+
+  const remainingBalance = Math.max(
+    (paymentHistory.purchase_amount || 0) - totalInstallmentAmount,
+    0
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
@@ -211,7 +223,8 @@ const PaymentHistoryDetails: React.FC = () => {
                   </label>
                   <p className="text-gray-900 font-medium">
                     {paymentHistory.car.make} {paymentHistory.car.model}
-                    {paymentHistory.car.ref_no && ` (${paymentHistory.car.ref_no})`}
+                    {paymentHistory.car.ref_no &&
+                      ` (${paymentHistory.car.ref_no})`}
                   </p>
                 </div>
               </div>
@@ -258,7 +271,9 @@ const PaymentHistoryDetails: React.FC = () => {
                   </label>
                   <div className="flex items-start gap-2 text-gray-900">
                     <MapPin className="w-4 h-4 text-gray-400 mt-1" />
-                    <p className="font-medium">{paymentHistory.wholesaler_address}</p>
+                    <p className="font-medium">
+                      {paymentHistory.wholesaler_address}
+                    </p>
                   </div>
                 </div>
               )}
@@ -313,7 +328,9 @@ const PaymentHistoryDetails: React.FC = () => {
                   </label>
                   <div className="flex items-start gap-2 text-gray-900">
                     <MapPin className="w-4 h-4 text-gray-400 mt-1" />
-                    <p className="font-medium">{paymentHistory.customer_address}</p>
+                    <p className="font-medium">
+                      {paymentHistory.customer_address}
+                    </p>
                   </div>
                 </div>
               )}
@@ -326,8 +343,11 @@ const PaymentHistoryDetails: React.FC = () => {
               <CreditCard className="w-6 h-6 text-blue-600" />
               Installments ({paymentHistory.installments?.length || 0})
             </h2>
-            {!paymentHistory.installments || paymentHistory.installments.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">No installments recorded</p>
+            {!paymentHistory.installments ||
+            paymentHistory.installments.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">
+                No installments recorded
+              </p>
             ) : (
               <div className="space-y-4">
                 {paymentHistory.installments.map((installment, index) => (
@@ -404,7 +424,9 @@ const PaymentHistoryDetails: React.FC = () => {
                           <label className="block text-sm font-medium text-gray-500 mb-1">
                             Description
                           </label>
-                          <p className="text-gray-900">{installment.description}</p>
+                          <p className="text-gray-900">
+                            {installment.description}
+                          </p>
                         </div>
                       )}
                       {installment.remarks && (
@@ -433,7 +455,9 @@ const PaymentHistoryDetails: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-500 mb-1">
                   Record ID
                 </label>
-                <p className="text-gray-900 font-semibold">#{paymentHistory.id}</p>
+                <p className="text-gray-900 font-semibold">
+                  #{paymentHistory.id}
+                </p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-500 mb-1">
@@ -465,15 +489,15 @@ const PaymentHistoryDetails: React.FC = () => {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-blue-100">Total Installments:</span>
+                <span className="text-blue-100">1st Installment:</span>
                 <span className="font-bold">
-                  {paymentHistory.installments?.length || 0}
+                  {formatCurrency(firstInstallmentAmount)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-blue-100">Paid Amount:</span>
+                <span className="text-blue-100">2nd Installment:</span>
                 <span className="font-bold">
-                  {formatCurrency(totalInstallmentAmount)}
+                  {formatCurrency(secondInstallmentAmount)}
                 </span>
               </div>
               <div className="pt-3 border-t border-blue-400">
@@ -506,7 +530,9 @@ const PaymentHistoryDetails: React.FC = () => {
                 toast.success("Payment history updated successfully");
                 handleEditSuccess();
               } else {
-                toast.error(response.message || "Failed to update payment history");
+                toast.error(
+                  response.message || "Failed to update payment history"
+                );
               }
             } catch (error) {
               console.error("Error updating payment history:", error);
@@ -530,4 +556,3 @@ const PaymentHistoryDetails: React.FC = () => {
 };
 
 export default PaymentHistoryDetails;
-
