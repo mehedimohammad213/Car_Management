@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PurchaseHistory extends Model
 {
@@ -12,6 +13,7 @@ class PurchaseHistory extends Model
     protected $table = 'purchase_history';
 
     protected $fillable = [
+        'car_id',
         'purchase_date',
         'purchase_amount',
         'govt_duty',
@@ -42,4 +44,9 @@ class PurchaseHistory extends Model
         'cnf_amount' => 'decimal:2',
         'lc_date' => 'date',
     ];
+
+    public function car(): BelongsTo
+    {
+        return $this->belongsTo(Car::class);
+    }
 }

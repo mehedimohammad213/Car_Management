@@ -5,13 +5,16 @@ import {
   CreatePurchaseHistoryData,
   UpdatePurchaseHistoryData,
 } from "../../services/purchaseHistoryApi";
+import { carApi, Car } from "../../services/carApi";
 
 interface PurchaseHistoryModalProps {
   isOpen: boolean;
   mode: "create" | "update";
   purchaseHistory?: PurchaseHistory | null;
   onClose: () => void;
-  onSubmit: (data: CreatePurchaseHistoryData | UpdatePurchaseHistoryData) => void;
+  onSubmit: (
+    data: CreatePurchaseHistoryData | UpdatePurchaseHistoryData
+  ) => void;
 }
 
 const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
@@ -22,6 +25,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   onSubmit,
 }) => {
   const [formData, setFormData] = useState<CreatePurchaseHistoryData>({
+    car_id: null,
     purchase_date: null,
     purchase_amount: null,
     govt_duty: null,
@@ -49,7 +53,35 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   // Separate fields for dollar and BDT amounts
   const [dollarAmount, setDollarAmount] = useState<string>("");
   const [bdtAmount, setBdtAmount] = useState<string>("");
-  const [existingFiles, setExistingFiles] = useState<Record<string, string>>({});
+  const [existingFiles, setExistingFiles] = useState<Record<string, string>>(
+    {}
+  );
+  const [cars, setCars] = useState<Car[]>([]);
+  const [loadingCars, setLoadingCars] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchCars();
+    }
+  }, [isOpen]);
+
+  const fetchCars = async () => {
+    try {
+      setLoadingCars(true);
+      const response = await carApi.getCars({ per_page: 1000 });
+      const carList = Array.isArray(response?.data?.data)
+        ? response.data.data
+        : Array.isArray(response?.data?.cars)
+        ? response.data.cars
+        : [];
+      setCars(carList);
+    } catch (error) {
+      console.error("Error fetching cars:", error);
+      setCars([]);
+    } finally {
+      setLoadingCars(false);
+    }
+  };
 
   useEffect(() => {
     if (purchaseHistory && mode === "update") {
@@ -60,8 +92,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         setDollarAmount("");
         setBdtAmount("");
       }
-      
+
       setFormData({
+        car_id: purchaseHistory.car_id ?? null,
         purchase_date: purchaseHistory.purchase_date || null,
         purchase_amount: purchaseHistory.purchase_amount,
         govt_duty: purchaseHistory.govt_duty || null,
@@ -103,13 +136,16 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
       const files: Record<string, string> = {};
       pdfFields.forEach((field) => {
-        const value = purchaseHistory[field as keyof PurchaseHistory] as string | null;
+        const value = purchaseHistory[field as keyof PurchaseHistory] as
+          | string
+          | null;
         if (value) files[field] = value;
       });
       setExistingFiles(files);
     } else {
       // Reset form for create mode
       setFormData({
+        car_id: null,
         purchase_date: null,
         purchase_amount: null,
         govt_duty: null,
@@ -176,7 +212,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     if (!path) return null;
     if (path.startsWith("http")) return path;
     // @ts-ignore
-    const baseUrl = (import.meta as any).env?.VITE_API_BASE_URL?.replace("/api", "") || "http://localhost:8000";
+    const baseUrl =
+      (import.meta as any).env?.VITE_API_BASE_URL?.replace("/api", "") ||
+      "http://localhost:8000";
     return `${baseUrl}${path}`;
   };
 
@@ -186,7 +224,10 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     { key: "bill_of_lading", label: "Bill of Lading" },
     { key: "invoice_number", label: "Invoice Number" },
     { key: "export_certificate", label: "Export Certificate" },
-    { key: "export_certificate_translated", label: "Export Certificate (Translated)" },
+    {
+      key: "export_certificate_translated",
+      label: "Export Certificate (Translated)",
+    },
     { key: "bill_of_exchange_amount", label: "Bill of Exchange Amount" },
     { key: "custom_duty_copy_3pages", label: "Custom Duty Copy (3 Pages)" },
     { key: "cheque_copy", label: "Cheque Copy" },
@@ -203,7 +244,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">
-              {mode === "create" ? "Create Purchase History" : "Update Purchase History"}
+              {mode === "create"
+                ? "Create Purchase History"
+                : "Update Purchase History"}
             </h2>
             <button
               onClick={onClose}
@@ -215,8 +258,46 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         </div>
 
         {/* Content */}
-        <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[calc(95vh-120px)]">
+        <form
+          onSubmit={handleSubmit}
+          className="overflow-y-auto max-h-[calc(95vh-120px)]"
+        >
           <div className="p-6 space-y-6">
+            {/* Car Selection */}
+            <div className="border-b border-gray-200 pb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Car Selection
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Car <span className="text-gray-400">(Optional)</span>
+                  </label>
+                  <select
+                    value={formData.car_id || ""}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "car_id",
+                        e.target.value ? parseInt(e.target.value, 10) : null
+                      )
+                    }
+                    disabled={loadingCars}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">
+                      {loadingCars ? "Loading cars..." : "Select a car"}
+                    </option>
+                    {cars.map((car) => (
+                      <option key={car.id} value={car.id}>
+                        {car.make} {car.model}
+                        {car.ref_no ? ` (${car.ref_no})` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -226,7 +307,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 <input
                   type="date"
                   value={formData.purchase_date || ""}
-                  onChange={(e) => handleInputChange("purchase_date", e.target.value || null)}
+                  onChange={(e) =>
+                    handleInputChange("purchase_date", e.target.value || null)
+                  }
                   className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -238,7 +321,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 <input
                   type="date"
                   value={formData.lc_date || ""}
-                  onChange={(e) => handleInputChange("lc_date", e.target.value || null)}
+                  onChange={(e) =>
+                    handleInputChange("lc_date", e.target.value || null)
+                  }
                   className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -246,7 +331,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
             {/* Purchase Amount Calculation */}
             <div className="bg-blue-50 rounded-xl p-6 border-2 border-blue-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Purchase Amount Calculation</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Purchase Amount Calculation
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -300,7 +387,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 <input
                   type="text"
                   value={formData.govt_duty || ""}
-                  onChange={(e) => handleInputChange("govt_duty", e.target.value || null)}
+                  onChange={(e) =>
+                    handleInputChange("govt_duty", e.target.value || null)
+                  }
                   className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -313,7 +402,12 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                   type="number"
                   step="0.01"
                   value={formData.cnf_amount || ""}
-                  onChange={(e) => handleInputChange("cnf_amount", e.target.value ? parseFloat(e.target.value) : null)}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "cnf_amount",
+                      e.target.value ? parseFloat(e.target.value) : null
+                    )
+                  }
                   className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -325,7 +419,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 <input
                   type="text"
                   value={formData.miscellaneous || ""}
-                  onChange={(e) => handleInputChange("miscellaneous", e.target.value || null)}
+                  onChange={(e) =>
+                    handleInputChange("miscellaneous", e.target.value || null)
+                  }
                   className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -337,7 +433,12 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 <input
                   type="text"
                   value={formData.total_units_per_lc || ""}
-                  onChange={(e) => handleInputChange("total_units_per_lc", e.target.value || null)}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "total_units_per_lc",
+                      e.target.value || null
+                    )
+                  }
                   className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -345,7 +446,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
             {/* LC Information */}
             <div className="border-t border-gray-200 pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">LC Information</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                LC Information
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -354,7 +457,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                   <input
                     type="text"
                     value={formData.lc_number || ""}
-                    onChange={(e) => handleInputChange("lc_number", e.target.value || null)}
+                    onChange={(e) =>
+                      handleInputChange("lc_number", e.target.value || null)
+                    }
                     className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -366,7 +471,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                   <input
                     type="text"
                     value={formData.lc_bank_name || ""}
-                    onChange={(e) => handleInputChange("lc_bank_name", e.target.value || null)}
+                    onChange={(e) =>
+                      handleInputChange("lc_bank_name", e.target.value || null)
+                    }
                     className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -378,7 +485,12 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                   <input
                     type="text"
                     value={formData.lc_bank_branch_name || ""}
-                    onChange={(e) => handleInputChange("lc_bank_branch_name", e.target.value || null)}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "lc_bank_branch_name",
+                        e.target.value || null
+                      )
+                    }
                     className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -389,7 +501,12 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                   </label>
                   <textarea
                     value={formData.lc_bank_branch_address || ""}
-                    onChange={(e) => handleInputChange("lc_bank_branch_address", e.target.value || null)}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "lc_bank_branch_address",
+                        e.target.value || null
+                      )
+                    }
                     rows={3}
                     className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -399,7 +516,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
             {/* PDF Uploads */}
             <div className="border-t border-gray-200 pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">PDF Documents</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                PDF Documents
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {pdfFields.map((field) => (
                   <div key={field.key}>
@@ -423,11 +542,23 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
                         <Upload className="w-8 h-8 mb-2 text-gray-400" />
                         <p className="text-sm text-gray-500">
-                          {formData[field.key as keyof CreatePurchaseHistoryData] ? "File selected" : "Click to upload PDF"}
+                          {formData[
+                            field.key as keyof CreatePurchaseHistoryData
+                          ]
+                            ? "File selected"
+                            : "Click to upload PDF"}
                         </p>
-                        {formData[field.key as keyof CreatePurchaseHistoryData] && (
+                        {formData[
+                          field.key as keyof CreatePurchaseHistoryData
+                        ] && (
                           <p className="text-xs text-gray-400 mt-1">
-                            {(formData[field.key as keyof CreatePurchaseHistoryData] as File)?.name}
+                            {
+                              (
+                                formData[
+                                  field.key as keyof CreatePurchaseHistoryData
+                                ] as File
+                              )?.name
+                            }
                           </p>
                         )}
                       </div>
@@ -470,4 +601,3 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 };
 
 export default PurchaseHistoryModal;
-

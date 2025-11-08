@@ -12,6 +12,7 @@ import {
   FileCheck,
   Receipt,
   AlertCircle,
+  Car as CarIcon,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import {
@@ -23,7 +24,8 @@ import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 const PurchaseHistoryDetails: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [purchaseHistory, setPurchaseHistory] = useState<PurchaseHistory | null>(null);
+  const [purchaseHistory, setPurchaseHistory] =
+    useState<PurchaseHistory | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -37,7 +39,9 @@ const PurchaseHistoryDetails: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await purchaseHistoryApi.getPurchaseHistory(parseInt(id));
+      const response = await purchaseHistoryApi.getPurchaseHistory(
+        parseInt(id)
+      );
       if (response.success && response.data) {
         setPurchaseHistory(response.data);
       } else {
@@ -96,7 +100,9 @@ const PurchaseHistoryDetails: React.FC = () => {
   const getPdfUrl = (path: string | null) => {
     if (!path) return null;
     if (path.startsWith("http")) return path;
-    const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace("/api", "") || "http://localhost:8000";
+    const baseUrl =
+      import.meta.env.VITE_API_BASE_URL?.replace("/api", "") ||
+      "http://localhost:8000";
     return `${baseUrl}${path}`;
   };
 
@@ -150,7 +156,10 @@ const PurchaseHistoryDetails: React.FC = () => {
     { key: "bill_of_lading", label: "Bill of Lading" },
     { key: "invoice_number", label: "Invoice Number" },
     { key: "export_certificate", label: "Export Certificate" },
-    { key: "export_certificate_translated", label: "Export Certificate (Translated)" },
+    {
+      key: "export_certificate_translated",
+      label: "Export Certificate (Translated)",
+    },
     { key: "bill_of_exchange_amount", label: "Bill of Exchange Amount" },
     { key: "custom_duty_copy_3pages", label: "Custom Duty Copy (3 Pages)" },
     { key: "cheque_copy", label: "Cheque Copy" },
@@ -203,6 +212,54 @@ const PurchaseHistoryDetails: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Car Information */}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <CarIcon className="w-6 h-6 text-blue-600" />
+              Car Information
+            </h2>
+            {purchaseHistory.car ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                    Car
+                  </label>
+                  <p className="text-gray-900 font-medium">
+                    {purchaseHistory.car.make} {purchaseHistory.car.model}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                    Reference No.
+                  </label>
+                  <p className="text-gray-900 font-medium">
+                    {purchaseHistory.car.ref_no || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                    Year
+                  </label>
+                  <p className="text-gray-900 font-medium">
+                    {purchaseHistory.car.year || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                    Color
+                  </label>
+                  <p className="text-gray-900 font-medium">
+                    {purchaseHistory.car.color || "N/A"}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-gray-500">
+                No car associated with this purchase history.
+              </p>
+            )}
+          </div>
+
           {/* Purchase Information */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
@@ -323,7 +380,9 @@ const PurchaseHistoryDetails: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {pdfFields.map((field) => {
-                const filePath = purchaseHistory[field.key as keyof PurchaseHistory] as string | null;
+                const filePath = purchaseHistory[
+                  field.key as keyof PurchaseHistory
+                ] as string | null;
                 const hasFile = !!filePath;
 
                 return (
@@ -336,7 +395,9 @@ const PurchaseHistoryDetails: React.FC = () => {
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium text-gray-900">{field.label}</h3>
+                      <h3 className="font-medium text-gray-900">
+                        {field.label}
+                      </h3>
                       {hasFile && (
                         <FileCheck className="w-5 h-5 text-green-500" />
                       )}
@@ -364,7 +425,9 @@ const PurchaseHistoryDetails: React.FC = () => {
                         </button>
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-500 mt-2">No file uploaded</p>
+                      <p className="text-sm text-gray-500 mt-2">
+                        No file uploaded
+                      </p>
                     )}
                   </div>
                 );
@@ -381,9 +444,27 @@ const PurchaseHistoryDetails: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-500 mb-1">
+                  Car
+                </label>
+                <p className="text-gray-900 font-semibold">
+                  {purchaseHistory.car
+                    ? `${purchaseHistory.car.make} ${
+                        purchaseHistory.car.model
+                      }${
+                        purchaseHistory.car.ref_no
+                          ? ` (${purchaseHistory.car.ref_no})`
+                          : ""
+                      }`
+                    : "N/A"}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
                   Record ID
                 </label>
-                <p className="text-gray-900 font-semibold">#{purchaseHistory.id}</p>
+                <p className="text-gray-900 font-semibold">
+                  #{purchaseHistory.id}
+                </p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-500 mb-1">
@@ -426,12 +507,14 @@ const PurchaseHistoryDetails: React.FC = () => {
                 <div className="flex justify-between">
                   <span className="text-blue-100">PDF Documents:</span>
                   <span className="font-bold">
-                    {pdfFields.filter(
-                      (field) =>
-                        purchaseHistory[
-                          field.key as keyof PurchaseHistory
-                        ] as string | null
-                    ).length}{" "}
+                    {
+                      pdfFields.filter(
+                        (field) =>
+                          purchaseHistory[
+                            field.key as keyof PurchaseHistory
+                          ] as string | null
+                      ).length
+                    }{" "}
                     / {pdfFields.length}
                   </span>
                 </div>
@@ -455,4 +538,3 @@ const PurchaseHistoryDetails: React.FC = () => {
 };
 
 export default PurchaseHistoryDetails;
-

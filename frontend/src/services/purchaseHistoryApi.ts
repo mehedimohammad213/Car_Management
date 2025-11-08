@@ -1,7 +1,16 @@
 import { apiClient } from "./apiClient";
 
+export interface PurchaseHistoryCar {
+  id: number;
+  make: string;
+  model: string;
+  ref_no?: string | null;
+  [key: string]: any;
+}
+
 export interface PurchaseHistory {
   id: number;
+  car_id: number | null;
   purchase_date: string | null;
   purchase_amount: number | null;
   govt_duty: string | null;
@@ -26,9 +35,13 @@ export interface PurchaseHistory {
   custom_three: string | null;
   created_at: string;
   updated_at: string;
+
+  // Relationships
+  car?: PurchaseHistoryCar | null;
 }
 
 export interface CreatePurchaseHistoryData {
+  car_id?: number | null;
   purchase_date?: string | null;
   purchase_amount?: number | null;
   govt_duty?: string | null;
@@ -93,9 +106,7 @@ class PurchaseHistoryApi {
   }
 
   // Get single purchase history
-  async getPurchaseHistory(
-    id: number
-  ): Promise<ApiResponse<PurchaseHistory>> {
+  async getPurchaseHistory(id: number): Promise<ApiResponse<PurchaseHistory>> {
     const response = await apiClient.get(`/purchase-history/${id}`);
     return response.data;
   }
@@ -107,7 +118,11 @@ class PurchaseHistoryApi {
     const formData = new FormData();
 
     // Add text fields
-    if (data.purchase_date) formData.append("purchase_date", data.purchase_date);
+    if (data.car_id !== undefined && data.car_id !== null) {
+      formData.append("car_id", data.car_id.toString());
+    }
+    if (data.purchase_date)
+      formData.append("purchase_date", data.purchase_date);
     if (data.purchase_amount !== undefined && data.purchase_amount !== null) {
       formData.append("purchase_amount", data.purchase_amount.toString());
     }
@@ -115,7 +130,8 @@ class PurchaseHistoryApi {
     if (data.cnf_amount !== undefined && data.cnf_amount !== null) {
       formData.append("cnf_amount", data.cnf_amount.toString());
     }
-    if (data.miscellaneous) formData.append("miscellaneous", data.miscellaneous);
+    if (data.miscellaneous)
+      formData.append("miscellaneous", data.miscellaneous);
     if (data.lc_date) formData.append("lc_date", data.lc_date);
     if (data.lc_number) formData.append("lc_number", data.lc_number);
     if (data.lc_bank_name) formData.append("lc_bank_name", data.lc_bank_name);
@@ -142,7 +158,9 @@ class PurchaseHistoryApi {
     ];
 
     pdfFields.forEach((field) => {
-      const file = data[field as keyof CreatePurchaseHistoryData] as File | null;
+      const file = data[
+        field as keyof CreatePurchaseHistoryData
+      ] as File | null;
       if (file) {
         formData.append(field, file);
       }
@@ -164,19 +182,27 @@ class PurchaseHistoryApi {
     const formData = new FormData();
 
     // Add text fields
+    if (data.car_id !== undefined) {
+      formData.append(
+        "car_id",
+        data.car_id !== null ? data.car_id.toString() : ""
+      );
+    }
     if (data.purchase_date !== undefined) {
       formData.append("purchase_date", data.purchase_date || "");
     }
     if (data.purchase_amount !== undefined && data.purchase_amount !== null) {
       formData.append("purchase_amount", data.purchase_amount.toString());
     }
-    if (data.govt_duty !== undefined) formData.append("govt_duty", data.govt_duty || "");
+    if (data.govt_duty !== undefined)
+      formData.append("govt_duty", data.govt_duty || "");
     if (data.cnf_amount !== undefined && data.cnf_amount !== null) {
       formData.append("cnf_amount", data.cnf_amount.toString());
     }
     if (data.miscellaneous !== undefined)
       formData.append("miscellaneous", data.miscellaneous || "");
-    if (data.lc_date !== undefined) formData.append("lc_date", data.lc_date || "");
+    if (data.lc_date !== undefined)
+      formData.append("lc_date", data.lc_date || "");
     if (data.lc_number !== undefined)
       formData.append("lc_number", data.lc_number || "");
     if (data.lc_bank_name !== undefined)
@@ -184,7 +210,10 @@ class PurchaseHistoryApi {
     if (data.lc_bank_branch_name !== undefined)
       formData.append("lc_bank_branch_name", data.lc_bank_branch_name || "");
     if (data.lc_bank_branch_address !== undefined)
-      formData.append("lc_bank_branch_address", data.lc_bank_branch_address || "");
+      formData.append(
+        "lc_bank_branch_address",
+        data.lc_bank_branch_address || ""
+      );
     if (data.total_units_per_lc !== undefined)
       formData.append("total_units_per_lc", data.total_units_per_lc || "");
 
@@ -204,7 +233,9 @@ class PurchaseHistoryApi {
     ];
 
     pdfFields.forEach((field) => {
-      const file = data[field as keyof UpdatePurchaseHistoryData] as File | null;
+      const file = data[
+        field as keyof UpdatePurchaseHistoryData
+      ] as File | null;
       if (file) {
         formData.append(field, file);
       }
@@ -226,4 +257,3 @@ class PurchaseHistoryApi {
 }
 
 export const purchaseHistoryApi = new PurchaseHistoryApi();
-

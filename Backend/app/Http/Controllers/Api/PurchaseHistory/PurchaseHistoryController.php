@@ -33,10 +33,10 @@ class PurchaseHistoryController extends Controller
 
         // Generate unique filename
         $filename = time() . '_' . $fieldName . '_' . $file->getClientOriginalName();
-        
+
         // Move file to public folder
         $file->move($uploadDir, $filename);
-        
+
         // Return relative path from public folder
         return '/purchase_history_pdfs/' . $filename;
     }
@@ -60,7 +60,7 @@ class PurchaseHistoryController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $query = PurchaseHistory::query();
+            $query = PurchaseHistory::with('car');
 
             // Search functionality
             if ($request->filled('search')) {
@@ -109,7 +109,14 @@ class PurchaseHistoryController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
+            $request->merge([
+                'car_id' => $request->input('car_id') !== null && $request->input('car_id') !== ''
+                    ? $request->input('car_id')
+                    : null,
+            ]);
+
             $validator = Validator::make($request->all(), [
+                'car_id' => 'nullable|exists:cars,id',
                 'purchase_date' => 'nullable|date',
                 'purchase_amount' => 'nullable|numeric',
                 'govt_duty' => 'nullable|string',
@@ -143,6 +150,7 @@ class PurchaseHistoryController extends Controller
             }
 
             $data = $request->only([
+                'car_id',
                 'purchase_date',
                 'purchase_amount',
                 'govt_duty',
@@ -177,7 +185,7 @@ class PurchaseHistoryController extends Controller
                 }
             }
 
-            $purchaseHistory = PurchaseHistory::create($data);
+            $purchaseHistory = PurchaseHistory::create($data)->load('car');
 
             return response()->json([
                 'success' => true,
@@ -198,7 +206,7 @@ class PurchaseHistoryController extends Controller
     public function show($id): JsonResponse
     {
         try {
-            $purchaseHistory = PurchaseHistory::find($id);
+            $purchaseHistory = PurchaseHistory::with('car')->find($id);
 
             if (!$purchaseHistory) {
                 return response()->json([
@@ -235,7 +243,14 @@ class PurchaseHistoryController extends Controller
                 ], 404);
             }
 
+            $request->merge([
+                'car_id' => $request->input('car_id') !== null && $request->input('car_id') !== ''
+                    ? $request->input('car_id')
+                    : null,
+            ]);
+
             $validator = Validator::make($request->all(), [
+                'car_id' => 'nullable|exists:cars,id',
                 'purchase_date' => 'nullable|date',
                 'purchase_amount' => 'nullable|numeric',
                 'govt_duty' => 'nullable|string',
@@ -269,6 +284,7 @@ class PurchaseHistoryController extends Controller
             }
 
             $data = $request->only([
+                'car_id',
                 'purchase_date',
                 'purchase_amount',
                 'govt_duty',
@@ -310,7 +326,7 @@ class PurchaseHistoryController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $purchaseHistory->fresh(),
+                'data' => $purchaseHistory->fresh()->load('car'),
                 'message' => 'Purchase history updated successfully'
             ]);
         } catch (\Exception $e) {

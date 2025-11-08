@@ -14,13 +14,17 @@ import Pagination from "../../components/common/Pagination";
 
 const PurchaseHistoryPage: React.FC = () => {
   const navigate = useNavigate();
-  const [purchaseHistories, setPurchaseHistories] = useState<PurchaseHistory[]>([]);
+  const [purchaseHistories, setPurchaseHistories] = useState<PurchaseHistory[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "update">("create");
-  const [selectedPurchaseHistory, setSelectedPurchaseHistory] = useState<PurchaseHistory | null>(null);
+  const [selectedPurchaseHistory, setSelectedPurchaseHistory] =
+    useState<PurchaseHistory | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [purchaseHistoryToDelete, setPurchaseHistoryToDelete] = useState<PurchaseHistory | null>(null);
+  const [purchaseHistoryToDelete, setPurchaseHistoryToDelete] =
+    useState<PurchaseHistory | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Filters
@@ -54,7 +58,7 @@ const PurchaseHistoryPage: React.FC = () => {
       if (purchaseDateTo) params.purchase_date_to = purchaseDateTo;
 
       const response = await purchaseHistoryApi.getPurchaseHistories(params);
-      
+
       setPurchaseHistories(response.data || []);
       setTotalPages(response.last_page || 1);
       setTotalItems(response.total || 0);
@@ -166,7 +170,9 @@ const PurchaseHistoryPage: React.FC = () => {
   const getPdfUrl = (path: string | null) => {
     if (!path) return null;
     if (path.startsWith("http")) return path;
-    const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace("/api", "") || "http://localhost:8000";
+    const baseUrl =
+      import.meta.env.VITE_API_BASE_URL?.replace("/api", "") ||
+      "http://localhost:8000";
     return `${baseUrl}${path}`;
   };
 
@@ -176,8 +182,12 @@ const PurchaseHistoryPage: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Purchase History</h1>
-            <p className="text-gray-600 mt-1">Manage purchase history records</p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Purchase History
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Manage purchase history records
+            </p>
           </div>
           <button
             onClick={handleCreate}
@@ -270,11 +280,22 @@ const PurchaseHistoryPage: React.FC = () => {
                 <thead className="bg-blue-600 text-white">
                   <tr>
                     <th className="px-6 py-4 text-left font-semibold">ID</th>
-                    <th className="px-6 py-4 text-left font-semibold">Purchase Date</th>
-                    <th className="px-6 py-4 text-left font-semibold">Purchase Amount</th>
-                    <th className="px-6 py-4 text-left font-semibold">LC Number</th>
-                    <th className="px-6 py-4 text-left font-semibold">LC Bank</th>
-                    <th className="px-6 py-4 text-left font-semibold">Actions</th>
+                    <th className="px-6 py-4 text-left font-semibold">Car</th>
+                    <th className="px-6 py-4 text-left font-semibold">
+                      Purchase Date
+                    </th>
+                    <th className="px-6 py-4 text-left font-semibold">
+                      Purchase Amount
+                    </th>
+                    <th className="px-6 py-4 text-left font-semibold">
+                      LC Number
+                    </th>
+                    <th className="px-6 py-4 text-left font-semibold">
+                      LC Bank
+                    </th>
+                    <th className="px-6 py-4 text-left font-semibold">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -289,11 +310,25 @@ const PurchaseHistoryPage: React.FC = () => {
                       }}
                     >
                       <td className="px-6 py-4">{ph.id}</td>
-                      <td className="px-6 py-4">{formatDate(ph.purchase_date)}</td>
-                      <td className="px-6 py-4">{formatCurrency(ph.purchase_amount)}</td>
+                      <td className="px-6 py-4">
+                        {ph.car
+                          ? `${ph.car.make} ${ph.car.model}${
+                              ph.car.ref_no ? ` (${ph.car.ref_no})` : ""
+                            }`
+                          : "N/A"}
+                      </td>
+                      <td className="px-6 py-4">
+                        {formatDate(ph.purchase_date)}
+                      </td>
+                      <td className="px-6 py-4">
+                        {formatCurrency(ph.purchase_amount)}
+                      </td>
                       <td className="px-6 py-4">{ph.lc_number || "N/A"}</td>
                       <td className="px-6 py-4">{ph.lc_bank_name || "N/A"}</td>
-                      <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                      <td
+                        className="px-6 py-4"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleView(ph)}
@@ -368,4 +403,3 @@ const PurchaseHistoryPage: React.FC = () => {
 };
 
 export default PurchaseHistoryPage;
-
