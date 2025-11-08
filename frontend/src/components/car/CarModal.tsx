@@ -103,6 +103,31 @@ const CarModal: React.FC<CarModalProps> = ({
       value: selectedCar.seats || "N/A",
     },
     {
+      label: "Overall Grade",
+      value:
+        selectedCar.grade_overall !== undefined &&
+        selectedCar.grade_overall !== null
+          ? selectedCar.grade_overall
+          : "N/A",
+    },
+    {
+      label: "Engine No.",
+      value: selectedCar.engine_number || "N/A",
+    },
+    {
+      label: "Chassis No.",
+      value:
+        selectedCar.chassis_no_full || selectedCar.chassis_no_masked || "N/A",
+    },
+    {
+      label: "No. of Keys",
+      value:
+        selectedCar.number_of_keys !== undefined &&
+        selectedCar.number_of_keys !== null
+          ? selectedCar.number_of_keys
+          : "N/A",
+    },
+    {
       label: "Status",
       value: (
         <span
