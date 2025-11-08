@@ -431,7 +431,7 @@ const UserCarCatalog: React.FC = () => {
             aaScore.length > 0 ? aaScore.join(" ") : "N/A",
             keyFeatures.length > 0 ? keyFeatures.join(", ") : "N/A",
             car.price_amount
-              ? `$${car.price_amount.toLocaleString()}`
+              ? `BDT ${car.price_amount.toLocaleString()}`
               : "Price on request",
           ];
         } catch (error) {

@@ -1,9 +1,15 @@
 export const formatPrice = (amount?: number, currency?: string) => {
-  if (!amount) return "Price on request";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency || "USD",
-  }).format(amount);
+  if (amount === undefined || amount === null) return "Price on request";
+
+  const formattedAmount = amount.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  const resolvedCurrency = (currency || "BDT").toUpperCase();
+  const currencyLabel = resolvedCurrency === "USD" ? "BDT" : resolvedCurrency;
+
+  return `${currencyLabel} ${formattedAmount}`;
 };
 
 export const getStatusColor = (status: string) => {
