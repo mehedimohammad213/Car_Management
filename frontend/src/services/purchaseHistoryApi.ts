@@ -166,11 +166,7 @@ class PurchaseHistoryApi {
       }
     });
 
-    const response = await apiClient.post("/purchase-history", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await apiClient.post("/purchase-history", formData);
     return response.data;
   }
 
@@ -179,6 +175,53 @@ class PurchaseHistoryApi {
     id: number,
     data: UpdatePurchaseHistoryData
   ): Promise<ApiResponse<PurchaseHistory>> {
+    const pdfFields: (keyof UpdatePurchaseHistoryData)[] = [
+      "bill_of_lading",
+      "invoice_number",
+      "export_certificate",
+      "export_certificate_translated",
+      "bill_of_exchange_amount",
+      "custom_duty_copy_3pages",
+      "cheque_copy",
+      "certificate",
+      "custom_one",
+      "custom_two",
+      "custom_three",
+    ];
+
+    const hasFileUploads = pdfFields.some((field) => {
+      const value = data[field];
+      return value instanceof File;
+    });
+
+    if (!hasFileUploads) {
+      const payload: Record<string, any> = {};
+
+      const baseFields: (keyof UpdatePurchaseHistoryData)[] = [
+        "car_id",
+        "purchase_date",
+        "purchase_amount",
+        "govt_duty",
+        "cnf_amount",
+        "miscellaneous",
+        "lc_date",
+        "lc_number",
+        "lc_bank_name",
+        "lc_bank_branch_name",
+        "lc_bank_branch_address",
+        "total_units_per_lc",
+      ];
+
+      baseFields.forEach((field) => {
+        if (field in data) {
+          payload[field] = data[field] === undefined ? null : data[field];
+        }
+      });
+
+      const response = await apiClient.put(`/purchase-history/${id}`, payload);
+      return response.data;
+    }
+
     const formData = new FormData();
 
     // Add text fields
@@ -218,20 +261,6 @@ class PurchaseHistoryApi {
       formData.append("total_units_per_lc", data.total_units_per_lc || "");
 
     // Add PDF files
-    const pdfFields = [
-      "bill_of_lading",
-      "invoice_number",
-      "export_certificate",
-      "export_certificate_translated",
-      "bill_of_exchange_amount",
-      "custom_duty_copy_3pages",
-      "cheque_copy",
-      "certificate",
-      "custom_one",
-      "custom_two",
-      "custom_three",
-    ];
-
     pdfFields.forEach((field) => {
       const file = data[
         field as keyof UpdatePurchaseHistoryData
@@ -241,11 +270,7 @@ class PurchaseHistoryApi {
       }
     });
 
-    const response = await apiClient.put(`/purchase-history/${id}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await apiClient.put(`/purchase-history/${id}`, formData);
     return response.data;
   }
 
