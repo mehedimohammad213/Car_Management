@@ -50,9 +50,10 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     custom_three: null,
   });
 
-  // Separate fields for dollar and BDT amounts
-  const [dollarAmount, setDollarAmount] = useState<string>("");
+  // Separate fields for foreign currency and BDT amounts
+  const [foreignAmount, setForeignAmount] = useState<string>("");
   const [bdtAmount, setBdtAmount] = useState<string>("");
+  const [currencyType, setCurrencyType] = useState<"dollar" | "yen">("dollar");
   const [existingFiles, setExistingFiles] = useState<Record<string, string>>(
     {}
   );
@@ -89,7 +90,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       if (purchaseHistory.purchase_amount) {
         // For now, we'll set default values. User can adjust
         // In a real scenario, you might want to store these separately
-        setDollarAmount("");
+        setForeignAmount("");
         setBdtAmount("");
       }
 
@@ -169,7 +170,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         custom_two: null,
         custom_three: null,
       });
-      setDollarAmount("");
+      setForeignAmount("");
       setBdtAmount("");
       setExistingFiles({});
     }
@@ -177,14 +178,14 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
   // Calculate purchase_amount when dollar or BDT changes
   useEffect(() => {
-    const dollar = parseFloat(dollarAmount) || 0;
+    const foreign = parseFloat(foreignAmount) || 0;
     const bdt = parseFloat(bdtAmount) || 0;
-    const calculated = dollar * bdt;
+    const calculated = foreign * bdt;
     setFormData((prev) => ({
       ...prev,
       purchase_amount: calculated > 0 ? calculated : null,
     }));
-  }, [dollarAmount, bdtAmount]);
+  }, [foreignAmount, bdtAmount]);
 
   const handleInputChange = (
     field: keyof CreatePurchaseHistoryData,
@@ -334,16 +335,49 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Purchase Amount Calculation
               </h3>
+              <div className="flex flex-wrap items-center gap-4 mb-4">
+                <span className="text-sm font-medium text-gray-700">
+                  Select Currency:
+                </span>
+                <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={currencyType === "dollar"}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setCurrencyType("dollar");
+                      }
+                    }}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  Dollar
+                </label>
+                <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={currencyType === "yen"}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setCurrencyType("yen");
+                      }
+                    }}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  Yen
+                </label>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Dollar Amount ($)
+                    {currencyType === "dollar"
+                      ? "Dollar Amount (USD)"
+                      : "Yen Amount (JPY)"}
                   </label>
                   <input
                     type="number"
                     step="0.01"
-                    value={dollarAmount}
-                    onChange={(e) => setDollarAmount(e.target.value)}
+                    value={foreignAmount}
+                    onChange={(e) => setForeignAmount(e.target.value)}
                     placeholder="0.00"
                     className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -372,7 +406,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                     className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-700 font-semibold"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Auto-calculated: Dollar × BDT
+                    Auto-calculated:{" "}
+                    {currencyType === "dollar" ? "Dollar" : "Yen"} × BDT
                   </p>
                 </div>
               </div>
