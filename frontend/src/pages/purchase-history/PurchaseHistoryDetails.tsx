@@ -345,14 +345,6 @@ const PurchaseHistoryDetails: React.FC = () => {
                   {purchaseHistory.miscellaneous || "N/A"}
                 </p>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">
-                  Total Units per LC
-                </label>
-                <p className="text-gray-900 font-medium">
-                  {purchaseHistory.total_units_per_lc || "N/A"}
-                </p>
-              </div>
             </div>
           </div>
 
@@ -378,6 +370,14 @@ const PurchaseHistoryDetails: React.FC = () => {
                 </label>
                 <p className="text-gray-900 font-medium">
                   {purchaseHistory.lc_number || "N/A"}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  Total Units per LC
+                </label>
+                <p className="text-gray-900 font-medium">
+                  {purchaseHistory.total_units_per_lc || "N/A"}
                 </p>
               </div>
               <div>
