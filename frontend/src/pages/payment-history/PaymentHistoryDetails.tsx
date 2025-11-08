@@ -105,13 +105,21 @@ const PaymentHistoryDetails: React.FC = () => {
     });
   };
 
-  const formatCurrency = (amount: number | null) => {
-    if (amount === null) return "N/A";
+  const toNumber = (value: number | string | null | undefined): number => {
+    if (value === null || value === undefined) return 0;
+    if (typeof value === "number") return value;
+    const parsed = parseFloat(value);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  };
+
+  const formatCurrency = (amount: number | string | null | undefined) => {
+    if (amount === null || amount === undefined) return "N/A";
+    const numericAmount = toNumber(amount);
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "BDT",
       minimumFractionDigits: 2,
-    }).format(amount);
+    }).format(numericAmount);
   };
 
   if (loading) {
@@ -139,7 +147,7 @@ const PaymentHistoryDetails: React.FC = () => {
 
   const totalInstallmentAmount =
     paymentHistory.installments?.reduce(
-      (sum, inst) => sum + (inst.amount || 0),
+      (sum, inst) => sum + toNumber(inst.amount),
       0
     ) || 0;
 
@@ -149,7 +157,7 @@ const PaymentHistoryDetails: React.FC = () => {
     paymentHistory.installments?.[1]?.amount ?? null;
 
   const remainingBalance = Math.max(
-    (paymentHistory.purchase_amount || 0) - totalInstallmentAmount,
+    toNumber(paymentHistory.purchase_amount) - totalInstallmentAmount,
     0
   );
 
