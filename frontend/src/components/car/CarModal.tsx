@@ -88,8 +88,7 @@ const CarModal: React.FC<CarModalProps> = ({
     {
       label: "Reference No.",
       value:
-        selectedCar.ref_no ||
-        `AA${selectedCar.id.toString().padStart(6, "0")}`,
+        selectedCar.ref_no || `AA${selectedCar.id.toString().padStart(6, "0")}`,
     },
     {
       label: "Registration Year",
@@ -215,7 +214,7 @@ const CarModal: React.FC<CarModalProps> = ({
                     </div>
                   )}
 
-                  {/* PDF Documents at the end of the row */}
+                  {/* Auction Sheet at the end of the row */}
                   {!pdfLoading.get(selectedCar.id) &&
                     pdfFiles.get(selectedCar.id) &&
                     pdfFiles.get(selectedCar.id)!.length > 0 && (
@@ -227,11 +226,11 @@ const CarModal: React.FC<CarModalProps> = ({
                             onClick={() =>
                               onDownloadPdf(pdf.url, pdf.name, selectedCar.id)
                             }
-                            title="Download PDF Document"
+                            title="Download Auction Sheet"
                           >
                             <Download className="w-4 h-4 text-red-600 group-hover:text-red-700 mb-1" />
                             <span className="text-xs text-red-600 font-medium">
-                              Document
+                              Auction Sheet
                             </span>
                           </div>
                         ))}
