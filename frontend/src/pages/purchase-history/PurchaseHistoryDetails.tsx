@@ -89,12 +89,28 @@ const PurchaseHistoryDetails: React.FC = () => {
     });
   };
 
-  const formatCurrency = (amount: number | null) => {
-    if (amount === null) return "N/A";
+  const toNumber = (
+    value: number | string | null | undefined
+  ): number | null => {
+    if (value === null || value === undefined) return null;
+    if (typeof value === "number") return value;
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    const parsed = parseFloat(trimmed);
+    return Number.isNaN(parsed) ? null : parsed;
+  };
+
+  const formatCurrency = (
+    amount: number | string | null | undefined
+  ): string => {
+    if (amount === null || amount === undefined) return "N/A";
+    if (typeof amount === "string" && !amount.trim()) return "N/A";
+    const numericAmount = toNumber(amount);
+    if (numericAmount === null) return "N/A";
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-    }).format(amount);
+    }).format(numericAmount);
   };
 
   const getPdfUrl = (path: string | null) => {
@@ -168,6 +184,25 @@ const PurchaseHistoryDetails: React.FC = () => {
     { key: "custom_two", label: "Custom Two" },
     { key: "custom_three", label: "Custom Three" },
   ];
+
+  const purchaseAmountValue = toNumber(purchaseHistory.purchase_amount);
+  const govtDutyValue = toNumber(purchaseHistory.govt_duty);
+  const cnfAmountValue = toNumber(purchaseHistory.cnf_amount);
+  const miscellaneousValue = toNumber(purchaseHistory.miscellaneous);
+
+  const hasCostValues = [
+    purchaseAmountValue,
+    govtDutyValue,
+    cnfAmountValue,
+    miscellaneousValue,
+  ].some((value) => value !== null);
+
+  const calculatedPurchaseAmount = hasCostValues
+    ? (purchaseAmountValue || 0) +
+      (govtDutyValue || 0) +
+      (cnfAmountValue || 0) +
+      (miscellaneousValue || 0)
+    : null;
 
   return (
     <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
@@ -495,27 +530,29 @@ const PurchaseHistoryDetails: React.FC = () => {
                   {formatCurrency(purchaseHistory.purchase_amount)}
                 </span>
               </div>
-              {purchaseHistory.cnf_amount && (
-                <div className="flex justify-between">
-                  <span className="text-blue-100">CNF Amount:</span>
-                  <span className="font-bold">
-                    {formatCurrency(purchaseHistory.cnf_amount)}
-                  </span>
-                </div>
-              )}
+              <div className="flex justify-between">
+                <span className="text-blue-100">Govt Duty:</span>
+                <span className="font-bold">
+                  {formatCurrency(purchaseHistory.govt_duty)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-blue-100">CNF Amount:</span>
+                <span className="font-bold">
+                  {formatCurrency(purchaseHistory.cnf_amount)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-blue-100">Miscellaneous:</span>
+                <span className="font-bold">
+                  {formatCurrency(purchaseHistory.miscellaneous)}
+                </span>
+              </div>
               <div className="pt-3 border-t border-blue-400">
                 <div className="flex justify-between">
-                  <span className="text-blue-100">PDF Documents:</span>
+                  <span className="text-blue-100">Total:</span>
                   <span className="font-bold">
-                    {
-                      pdfFields.filter(
-                        (field) =>
-                          purchaseHistory[
-                            field.key as keyof PurchaseHistory
-                          ] as string | null
-                      ).length
-                    }{" "}
-                    / {pdfFields.length}
+                    {formatCurrency(calculatedPurchaseAmount)}
                   </span>
                 </div>
               </div>
