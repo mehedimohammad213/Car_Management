@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -279,7 +280,7 @@ const Dashboard: React.FC = () => {
                           <div className="flex items-center gap-2 mb-2">
                             <DollarSignIcon className="w-4 h-4 text-green-600" />
                             <p className="font-bold text-slate-900 dark:text-white text-lg">
-                              ${order.total_amount.toLocaleString()}
+                              BDT {order.total_amount.toLocaleString()}
                             </p>
                           </div>
                           <span
@@ -381,7 +382,7 @@ const Dashboard: React.FC = () => {
                     Total Stock Value
                   </p>
                   <p className="text-3xl font-bold text-slate-900 dark:text-white">
-                    ${dashboardData.totalStockValue.toLocaleString()}
+                    BDT {dashboardData.totalStockValue.toLocaleString()}
                   </p>
                   <p className="text-xs text-slate-500 dark:text-gray-400 mt-2">
                     vs last month
@@ -517,7 +518,9 @@ const Dashboard: React.FC = () => {
                     axisLine={false}
                     tickLine={false}
                     tick={{ fontSize: 12, fill: "#64748b" }}
-                    tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                    tickFormatter={(value) =>
+                      `BDT ${(value / 1000).toFixed(0)}k`
+                    }
                   />
                   <Tooltip
                     contentStyle={{
@@ -527,7 +530,7 @@ const Dashboard: React.FC = () => {
                       boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                     }}
                     formatter={(value: number) => [
-                      `$${value.toLocaleString()}`,
+                      `BDT ${value.toLocaleString()}`,
                       "Sales",
                     ]}
                   />
@@ -693,7 +696,7 @@ const Dashboard: React.FC = () => {
                       Avg. Order Value
                     </span>
                     <span className="text-lg font-semibold text-slate-900 dark:text-white">
-                      $28,450
+                      BDT 28,450
                     </span>
                   </div>
                 </div>
@@ -787,7 +790,7 @@ const Dashboard: React.FC = () => {
                       Stock Value
                     </span>
                     <span className="text-lg font-semibold text-slate-900 dark:text-white">
-                      ${dashboardData.totalStockValue.toLocaleString()}
+                      BDT {dashboardData.totalStockValue.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex items-center justify-between mt-2">
