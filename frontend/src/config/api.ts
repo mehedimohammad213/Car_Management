@@ -1,7 +1,10 @@
 // Get API base URL from environment variable or use default
 const getApiBaseUrl = (): string => {
   // @ts-ignore - Vite environment variables
-  return import.meta.env?.VITE_API_BASE_URL || "http://localhost:8000/api";
+  return (
+    import.meta.env?.VITE_API_BASE_URL ||
+    "https://backend.dreamagentcarvision.com/api"
+  );
 };
 
 export const API_BASE_URL = getApiBaseUrl();
