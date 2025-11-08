@@ -46,6 +46,80 @@ const CarModal: React.FC<CarModalProps> = ({
 }) => {
   if (!showCarModal || !selectedCar) return null;
 
+  const specificationItems: Array<{
+    label: string;
+    value: React.ReactNode;
+  }> = [
+    {
+      label: "Mileage",
+      value: selectedCar.mileage_km
+        ? `${selectedCar.mileage_km.toLocaleString()} km`
+        : "N/A",
+    },
+    {
+      label: "Year",
+      value: selectedCar.year || "N/A",
+    },
+    {
+      label: "Engine",
+      value: selectedCar.engine_cc
+        ? `${selectedCar.engine_cc.toLocaleString()} cc`
+        : "N/A",
+    },
+    {
+      label: "Transmission",
+      value: selectedCar.transmission || "N/A",
+    },
+    {
+      label: "Drivetrain",
+      value:
+        (selectedCar as any).drive_type ||
+        (selectedCar as any).drivetrain ||
+        "N/A",
+    },
+    {
+      label: "Steering",
+      value: selectedCar.steering || "N/A",
+    },
+    {
+      label: "Fuel",
+      value: selectedCar.fuel || "N/A",
+    },
+    {
+      label: "Reference No.",
+      value:
+        selectedCar.ref_no ||
+        `AA${selectedCar.id.toString().padStart(6, "0")}`,
+    },
+    {
+      label: "Registration Year",
+      value: selectedCar.year || "N/A",
+    },
+    {
+      label: "Exterior Color",
+      value: selectedCar.color || "N/A",
+    },
+    {
+      label: "Seating Capacity",
+      value: selectedCar.seats || "N/A",
+    },
+    {
+      label: "Status",
+      value: (
+        <span
+          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+            selectedCar.status
+          )}`}
+        >
+          {selectedCar.status
+            ? selectedCar.status.charAt(0).toUpperCase() +
+              selectedCar.status.slice(1)
+            : "N/A"}
+        </span>
+      ),
+    },
+  ];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop with blur effect */}
@@ -178,99 +252,21 @@ const CarModal: React.FC<CarModalProps> = ({
                   </h3>
                 </div>
                 <div className="space-y-3">
-                  {/* Two Column Specifications Grid */}
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    {/* Left Column */}
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Mileage:</span>
-                        <span className="font-semibold text-gray-900">
-                          {selectedCar.mileage_km
-                            ? `${selectedCar.mileage_km.toLocaleString()} km`
-                            : "N/A"}
+                  {/* Refined Specifications Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    {specificationItems.map(({ label, value }) => (
+                      <div
+                        key={label}
+                        className="rounded-xl border border-gray-100 bg-gradient-to-br from-white to-gray-50 px-4 py-3 shadow-sm"
+                      >
+                        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                          {label}
                         </span>
+                        <div className="mt-2 text-sm font-semibold text-gray-900">
+                          {value}
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Year:</span>
-                        <span className="font-semibold text-gray-900">
-                          {selectedCar.year || "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Engine:</span>
-                        <span className="font-semibold text-gray-900">
-                          {selectedCar.engine_cc
-                            ? `${selectedCar.engine_cc.toLocaleString()} cc`
-                            : "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Trans.:</span>
-                        <span className="font-semibold text-gray-900">
-                          {selectedCar.transmission || "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Drivetrain:</span>
-                        <span className="font-semibold text-gray-900">
-                          {(selectedCar as any).drive_type ||
-                            (selectedCar as any).drivetrain ||
-                            "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Steering:</span>
-                        <span className="font-semibold text-gray-900">
-                          {selectedCar.steering || "-"}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Right Column */}
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Fuel:</span>
-                        <span className="font-semibold text-gray-900">
-                          {selectedCar.fuel || "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Ref No.:</span>
-                        <span className="font-semibold text-gray-900">
-                          {selectedCar.ref_no ||
-                            `AA${selectedCar.id.toString().padStart(6, "0")}`}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Registration:</span>
-                        <span className="font-semibold text-gray-900">
-                          {selectedCar.year || "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Color:</span>
-                        <span className="font-semibold text-gray-900">
-                          {selectedCar.color || "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Seats:</span>
-                        <span className="font-semibold text-gray-900">
-                          {selectedCar.seats || "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Status:</span>
-                        <span
-                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                            selectedCar.status
-                          )}`}
-                        >
-                          {selectedCar.status?.charAt(0).toUpperCase() +
-                            selectedCar.status?.slice(1)}
-                        </span>
-                      </div>
-                    </div>
+                    ))}
                   </div>
 
                   {/* Stock Information - Full Width */}
