@@ -5,7 +5,6 @@ import {
   Edit,
   Trash2,
   Calendar,
-  DollarSign,
   Building2,
   User,
   CreditCard,
@@ -17,6 +16,7 @@ import {
   Car,
   Download,
 } from "lucide-react";
+import { CurrencyBDTIcon } from "../../components/icons/CurrencyBDTIcon";
 import { toast } from "react-toastify";
 import {
   paymentHistoryApi,
@@ -268,7 +268,7 @@ const PaymentHistoryDetails: React.FC = () => {
                   Purchase Amount
                 </label>
                 <div className="flex items-center gap-2 text-gray-900 font-medium">
-                  <DollarSign className="w-4 h-4 text-gray-400" />
+                  <CurrencyBDTIcon className="w-4 h-4 text-gray-400" />
                   {formatCurrency(paymentHistory.purchase_amount)}
                 </div>
               </div>
@@ -394,7 +394,7 @@ const PaymentHistoryDetails: React.FC = () => {
                           Amount
                         </label>
                         <div className="flex items-center gap-2 text-gray-900 font-medium">
-                          <DollarSign className="w-4 h-4 text-gray-400" />
+                          <CurrencyBDTIcon className="w-4 h-4 text-gray-400" />
                           {formatCurrency(installment.amount)}
                         </div>
                       </div>
@@ -403,7 +403,7 @@ const PaymentHistoryDetails: React.FC = () => {
                           Balance
                         </label>
                         <div className="flex items-center gap-2 text-gray-900 font-medium">
-                          <DollarSign className="w-4 h-4 text-gray-400" />
+                          <CurrencyBDTIcon className="w-4 h-4 text-gray-400" />
                           {formatCurrency(installment.balance)}
                         </div>
                       </div>

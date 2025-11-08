@@ -7,13 +7,13 @@ import {
   FileText,
   Download,
   Calendar,
-  DollarSign,
   Building2,
   FileCheck,
   Receipt,
   AlertCircle,
   Car as CarIcon,
 } from "lucide-react";
+import { CurrencyBDTIcon } from "../../components/icons/CurrencyBDTIcon";
 import { toast } from "react-toastify";
 import {
   purchaseHistoryApi,
@@ -107,9 +107,9 @@ const PurchaseHistoryDetails: React.FC = () => {
     if (typeof amount === "string" && !amount.trim()) return "N/A";
     const numericAmount = toNumber(amount);
     if (numericAmount === null) return "N/A";
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "BDT",
     }).format(numericAmount);
   };
 
@@ -316,7 +316,7 @@ const PurchaseHistoryDetails: React.FC = () => {
                   Purchase Amount
                 </label>
                 <div className="flex items-center gap-2 text-gray-900 font-medium">
-                  <DollarSign className="w-4 h-4 text-gray-400" />
+                  <CurrencyBDTIcon className="w-4 h-4 text-gray-400" />
                   {formatCurrency(purchaseHistory.purchase_amount)}
                 </div>
               </div>
@@ -333,7 +333,7 @@ const PurchaseHistoryDetails: React.FC = () => {
                   CNF Amount
                 </label>
                 <div className="flex items-center gap-2 text-gray-900 font-medium">
-                  <DollarSign className="w-4 h-4 text-gray-400" />
+                  <CurrencyBDTIcon className="w-4 h-4 text-gray-400" />
                   {formatCurrency(purchaseHistory.cnf_amount)}
                 </div>
               </div>

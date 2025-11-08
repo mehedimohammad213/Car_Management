@@ -54,7 +54,7 @@ const PaymentHistoryPage: React.FC = () => {
       if (purchaseDateTo) params.purchase_date_to = purchaseDateTo;
 
       const response = await paymentHistoryApi.getPaymentHistories(params);
-      
+
       setPaymentHistories(response.data || []);
       setTotalPages(response.last_page || 1);
       setTotalItems(response.total || 0);
@@ -157,9 +157,9 @@ const PaymentHistoryPage: React.FC = () => {
 
   const formatCurrency = (amount: number | null) => {
     if (amount === null) return "N/A";
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "BDT",
     }).format(amount);
   };
 
@@ -382,4 +382,3 @@ const PaymentHistoryPage: React.FC = () => {
 };
 
 export default PaymentHistoryPage;
-

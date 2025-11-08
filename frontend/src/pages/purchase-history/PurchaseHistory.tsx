@@ -161,9 +161,9 @@ const PurchaseHistoryPage: React.FC = () => {
 
   const formatCurrency = (amount: number | null) => {
     if (amount === null) return "N/A";
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "BDT",
     }).format(amount);
   };
 
