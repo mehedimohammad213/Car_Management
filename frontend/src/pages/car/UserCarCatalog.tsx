@@ -45,7 +45,7 @@ const UserCarCatalog: React.FC = () => {
   const [fuelFilter, setFuelFilter] = useState("");
   const [colorFilter, setColorFilter] = useState("");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
-  const [sortBy, setSortBy] = useState("created_at");
+  const [sortBy, setSortBy] = useState("price_amount");
   const [sortDirection, setSortDirection] = useState("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(12);
@@ -133,7 +133,15 @@ const UserCarCatalog: React.FC = () => {
 
       if (response.success && response.data.data) {
         console.log("Setting cars:", response.data.data);
-        setCars(response.data.data);
+        const processedCars = [...response.data.data];
+        if (sortBy === "price_amount") {
+          processedCars.sort((a, b) => {
+            const priceA = Number((a as any).price_amount) || 0;
+            const priceB = Number((b as any).price_amount) || 0;
+            return sortDirection === "asc" ? priceA - priceB : priceB - priceA;
+          });
+        }
+        setCars(processedCars);
         setTotalPages(response.data.last_page || 1);
         setTotalItems(response.data.total || 0);
       } else {
@@ -613,7 +621,7 @@ const UserCarCatalog: React.FC = () => {
     setFuelFilter("");
     setColorFilter("");
     setPriceRange({ min: "", max: "" });
-    setSortBy("created_at");
+    setSortBy("price_amount");
     setSortDirection("desc");
     setCurrentPage(1);
     setShowAdvancedFilters(false);
