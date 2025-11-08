@@ -29,7 +29,7 @@ type NavItem = {
 
 const BdtIcon: React.FC<{ className?: string }> = ({ className }) => (
   <span
-    className={`inline-flex items-center justify-center font-extrabold leading-none text-lg text-gray-500 dark:text-gray-300 ${
+    className={`inline-flex items-center justify-center font-extrabold leading-none text-lg text-current ${
       className ?? ""
     }`}
   >
