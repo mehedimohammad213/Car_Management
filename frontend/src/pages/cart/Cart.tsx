@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { TrashIcon, MinusIcon, PlusIcon, ArrowLeftIcon } from "lucide-react";
@@ -134,7 +136,7 @@ const Cart: React.FC = () => {
 
   const subtotal = getTotalPrice();
   const tax = subtotal * 0.08; // 8% tax
-  const shipping = subtotal > 50000 ? 0 : 500; // Free shipping over $50,000
+  const shipping = subtotal > 50000 ? 0 : 500; // Free shipping over BDT 50,000
   const total = subtotal + tax + shipping;
 
   return (
@@ -166,7 +168,7 @@ const Cart: React.FC = () => {
                 </div>
                 <div className="text-left sm:text-right">
                   <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                    ${item.car.price_amount?.toLocaleString()}
+                    BDT {item.car.price_amount?.toLocaleString()}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     per unit
@@ -214,10 +216,8 @@ const Cart: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between sm:justify-end space-x-4">
                   <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                    $
-                    {(
-                      (item.car.price_amount || 0) * item.quantity
-                    ).toLocaleString()}
+                    BDT{" "}
+                    {((item.car.price_amount || 0) * item.quantity).toLocaleString()}
                   </p>
                   <button
                     type="button"
@@ -251,22 +251,22 @@ const Cart: React.FC = () => {
             <div className="space-y-3">
               <div className="flex justify-between text-gray-600 dark:text-gray-400">
                 <span>Subtotal</span>
-                <span>${subtotal.toLocaleString()}</span>
+                <span>BDT {subtotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-gray-600 dark:text-gray-400">
                 <span>Tax (8%)</span>
-                <span>${tax.toLocaleString()}</span>
+                <span>BDT {tax.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-gray-600 dark:text-gray-400">
                 <span>Shipping</span>
                 <span>
-                  {shipping === 0 ? "Free" : `$${shipping.toLocaleString()}`}
+                  {shipping === 0 ? "Free" : `BDT ${shipping.toLocaleString()}`}
                 </span>
               </div>
               <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
                 <div className="flex justify-between text-lg font-semibold text-gray-900 dark:text-white">
                   <span>Total</span>
-                  <span>${total.toLocaleString()}</span>
+                  <span>BDT {total.toLocaleString()}</span>
                 </div>
               </div>
             </div>
