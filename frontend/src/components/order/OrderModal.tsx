@@ -89,7 +89,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                   <div className="text-right">
                     <p className="text-sm text-gray-600">Total Amount</p>
                     <p className="text-3xl font-bold text-gray-900">
-                      ${order.total_amount.toLocaleString()}
+                      BDT {order.total_amount.toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -178,14 +178,14 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                               <span className="text-gray-600">
                                 Unit Price:{" "}
                                 <span className="font-medium text-gray-900">
-                                  ${item.price.toLocaleString()}
+                                  BDT {item.price.toLocaleString()}
                                 </span>
                               </span>
                             </div>
                           </div>
                           <div className="text-right">
                             <p className="text-xl font-bold text-gray-900">
-                              ${(item.price * item.quantity).toLocaleString()}
+                              BDT {(item.price * item.quantity).toLocaleString()}
                             </p>
                             <p className="text-xs text-gray-500">Subtotal</p>
                           </div>

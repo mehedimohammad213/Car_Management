@@ -134,7 +134,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                 <td className="px-6 py-4">
                   <div className="text-right">
                     <div className="font-semibold text-gray-900">
-                      ${order.total_amount.toLocaleString()}
+                      BDT {order.total_amount.toLocaleString()}
                     </div>
                     <div className="text-xs text-gray-500">
                       {order.items.length} item
@@ -213,7 +213,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                 </span>
               </div>
               <div className="text-sm text-gray-600 mb-3">
-                {order.user?.name || "Unknown User"} • $
+                {order.user?.name || "Unknown User"} • BDT{" "}
                 {order.total_amount.toLocaleString()}
               </div>
               <div className="flex items-center gap-2">

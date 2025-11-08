@@ -18,7 +18,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
   const formatPrice = (price?: number | string) => {
     if (!price) return "N/A";
     const numPrice = typeof price === "string" ? parseFloat(price) : price;
-    return `$${numPrice.toLocaleString()}`;
+    return `BDT ${numPrice.toLocaleString()}`;
   };
 
   const getStatusColor = (status: string) => {

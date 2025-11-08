@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from "react";
 import { DownloadIcon, EyeIcon, ChevronUp, ChevronDown } from "lucide-react";
 // Removed mockData import
@@ -231,7 +233,7 @@ const Orders: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="text-right">
                         <div className="font-semibold text-gray-900 dark:text-white">
-                          ${order.totalAmount.toLocaleString()}
+                          BDT {order.totalAmount.toLocaleString()}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
                           {order.items.length} item
@@ -315,7 +317,7 @@ const Orders: React.FC = () => {
                           {item.car.brand} {item.car.model}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
-                          Qty: {item.quantity} • ${item.price.toLocaleString()}
+                          Qty: {item.quantity} • BDT {item.price.toLocaleString()}
                         </div>
                       </div>
                     </div>
@@ -329,7 +331,7 @@ const Orders: React.FC = () => {
 
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Total: ${order.totalAmount.toLocaleString()}
+                    Total: BDT {order.totalAmount.toLocaleString()}
                   </span>
                   <div className="flex items-center space-x-2">
                     <button
@@ -487,10 +489,10 @@ const Orders: React.FC = () => {
                         Qty: {item.quantity}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        ${item.price.toLocaleString()} each
+                        BDT {item.price.toLocaleString()} each
                       </p>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        ${(item.price * item.quantity).toLocaleString()}
+                        BDT {(item.price * item.quantity).toLocaleString()}
                       </p>
                     </div>
                   </div>
@@ -501,7 +503,7 @@ const Orders: React.FC = () => {
             <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div className="flex justify-between items-center">
                 <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Total Amount: ${selectedOrder.totalAmount.toLocaleString()}
+                  Total Amount: BDT {selectedOrder.totalAmount.toLocaleString()}
                 </span>
                 <button
                   onClick={() => handleDownloadInvoice(selectedOrder)}

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from "react";
 import {
   SearchIcon,
@@ -224,7 +226,7 @@ const OrderManagement: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="text-right">
                         <div className="font-semibold text-gray-900 dark:text-white">
-                          ${order.totalAmount.toLocaleString()}
+                          BDT {order.totalAmount.toLocaleString()}
                         </div>
                       </div>
                     </td>
@@ -414,7 +416,7 @@ const OrderManagement: React.FC = () => {
                         Qty: {item.quantity}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        ${item.price.toLocaleString()} each
+                        BDT {item.price.toLocaleString()} each
                       </p>
                     </div>
                   </div>
@@ -425,7 +427,7 @@ const OrderManagement: React.FC = () => {
             <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div className="flex justify-between items-center">
                 <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Total Amount: ${selectedOrder.totalAmount.toLocaleString()}
+                  Total Amount: BDT {selectedOrder.totalAmount.toLocaleString()}
                 </span>
                 <button
                   onClick={() => handleDownloadInvoice(selectedOrder)}

@@ -54,7 +54,7 @@ export const DeleteOrderModal: React.FC<DeleteOrderModalProps> = ({
                   </h3>
                   <p className="text-sm text-gray-600">
                     {order.items.length} item
-                    {order.items.length !== 1 ? "s" : ""} • $
+                    {order.items.length !== 1 ? "s" : ""} • BDT{" "}
                     {order.total_amount.toLocaleString()}
                   </p>
                 </div>

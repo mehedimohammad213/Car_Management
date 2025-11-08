@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from "react";
 import { Clock, CheckCircle, Truck, XCircle } from "lucide-react";
 import { orderApi, Order } from "../../services/orderApi";

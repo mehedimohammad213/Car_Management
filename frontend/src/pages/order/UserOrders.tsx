@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -391,7 +393,7 @@ const UserOrders: React.FC = () => {
                                 {item.car.make} {item.car.model}
                               </div>
                               <div className="text-xs text-gray-500">
-                                Qty: {item.quantity} • $
+                                Qty: {item.quantity} • BDT{" "}
                                 {item.price.toLocaleString()}
                               </div>
                             </div>
@@ -409,7 +411,7 @@ const UserOrders: React.FC = () => {
                     <div className="col-span-1">
                       <div className="text-right">
                         <div className="font-semibold text-gray-900">
-                          ${order.total_amount.toLocaleString()}
+                          BDT {order.total_amount.toLocaleString()}
                         </div>
                       </div>
                     </div>
@@ -526,7 +528,7 @@ const UserOrders: React.FC = () => {
                               {item.car.make} {item.car.model}
                             </div>
                             <div className="text-xs text-gray-500">
-                              Qty: {item.quantity} • $
+                              Qty: {item.quantity} • BDT{" "}
                               {item.price.toLocaleString()}
                             </div>
                           </div>
@@ -541,7 +543,7 @@ const UserOrders: React.FC = () => {
 
                     <div className="flex items-center justify-between">
                       <span className="text-lg font-semibold text-gray-900">
-                        Total: ${order.total_amount.toLocaleString()}
+                        Total: BDT {order.total_amount.toLocaleString()}
                       </span>
                       <div className="flex items-center gap-2">
                         <button
@@ -648,8 +650,8 @@ const UserOrders: React.FC = () => {
                           <p className="text-sm text-gray-600 dark:text-gray-400">
                             Total Amount
                           </p>
-                          <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                            ${selectedOrder.total_amount.toLocaleString()}
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                          BDT {selectedOrder.total_amount.toLocaleString()}
                           </p>
                         </div>
                       </div>
@@ -687,17 +689,14 @@ const UserOrders: React.FC = () => {
                                     <span className="text-gray-600 dark:text-gray-400">
                                       Unit Price:{" "}
                                       <span className="font-medium text-gray-900 dark:text-white">
-                                        ${item.price.toLocaleString()}
+                                        BDT {item.price.toLocaleString()}
                                       </span>
                                     </span>
                                   </div>
                                 </div>
                                 <div className="text-right">
                                   <p className="text-xl font-bold text-gray-900 dark:text-white">
-                                    $
-                                    {(
-                                      item.price * item.quantity
-                                    ).toLocaleString()}
+                                    BDT {(item.price * item.quantity).toLocaleString()}
                                   </p>
                                   <p className="text-xs text-gray-500 dark:text-gray-400">
                                     Subtotal
@@ -859,7 +858,7 @@ const UserOrders: React.FC = () => {
                         </h3>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           {orderToCancel.items.length} item
-                          {orderToCancel.items.length !== 1 ? "s" : ""} • $
+                          {orderToCancel.items.length !== 1 ? "s" : ""} • BDT{" "}
                           {orderToCancel.total_amount.toLocaleString()}
                         </p>
                       </div>
