@@ -176,32 +176,21 @@ const CarTable: React.FC<CarTableProps> = ({
             {/* Key Features */}
             <div className="col-span-1 flex items-center">
               <div className="flex flex-wrap gap-1">
-                {car.fuel && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    {car.fuel}
+                {(car.keys_feature
+                  ?.split(",")
+                  .map((feature) => feature.trim())
+                  .filter(Boolean) || []
+                ).map((feature) => (
+                  <span
+                    key={feature}
+                    className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                  >
+                    {feature}
                   </span>
+                ))}
+                {!car.keys_feature && (
+                  <span className="text-xs text-gray-500">N/A</span>
                 )}
-                {car.seats && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    {car.seats} Seats
-                  </span>
-                )}
-                {car.steering && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                    {car.steering}
-                  </span>
-                )}
-                {(car as any).drive_type && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                    {(car as any).drive_type}
-                  </span>
-                )}
-                {!car.fuel &&
-                  !car.seats &&
-                  !car.steering &&
-                  !(car as any).drive_type && (
-                    <span className="text-xs text-gray-500">N/A</span>
-                  )}
               </div>
             </div>
 
