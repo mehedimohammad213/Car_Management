@@ -10,6 +10,8 @@ interface SearchFiltersProps {
   setCategoryFilter: (category: string) => void;
   yearFilter: string;
   setYearFilter: (year: string) => void;
+  statusFilter: string;
+  setStatusFilter: (status: string) => void;
   transmissionFilter: string;
   setTransmissionFilter: (transmission: string) => void;
   colorFilter: string;
@@ -37,6 +39,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
     setCategoryFilter,
     yearFilter,
     setYearFilter,
+    statusFilter,
+    setStatusFilter,
     transmissionFilter,
     setTransmissionFilter,
     colorFilter,
@@ -141,6 +145,28 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             </select>
 
             <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
+            >
+              <option value="">All Statuses</option>
+              {(
+                filterOptions?.statuses || [
+                  "available",
+                  "reserved",
+                  "sold",
+                  "in_transit",
+                ]
+              ).map((status: string) => (
+                <option key={status} value={status}>
+                  {status
+                    .replace(/_/g, " ")
+                    .replace(/\b\w/g, (c: string) => c.toUpperCase())}
+                </option>
+              ))}
+            </select>
+
+            <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
@@ -151,15 +177,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
                   {category.name}
                 </option>
               ))}
-            </select>
-
-            <select className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 bg-gray-100 text-sm transition-all duration-200">
-              <option value="">Body Type</option>
-              <option value="sedan">Sedan</option>
-              <option value="suv">SUV</option>
-              <option value="hatchback">Hatchback</option>
-              <option value="wagon">Wagon</option>
-              <option value="coupe">Coupe</option>
             </select>
 
             <select

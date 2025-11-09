@@ -37,7 +37,7 @@ const UserCarCatalog: React.FC = () => {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("available");
+  const [statusFilter, setStatusFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [makeFilter, setMakeFilter] = useState("");
   const [yearFilter, setYearFilter] = useState("");
@@ -613,7 +613,7 @@ const UserCarCatalog: React.FC = () => {
 
   const clearFilters = () => {
     setSearchTerm("");
-    setStatusFilter("available");
+    setStatusFilter("");
     setCategoryFilter("");
     setMakeFilter("");
     setYearFilter("");
@@ -644,6 +644,8 @@ const UserCarCatalog: React.FC = () => {
           setSearchTerm={setSearchTerm}
           makeFilter={makeFilter}
           setMakeFilter={setMakeFilter}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
           categoryFilter={categoryFilter}
           setCategoryFilter={setCategoryFilter}
           yearFilter={yearFilter}
