@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, Download, X, Plus } from "lucide-react";
+import { Search, Download, Plus } from "lucide-react";
 
 interface SearchFiltersProps {
   searchTerm: string;
@@ -75,6 +75,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
 
           {/* Action Buttons */}
           <div className="flex gap-3">
+            {/* Advanced Search button temporarily disabled
             <button
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
               className="flex items-center gap-3 px-6 py-3 text-blue-600 border-2 border-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-200 font-semibold text-sm shadow-md hover:shadow-lg"
@@ -82,6 +83,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
               <span>Advanced Search</span>
               <span className="text-lg">{showAdvancedFilters ? "−" : "+"}</span>
             </button>
+            */}
 
             <button
               onClick={onGeneratePDF}
@@ -122,19 +124,13 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
       {/* Filter Grid with Search Button on Same Line */}
       <div className="flex items-start gap-4 mb-6">
         {/* Filter Grid */}
-        <div
-          className={`flex-1 transition-all duration-300 ${
-            showAdvancedFilters
-              ? "opacity-100 max-h-none"
-              : "opacity-100 max-h-20 overflow-hidden"
-          }`}
-        >
+        <div className="flex-1">
           {/* First Row - Always Visible */}
-          <div className="grid grid-cols-5 gap-4 mb-4">
+          <div className="flex flex-wrap gap-4 mb-4">
             <select
               value={makeFilter}
               onChange={(e) => setMakeFilter(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
+              className="flex-1 min-w-[160px] px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
             >
               <option value="">All Makes</option>
               {filterOptions?.makes?.map((make: string) => (
@@ -147,7 +143,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
+              className="flex-1 min-w-[160px] px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
             >
               <option value="">All Statuses</option>
               {(
@@ -169,7 +165,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
+              className="flex-1 min-w-[160px] px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
             >
               <option value="">All Categories</option>
               {categories.map((category) => (
@@ -182,7 +178,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             <select
               value={yearFilter}
               onChange={(e) => setYearFilter(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
+              className="flex-1 min-w-[160px] px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
             >
               <option value="">All Years</option>
               {filterOptions?.years?.map((year: number) => (
@@ -192,135 +188,32 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
               ))}
             </select>
 
-            <select className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200">
-              <option value="">Max Year</option>
-              {filterOptions?.years?.map((year: number) => (
-                <option key={year} value={year}>
-                  {year}
+            <select
+              value={colorFilter}
+              onChange={(e) => setColorFilter(e.target.value)}
+              className="flex-1 min-w-[160px] px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
+            >
+              <option value="">All Colors</option>
+              {filterOptions?.colors?.map((color: string) => (
+                <option key={color} value={color}>
+                  {color}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={fuelFilter}
+              onChange={(e) => setFuelFilter(e.target.value)}
+              className="flex-1 min-w-[160px] px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
+            >
+              <option value="">All Fuel Types</option>
+              {filterOptions?.fuels?.map((fuel: string) => (
+                <option key={fuel} value={fuel}>
+                  {fuel}
                 </option>
               ))}
             </select>
           </div>
-
-          {/* Additional Rows - Only Visible When Expanded */}
-          {showAdvancedFilters && (
-            <div className="space-y-4">
-              {/* Second Row */}
-              <div className="grid grid-cols-5 gap-4">
-                <select
-                  value={transmissionFilter}
-                  onChange={(e) => setTransmissionFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Transmission</option>
-                  {filterOptions?.transmissions?.map((transmission: string) => (
-                    <option key={transmission} value={transmission}>
-                      {transmission}
-                    </option>
-                  ))}
-                </select>
-
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                  <option value="">Drivetrain</option>
-                  <option value="2wd">2WD</option>
-                  <option value="4wd">4WD</option>
-                  <option value="awd">AWD</option>
-                </select>
-
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                  <option value="">Select Steering</option>
-                  <option value="left">Left Hand Drive</option>
-                  <option value="right">Right Hand Drive</option>
-                </select>
-
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                  <option value="">Min Mileage</option>
-                  <option value="0">0 km</option>
-                  <option value="10000">10,000 km</option>
-                  <option value="50000">50,000 km</option>
-                  <option value="100000">100,000 km</option>
-                  <option value="200000">200,000 km</option>
-                </select>
-
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                  <option value="">Max Mileage</option>
-                  <option value="50000">50,000 km</option>
-                  <option value="100000">100,000 km</option>
-                  <option value="200000">200,000 km</option>
-                  <option value="300000">300,000 km</option>
-                  <option value="500000">500,000 km</option>
-                </select>
-              </div>
-
-              {/* Third Row */}
-              <div className="grid grid-cols-5 gap-4">
-                <select
-                  value={colorFilter}
-                  onChange={(e) => setColorFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Color</option>
-                  {filterOptions?.colors?.map((color: string) => (
-                    <option key={color} value={color}>
-                      {color}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  value={fuelFilter}
-                  onChange={(e) => setFuelFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">All Fuel Types</option>
-                  {filterOptions?.fuels?.map((fuel: string) => (
-                    <option key={fuel} value={fuel}>
-                      {fuel}
-                    </option>
-                  ))}
-                </select>
-
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                  <option value="">Auction Grade</option>
-                  <option value="5">5</option>
-                  <option value="4.5">4.5</option>
-                  <option value="4">4</option>
-                  <option value="3.5">3.5</option>
-                  <option value="3">3</option>
-                  <option value="2">2</option>
-                  <option value="1">1</option>
-                  <option value="R">R</option>
-                </select>
-
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                  <option value="">Min Eng.cc</option>
-                  <option value="1000">1000cc</option>
-                  <option value="1500">1500cc</option>
-                  <option value="2000">2000cc</option>
-                  <option value="2500">2500cc</option>
-                  <option value="3000">3000cc</option>
-                </select>
-
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                  <option value="">Max Eng.cc</option>
-                  <option value="2000">2000cc</option>
-                  <option value="2500">2500cc</option>
-                  <option value="3000">3000cc</option>
-                  <option value="4000">4000cc</option>
-                  <option value="5000">5000cc</option>
-                </select>
-              </div>
-
-              {/* Fourth Row - Removed date inputs */}
-              <div className="grid grid-cols-5 gap-4">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Reset Button */}
