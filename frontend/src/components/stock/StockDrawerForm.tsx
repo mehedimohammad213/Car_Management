@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  PackageIcon,
-  DollarSignIcon,
-  HashIcon,
-  FileTextIcon,
-} from "lucide-react";
+import { PackageIcon, HashIcon, FileTextIcon } from "lucide-react";
 import {
   Stock,
   CreateStockData,
@@ -155,15 +150,6 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
     }
   };
 
-  const statusOptions = [
-    { value: "available", label: "Available", color: "text-green-600" },
-    { value: "sold", label: "Sold", color: "text-blue-600" },
-    { value: "reserved", label: "Reserved", color: "text-yellow-600" },
-    { value: "damaged", label: "Damaged", color: "text-red-600" },
-    { value: "lost", label: "Lost", color: "text-gray-600" },
-    { value: "stolen", label: "Stolen", color: "text-red-600" },
-  ];
-
   const formatCarLabel = (car: AvailableCar) => {
     const category = car.category?.name || "";
     const subcategory = car.subcategory?.name || "";
@@ -179,7 +165,7 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Car Selection, Quantity, and Status Fields - 3 Columns */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="block text-sm font-medium text-gray-700">
@@ -240,22 +226,7 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
           )}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Status
-          </label>
-          <select
-            value={formData.status}
-            onChange={(e) => handleInputChange("status", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            {statusOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Status dropdown intentionally commented out per request */}
       </div>
 
       {/* Notes */}
