@@ -25,9 +25,9 @@ const StockDrawer: React.FC<StockDrawerProps> = ({
   showActions = true,
 }) => {
   const sizeClasses = {
-    sm: "h-1/3",
-    md: "h-1/2",
-    lg: "h-2/3",
+    sm: "max-h-[60vh]",
+    md: "max-h-[75vh]",
+    lg: "max-h-[85vh]",
   };
 
   if (!isOpen) return null;
@@ -42,43 +42,45 @@ const StockDrawer: React.FC<StockDrawerProps> = ({
 
       {/* Drawer */}
       <div
-        className={`fixed bottom-0 left-0 right-0 ${sizeClasses[size]} bg-white rounded-t-2xl shadow-2xl z-50 transform transition-transform duration-300 ease-in-out`}
-        style={{
-          transform: isOpen ? "translateY(0)" : "translateY(100%)",
-        }}
+        className={`fixed bottom-0 left-0 right-0 ${sizeClasses[size]} bg-white rounded-t-2xl shadow-2xl z-50 overflow-hidden transition-transform duration-300 ease-in-out md:left-1/2 md:right-auto md:-translate-x-1/2 md:rounded-2xl md:bottom-6 md:w-full md:max-w-3xl`}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-          >
-            <X className="w-5 h-5 text-gray-500" />
-          </button>
-        </div>
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 sm:px-6 py-4 sm:py-5 border-b border-gray-200">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+              {title}
+            </h2>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto h-full">
-          {children}
+          {/* Content */}
+          <div className="flex-1 px-5 sm:px-6 py-4 overflow-y-auto">
+            {children}
 
-          {/* Action Buttons */}
-          {showActions && (
-            <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200">
-              <button
-                onClick={onCancel || onClose}
-                className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={onSave}
-                className="flex-1 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
-              >
-                Save
-              </button>
-            </div>
-          )}
+            {/* Action Buttons */}
+            {showActions && (
+              <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200">
+                <button
+                  onClick={onCancel || onClose}
+                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={onSave}
+                  className="flex-1 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
+                >
+                  Save
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

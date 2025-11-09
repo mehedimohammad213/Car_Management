@@ -184,18 +184,8 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
           <div className="flex items-center justify-between mb-2">
             <label className="block text-sm font-medium text-gray-700">
               <PackageIcon className="w-4 h-4 inline mr-2" />
-              {stock ? "Car" : "Car Selection *"}
+              {stock ? "Car" : "Car *"}
             </label>
-            {!stock && (
-              <button
-                type="button"
-                onClick={fetchAvailableCars}
-                disabled={isLoadingCars}
-                className="text-xs text-indigo-600 hover:text-indigo-800 disabled:text-gray-400"
-              >
-                {isLoadingCars ? "Loading..." : "Refresh"}
-              </button>
-            )}
           </div>
           {stock ? (
             <div className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700">
@@ -268,47 +258,19 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
         </div>
       </div>
 
-      {/* Price and Notes - 2 Columns */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <DollarSignIcon className="w-4 h-4 inline mr-2" />
-            Price (Optional)
-          </label>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            placeholder="0.00"
-            value={formData.price === 0 ? "" : formData.price}
-            onChange={(e) =>
-              handleInputChange(
-                "price",
-                e.target.value ? parseFloat(e.target.value) : 0
-              )
-            }
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-              errors.price ? "border-red-300" : "border-gray-300"
-            }`}
-          />
-          {errors.price && (
-            <p className="mt-1 text-sm text-red-600">{errors.price}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <FileTextIcon className="w-4 h-4 inline mr-2" />
-            Notes (Optional)
-          </label>
-          <textarea
-            rows={1}
-            placeholder="Add any additional notes about this stock item..."
-            value={formData.notes}
-            onChange={(e) => handleInputChange("notes", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
-          />
-        </div>
+      {/* Notes */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          <FileTextIcon className="w-4 h-4 inline mr-2" />
+          Notes (Optional)
+        </label>
+        <textarea
+          rows={3}
+          placeholder="Add any additional notes about this stock item..."
+          value={formData.notes}
+          onChange={(e) => handleInputChange("notes", e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+        />
       </div>
 
       {/* Form Actions */}
