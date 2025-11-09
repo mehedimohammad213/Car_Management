@@ -15,12 +15,6 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
   onDelete,
   onView,
 }) => {
-  const formatPrice = (price?: number | string) => {
-    if (!price) return "N/A";
-    const numPrice = typeof price === "string" ? parseFloat(price) : price;
-    return `BDT ${numPrice.toLocaleString()}`;
-  };
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case "available":
@@ -38,6 +32,27 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
       default:
         return "bg-gray-100 text-gray-800";
     }
+  };
+
+  const renderStatusPill = (status?: string) => {
+    if (!status) {
+      return (
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-500">
+          N/A
+        </span>
+      );
+    }
+
+    return (
+      <span
+        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+          status
+        )}`}
+      >
+        <span className="mr-1">{getStatusIcon(status)}</span>
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </span>
+    );
   };
 
   const getStatusIcon = (status: string) => {
@@ -82,19 +97,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
           {stock.quantity}
         </span>
       </td>
-      <td className="px-6 py-4 font-medium text-gray-900">
-        {formatPrice(stock.price)}
-      </td>
-      <td className="px-6 py-4">
-        <span
-          className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-            stock.status
-          )}`}
-        >
-          <span className="mr-1">{getStatusIcon(stock.status)}</span>
-          {stock.status.charAt(0).toUpperCase() + stock.status.slice(1)}
-        </span>
-      </td>
+      <td className="px-6 py-4">{renderStatusPill(stock.car?.status)}</td>
       <td className="px-6 py-4">
         <div className="flex items-center gap-2">
           {onView && (
