@@ -97,12 +97,12 @@ const Header: React.FC = () => {
     { path: "/admin/cars", label: "Car", icon: CarIcon },
     {
       path: "/admin/purchase-history",
-      label: "Purchase History",
+      label: "Purchase",
       icon: BdtIcon,
     },
     {
       path: "/admin/payment-history",
-      label: "Payment History",
+      label: "Payment",
       icon: CreditCard,
     },
     { path: "/admin/stock", label: "Stock", icon: PackageIcon },
@@ -126,23 +126,23 @@ const Header: React.FC = () => {
   return (
     <>
       <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
-        <div className="relative w-full">
-          <div className="flex justify-between items-center h-16">
+        <div className="mx-auto max-w-7xl px-3 sm:px-4 lg:px-6">
+          <div className="flex items-center justify-between h-16 gap-3">
             {/* Logo */}
-            <div className="absolute left-2 sm:left-4 lg:left-6 z-10">
+            <div className="flex items-center flex-shrink-0">
               <Link
                 to={user.role === "admin" ? "/admin" : "/dashboard"}
                 className="flex items-center space-x-2"
               >
-                <CarIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-                <span className="text-xl font-bold text-gray-900 dark:text-white">
+                <CarIcon className="h-8 w-8 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white whitespace-nowrap">
                   Dream Car
                 </span>
               </Link>
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-8 flex-1 justify-center">
+            <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 flex-1 justify-center">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActiveRoute = isActive(item.path);
@@ -170,29 +170,31 @@ const Header: React.FC = () => {
             </nav>
 
             {/* Right side actions */}
-            <div className="absolute right-2 sm:right-4 lg:right-6 z-10">
+            <div className="flex items-center justify-end flex-shrink-0">
               {/* Profile Dropdown */}
               <div className="relative profile-dropdown">
                 <button
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  className="flex items-center space-x-2 rounded-full px-2 py-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
-                  <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
+                  <div className="h-9 w-9 sm:h-8 sm:w-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
                     <span className="text-white text-sm font-medium">
                       {user.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  <span className="hidden sm:block">{user.name}</span>
+                  <span className="hidden sm:block max-w-[8rem] truncate">
+                    {user.name}
+                  </span>
                   <ChevronDownIcon className="h-4 w-4" />
                 </button>
 
                 {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
-                    <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                  <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
+                    <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 space-y-1">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                         {user.name}
                       </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                         {user.email}
                       </p>
                     </div>
@@ -220,7 +222,7 @@ const Header: React.FC = () => {
               {/* Mobile menu button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white ml-2"
+                className="md:hidden ml-2 inline-flex items-center justify-center rounded-md p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 transition"
               >
                 {mobileMenuOpen ? (
                   <XIcon className="h-6 w-6" />
@@ -234,8 +236,8 @@ const Header: React.FC = () => {
 
         {/* Mobile Navigation Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+          <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <div className="px-3 sm:px-4 pt-2 pb-4 space-y-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActiveRoute = isActive(item.path);
