@@ -263,32 +263,30 @@ const Dashboard: React.FC = () => {
                       key={order.id}
                       className="group p-5 bg-slate-50 dark:bg-gray-700/50 rounded-xl border border-slate-200 dark:border-gray-600 hover:bg-slate-100 dark:hover:bg-gray-700 transition-colors"
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-xl">
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-start gap-4">
+                          <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-xl flex-shrink-0">
                             <CarIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                           </div>
                           <div>
-                            <p className="font-semibold text-slate-900 dark:text-white text-lg">
+                            <p className="font-semibold text-slate-900 dark:text-white text-base sm:text-lg leading-snug">
                               {carName}
                               {carCount > 1 && ` + ${carCount - 1} more`}
                             </p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-sm text-slate-600 dark:text-gray-400">
-                                Order #{order.id}
-                              </span>
-                              <span className="text-slate-400">•</span>
-                              <span className="text-sm text-slate-600 dark:text-gray-400 flex items-center gap-1">
+                            <div className="flex flex-wrap items-center gap-2 mt-1 text-sm text-slate-600 dark:text-gray-400">
+                              <span>Order #{order.id}</span>
+                              <span className="hidden sm:inline text-slate-400">•</span>
+                              <span className="flex items-center gap-1">
                                 <CalendarIcon className="w-3 h-3" />
                                 {orderDate}
                               </span>
                             </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="flex items-center gap-2 mb-2">
+                        <div className="flex flex-col gap-2 sm:items-end text-left sm:text-right">
+                          <div className="flex items-center gap-2">
                             <BdtIcon className="text-green-600 text-base" />
-                            <p className="font-bold text-slate-900 dark:text-white text-lg">
+                            <p className="font-bold text-slate-900 dark:text-white text-base sm:text-lg">
                               BDT {order.total_amount.toLocaleString()}
                             </p>
                           </div>
