@@ -36,28 +36,30 @@ const CarTable: React.FC<CarTableProps> = ({
 }) => {
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-      {/* Table Header */}
-      <div className="bg-gradient-to-r from-gray-50 to-blue-50 border-b-2 border-blue-200">
-        <div className="grid grid-cols-10 gap-3 p-6 text-sm font-bold text-gray-800 uppercase tracking-wide">
-          <div className="col-span-3">Car Information</div>
-          <div className="col-span-1">Mileage</div>
-          <div className="col-span-1">Engine</div>
-          <div className="col-span-1">Color</div>
-          <div className="col-span-1">AA Score</div>
-          <div className="col-span-1">Key Features</div>
-          <div className="col-span-1">Price</div>
-          <div className="col-span-1">Action</div>
-        </div>
-      </div>
+      <div className="overflow-x-auto">
+        <div className="min-w-[1100px]">
+          {/* Table Header */}
+          <div className="bg-gradient-to-r from-gray-50 to-blue-50 border-b-2 border-blue-200">
+            <div className="grid grid-cols-10 gap-3 p-6 text-sm font-bold text-gray-800 uppercase tracking-wide">
+              <div className="col-span-3">Car Information</div>
+              <div className="col-span-1">Mileage</div>
+              <div className="col-span-1">Engine</div>
+              <div className="col-span-1">Color</div>
+              <div className="col-span-1">AA Score</div>
+              <div className="col-span-1">Key Features</div>
+              <div className="col-span-1">Price</div>
+              <div className="col-span-1">Action</div>
+            </div>
+          </div>
 
-      {/* Table Body */}
-      <div className="divide-y divide-gray-100">
-        {cars.map((car) => (
-          <div
-            key={car.id}
-            onClick={() => onViewCar(car)}
-            className="grid grid-cols-10 gap-3 p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 border-l-4 border-transparent hover:border-blue-500 cursor-pointer"
-          >
+          {/* Table Body */}
+          <div className="divide-y divide-gray-100">
+            {cars.map((car) => (
+              <div
+                key={car.id}
+                onClick={() => onViewCar(car)}
+                className="grid grid-cols-10 gap-3 p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 border-l-4 border-transparent hover:border-blue-500 cursor-pointer"
+              >
             {/* Car Information */}
             <div className="col-span-3 flex items-center gap-4">
               <div className="w-24 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden flex-shrink-0 shadow-md">
@@ -260,8 +262,10 @@ const CarTable: React.FC<CarTableProps> = ({
                 </button>
               )}
             </div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );
