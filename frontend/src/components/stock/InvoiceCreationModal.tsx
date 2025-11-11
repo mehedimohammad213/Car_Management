@@ -205,7 +205,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
 
         <div className="flex h-[calc(90vh-120px)]">
           {/* Left Panel - Car Selection */}
-          <div className="w-1/3 border-r border-gray-200 flex flex-col">
+          <div className="w-1/2 border-r border-gray-200 flex flex-col">
             <div className="p-4 border-b border-gray-200">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -256,7 +256,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
           </div>
 
           {/* Right Panel - Invoice Items */}
-          <div className="w-2/3 flex flex-col">
+          <div className="w-1/2 flex flex-col">
             <div className="p-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">
                 Invoice Items ({selectedCars.length})
