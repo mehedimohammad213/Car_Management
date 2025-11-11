@@ -277,7 +277,7 @@ export class StockInvoiceService {
 
       // Total
       const itemTotal = item.price * item.quantity;
-      addText(`$${itemTotal.toLocaleString()}`, pageWidth - 20, itemY + 5, {
+      addText(`BDT ${itemTotal.toLocaleString()}`, pageWidth - 20, itemY + 5, {
         fontSize: 10,
         style: "bold",
       });
@@ -304,28 +304,28 @@ export class StockInvoiceService {
     const total = subtotal + tax;
 
     addText("Subtotal:", totalsX, yPosition, { fontSize: 12 });
-    addText(`$${subtotal.toLocaleString()}`, totalsX + 50, yPosition, {
+    addText(`BDT ${subtotal.toLocaleString()}`, totalsX + 50, yPosition, {
       fontSize: 12,
       style: "bold",
     });
     yPosition += 8;
 
     addText("Total FOB:", totalsX, yPosition, { fontSize: 12 });
-    addText(`$${totalFob.toLocaleString()}`, totalsX + 50, yPosition, {
+    addText(`BDT ${totalFob.toLocaleString()}`, totalsX + 50, yPosition, {
       fontSize: 12,
       style: "bold",
     });
     yPosition += 8;
 
     addText("Total Freight:", totalsX, yPosition, { fontSize: 12 });
-    addText(`$${totalFreight.toLocaleString()}`, totalsX + 50, yPosition, {
+    addText(`BDT ${totalFreight.toLocaleString()}`, totalsX + 50, yPosition, {
       fontSize: 12,
       style: "bold",
     });
     yPosition += 8;
 
     addText("Tax (8%):", totalsX, yPosition, { fontSize: 12 });
-    addText(`$${tax.toLocaleString()}`, totalsX + 50, yPosition, {
+    addText(`BDT ${tax.toLocaleString()}`, totalsX + 50, yPosition, {
       fontSize: 12,
       style: "bold",
     });
@@ -335,31 +335,31 @@ export class StockInvoiceService {
     yPosition += 8;
 
     addText("Total:", totalsX, yPosition, { fontSize: 14, style: "bold" });
-    addText(`$${total.toLocaleString()}`, totalsX + 50, yPosition, {
+    addText(`BDT ${total.toLocaleString()}`, totalsX + 50, yPosition, {
       fontSize: 14,
       style: "bold",
       color: accentColor,
     });
     yPosition += 20;
 
-    // Stock information
-    addText("Stock Information:", 20, yPosition, {
-      fontSize: 12,
-      style: "bold",
-    });
-    yPosition += 10;
-    addText(`Total Items: ${data.items.length}`, 20, yPosition, {
-      fontSize: 10,
-    });
-    addText(
-      `Total Quantity: ${data.items.reduce(
-        (sum, item) => sum + item.quantity,
-        0
-      )}`,
-      20,
-      yPosition + 6,
-      { fontSize: 10 }
-    );
+    // Stock information (commented out per request)
+    // addText("Stock Information:", 20, yPosition, {
+    //   fontSize: 12,
+    //   style: "bold",
+    // });
+    // yPosition += 10;
+    // addText(`Total Items: ${data.items.length}`, 20, yPosition, {
+    //   fontSize: 10,
+    // });
+    // addText(
+    //   `Total Quantity: ${data.items.reduce(
+    //     (sum, item) => sum + item.quantity,
+    //     0
+    //   )}`,
+    //   20,
+    //   yPosition + 6,
+    //   { fontSize: 10 }
+    // );
 
     // Footer
     yPosition = pageHeight - 40;
