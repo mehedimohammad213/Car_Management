@@ -34,7 +34,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
       </h3>
       <div className="space-y-6">
         {/* First row - 5 fields */}
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           <FormField
             label="Reference Number"
             field="ref_no"
@@ -46,7 +46,6 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             error={errors.ref_no}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("ref_no", value)}
-            inline={true}
           />
           <FormField
             label="Code"
@@ -59,7 +58,6 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             error={errors.code}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("code", value)}
-            inline={true}
           />
           <FormField
             label="Make"
@@ -72,7 +70,6 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             error={errors.make}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("make", value)}
-            inline={true}
           />
           <FormField
             label="Model"
@@ -85,7 +82,6 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             error={errors.model}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("model", value)}
-            inline={true}
           />
           <FormField
             label="Model Code"
@@ -98,12 +94,11 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             error={errors.model_code}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("model_code", value)}
-            inline={true}
           />
         </div>
 
         {/* Second row - 5 fields */}
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           <FormField
             label="Variant"
             field="variant"
@@ -115,7 +110,6 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             error={errors.variant}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("variant", value)}
-            inline={true}
           />
           <FormField
             label="Year"
@@ -127,7 +121,6 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             error={errors.year}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("year", value)}
-            inline={true}
           />
           <FormField
             label="Registration Year/Month"
@@ -140,9 +133,8 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             error={errors.reg_year_month}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("reg_year_month", value)}
-            inline={true}
           />
-          <div className="flex-1">
+          <div className="w-full">
             <SelectField
               label="Category"
               field="category_id"

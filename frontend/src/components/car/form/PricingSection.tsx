@@ -24,7 +24,7 @@ const PricingSection: React.FC<PricingSectionProps> = ({
       </h3>
       <div className="space-y-6">
         {/* First row - 5 fields */}
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <FormField
             label="Price Amount"
             field="price_amount"
@@ -35,7 +35,6 @@ const PricingSection: React.FC<PricingSectionProps> = ({
             error={errors.price_amount}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("price_amount", value)}
-            inline={true}
           />
           <FormField
             label="Price Basis"
@@ -48,7 +47,6 @@ const PricingSection: React.FC<PricingSectionProps> = ({
             error={errors.price_basis}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("price_basis", value)}
-            inline={true}
           />
           <FormField
             label="FOB Value"
@@ -60,7 +58,6 @@ const PricingSection: React.FC<PricingSectionProps> = ({
             error={errors.fob_value_usd}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("fob_value_usd", value)}
-            inline={true}
           />
           <FormField
             label="Freight"
@@ -72,7 +69,6 @@ const PricingSection: React.FC<PricingSectionProps> = ({
             error={errors.freight_usd}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("freight_usd", value)}
-            inline={true}
           />
         </div>
       </div>

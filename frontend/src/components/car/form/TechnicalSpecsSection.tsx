@@ -24,7 +24,7 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
       </h3>
       <div className="space-y-6">
         {/* First row - 5 fields */}
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           <FormField
             label="Transmission"
             field="transmission"
@@ -36,7 +36,6 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             error={errors.transmission}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("transmission", value)}
-            inline={true}
           />
           <FormField
             label="Drive"
@@ -49,7 +48,6 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             error={errors.drive}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("drive", value)}
-            inline={true}
           />
           <FormField
             label="Steering"
@@ -62,7 +60,6 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             error={errors.steering}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("steering", value)}
-            inline={true}
           />
           <FormField
             label="Fuel Type"
@@ -75,7 +72,6 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             error={errors.fuel}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("fuel", value)}
-            inline={true}
           />
           <FormField
             label="Color"
@@ -88,12 +84,11 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             error={errors.color}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("color", value)}
-            inline={true}
           />
         </div>
 
         {/* Second row - 3 fields */}
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           <FormField
             label="Mileage (km)"
             field="mileage_km"
@@ -104,7 +99,6 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             error={errors.mileage_km}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("mileage_km", value)}
-            inline={true}
           />
           <FormField
             label="Engine Capacity (cc)"
@@ -116,7 +110,6 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             error={errors.engine_cc}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("engine_cc", value)}
-            inline={true}
           />
           <FormField
             label="Seats"
@@ -128,7 +121,6 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             error={errors.seats}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("seats", value)}
-            inline={true}
           />
         </div>
       </div>

@@ -32,7 +32,7 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
       </h3>
       <div className="space-y-6">
         {/* First row - 5 fields */}
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           <FormField
             label="Chassis Number (Masked)"
             field="chassis_no_masked"
@@ -44,7 +44,6 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
             error={errors.chassis_no_masked}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("chassis_no_masked", value)}
-            inline={true}
           />
           <FormField
             label="Chassis Number (Full)"
@@ -57,7 +56,6 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
             error={errors.chassis_no_full}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("chassis_no_full", value)}
-            inline={true}
           />
           <FormField
             label="Location"
@@ -70,7 +68,6 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
             error={errors.location}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("location", value)}
-            inline={true}
           />
           <FormField
             label="Country of Origin"
@@ -83,9 +80,8 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
             error={errors.country_origin}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("country_origin", value)}
-            inline={true}
           />
-          <div className="flex-1">
+          <div className="w-full">
             <SelectField
               label="Status"
               field="status"
@@ -101,7 +97,7 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
         </div>
 
         {/* Second row - New fields */}
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <FormField
             label="Package"
             field="package"
@@ -113,7 +109,6 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
             error={errors.package}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("package", value)}
-            inline={true}
           />
           <FormField
             label="Body"
@@ -126,7 +121,6 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
             error={errors.body}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("body", value)}
-            inline={true}
           />
           <FormField
             label="Type"
@@ -139,7 +133,6 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
             error={errors.type}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("type", value)}
-            inline={true}
           />
           <FormField
             label="Engine Number"
@@ -152,12 +145,11 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
             error={errors.engine_number}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("engine_number", value)}
-            inline={true}
           />
         </div>
 
         {/* Third row - Keys fields */}
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField
             label="Number of Keys"
             field="number_of_keys"
@@ -167,10 +159,14 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
             value={formData.number_of_keys}
             error={errors.number_of_keys}
             isViewMode={isViewMode}
-            onChange={(value) => onInputChange("number_of_keys", value ? Number(value) : undefined)}
-            inline={true}
+            onChange={(value) =>
+              onInputChange(
+                "number_of_keys",
+                value ? Number(value) : undefined
+              )
+            }
           />
-          <div className="flex-1">
+          <div className="w-full">
             <FormField
               label="Keys Feature"
               field="keys_feature"
