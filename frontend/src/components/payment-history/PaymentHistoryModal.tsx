@@ -157,7 +157,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (mode === "update") {
       const submitData: UpdatePaymentHistoryData = {
         ...formData,
@@ -238,7 +238,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Purchase Amount
+                    Selling Price
                   </label>
                   <input
                     type="number"
@@ -250,7 +250,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Purchase Date
+                    Selling Date
                   </label>
                   <input
                     type="date"
@@ -494,4 +494,3 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
 };
 
 export default PaymentHistoryModal;
-
