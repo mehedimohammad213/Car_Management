@@ -145,7 +145,7 @@ const CarModal: React.FC<CarModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-6">
       {/* Backdrop with blur effect */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -153,9 +153,9 @@ const CarModal: React.FC<CarModalProps> = ({
       />
 
       {/* Modal */}
-      <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-7xl max-h-[98vh] flex flex-col overflow-hidden">
+      <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-7xl max-h-[98vh] flex flex-col overflow-hidden mx-0 sm:mx-auto">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
           <div className="flex items-center gap-3">
             <Car className="w-6 h-6 text-blue-600" />
             <h2 className="text-2xl font-bold text-gray-900">
@@ -173,8 +173,8 @@ const CarModal: React.FC<CarModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Left Column - Photos (2/3 width) */}
             <div className="lg:col-span-2">
               {/* Main Photo */}
@@ -183,7 +183,7 @@ const CarModal: React.FC<CarModalProps> = ({
                   <img
                     src={selectedCar.photos[currentImageIndex].url}
                     alt={`${selectedCar.make} ${selectedCar.model}`}
-                    className="w-full h-96 object-cover rounded-xl"
+                    className="w-full h-72 sm:h-96 object-cover rounded-xl"
                   />
                 ) : (
                   <div className="h-96 bg-gray-100 rounded-xl flex items-center justify-center">
@@ -215,7 +215,7 @@ const CarModal: React.FC<CarModalProps> = ({
 
               {/* Thumbnail Gallery */}
               {selectedCar.photos && selectedCar.photos.length > 0 && (
-                <div className="flex gap-2 mb-4">
+                <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
                   {selectedCar.photos
                     .slice(0, 4)
                     .map((photo: any, index: number) => (
@@ -226,7 +226,7 @@ const CarModal: React.FC<CarModalProps> = ({
                           selectedCar.model
                         } thumbnail ${index + 1}`}
                         onClick={() => onThumbnailClick(index)}
-                        className={`w-20 h-16 object-cover rounded-md cursor-pointer transition-all ${
+                        className={`w-20 h-16 object-cover rounded-md cursor-pointer transition-all flex-shrink-0 ${
                           currentImageIndex === index
                             ? "ring-2 ring-blue-500 opacity-100"
                             : "hover:opacity-80 opacity-70"
