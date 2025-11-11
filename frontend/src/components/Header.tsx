@@ -271,7 +271,7 @@ const Header: React.FC = () => {
       {/* Professional Logout Confirmation Modal */}
       {showLogoutConfirm && (
         <div
-          className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity duration-300 ${
+          className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4 py-6 sm:p-6 transition-opacity duration-300 ${
             modalVisible ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -300,7 +300,7 @@ const Header: React.FC = () => {
             </div>
 
             {/* Content Section */}
-            <div className="px-6 pb-6">
+            <div className="px-5 sm:px-6 pb-6">
               <div className="bg-status-warning-50 dark:bg-status-warning-900/20 border border-status-warning-200 dark:border-status-warning-800 rounded-xl p-4 mb-6">
                 <div className="flex items-start space-x-3">
                   <div className="flex-shrink-0 w-5 h-5 bg-status-warning-500 rounded-full flex items-center justify-center mt-0.5">
@@ -320,11 +320,11 @@ const Header: React.FC = () => {
 
               {/* User Info */}
               <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 mb-6">
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center gap-3 flex-wrap">
                   <div className="w-10 h-10 bg-gradient-to-br from-secondary-500 to-accent-purple-600 rounded-lg flex items-center justify-center text-white font-semibold text-sm">
                     {user?.name?.charAt(0)?.toUpperCase() || "U"}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-[160px]">
                     <p className="font-medium text-gray-900 dark:text-white">
                       {user?.name || "User"}
                     </p>
