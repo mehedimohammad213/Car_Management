@@ -82,10 +82,40 @@ export class StockInvoiceService {
 
     // Helper function to add text with styling
     const addText = (text: string, x: number, y: number, options: any = {}) => {
-      doc.setFontSize(options.fontSize || 12);
-      doc.setTextColor(options.color || textColor);
-      doc.setFont(options.font || "helvetica", options.style || "normal");
-      doc.text(text, x, y);
+      const {
+        fontSize,
+        color,
+        font,
+        style,
+        maxWidth,
+        lineHeight = 5,
+        align,
+      } = options;
+
+      doc.setFontSize(fontSize || 12);
+      doc.setTextColor(color || textColor);
+      doc.setFont(font || "helvetica", style || "normal");
+
+      const lines = maxWidth
+        ? doc.splitTextToSize(text, maxWidth)
+        : Array.isArray(text)
+        ? text
+        : [text];
+
+      lines.forEach((line: string, index: number) => {
+        const textY = y + index * lineHeight;
+        if (align) {
+          doc.text(line, x, textY, { align });
+        } else {
+          doc.text(line, x, textY);
+        }
+      });
+
+      return {
+        lineCount: lines.length,
+        height: (lines.length - 1) * lineHeight,
+        lastY: y + (lines.length - 1) * lineHeight,
+      };
     };
 
     // Helper function to add line
@@ -118,14 +148,13 @@ export class StockInvoiceService {
     // Header with green gradient background
     addRect(0, 0, pageWidth, 60, primaryColor);
 
-    // Company logo area (Stock icon)
-    addText("📦", 20, 25, { fontSize: 24, color: "#ffffff" });
-    addText(data.company.name, 50, 25, {
+    // Company header text
+    addText(data.company.name, 20, 25, {
       fontSize: 20,
       color: "#ffffff",
       style: "bold",
     });
-    addText("Stock Management System", 50, 32, {
+    addText("Stock Management System", 20, 32, {
       fontSize: 12,
       color: "#e2e8f0",
     });
@@ -192,98 +221,158 @@ export class StockInvoiceService {
     yPosition += 15;
 
     // Table header
+    const marginLeft = 20;
+    const marginRight = 20;
+    const lineHeight = 5;
+    const rowPadding = 4;
+    const rowSpacing = 4;
+
+    const totalColumnWidth = 35;
+    const freightColumnWidth = 30;
+    const fobColumnWidth = 30;
+    const qtyColumnWidth = 15;
+
+    const totalColumnX = pageWidth - marginRight;
+    const freightColumnX = totalColumnX - totalColumnWidth;
+    const fobColumnX = freightColumnX - fobColumnWidth;
+    const qtyColumnX = fobColumnX - qtyColumnWidth;
+    const itemColumnX = 55;
+    const codeColumnX = marginLeft + 5;
+    const itemColumnWidth = qtyColumnX - itemColumnX - 10;
+    const codeColumnWidth = itemColumnX - codeColumnX - 5;
+
     addRect(20, yPosition - 5, pageWidth - 40, 15, lightGray);
-    addText("Code", 25, yPosition + 2, { fontSize: 10, style: "bold" });
-    addText("Item", 50, yPosition + 2, { fontSize: 10, style: "bold" });
-    addText("Description", 100, yPosition + 2, { fontSize: 10, style: "bold" });
-    addText("Qty", pageWidth - 80, yPosition + 2, {
+    addText("Code", codeColumnX, yPosition + 2, {
       fontSize: 10,
       style: "bold",
     });
-    addText("FOB", pageWidth - 60, yPosition + 2, {
+    addText("Item", itemColumnX, yPosition + 2, {
       fontSize: 10,
       style: "bold",
     });
-    addText("Freight", pageWidth - 40, yPosition + 2, {
+    addText("Qty", qtyColumnX, yPosition + 2, {
       fontSize: 10,
       style: "bold",
+      align: "right",
     });
-    addText("Total", pageWidth - 20, yPosition + 2, {
+    addText("FOB", fobColumnX, yPosition + 2, {
       fontSize: 10,
       style: "bold",
+      align: "right",
+    });
+    addText("Freight", freightColumnX, yPosition + 2, {
+      fontSize: 10,
+      style: "bold",
+      align: "right",
+    });
+    addText("Total", totalColumnX, yPosition + 2, {
+      fontSize: 10,
+      style: "bold",
+      align: "right",
     });
 
-    yPosition += 10;
+    yPosition += 12;
 
     // Table rows
+    let currentRowY = yPosition;
     data.items.forEach((item, index) => {
-      const itemY = yPosition + index * 25;
+      const codeText = item.code || `STK-${item.car.id}`;
+      const nameText = `${item.car.make} ${item.car.model}`;
+      const mileageText = item.car.mileage_km
+        ? `Mileage: ${item.car.mileage_km.toLocaleString()} km`
+        : "";
+      const codeLines = doc.splitTextToSize(codeText, codeColumnWidth);
+      const nameLines = doc.splitTextToSize(nameText, itemColumnWidth);
+      const detailLineCount =
+        nameLines.length + (mileageText ? 2 : 1); // year + optional mileage
 
-      // Alternating row colors
+      const contentHeight = Math.max(
+        codeLines.length * lineHeight,
+        detailLineCount * lineHeight + 2
+      );
+      const rowHeight = Math.max(18, contentHeight) + rowPadding * 2;
+
       if (index % 2 === 0) {
-        addRect(20, itemY - 5, pageWidth - 40, 25, "#fafafa");
+        addRect(marginLeft, currentRowY - rowPadding, pageWidth - 40, rowHeight, "#fafafa");
       }
 
-      // Item code
-      addText(item.code || `STK-${item.car.id}`, 25, itemY + 5, {
+      const codeY = currentRowY + lineHeight;
+      addText(codeText, codeColumnX, codeY, {
         fontSize: 9,
         style: "bold",
+        maxWidth: codeColumnWidth,
+        lineHeight,
       });
 
-      // Item details
-      addText(`${item.car.make} ${item.car.model}`, 50, itemY, {
+      const nameResult = addText(nameText, itemColumnX, currentRowY + lineHeight, {
         fontSize: 10,
         style: "bold",
+        maxWidth: itemColumnWidth,
+        lineHeight,
       });
-      addText(`Year: ${item.car.year}`, 50, itemY + 5, {
+
+      const yearY = nameResult.lastY + lineHeight;
+      addText(`Year: ${item.car.year}`, itemColumnX, yearY, {
         fontSize: 8,
         color: secondaryColor,
+        maxWidth: itemColumnWidth,
+        lineHeight,
       });
-      addText(
-        `Mileage: ${item.car.mileage_km?.toLocaleString()} km`,
-        50,
-        itemY + 10,
-        { fontSize: 8, color: secondaryColor }
-      );
 
-      // Quantity
-      addText(item.quantity.toString(), pageWidth - 80, itemY + 5, {
+      if (mileageText) {
+        addText(mileageText, itemColumnX, yearY + lineHeight, {
+          fontSize: 8,
+          color: secondaryColor,
+          maxWidth: itemColumnWidth,
+          lineHeight,
+        });
+      }
+
+      const numericY = currentRowY + lineHeight;
+      addText(item.quantity.toString(), qtyColumnX, numericY, {
         fontSize: 10,
         style: "bold",
+        align: "right",
       });
 
-      // FOB Value
       addText(
         `BDT ${(item.fob_value_usd || item.price).toLocaleString()}`,
-        pageWidth - 60,
-        itemY + 5,
+        fobColumnX,
+        numericY,
         {
           fontSize: 9,
+          align: "right",
+          maxWidth: fobColumnWidth,
         }
       );
 
-      // Freight
       addText(
         `BDT ${(item.freight_usd || 0).toLocaleString()}`,
-        pageWidth - 40,
-        itemY + 5,
+        freightColumnX,
+        numericY,
         {
           fontSize: 9,
+          align: "right",
+          maxWidth: freightColumnWidth,
         }
       );
 
-      // Total
       const itemTotal = item.price * item.quantity;
-      addText(`BDT ${itemTotal.toLocaleString()}`, pageWidth - 20, itemY + 5, {
+      addText(`BDT ${itemTotal.toLocaleString()}`, totalColumnX, numericY, {
         fontSize: 10,
         style: "bold",
+        align: "right",
+        maxWidth: totalColumnWidth,
       });
+
+      currentRowY += rowHeight + rowSpacing;
     });
 
-    yPosition += data.items.length * 25 + 20;
+    yPosition = currentRowY + 12;
 
     // Totals section
-    const totalsX = pageWidth - 100;
+    const totalsLabelX = pageWidth - 75;
+    const totalsValueX = pageWidth - 20;
     const subtotal = data.items.reduce(
       (total, item) => total + item.price * item.quantity,
       0
@@ -300,42 +389,47 @@ export class StockInvoiceService {
     const tax = subtotal * 0.08; // 8% tax
     const total = subtotal + tax;
 
-    addText("Subtotal:", totalsX, yPosition, { fontSize: 12 });
-    addText(`BDT ${subtotal.toLocaleString()}`, totalsX + 50, yPosition, {
+    addText("Subtotal:", totalsLabelX, yPosition, { fontSize: 12 });
+    addText(`BDT ${subtotal.toLocaleString()}`, totalsValueX, yPosition, {
       fontSize: 12,
       style: "bold",
+      align: "right",
     });
     yPosition += 8;
 
-    addText("Total FOB:", totalsX, yPosition, { fontSize: 12 });
-    addText(`BDT ${totalFob.toLocaleString()}`, totalsX + 50, yPosition, {
+    addText("Total FOB:", totalsLabelX, yPosition, { fontSize: 12 });
+    addText(`BDT ${totalFob.toLocaleString()}`, totalsValueX, yPosition, {
       fontSize: 12,
       style: "bold",
+      align: "right",
     });
     yPosition += 8;
 
-    addText("Total Freight:", totalsX, yPosition, { fontSize: 12 });
-    addText(`BDT ${totalFreight.toLocaleString()}`, totalsX + 50, yPosition, {
+    addText("Total Freight:", totalsLabelX, yPosition, { fontSize: 12 });
+    addText(`BDT ${totalFreight.toLocaleString()}`, totalsValueX, yPosition, {
       fontSize: 12,
       style: "bold",
+      align: "right",
     });
     yPosition += 8;
 
-    addText("Tax (8%):", totalsX, yPosition, { fontSize: 12 });
-    addText(`BDT ${tax.toLocaleString()}`, totalsX + 50, yPosition, {
+    addText("Tax (8%):", totalsLabelX, yPosition, { fontSize: 12 });
+    addText(`BDT ${tax.toLocaleString()}`, totalsValueX, yPosition, {
       fontSize: 12,
       style: "bold",
+      align: "right",
     });
     yPosition += 8;
 
-    addLine(totalsX, yPosition, totalsX + 60, yPosition, textColor);
+    addLine(totalsLabelX, yPosition, totalsValueX, yPosition, textColor);
     yPosition += 8;
 
-    addText("Total:", totalsX, yPosition, { fontSize: 14, style: "bold" });
-    addText(`BDT ${total.toLocaleString()}`, totalsX + 50, yPosition, {
+    addText("Total:", totalsLabelX, yPosition, { fontSize: 14, style: "bold" });
+    addText(`BDT ${total.toLocaleString()}`, totalsValueX, yPosition, {
       fontSize: 14,
       style: "bold",
       color: accentColor,
+      align: "right",
     });
     yPosition += 20;
 
