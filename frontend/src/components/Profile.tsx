@@ -40,28 +40,28 @@ const Profile: React.FC = () => {
         {/* Profile Card */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
           {/* Profile Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-12 relative">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 sm:px-8 py-8 sm:py-12 relative">
             <div className="absolute inset-0 bg-black/10"></div>
-            <div className="relative flex items-center space-x-6">
+            <div className="relative flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-6 sm:space-y-0 text-center sm:text-left">
               {/* Avatar */}
-              <div className="relative">
-                <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-3xl font-bold text-white border-4 border-white/30">
+              <div className="relative mx-auto sm:mx-0">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-2xl sm:text-3xl font-bold text-white border-4 border-white/30">
                   {getInitials(user?.name || "")}
                 </div>
-                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
-                  <CheckCircleIcon className="w-5 h-5 text-white" />
+                <div className="absolute -bottom-2 -right-2 w-7 h-7 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
+                  <CheckCircleIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
               </div>
 
               {/* User Info */}
               <div className="flex-1 text-white">
-                <h2 className="text-3xl font-bold mb-2">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-2">
                   {user?.name || "Unknown User"}
                 </h2>
-                <p className="text-blue-100 text-lg mb-3">
+                <p className="text-blue-100 text-base sm:text-lg mb-3">
                   {user?.email || "No email provided"}
                 </p>
-                <div className="flex items-center space-x-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-3 sm:space-y-0">
                   <span
                     className={`px-4 py-2 rounded-full text-sm font-semibold border ${getRoleColor(
                       user?.role || ""
@@ -78,8 +78,8 @@ const Profile: React.FC = () => {
           </div>
 
           {/* Profile Details */}
-          <div className="p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="p-6 sm:p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
               {/* Personal Information */}
               <div className="lg:col-span-2">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
