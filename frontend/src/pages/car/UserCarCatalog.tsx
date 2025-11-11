@@ -386,6 +386,15 @@ const UserCarCatalog: React.FC = () => {
         return;
       }
 
+      const availableCars = cars.filter(
+        (car) => car.status?.toLowerCase() === "available"
+      );
+
+      if (availableCars.length === 0) {
+        alert("No available cars to export. Please ensure some cars are marked as available.");
+        return;
+      }
+
       const doc = new jsPDF();
 
       // Add title
@@ -407,7 +416,7 @@ const UserCarCatalog: React.FC = () => {
         "Price",
       ];
 
-      const tableData = cars.map((car) => {
+      const tableData = availableCars.map((car) => {
         try {
           const keyFeatures = [];
           if (car.fuel) keyFeatures.push(car.fuel);
