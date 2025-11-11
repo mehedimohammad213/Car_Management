@@ -430,9 +430,15 @@ const UserCarCatalog: React.FC = () => {
           if (car.grade_exterior) aaScore.push(`Ext: ${car.grade_exterior}`);
           if (car.grade_interior) aaScore.push(`Int: ${car.grade_interior}`);
 
+          const reference = car.ref_no || "N/A";
+          const chassis =
+            car.chassis_no_full || car.chassis_no_masked || "N/A";
+
           return [
             `${car.year || "N/A"} ${car.make || "N/A"} ${car.model || "N/A"}${
               car.variant ? ` - ${car.variant}` : ""
+            }\nRef: ${reference}${
+              chassis && chassis !== "N/A" ? ` | Chassis: ${chassis}` : ""
             }`,
             car.mileage_km ? `${car.mileage_km.toLocaleString()} km` : "N/A",
             car.engine_cc ? `${car.engine_cc.toLocaleString()} cc` : "N/A",
@@ -446,6 +452,7 @@ const UserCarCatalog: React.FC = () => {
         } catch (error) {
           console.error("Error processing car data:", error, car);
           return [
+            "Error",
             "Error",
             "Error",
             "Error",
@@ -476,12 +483,12 @@ const UserCarCatalog: React.FC = () => {
             fillColor: [245, 245, 245],
           },
           columnStyles: {
-            0: { cellWidth: 40 },
+            0: { cellWidth: 45 },
             1: { cellWidth: 20 },
             2: { cellWidth: 20 },
             3: { cellWidth: 15 },
-            4: { cellWidth: 25 },
-            5: { cellWidth: 30 },
+            4: { cellWidth: 20 },
+            5: { cellWidth: 25 },
             6: { cellWidth: 25 },
           },
           didDrawPage: function (data: any) {
