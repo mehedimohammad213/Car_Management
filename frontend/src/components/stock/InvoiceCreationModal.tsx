@@ -410,7 +410,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Total
                           </label>
-                          <div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-right font-semibold">
+                          <div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-right font-semibold break-words whitespace-normal">
                             {(item.price * item.quantity).toLocaleString()}
                           </div>
                         </div>
