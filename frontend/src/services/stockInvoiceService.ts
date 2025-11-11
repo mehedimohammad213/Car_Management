@@ -230,21 +230,18 @@ export class StockInvoiceService {
         style: "bold",
       });
 
-      // Item image placeholder
-      addText("🚗", 50, itemY + 5, { fontSize: 12 });
-
       // Item details
-      addText(`${item.car.make} ${item.car.model}`, 65, itemY, {
+      addText(`${item.car.make} ${item.car.model}`, 50, itemY, {
         fontSize: 10,
         style: "bold",
       });
-      addText(`Year: ${item.car.year}`, 65, itemY + 5, {
+      addText(`Year: ${item.car.year}`, 50, itemY + 5, {
         fontSize: 8,
         color: secondaryColor,
       });
       addText(
         `Mileage: ${item.car.mileage_km?.toLocaleString()} km`,
-        65,
+        50,
         itemY + 10,
         { fontSize: 8, color: secondaryColor }
       );
@@ -257,7 +254,7 @@ export class StockInvoiceService {
 
       // FOB Value
       addText(
-        `$${(item.fob_value_usd || item.price).toLocaleString()}`,
+        `BDT ${(item.fob_value_usd || item.price).toLocaleString()}`,
         pageWidth - 60,
         itemY + 5,
         {
@@ -267,7 +264,7 @@ export class StockInvoiceService {
 
       // Freight
       addText(
-        `$${(item.freight_usd || 0).toLocaleString()}`,
+        `BDT ${(item.freight_usd || 0).toLocaleString()}`,
         pageWidth - 40,
         itemY + 5,
         {
@@ -373,16 +370,16 @@ export class StockInvoiceService {
     });
     yPosition += 8;
 
-    addText(
-      `For questions about this stock invoice, contact us at ${data.company.email}`,
-      20,
-      yPosition,
-      { fontSize: 10, color: secondaryColor }
-    );
-    addText(`Visit us at ${data.company.website}`, 20, yPosition + 6, {
-      fontSize: 10,
-      color: secondaryColor,
-    });
+    // addText(
+    //   `For questions about this stock invoice, contact us at ${data.company.email}`,
+    //   20,
+    //   yPosition,
+    //   { fontSize: 10, color: secondaryColor }
+    // );
+    // addText(`Visit us at ${data.company.website}`, 20, yPosition + 6, {
+    //   fontSize: 10,
+    //   color: secondaryColor,
+    // });
 
     // Page number
     addText(`Page 1 of 1`, pageWidth - 30, pageHeight - 10, {
