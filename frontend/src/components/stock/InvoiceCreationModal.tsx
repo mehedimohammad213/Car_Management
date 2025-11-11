@@ -422,25 +422,25 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
             {/* Footer with Total and Actions */}
             {selectedCars.length > 0 && (
               <div className="border-t border-gray-200 p-4 bg-gray-50">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
                   <span className="text-lg font-semibold text-gray-900">
                     Total Amount:
                   </span>
-                  <span className="text-2xl font-bold text-blue-600">
+                  <span className="text-2xl font-bold text-blue-600 break-words text-right">
                     {calculateTotal().toLocaleString()}
                   </span>
                 </div>
                 <div className="flex gap-3">
                   <button
                     onClick={handleClose}
-                    className="flex-1 px-4 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    className="flex-1 h-12 px-4 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium flex items-center justify-center"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSubmit}
                     disabled={isSubmitting}
-                    className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 h-12 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   >
                     {isSubmitting ? "Creating Invoice..." : "Create Invoice"}
                   </button>
