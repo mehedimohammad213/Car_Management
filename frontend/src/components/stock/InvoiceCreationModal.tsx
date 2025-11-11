@@ -231,15 +231,13 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                       key={car.id}
                       className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">
-                            {car.make} {car.model}
-                          </h3>
-                        </div>
+                      <div className="flex flex-col">
+                        <h3 className="font-semibold text-gray-900">
+                          {car.make} {car.model}
+                        </h3>
                         <button
                           onClick={() => addCarToInvoice(car)}
-                          className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                          className="mt-3 self-start px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
                         >
                           <Plus className="w-4 h-4 mr-1" />
                           Add
