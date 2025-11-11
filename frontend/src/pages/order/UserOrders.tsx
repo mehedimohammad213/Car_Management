@@ -274,9 +274,9 @@ const UserOrders: React.FC = () => {
         {/* Search Filters */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-6">
           {/* Filter Row with Search, Status, and Buttons */}
-          <div className="flex items-center gap-4 mb-6">
+          <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center">
             {/* Search Input */}
-            <div className="flex-1">
+            <div className="w-full md:flex-1">
               <input
                 type="text"
                 placeholder="Search orders by ID, vehicle make, model, or any keyword..."
@@ -287,18 +287,19 @@ const UserOrders: React.FC = () => {
             </div>
 
             {/* Status Filter */}
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200 min-w-[140px]"
-            >
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
-              <option value="canceled">Canceled</option>
-            </select>
+            <div className="flex gap-3 w-full md:w-auto md:items-center">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="flex-1 md:flex-none px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200 min-w-[140px]"
+              >
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="canceled">Canceled</option>
+              </select>
 
             {/* Reset Button */}
             <button
@@ -306,10 +307,11 @@ const UserOrders: React.FC = () => {
                 setSearchTerm("");
                 setStatusFilter("all");
               }}
-              className="px-4 py-3 text-blue-600 hover:text-blue-800 border border-blue-300 hover:bg-blue-50 rounded-xl font-semibold text-sm transition-all duration-200"
+              className="w-full md:w-auto px-4 py-3 text-blue-600 hover:text-blue-800 border border-blue-300 hover:bg-blue-50 rounded-xl font-semibold text-sm transition-all duration-200"
             >
               Reset
             </button>
+            </div>
           </div>
         </div>
 
@@ -342,7 +344,7 @@ const UserOrders: React.FC = () => {
           ) : (
             <>
               {/* Table Header */}
-              <div className="bg-gradient-to-r from-gray-50 to-blue-50 border-b-2 border-blue-200">
+              <div className="hidden bg-gradient-to-r from-gray-50 to-blue-50 border-b-2 border-blue-200 lg:block">
                 <div className="grid grid-cols-12 gap-3 p-6 text-sm font-bold text-gray-800 uppercase tracking-wide">
                   <div className="col-span-2">Order Information</div>
                   <div className="col-span-3">Items</div>
@@ -354,7 +356,7 @@ const UserOrders: React.FC = () => {
                 </div>
               </div>
               {/* Table Body */}
-              <div className="divide-y divide-gray-100">
+              <div className="hidden divide-y divide-gray-100 lg:block">
                 {sortedOrders.map((order) => (
                   <div
                     key={order.id}
