@@ -295,7 +295,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-6 gap-4 mb-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Quantity
