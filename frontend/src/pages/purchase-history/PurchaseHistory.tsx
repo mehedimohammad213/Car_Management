@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Plus, Search, Filter, X, Eye } from "lucide-react";
+import { Plus, Search, Filter, X, Eye, Edit, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   purchaseHistoryApi,
@@ -349,23 +349,24 @@ const PurchaseHistoryPage: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleView(ph)}
-                            className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors flex items-center gap-1"
+                            className="p-2 text-green-600 hover:text-green-700 rounded-lg transition-colors"
                             title="View Details"
                           >
-                            <Eye className="w-4 h-4" />
-                            View
+                            <Eye className="w-5 h-5" />
                           </button>
                           <button
                             onClick={() => handleEdit(ph)}
-                            className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                            className="p-2 text-blue-600 hover:text-blue-700 rounded-lg transition-colors"
+                            title="Edit"
                           >
-                            Edit
+                            <Edit className="w-5 h-5" />
                           </button>
                           <button
                             onClick={() => handleDelete(ph)}
-                            className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                            className="p-2 text-red-600 hover:text-red-700 rounded-lg transition-colors"
+                            title="Delete"
                           >
-                            Delete
+                            <Trash2 className="w-5 h-5" />
                           </button>
                         </div>
                       </td>
