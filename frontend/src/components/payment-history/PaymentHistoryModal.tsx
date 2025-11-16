@@ -23,6 +23,14 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
   onClose,
   onSubmit,
 }) => {
+  const formatDateForInput = (value: string | null | undefined): string | null => {
+    if (!value) return null;
+    // If already YYYY-MM-DD, return as is
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+    // Handle common API formats like 'YYYY-MM-DDTHH:mm:ss' or 'YYYY-MM-DD HH:mm:ss'
+    return value.substring(0, 10);
+  };
+
   const [formData, setFormData] = useState<CreatePaymentHistoryData>({
     car_id: null,
     showroom_name: null,
@@ -54,7 +62,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
         showroom_name: paymentHistory.showroom_name,
         wholesaler_address: paymentHistory.wholesaler_address,
         purchase_amount: paymentHistory.purchase_amount,
-        purchase_date: paymentHistory.purchase_date,
+        purchase_date: formatDateForInput(paymentHistory.purchase_date),
         nid_number: paymentHistory.nid_number,
         tin_certificate: paymentHistory.tin_certificate,
         customer_address: paymentHistory.customer_address,
@@ -68,7 +76,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
         setInstallments(
           paymentHistory.installments.map((inst) => ({
             id: inst.id,
-            installment_date: inst.installment_date,
+            installment_date: formatDateForInput(inst.installment_date),
             description: inst.description,
             amount: inst.amount,
             payment_method: inst.payment_method,
