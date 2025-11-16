@@ -216,22 +216,22 @@ const CarTable: React.FC<CarTableProps> = ({
                     ? onViewCarAdmin(car)
                     : onViewCar(car)
                 }
-                className="p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="p-2 text-blue-600 hover:text-blue-700 rounded-lg transition-colors"
                 title={
                   isAdmin ? "View Car Details (Admin)" : "View Car Details"
                 }
               >
-                <Eye className="w-4 h-4" />
+                <Eye className="w-5 h-5" />
               </button>
 
               {/* Edit button for admin */}
               {isAdmin && onEditCar && (
                 <button
                   onClick={() => onEditCar(car)}
-                  className="p-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  className="p-2 text-orange-600 hover:text-orange-700 rounded-lg transition-colors"
                   title="Edit Car"
                 >
-                  <Edit className="w-4 h-4" />
+                  <Edit className="w-5 h-5" />
                 </button>
               )}
 
@@ -239,10 +239,10 @@ const CarTable: React.FC<CarTableProps> = ({
               {isAdmin && onDeleteCar && (
                 <button
                   onClick={() => onDeleteCar(car)}
-                  className="p-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  className="p-2 text-red-600 hover:text-red-700 rounded-lg transition-colors"
                   title="Delete Car"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-5 h-5" />
                 </button>
               )}
 
@@ -251,13 +251,13 @@ const CarTable: React.FC<CarTableProps> = ({
                 <button
                   onClick={() => onAddToCart(car)}
                   disabled={isCarLoading(car.id)}
-                  className="p-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
+                  className="p-2 text-green-600 hover:text-green-700 rounded-lg transition-colors disabled:text-gray-400 disabled:cursor-not-allowed"
                   title="Add to Cart"
                 >
                   {isCarLoading(car.id) ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-current border-t-transparent"></div>
                   ) : (
-                    <ShoppingCart className="w-4 h-4" />
+                    <ShoppingCart className="w-5 h-5" />
                   )}
                 </button>
               )}
