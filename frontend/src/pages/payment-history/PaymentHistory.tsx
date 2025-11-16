@@ -299,9 +299,22 @@ const PaymentHistoryPage: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
-                          {ph.installments?.length || 0} installments
-                        </span>
+                        {ph.installments && ph.installments.length > 0 ? (
+                          <div className="max-h-40 overflow-y-auto pr-2 space-y-2">
+                            {ph.installments.map((ins) => (
+                              <div key={ins.id} className="flex items-start justify-between gap-3 text-sm">
+                                <div className="font-medium text-gray-800">
+                                  {formatDate(ins.installment_date)}
+                                </div>
+                                <div className="text-right min-w-[120px] text-gray-900">
+                                  {formatCurrency(ins.amount)}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-gray-500 text-sm">No installments</span>
+                        )}
                       </td>
                       <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center gap-2">
