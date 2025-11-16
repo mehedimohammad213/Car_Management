@@ -270,7 +270,10 @@ class PurchaseHistoryApi {
       }
     });
 
-    const response = await apiClient.put(`/purchase-history/${id}`, formData);
+    // IMPORTANT: PHP does not handle file uploads on raw PUT.
+    // Use POST with method override so Laravel processes uploaded files.
+    formData.append("_method", "PUT");
+    const response = await apiClient.post(`/purchase-history/${id}`, formData);
     return response.data;
   }
 
