@@ -13,6 +13,8 @@ export interface PurchaseHistory {
   car_id: number | null;
   purchase_date: string | null;
   purchase_amount: number | null;
+  foreign_amount?: number | null;
+  bdt_amount?: number | null;
   govt_duty: string | null;
   cnf_amount: number | null;
   miscellaneous: string | null;
@@ -44,6 +46,8 @@ export interface CreatePurchaseHistoryData {
   car_id?: number | null;
   purchase_date?: string | null;
   purchase_amount?: number | null;
+  foreign_amount?: number | null;
+  bdt_amount?: number | null;
   govt_duty?: string | null;
   cnf_amount?: number | null;
   miscellaneous?: string | null;
@@ -126,6 +130,12 @@ class PurchaseHistoryApi {
     if (data.purchase_amount !== undefined && data.purchase_amount !== null) {
       formData.append("purchase_amount", data.purchase_amount.toString());
     }
+    if (data.foreign_amount !== undefined && data.foreign_amount !== null) {
+      formData.append("foreign_amount", data.foreign_amount.toString());
+    }
+    if (data.bdt_amount !== undefined && data.bdt_amount !== null) {
+      formData.append("bdt_amount", data.bdt_amount.toString());
+    }
     if (data.govt_duty) formData.append("govt_duty", data.govt_duty);
     if (data.cnf_amount !== undefined && data.cnf_amount !== null) {
       formData.append("cnf_amount", data.cnf_amount.toString());
@@ -201,6 +211,8 @@ class PurchaseHistoryApi {
         "car_id",
         "purchase_date",
         "purchase_amount",
+        "foreign_amount",
+        "bdt_amount",
         "govt_duty",
         "cnf_amount",
         "miscellaneous",
@@ -236,6 +248,18 @@ class PurchaseHistoryApi {
     }
     if (data.purchase_amount !== undefined && data.purchase_amount !== null) {
       formData.append("purchase_amount", data.purchase_amount.toString());
+    }
+    if (data.foreign_amount !== undefined) {
+      formData.append(
+        "foreign_amount",
+        data.foreign_amount !== null ? data.foreign_amount.toString() : ""
+      );
+    }
+    if (data.bdt_amount !== undefined) {
+      formData.append(
+        "bdt_amount",
+        data.bdt_amount !== null ? data.bdt_amount.toString() : ""
+      );
     }
     if (data.govt_duty !== undefined)
       formData.append("govt_duty", data.govt_duty || "");

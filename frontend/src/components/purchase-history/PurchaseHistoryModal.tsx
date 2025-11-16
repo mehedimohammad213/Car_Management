@@ -107,17 +107,28 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   useEffect(() => {
     if (purchaseHistory && mode === "update") {
       // Calculate dollar and BDT from purchase_amount if available
-      if (purchaseHistory.purchase_amount) {
-        // For now, we'll set default values. User can adjust
-        // In a real scenario, you might want to store these separately
-        setForeignAmount("");
-        setBdtAmount("");
-      }
+      // Prefill from backend fields if present
+      setForeignAmount(
+        purchaseHistory.foreign_amount != null
+          ? String(purchaseHistory.foreign_amount)
+          : ""
+      );
+      setBdtAmount(
+        purchaseHistory.bdt_amount != null
+          ? String(purchaseHistory.bdt_amount)
+          : ""
+      );
 
       setFormData({
         car_id: purchaseHistory.car_id ?? null,
         purchase_date: toInputDate(purchaseHistory.purchase_date),
         purchase_amount: purchaseHistory.purchase_amount,
+        foreign_amount:
+          purchaseHistory.foreign_amount != null
+            ? purchaseHistory.foreign_amount
+            : null,
+        bdt_amount:
+          purchaseHistory.bdt_amount != null ? purchaseHistory.bdt_amount : null,
         govt_duty: purchaseHistory.govt_duty || null,
         cnf_amount: purchaseHistory.cnf_amount || null,
         miscellaneous: purchaseHistory.miscellaneous || null,
@@ -169,6 +180,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         car_id: null,
         purchase_date: null,
         purchase_amount: null,
+        foreign_amount: null,
+        bdt_amount: null,
         govt_duty: null,
         cnf_amount: null,
         miscellaneous: null,
@@ -204,6 +217,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     setFormData((prev) => ({
       ...prev,
       purchase_amount: calculated > 0 ? calculated : null,
+      foreign_amount:
+        !Number.isNaN(foreign) && foreignAmount !== "" ? foreign : null,
+      bdt_amount: !Number.isNaN(bdt) && bdtAmount !== "" ? bdt : null,
     }));
   }, [foreignAmount, bdtAmount]);
 
@@ -397,7 +413,15 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                     type="number"
                     step="0.01"
                     value={foreignAmount}
-                    onChange={(e) => setForeignAmount(e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setForeignAmount(val);
+                      setFormData((prev) => ({
+                        ...prev,
+                        foreign_amount:
+                          val === "" ? null : parseFloat(val) || 0,
+                      }));
+                    }}
                     placeholder="0.00"
                     className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -410,7 +434,14 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                     type="number"
                     step="0.01"
                     value={bdtAmount}
-                    onChange={(e) => setBdtAmount(e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setBdtAmount(val);
+                      setFormData((prev) => ({
+                        ...prev,
+                        bdt_amount: val === "" ? null : parseFloat(val) || 0,
+                      }));
+                    }}
                     placeholder="0.00"
                     className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />

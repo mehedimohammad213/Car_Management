@@ -16,6 +16,8 @@ class PurchaseHistory extends Model
         'car_id',
         'purchase_date',
         'purchase_amount',
+        'foreign_amount',
+        'bdt_amount',
         'govt_duty',
         'cnf_amount',
         'miscellaneous',
@@ -41,9 +43,31 @@ class PurchaseHistory extends Model
     protected $casts = [
         'purchase_date' => 'date',
         'purchase_amount' => 'decimal:2',
+        'foreign_amount' => 'decimal:2',
+        'bdt_amount' => 'decimal:2',
         'cnf_amount' => 'decimal:2',
         'lc_date' => 'date',
     ];
+
+    // Always include keys in API responses
+    protected $appends = [
+        'foreign_amount',
+        'bdt_amount',
+    ];
+
+    public function getForeignAmountAttribute(): mixed
+    {
+        return array_key_exists('foreign_amount', $this->attributes)
+            ? $this->attributes['foreign_amount']
+            : null;
+    }
+
+    public function getBdtAmountAttribute(): mixed
+    {
+        return array_key_exists('bdt_amount', $this->attributes)
+            ? $this->attributes['bdt_amount']
+            : null;
+    }
 
     public function car(): BelongsTo
     {

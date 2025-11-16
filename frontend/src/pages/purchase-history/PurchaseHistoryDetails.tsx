@@ -192,6 +192,8 @@ const PurchaseHistoryDetails: React.FC = () => {
 
   const hasCostValues = [
     purchaseAmountValue,
+    toNumber(purchaseHistory.foreign_amount),
+    toNumber(purchaseHistory.bdt_amount),
     govtDutyValue,
     cnfAmountValue,
     miscellaneousValue,
@@ -306,6 +308,23 @@ const PurchaseHistoryDetails: React.FC = () => {
               Purchase Information
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  Foreign Amount
+                </label>
+                <p className="text-gray-900 font-medium">
+                  {formatCurrency(purchaseHistory.foreign_amount)}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  BDT Amount
+                </label>
+                <div className="flex items-center gap-2 text-gray-900 font-medium">
+                  <CurrencyBDTIcon className="w-4 h-4 text-gray-400" />
+                  {formatCurrency(purchaseHistory.bdt_amount)}
+                </div>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-500 mb-1">
                   Purchase Date
