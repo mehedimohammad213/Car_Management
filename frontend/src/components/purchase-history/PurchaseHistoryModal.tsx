@@ -24,6 +24,26 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   onClose,
   onSubmit,
 }) => {
+  const toInputDate = (value: string | null | undefined): string | null => {
+    if (!value) return null;
+    // Try to parse and normalize to YYYY-MM-DD for <input type="date">
+    // Handles values like 'YYYY-MM-DD', ISO strings, or other parseable formats
+    const d = new Date(value);
+    if (!isNaN(d.getTime())) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+    // Fallback: if already looks like YYYY-MM-DD or starts with that, slice it
+    if (typeof value === "string" && value.length >= 10) {
+      const maybe = value.slice(0, 10);
+      // simple check
+      if (/^\d{4}-\d{2}-\d{2}$/.test(maybe)) return maybe;
+    }
+    return null;
+  };
+
   const [formData, setFormData] = useState<CreatePurchaseHistoryData>({
     car_id: null,
     purchase_date: null,
@@ -96,12 +116,12 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
       setFormData({
         car_id: purchaseHistory.car_id ?? null,
-        purchase_date: purchaseHistory.purchase_date || null,
+        purchase_date: toInputDate(purchaseHistory.purchase_date),
         purchase_amount: purchaseHistory.purchase_amount,
         govt_duty: purchaseHistory.govt_duty || null,
         cnf_amount: purchaseHistory.cnf_amount || null,
         miscellaneous: purchaseHistory.miscellaneous || null,
-        lc_date: purchaseHistory.lc_date || null,
+        lc_date: toInputDate(purchaseHistory.lc_date),
         lc_number: purchaseHistory.lc_number || null,
         lc_bank_name: purchaseHistory.lc_bank_name || null,
         lc_bank_branch_name: purchaseHistory.lc_bank_branch_name || null,
