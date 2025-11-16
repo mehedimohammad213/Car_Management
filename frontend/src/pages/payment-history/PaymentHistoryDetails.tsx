@@ -87,7 +87,7 @@ const PaymentHistoryDetails: React.FC = () => {
 
   const handleEditSuccess = () => {
     setShowEditModal(false);
-    fetchPaymentHistory();
+    navigate("/admin/payment-history");
   };
 
   const handleDownloadInvoice = () => {
