@@ -20,7 +20,7 @@ export class PaymentHistoryInvoiceService {
 
   static generateSalesTrackingReport(paymentHistory: PaymentHistory): void {
     const referenceNumber = this.generateReferenceNumber(paymentHistory.id);
-    
+
     const invoiceData: PaymentHistoryInvoiceData = {
       paymentHistory,
       company: this.COMPANY_INFO,
@@ -61,7 +61,7 @@ export class PaymentHistoryInvoiceService {
       doc.setFontSize(options.fontSize || 12);
       doc.setTextColor(options.color || textColor);
       doc.setFont(options.font || "helvetica", options.style || "normal");
-      
+
       // Handle text wrapping
       const maxWidth = options.maxWidth || pageWidth - x - margin;
       const lines = doc.splitTextToSize(text, maxWidth);
@@ -99,11 +99,12 @@ export class PaymentHistoryInvoiceService {
       // Add text
       const padding = 2;
       const textX = x + padding;
-      const textY = y + height / 2 + 2;
+      // Top-align text inside the cell to avoid overlap when text wraps
+      const textY = y + padding + 3;
       doc.setFontSize(options.fontSize || 10);
       doc.setTextColor(options.color || textColor);
       doc.setFont(options.font || "helvetica", options.style || "normal");
-      
+
       const maxTextWidth = width - 2 * padding;
       const lines = doc.splitTextToSize(text || "", maxTextWidth);
       doc.text(lines, textX, textY, {
@@ -177,6 +178,7 @@ export class PaymentHistoryInvoiceService {
     const col1Width = 40;
     const col2Width = 70;
     const col3Width = 70;
+    const colWidths = [col1Width, col2Width, col3Width];
 
     // Table headers
     const headers = [
@@ -219,23 +221,16 @@ export class PaymentHistoryInvoiceService {
     headers.forEach((row, rowIndex) => {
       const currentY = tableStartY + rowIndex * rowHeight;
       row.forEach((header, colIndex) => {
-        const x = margin + colIndex * col1Width;
-        addTableCell(
-          header,
-          x,
-          currentY,
-          col1Width,
-          rowHeight,
-          { fontSize: 9, style: "bold" }
-        );
-        addTableCell(
-          values[rowIndex][colIndex],
-          x,
-          currentY + rowHeight,
-          col1Width,
-          rowHeight,
-          { fontSize: 9 }
-        );
+        const x =
+          margin + colWidths.slice(0, colIndex).reduce((a, b) => a + b, 0);
+        const width = colWidths[colIndex];
+        addTableCell(header, x, currentY, width, rowHeight, {
+          fontSize: 9,
+          style: "bold",
+        });
+        addTableCell(values[rowIndex][colIndex], x, currentY + rowHeight, width, rowHeight, {
+          fontSize: 9,
+        });
       });
     });
 
@@ -252,10 +247,6 @@ export class PaymentHistoryInvoiceService {
     const wholesalerInfo = [
       { label: "Buyer:", value: data.paymentHistory.showroom_name || "N/A" },
       {
-        label: "Address:",
-        value: data.paymentHistory.wholesaler_address || "N/A",
-      },
-      {
         label: "Sale Date:",
         value: data.paymentHistory.purchase_date
           ? this.formatDate(data.paymentHistory.purchase_date)
@@ -268,13 +259,18 @@ export class PaymentHistoryInvoiceService {
             ? "INSTALLMENTS"
             : "N/A",
       },
+      // Placeholder to push Address to the next row (appear under Method)
+      { label: "", value: "" },
+      {
+        label: "Address:",
+        value: data.paymentHistory.wholesaler_address || "N/A",
+      },
       {
         label: "Sale Price:",
         value: data.paymentHistory.purchase_amount
           ? `${this.formatCurrency(data.paymentHistory.purchase_amount)} BDT`
           : "N/A",
-      },
-      { label: "Remarks:", value: "" },
+      }
     ];
 
     wholesalerInfo.forEach((info, index) => {
@@ -354,20 +350,19 @@ export class PaymentHistoryInvoiceService {
 
     // Payment Records Table
     const paymentTableStartY = yPosition;
-    const paymentColWidths = [20, 25, 20, 15, 20, 25, 20, 20];
+    // Columns: Date, Amount, Method, Bank Name, Cheque Number, Balance
+    const paymentColWidths = [22, 28, 20, 45, 40, 25];
     const paymentRowHeight = 8;
     const totalTableWidth = paymentColWidths.reduce((a, b) => a + b, 0);
 
     // Table headers
     const paymentHeaders = [
       "Date",
-      "Description",
       "Amount",
       "Method",
       "Bank Name",
       "Cheque Number",
       "Balance",
-      "Remarks",
     ];
 
     paymentHeaders.forEach((header, colIndex) => {
@@ -411,7 +406,6 @@ export class PaymentHistoryInvoiceService {
           installment.installment_date
             ? this.formatDateShort(installment.installment_date)
             : "",
-          installment.description || "",
           installment.amount
             ? `${this.formatCurrency(installment.amount)}`
             : "",
@@ -421,7 +415,6 @@ export class PaymentHistoryInvoiceService {
           installment.balance
             ? `${this.formatCurrency(installment.balance)}`
             : "",
-          installment.remarks || "",
         ];
 
         rowData.forEach((cell, colIndex) => {
@@ -484,4 +477,3 @@ export class PaymentHistoryInvoiceService {
     }).format(amount);
   }
 }
-
