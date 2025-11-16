@@ -172,69 +172,67 @@ export class PaymentHistoryInvoiceService {
       yPosition += 6;
     }
 
-    // Car details table
-    const tableStartY = yPosition;
-    const rowHeight = 8;
-    const col1Width = 40;
-    const col2Width = 70;
-    const col3Width = 70;
-    const colWidths = [col1Width, col2Width, col3Width];
-
-    // Table headers
-    const headers = [
-      ["Make / Model / Year", "Package", "Fuel Type"],
-      ["Color", "Transmission", "Seats"],
-      ["Chassis / VIN", "Engine No.", "Engine Capacity"],
-      ["Drive", "Number of Keys", "Mileage"],
+    // Car details in two-column label/value layout (no table)
+    const carInfo = [
+      {
+        label: "Make / Model / Year:",
+        value: car
+          ? `${car.make || "N/A"} ${car.model || ""} ${car.year || ""}`.trim()
+          : "N/A",
+      },
+      { label: "Package:", value: car?.package || "N/A" },
+      { label: "Fuel Type:", value: car?.fuel || "N/A" },
+      { label: "Color:", value: car?.color || "N/A" },
+      { label: "Transmission:", value: car?.transmission || "N/A" },
+      {
+        label: "Mileage:",
+        value:
+          car?.mileage_km !== undefined && car?.mileage_km !== null
+            ? `${car.mileage_km.toLocaleString()} Km`
+            : "N/A",
+      },
+      {
+        label: "Chassis / VIN:",
+        value:
+          car?.chassis_no_full || car?.chassis_no_masked
+            ? (car.chassis_no_full || car.chassis_no_masked) as string
+            : "N/A",
+      },
+      {
+        label: "Engine Capacity:",
+        value:
+          car?.engine_cc !== undefined && car?.engine_cc !== null
+            ? `${car.engine_cc} cc`
+            : "N/A",
+      },
+      { label: "Drive:", value: car?.drive || "N/A" },
+      {
+        label: "Seats:",
+        value:
+          car?.seats !== undefined && car?.seats !== null
+            ? String(car.seats)
+            : "N/A",
+      },
     ];
 
-    const values = car
-      ? [
-          [
-            `${car.year || ""} ${car.make || ""} ${car.model || ""}`,
-            car.package || "-",
-            car.fuel || "N/A",
-          ],
-          [
-            car.color || "N/A",
-            car.transmission || "N/A",
-            car.seats?.toString() || "N/A",
-          ],
-          [
-            car.chassis_no_full || car.chassis_no_masked || "N/A",
-            "N/A", // Engine number not in car model
-            car.engine_cc ? `${car.engine_cc} cc` : "N/A",
-          ],
-          [
-            car.drive || "N/A",
-            "N/A", // Number of keys not directly available
-            car.mileage_km ? `${car.mileage_km.toLocaleString()} Km` : "N/A",
-          ],
-        ]
-      : [
-          ["N/A", "N/A", "N/A"],
-          ["N/A", "N/A", "N/A"],
-          ["N/A", "N/A", "N/A"],
-          ["N/A", "N/A", "N/A"],
-        ];
-
-    headers.forEach((row, rowIndex) => {
-      const currentY = tableStartY + rowIndex * rowHeight;
-      row.forEach((header, colIndex) => {
-        const x =
-          margin + colWidths.slice(0, colIndex).reduce((a, b) => a + b, 0);
-        const width = colWidths[colIndex];
-        addTableCell(header, x, currentY, width, rowHeight, {
-          fontSize: 9,
-          style: "bold",
-        });
-        addTableCell(values[rowIndex][colIndex], x, currentY + rowHeight, width, rowHeight, {
-          fontSize: 9,
-        });
-      });
+    carInfo.forEach((info, index) => {
+      if (index % 2 === 0) {
+        // Left column
+        addText(info.label, margin, yPosition, { fontSize: 10 });
+        addText(info.value, margin + 40, yPosition, { fontSize: 10 });
+      } else {
+        // Right column
+        addText(info.label, margin + 100, yPosition, { fontSize: 10 });
+        addText(info.value, margin + 140, yPosition, { fontSize: 10 });
+        yPosition += 5;
+      }
     });
 
-    yPosition = tableStartY + headers.length * rowHeight * 2 + 5;
+    if (carInfo.length % 2 === 1) {
+      yPosition += 5;
+    }
+
+    yPosition += 5;
 
     // Wholesaler Information Section
     addText("WholeSaler Information", margin, yPosition, {
