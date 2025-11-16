@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Plus, Search, Filter, X, Eye } from "lucide-react";
 import { toast } from "react-toastify";
 import {
@@ -14,6 +14,7 @@ import Pagination from "../../components/common/Pagination";
 
 const PurchaseHistoryPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation() as { state?: { editId?: number } };
   const [purchaseHistories, setPurchaseHistories] = useState<PurchaseHistory[]>(
     []
   );
@@ -42,6 +43,21 @@ const PurchaseHistoryPage: React.FC = () => {
   useEffect(() => {
     fetchPurchaseHistories();
   }, [currentPage, searchTerm, purchaseDateFrom, purchaseDateTo]);
+
+  // Open edit modal if navigated with state { editId }
+  useEffect(() => {
+    if (!loading && purchaseHistories.length > 0 && location.state?.editId) {
+      const toEdit = purchaseHistories.find(
+        (ph) => ph.id === location.state!.editId
+      );
+      if (toEdit) {
+        setSelectedPurchaseHistory(toEdit);
+        setModalMode("update");
+        setShowModal(true);
+      }
+      // Do not attempt to clear the history state here to avoid navigation issues
+    }
+  }, [loading, purchaseHistories, location.state]);
 
   const fetchPurchaseHistories = async () => {
     try {

@@ -227,11 +227,15 @@ const PurchaseHistoryDetails: React.FC = () => {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate("/admin/purchase-history")}
+              onClick={() =>
+                navigate("/admin/purchase-history", {
+                  state: { editId: purchaseHistory.id },
+                })
+              }
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
             >
               <Edit className="w-5 h-5" />
-              Back to List
+              Edit
             </button>
             <button
               onClick={() => setShowDeleteModal(true)}
