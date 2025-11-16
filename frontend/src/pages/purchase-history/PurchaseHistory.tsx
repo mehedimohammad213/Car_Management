@@ -145,6 +145,7 @@ const PurchaseHistoryPage: React.FC = () => {
           setShowModal(false);
           setSelectedPurchaseHistory(null);
           fetchPurchaseHistories();
+        navigate("/admin/purchase-history");
         } else {
           toast.error(response.message || "Failed to update purchase history");
         }
