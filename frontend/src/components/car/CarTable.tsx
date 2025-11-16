@@ -38,9 +38,9 @@ const CarTable: React.FC<CarTableProps> = ({
     <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <div className="min-w-[1100px]">
-          {/* Table Header */}
-          <div className="bg-gradient-to-r from-gray-50 to-blue-50 border-b-2 border-blue-200">
-            <div className="grid grid-cols-10 gap-3 p-6 text-sm font-bold text-gray-800 uppercase tracking-wide">
+          {/* Table Header - match payment page blue header */}
+          <div className="bg-blue-600">
+            <div className="grid grid-cols-10 gap-3 p-6 text-sm font-bold text-white uppercase tracking-wide">
               <div className="col-span-3">Car Information</div>
               <div className="col-span-1">Mileage</div>
               <div className="col-span-1">Engine</div>
@@ -58,7 +58,7 @@ const CarTable: React.FC<CarTableProps> = ({
               <div
                 key={car.id}
                 onClick={() => onViewCar(car)}
-                className="grid grid-cols-10 gap-3 p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 border-l-4 border-transparent hover:border-blue-500 cursor-pointer"
+                className="grid grid-cols-10 gap-3 p-6 hover:bg-gray-50 transition-colors cursor-pointer"
               >
             {/* Car Information */}
             <div className="col-span-3 flex items-center gap-4">
