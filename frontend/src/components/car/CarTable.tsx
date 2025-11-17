@@ -40,13 +40,13 @@ const CarTable: React.FC<CarTableProps> = ({
         <div className="min-w-[1100px]">
           {/* Table Header - match payment page blue header */}
           <div className="bg-blue-600">
-            <div className="grid grid-cols-10 gap-3 p-6 text-sm font-bold text-white uppercase tracking-wide">
+            <div className="grid grid-cols-12 gap-1 p-3 text-sm font-bold text-white uppercase tracking-wide">
               <div className="col-span-3">Car Information</div>
               <div className="col-span-1">Mileage</div>
               <div className="col-span-1">Engine</div>
               <div className="col-span-1">Color</div>
               <div className="col-span-1">AA Score</div>
-              <div className="col-span-1">Key Features</div>
+              <div className="col-span-3">Key Features</div>
               <div className="col-span-1">Price</div>
               <div className="col-span-1">Action</div>
             </div>
@@ -58,10 +58,10 @@ const CarTable: React.FC<CarTableProps> = ({
               <div
                 key={car.id}
                 onClick={() => onViewCar(car)}
-                className="grid grid-cols-10 gap-3 p-6 hover:bg-gray-50 transition-colors cursor-pointer"
+                className="grid grid-cols-12 gap-1 p-3 hover:bg-gray-50 transition-colors cursor-pointer"
               >
             {/* Car Information */}
-            <div className="col-span-3 flex items-center gap-4">
+            <div className="col-span-3 flex items-center gap-2">
               <div className="w-24 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden flex-shrink-0 shadow-md">
                 {car.photos && car.photos.length > 0 ? (
                   <img
@@ -176,7 +176,7 @@ const CarTable: React.FC<CarTableProps> = ({
             </div>
 
             {/* Key Features */}
-            <div className="col-span-1 flex items-center">
+            <div className="col-span-3 flex items-center">
               <div className="flex flex-wrap gap-1">
                 {(car.keys_feature
                   ?.split(",")
