@@ -98,7 +98,7 @@ export interface Car {
 }
 
 export interface CreateCarData {
-  category_id: number;
+  category_id?: number;
   subcategory_id?: number;
   ref_no?: string;
   code?: string;

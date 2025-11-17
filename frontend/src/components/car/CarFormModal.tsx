@@ -40,7 +40,7 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
   isModal = false,
 }) => {
   const [formData, setFormData] = useState<CreateCarData>({
-    category_id: 0,
+    category_id: undefined,
     subcategory_id: undefined,
     ref_no: "",
     code: "",
@@ -385,16 +385,12 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Required fields validation
-    if (!formData.category_id || formData.category_id === 0) {
-      newErrors.category_id = "Category is required";
-    }
-
-    if (!formData.make.trim()) {
+    // Required fields validation - only make, model, and year are required
+    if (!formData.make || !formData.make.trim()) {
       newErrors.make = "Make is required";
     }
 
-    if (!formData.model.trim()) {
+    if (!formData.model || !formData.model.trim()) {
       newErrors.model = "Model is required";
     }
 

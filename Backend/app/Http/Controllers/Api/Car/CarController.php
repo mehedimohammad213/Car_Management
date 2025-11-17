@@ -154,7 +154,7 @@ class CarController extends Controller
 
         // Prepare validation data - handle JSON strings from FormData
         $validationData = $request->all();
-        
+
         // Convert JSON strings to arrays for validation if they exist
         if (isset($validationData['photos']) && is_string($validationData['photos'])) {
             $validationData['photos'] = json_decode($validationData['photos'], true) ?? [];
@@ -164,7 +164,7 @@ class CarController extends Controller
         }
 
         $validator = Validator::make($validationData, [
-            'category_id' => 'required|integer|exists:categories,id',
+            'category_id' => 'nullable|integer|exists:categories,id',
             'subcategory_id' => 'nullable|exists:categories,id',
             'ref_no' => 'nullable|string|max:32|unique:cars,ref_no',
             'code' => 'nullable|string|max:50',
@@ -539,7 +539,7 @@ class CarController extends Controller
 
         // Prepare validation data - handle JSON strings from FormData
         $validationData = $request->all();
-        
+
         // Convert JSON strings to arrays for validation if they exist
         if (isset($validationData['photos']) && is_string($validationData['photos'])) {
             $validationData['photos'] = json_decode($validationData['photos'], true) ?? [];
@@ -655,7 +655,7 @@ class CarController extends Controller
             if (!empty($validationData['photos'])) {
                 // Delete existing photos
                 $car->photos()->delete();
-                
+
                 // Create new photos
                 foreach ($validationData['photos'] as $photoData) {
                     $car->photos()->create($photoData);
@@ -666,7 +666,7 @@ class CarController extends Controller
             if (!empty($validationData['details'])) {
                 // Delete existing details
                 $car->details()->delete();
-                
+
                 foreach ($validationData['details'] as $detailData) {
                     // Extract sub_details from detailData
                     $subDetails = $detailData['sub_details'] ?? [];
@@ -867,7 +867,7 @@ class CarController extends Controller
         }
 
         // Check if it's an image (ImageBB URL) or PDF (local storage)
-        $isImage = filter_var($car->attached_file, FILTER_VALIDATE_URL) && 
+        $isImage = filter_var($car->attached_file, FILTER_VALIDATE_URL) &&
                    !str_contains($car->attached_file, '/storage/');
 
         return response()->json([
@@ -897,7 +897,7 @@ class CarController extends Controller
         if (str_contains($car->attached_file, '/storage/')) {
             $filePath = str_replace('/storage/', '', $car->attached_file);
             $fullPath = storage_path('app/public/' . $filePath);
-            
+
             if (file_exists($fullPath)) {
                 return response()->download($fullPath, basename($car->attached_file));
             }
