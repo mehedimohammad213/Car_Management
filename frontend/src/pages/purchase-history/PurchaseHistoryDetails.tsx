@@ -271,10 +271,10 @@ const PurchaseHistoryDetails: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-500 mb-1">
-                    Reference No.
+                    Chassis Number
                   </label>
                   <p className="text-gray-900 font-medium">
-                    {purchaseHistory.car.ref_no || "N/A"}
+                    {purchaseHistory.car.chassis_no_full || purchaseHistory.car.chassis_no_masked || "N/A"}
                   </p>
                 </div>
                 <div>
@@ -506,13 +506,10 @@ const PurchaseHistoryDetails: React.FC = () => {
                 </label>
                 <p className="text-gray-900 font-semibold">
                   {purchaseHistory.car
-                    ? `${purchaseHistory.car.make} ${
-                        purchaseHistory.car.model
-                      }${
-                        purchaseHistory.car.ref_no
-                          ? ` (${purchaseHistory.car.ref_no})`
-                          : ""
-                      }`
+                    ? (() => {
+                        const chassisNo = purchaseHistory.car.chassis_no_full || purchaseHistory.car.chassis_no_masked;
+                        return `${purchaseHistory.car.make} ${purchaseHistory.car.model}${chassisNo ? ` (${chassisNo})` : ""}`;
+                      })()
                     : "N/A"}
                 </p>
               </div>

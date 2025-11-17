@@ -324,12 +324,15 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                     <option value="">
                       {loadingCars ? "Loading cars..." : "Select a car"}
                     </option>
-                    {cars.map((car) => (
-                      <option key={car.id} value={car.id}>
-                        {car.make} {car.model}
-                        {car.ref_no ? ` (${car.ref_no})` : ""}
-                      </option>
-                    ))}
+                    {cars.map((car) => {
+                      const chassisNo = car.chassis_no_full || car.chassis_no_masked;
+                      return (
+                        <option key={car.id} value={car.id}>
+                          {car.make} {car.model}
+                          {chassisNo ? ` (${chassisNo})` : ""}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
               </div>
