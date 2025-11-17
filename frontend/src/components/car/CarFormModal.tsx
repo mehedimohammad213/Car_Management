@@ -139,6 +139,7 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
         number_of_keys: car.number_of_keys || undefined,
         keys_feature: car.keys_feature || "",
         notes: car.notes || "",
+        attached_file: car.attached_file || undefined,
         photos:
           car.photos?.map((p) => ({
             url: p.url,
@@ -518,7 +519,7 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
       if (formData.attached_file && formData.attached_file instanceof File) {
         // Create FormData for file upload
         const submitData = new FormData();
-        
+
         // Add all form fields except the file
         Object.keys(formData).forEach(key => {
           if (key !== 'attached_file' && formData[key as keyof CreateCarData] !== undefined) {
@@ -530,14 +531,23 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
             }
           }
         });
-        
+
         // Add the file
         submitData.append('attached_file', formData.attached_file);
-        
+
         await onSubmit(submitData as any);
       } else {
-        console.log("No file attached, submitting regular form data");
-        await onSubmit(formData);
+        // No new file to upload - exclude attached_file from submission
+        // If it's a string (existing file), backend will keep it
+        // If it's null/undefined, backend will keep existing or leave it null
+        const submitData = { ...formData };
+        // Remove attached_file if it's a string (existing file URL)
+        // Only send it if it's a File object (which is handled above)
+        if (typeof submitData.attached_file === 'string') {
+          delete submitData.attached_file;
+        }
+        console.log("No new file attached, submitting regular form data (excluding existing file URL)");
+        await onSubmit(submitData);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
