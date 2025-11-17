@@ -23,7 +23,7 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
         Technical Specifications
       </h3>
       <div className="space-y-6">
-        {/* First row - Mileage, Chassis Number, Engine Capacity, Steering */}
+        {/* First row - Mileage, Chassis Number, Engine Capacity, Fuel Type */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <FormField
             label="Mileage"
@@ -59,10 +59,6 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("engine_cc", value)}
           />
-        </div>
-
-        {/* Second row - Fuel Type, Transmission, Drivetrain, Type */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <FormField
             label="Fuel Type"
             field="fuel"
@@ -75,6 +71,10 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("fuel", value)}
           />
+        </div>
+
+        {/* Second row - Transmission, Drivetrain, Engine Number, Seats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <FormField
             label="Transmission"
             field="transmission"
@@ -99,10 +99,6 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("drive", value)}
           />
-        </div>
-
-        {/* Third row - Engine Number, Seats, Number of Keys, Chassis Masked */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <FormField
             label="Engine Number"
             field="engine_number"
@@ -126,6 +122,10 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("seats", value)}
           />
+        </div>
+
+        {/* Third row - Number of Keys, Key Features */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <FormField
             label="Number of Keys"
             field="number_of_keys"
@@ -142,10 +142,6 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
               )
             }
           />
-        </div>
-
-        {/* Fourth row - Key Features */}
-        <div className="grid grid-cols-1 gap-4">
           <FormField
             label="Key Features"
             field="keys_feature"
