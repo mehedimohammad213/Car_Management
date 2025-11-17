@@ -210,7 +210,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Car <span className="text-gray-400">(Optional)</span>
+                    Car <span className="text-gray-400"></span>
                   </label>
                   <select
                     value={formData.car_id || ""}
@@ -219,11 +219,14 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                     disabled={loadingCars}
                   >
                     <option value="">Select a car</option>
-                    {cars.map((car) => (
-                      <option key={car.id} value={car.id}>
-                        {car.make} {car.model} {car.ref_no ? `(${car.ref_no})` : ""}
-                      </option>
-                    ))}
+                    {cars.map((car) => {
+                      const chassisNo = car.chassis_no_full || car.chassis_no_masked;
+                      return (
+                        <option key={car.id} value={car.id}>
+                          {car.make} {car.model} {chassisNo ? `(${chassisNo})` : ""}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
               </div>

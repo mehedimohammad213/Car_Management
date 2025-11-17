@@ -286,7 +286,10 @@ const PaymentHistoryPage: React.FC = () => {
                       <td className="px-6 py-4">{ph.id}</td>
                       <td className="px-6 py-4">
                         {ph.car
-                          ? `${ph.car.make} ${ph.car.model}${ph.car.ref_no ? ` (${ph.car.ref_no})` : ""}`
+                          ? (() => {
+                              const chassisNo = ph.car.chassis_no_full || ph.car.chassis_no_masked;
+                              return `${ph.car.make} ${ph.car.model}${chassisNo ? ` (${chassisNo})` : ""}`;
+                            })()
                           : "N/A"}
                       </td>
                       <td className="px-6 py-4">{ph.showroom_name || "N/A"}</td>

@@ -231,8 +231,8 @@ const PaymentHistoryDetails: React.FC = () => {
                   </label>
                   <p className="text-gray-900 font-medium">
                     {paymentHistory.car.make} {paymentHistory.car.model}
-                    {paymentHistory.car.ref_no &&
-                      ` (${paymentHistory.car.ref_no})`}
+                    {(paymentHistory.car.chassis_no_full || paymentHistory.car.chassis_no_masked) &&
+                      ` (${paymentHistory.car.chassis_no_full || paymentHistory.car.chassis_no_masked})`}
                   </p>
                 </div>
               </div>
