@@ -23,8 +23,8 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
         Technical Specifications
       </h3>
       <div className="space-y-6">
-        {/* First row - Mileage, Chassis Number, Engine Capacity */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        {/* First row - Mileage, Chassis Number, Engine Capacity, Steering */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <FormField
             label="Mileage"
             field="mileage_km"
@@ -61,8 +61,8 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
           />
         </div>
 
-        {/* Second row - Fuel Type, Transmission, Drivetrain */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        {/* Second row - Fuel Type, Transmission, Drivetrain, Type */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <FormField
             label="Fuel Type"
             field="fuel"
@@ -101,8 +101,8 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
           />
         </div>
 
-        {/* Third row - Engine Number, Seats, Number of Keys */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        {/* Third row - Engine Number, Seats, Number of Keys, Chassis Masked */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <FormField
             label="Engine Number"
             field="engine_number"

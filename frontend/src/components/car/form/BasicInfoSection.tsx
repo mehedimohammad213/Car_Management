@@ -34,7 +34,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
       </h3>
       <div className="space-y-6">
         {/* Basic Information - Only these fields */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <FormField
             label="Reference Number"
             field="ref_no"

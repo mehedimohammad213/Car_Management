@@ -22,7 +22,7 @@ const GradingSection: React.FC<GradingSectionProps> = ({
         <Star className="w-5 h-5 text-blue-600" />
         Grading
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Overall Grade */}
         <FormField
           label="Overall Grade (0-10)"
