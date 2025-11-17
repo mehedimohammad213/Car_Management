@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Upload, FileText } from "lucide-react";
+import { X, Upload, File as FileIcon } from "lucide-react";
 import {
   PurchaseHistory,
   CreatePurchaseHistoryData,
@@ -253,6 +253,14 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       (import.meta as any).env?.VITE_API_BASE_URL?.replace("/api", "") ||
       "http://localhost:8000";
     return `${baseUrl}${path}`;
+  };
+
+  const getFileName = (filePath: string | File): string => {
+    if (filePath instanceof File) {
+      return filePath.name;
+    }
+    // Extract filename from path
+    return filePath.split('/').pop() || filePath.split('\\').pop() || 'Unknown file';
   };
 
   if (!isOpen) return null;
@@ -608,60 +616,109 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 PDF Documents
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {pdfFields.map((field) => (
-                  <div key={field.key}>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {field.label}
-                    </label>
-                    {existingFiles[field.key] && (
-                      <div className="mb-2 p-2 bg-gray-50 rounded-lg flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-gray-600" />
-                        <a
-                          href={getPdfUrl(existingFiles[field.key]) || "#"}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-blue-600 hover:underline flex-1 truncate"
-                        >
-                          Current file
-                        </a>
-                      </div>
-                    )}
-                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <Upload className="w-8 h-8 mb-2 text-gray-400" />
-                        <p className="text-sm text-gray-500">
-                          {formData[
-                            field.key as keyof CreatePurchaseHistoryData
-                          ]
-                            ? "File selected"
-                            : "Click to upload PDF"}
-                        </p>
-                        {formData[
-                          field.key as keyof CreatePurchaseHistoryData
-                        ] && (
-                          <p className="text-xs text-gray-400 mt-1">
-                            {
-                              (
-                                formData[
-                                  field.key as keyof CreatePurchaseHistoryData
-                                ] as File
-                              )?.name
-                            }
-                          </p>
-                        )}
-                      </div>
-                      <input
-                        type="file"
-                        accept=".pdf"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0] || null;
-                          handleFileChange(field.key, file);
-                        }}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
-                ))}
+                {pdfFields.map((field) => {
+                  const existingFile = existingFiles[field.key];
+                  const newFile = formData[field.key as keyof CreatePurchaseHistoryData] instanceof File
+                    ? formData[field.key as keyof CreatePurchaseHistoryData] as File
+                    : null;
+
+                  return (
+                    <div key={field.key}>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {field.label}
+                      </label>
+
+                      {/* Show existing file if available */}
+                      {existingFile && (
+                        <div className="mb-3 bg-blue-50 rounded-lg border border-blue-200 p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-semibold text-blue-700 uppercase">Current File</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newExistingFiles = { ...existingFiles };
+                                delete newExistingFiles[field.key];
+                                setExistingFiles(newExistingFiles);
+                              }}
+                              className="text-red-600 hover:text-red-700 p-1"
+                              title="Remove existing file"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <FileIcon className="w-5 h-5 text-red-600" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 truncate">
+                                {getFileName(existingFile)}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Existing file
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Show new file if selected */}
+                      {newFile && (
+                        <div className="mb-3 bg-green-50 rounded-lg border border-green-200 p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-semibold text-green-700 uppercase">New File (will replace current)</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleFileChange(field.key, null);
+                              }}
+                              className="text-red-600 hover:text-red-700 p-1"
+                              title="Remove new file"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <FileIcon className="w-5 h-5 text-red-600" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 truncate">
+                                {getFileName(newFile)}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {(newFile.size / 1024).toFixed(2)} KB
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Upload area - show if no existing file or if we want to allow replacement */}
+                      {!newFile && (
+                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <Upload className="w-8 h-8 mb-2 text-gray-400" />
+                            <p className="text-sm text-gray-500">
+                              {existingFile
+                                ? "Drag and drop a new file to replace the current one, or click to browse"
+                                : "Click to upload PDF"}
+                            </p>
+                          </div>
+                          <input
+                            type="file"
+                            accept=".pdf"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0] || null;
+                              handleFileChange(field.key, file);
+                            }}
+                            className="hidden"
+                          />
+                        </label>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
