@@ -346,6 +346,88 @@ class PurchaseHistoryController extends Controller
     }
 
     /**
+     * Download PDF file for a purchase history
+     */
+    public function downloadPdf(Request $request, $id)
+    {
+        try {
+            $purchaseHistory = PurchaseHistory::find($id);
+
+            if (!$purchaseHistory) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Purchase history not found'
+                ], 404);
+            }
+
+            $field = $request->input('field');
+            if (!$field) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'PDF field name is required'
+                ], 400);
+            }
+
+            // Validate field name
+            $pdfFields = [
+                'bill_of_lading',
+                'invoice_number',
+                'export_certificate',
+                'export_certificate_translated',
+                'bill_of_exchange_amount',
+                'custom_duty_copy_3pages',
+                'cheque_copy',
+                'certificate',
+                'custom_one',
+                'custom_two',
+                'custom_three',
+            ];
+
+            if (!in_array($field, $pdfFields)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid PDF field name'
+                ], 400);
+            }
+
+            $filePath = $purchaseHistory->$field;
+
+            if (!$filePath) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'PDF file not found for this field'
+                ], 404);
+            }
+
+            // If it's a full URL, redirect to it
+            if (filter_var($filePath, FILTER_VALIDATE_URL)) {
+                return redirect($filePath);
+            }
+
+            // Handle local file
+            $fullPath = public_path($filePath);
+
+            if (!File::exists($fullPath)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'PDF file does not exist on server'
+                ], 404);
+            }
+
+            $filename = basename($filePath);
+
+            return response()->download($fullPath, $filename, [
+                'Content-Type' => 'application/pdf',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to download PDF: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy($id): JsonResponse

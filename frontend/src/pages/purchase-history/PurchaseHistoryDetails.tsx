@@ -122,26 +122,62 @@ const PurchaseHistoryDetails: React.FC = () => {
     return `${baseUrl}${path}`;
   };
 
-  const handleViewPdf = (path: string | null) => {
-    const url = getPdfUrl(path);
-    if (url) {
-      window.open(url, "_blank");
-    } else {
+  const handleViewPdf = async (path: string | null, field: string) => {
+    if (!path || !purchaseHistory) {
       toast.error("PDF file not available");
+      return;
+    }
+
+    try {
+      // For external URLs, open directly
+      if (path.startsWith("http")) {
+        window.open(path, "_blank");
+        return;
+      }
+
+      // For local files, use the download endpoint to get the file
+      const token = localStorage.getItem("token");
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
+      const url = `${baseUrl}/purchase-history/${purchaseHistory.id}/pdf/download?field=${encodeURIComponent(field)}`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/pdf",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to load PDF");
+      }
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      window.open(blobUrl, "_blank");
+
+      // Clean up the blob URL after a delay
+      setTimeout(() => {
+        window.URL.revokeObjectURL(blobUrl);
+      }, 1000);
+    } catch (error) {
+      console.error("Error viewing PDF:", error);
+      toast.error("Failed to view PDF file");
     }
   };
 
-  const handleDownloadPdf = (path: string | null, filename: string) => {
-    const url = getPdfUrl(path);
-    if (url) {
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
+  const handleDownloadPdf = async (path: string | null, field: string, filename: string) => {
+    if (!path || !purchaseHistory) {
       toast.error("PDF file not available");
+      return;
+    }
+
+    try {
+      await purchaseHistoryApi.downloadPdf(purchaseHistory.id, field, filename);
+      toast.success("PDF downloaded successfully");
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      toast.error("Failed to download PDF file");
     }
   };
 
@@ -463,7 +499,7 @@ const PurchaseHistoryDetails: React.FC = () => {
                     {hasFile ? (
                       <div className="flex items-center gap-2 mt-3">
                         <button
-                          onClick={() => handleViewPdf(filePath)}
+                          onClick={() => handleViewPdf(filePath, field.key)}
                           className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                         >
                           <FileText className="w-4 h-4" />
@@ -473,6 +509,7 @@ const PurchaseHistoryDetails: React.FC = () => {
                           onClick={() =>
                             handleDownloadPdf(
                               filePath,
+                              field.key,
                               `${field.label.replace(/\s+/g, "_")}.pdf`
                             )
                           }

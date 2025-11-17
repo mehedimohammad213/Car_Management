@@ -306,6 +306,40 @@ class PurchaseHistoryApi {
     const response = await apiClient.delete(`/purchase-history/${id}`);
     return response.data;
   }
+
+  // Download PDF file
+  async downloadPdf(id: number, field: string, filename: string): Promise<void> {
+    try {
+      const token = localStorage.getItem("token");
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
+      const url = `${baseUrl}/purchase-history/${id}/pdf/download?field=${encodeURIComponent(field)}`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/pdf",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to download PDF");
+      }
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      throw error;
+    }
+  }
 }
 
 export const purchaseHistoryApi = new PurchaseHistoryApi();

@@ -58,7 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Additional endpoints
         Route::get('/filter/options', [CarController::class, 'getFilterOptions']);
-        
+
         // File serving routes
         Route::get('/{car}/attached-file', [CarController::class, 'getAttachedFile']);
         Route::get('/{car}/attached-file/download', [CarController::class, 'downloadAttachedFile']);
@@ -80,7 +80,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', [OrderController::class, 'getUserOrders']);
         Route::get('/{id}', [OrderController::class, 'getOrder']);
         Route::put('/{id}/cancel', [OrderController::class, 'cancelOrder']);
-        
+
         // Admin only routes
         Route::get('/admin/all', [OrderController::class, 'getAllOrders']);
         Route::put('/{id}/status', [OrderController::class, 'updateOrderStatus']);
@@ -91,6 +91,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('purchase-history')->group(function () {
         Route::get('/', [PurchaseHistoryController::class, 'index']);
         Route::post('/', [PurchaseHistoryController::class, 'store']);
+        Route::get('/{id}/pdf/download', [PurchaseHistoryController::class, 'downloadPdf'])->name('purchase-history.pdf.download');
         Route::get('/{id}', [PurchaseHistoryController::class, 'show']);
         Route::put('/{id}', [PurchaseHistoryController::class, 'update']);
         Route::delete('/{id}', [PurchaseHistoryController::class, 'destroy']);
