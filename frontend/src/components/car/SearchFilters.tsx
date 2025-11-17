@@ -66,7 +66,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search cars by make, model, year, or any keyword..."
+              placeholder="Search cars by make, model, year, chassis number, or any keyword..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"

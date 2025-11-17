@@ -113,6 +113,7 @@ class Car extends Model
               ->orWhere('variant', 'like', "%{$search}%")
               ->orWhere('model_code', 'like', "%{$search}%")
               ->orWhere('chassis_no_masked', 'like', "%{$search}%")
+              ->orWhere('chassis_no_full', 'like', "%{$search}%")
               ->orWhere('location', 'like', "%{$search}%")
               ->orWhere('notes', 'like', "%{$search}%");
         });
