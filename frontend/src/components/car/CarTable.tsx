@@ -89,7 +89,7 @@ const CarTable: React.FC<CarTableProps> = ({
                 </div>
                 <div className="text-xs text-gray-500">
                   Chassis No :{" "}
-                  {(car as any).chassis_no || (car as any).vin || "N/A"}
+                  {car.chassis_no_full || car.chassis_no_masked || "N/A"}
                 </div>
                 <div className="text-xs text-gray-500">
                   Status:{" "}
