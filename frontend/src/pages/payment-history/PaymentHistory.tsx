@@ -265,8 +265,8 @@ const PaymentHistoryPage: React.FC = () => {
                     <th className="px-6 py-4 text-left font-semibold">ID</th>
                     <th className="px-6 py-4 text-left font-semibold">Car</th>
                     <th className="px-6 py-4 text-left font-semibold">Showroom Name</th>
-                    <th className="px-6 py-4 text-left font-semibold">Purchase Date</th>
-                    <th className="px-6 py-4 text-left font-semibold">Purchase Amount</th>
+                    <th className="px-6 py-4 text-left font-semibold">Selling Date</th>
+                    <th className="px-6 py-4 text-left font-semibold">Selling Amount</th>
                     <th className="px-6 py-4 text-left font-semibold">Customer</th>
                     <th className="px-6 py-4 text-left font-semibold">Installments</th>
                     <th className="px-6 py-4 text-left font-semibold">Actions</th>
