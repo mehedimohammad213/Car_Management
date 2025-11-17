@@ -347,33 +347,38 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
             </div>
 
             {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Purchase Date
-                </label>
-                <input
-                  type="date"
-                  value={formData.purchase_date || ""}
-                  onChange={(e) =>
-                    handleInputChange("purchase_date", e.target.value || null)
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
+            <div className="border-b border-gray-200 pb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Basic Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Purchase Date
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.purchase_date || ""}
+                    onChange={(e) =>
+                      handleInputChange("purchase_date", e.target.value || null)
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  LC Date
-                </label>
-                <input
-                  type="date"
-                  value={formData.lc_date || ""}
-                  onChange={(e) =>
-                    handleInputChange("lc_date", e.target.value || null)
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    LC Date
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.lc_date || ""}
+                    onChange={(e) =>
+                      handleInputChange("lc_date", e.target.value || null)
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
               </div>
             </div>
 
@@ -476,51 +481,56 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
             </div>
 
             {/* Financial Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Govt Duty
-                </label>
-                <input
-                  type="text"
-                  value={formData.govt_duty || ""}
-                  onChange={(e) =>
-                    handleInputChange("govt_duty", e.target.value || null)
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
+            <div className="border-b border-gray-200 pb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Financial Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Govt Duty
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.govt_duty || ""}
+                    onChange={(e) =>
+                      handleInputChange("govt_duty", e.target.value || null)
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  CNF Amount
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.cnf_amount || ""}
-                  onChange={(e) =>
-                    handleInputChange(
-                      "cnf_amount",
-                      e.target.value ? parseFloat(e.target.value) : null
-                    )
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    CNF Amount
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.cnf_amount || ""}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "cnf_amount",
+                        e.target.value ? parseFloat(e.target.value) : null
+                      )
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Miscellaneous
-                </label>
-                <input
-                  type="text"
-                  value={formData.miscellaneous || ""}
-                  onChange={(e) =>
-                    handleInputChange("miscellaneous", e.target.value || null)
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Miscellaneous
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.miscellaneous || ""}
+                    onChange={(e) =>
+                      handleInputChange("miscellaneous", e.target.value || null)
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
               </div>
             </div>
 
@@ -529,69 +539,72 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 LC Information
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Total Units per LC
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.total_units_per_lc || ""}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "total_units_per_lc",
-                        e.target.value || null
-                      )
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    LC Number
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.lc_number || ""}
-                    onChange={(e) =>
-                      handleInputChange("lc_number", e.target.value || null)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
+              <div className="space-y-6">
+                {/* First row: 4 fields in same row */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Total Units per LC
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.total_units_per_lc || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "total_units_per_lc",
+                          e.target.value || null
+                        )
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      LC Number
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.lc_number || ""}
+                      onChange={(e) =>
+                        handleInputChange("lc_number", e.target.value || null)
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    LC Bank Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.lc_bank_name || ""}
-                    onChange={(e) =>
-                      handleInputChange("lc_bank_name", e.target.value || null)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      LC Bank Name
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.lc_bank_name || ""}
+                      onChange={(e) =>
+                        handleInputChange("lc_bank_name", e.target.value || null)
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    LC Bank Branch Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.lc_bank_branch_name || ""}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "lc_bank_branch_name",
-                        e.target.value || null
-                      )
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      LC Bank Branch Name
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.lc_bank_branch_name || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "lc_bank_branch_name",
+                          e.target.value || null
+                        )
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
                 </div>
-
-                <div className="md:col-span-2">
+                {/* Second row: LC Bank Branch Address */}
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     LC Bank Branch Address
                   </label>
