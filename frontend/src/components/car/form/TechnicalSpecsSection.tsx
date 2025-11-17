@@ -23,44 +23,46 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
         Technical Specifications
       </h3>
       <div className="space-y-6">
-        {/* First row - 5 fields */}
+        {/* First row - Mileage, Chassis Number, Engine Capacity */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           <FormField
-            label="Transmission"
-            field="transmission"
-            type="text"
-            placeholder="e.g., Automatic, Manual, CVT"
+            label="Mileage"
+            field="mileage_km"
+            type="number"
+            placeholder="e.g., 50000"
             required={false}
-            maxLength={32}
-            value={formData.transmission}
-            error={errors.transmission}
+            value={formData.mileage_km}
+            error={errors.mileage_km}
             isViewMode={isViewMode}
-            onChange={(value) => onInputChange("transmission", value)}
+            onChange={(value) => onInputChange("mileage_km", value)}
           />
           <FormField
-            label="Drive"
-            field="drive"
+            label="Chassis Number"
+            field="chassis_no_full"
             type="text"
-            placeholder="e.g., FWD, AWD, RWD"
+            placeholder="Complete chassis number"
             required={false}
-            maxLength={32}
-            value={formData.drive}
-            error={errors.drive}
+            maxLength={64}
+            value={formData.chassis_no_full}
+            error={errors.chassis_no_full}
             isViewMode={isViewMode}
-            onChange={(value) => onInputChange("drive", value)}
+            onChange={(value) => onInputChange("chassis_no_full", value)}
           />
           <FormField
-            label="Steering"
-            field="steering"
-            type="text"
-            placeholder="e.g., LHD, RHD"
+            label="Engine Capacity"
+            field="engine_cc"
+            type="number"
+            placeholder="e.g., 2000"
             required={false}
-            maxLength={16}
-            value={formData.steering}
-            error={errors.steering}
+            value={formData.engine_cc}
+            error={errors.engine_cc}
             isViewMode={isViewMode}
-            onChange={(value) => onInputChange("steering", value)}
+            onChange={(value) => onInputChange("engine_cc", value)}
           />
+        </div>
+
+        {/* Second row - Fuel Type, Transmission, Drivetrain */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           <FormField
             label="Fuel Type"
             field="fuel"
@@ -74,42 +76,44 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             onChange={(value) => onInputChange("fuel", value)}
           />
           <FormField
-            label="Color"
-            field="color"
+            label="Transmission"
+            field="transmission"
             type="text"
-            placeholder="e.g., Red, Blue, Silver, Black"
+            placeholder="e.g., Automatic, Manual, CVT"
             required={false}
-            maxLength={64}
-            value={formData.color}
-            error={errors.color}
+            maxLength={32}
+            value={formData.transmission}
+            error={errors.transmission}
             isViewMode={isViewMode}
-            onChange={(value) => onInputChange("color", value)}
+            onChange={(value) => onInputChange("transmission", value)}
+          />
+          <FormField
+            label="Drivetrain"
+            field="drive"
+            type="text"
+            placeholder="e.g., FWD, AWD, RWD"
+            required={false}
+            maxLength={32}
+            value={formData.drive}
+            error={errors.drive}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("drive", value)}
           />
         </div>
 
-        {/* Second row - 3 fields */}
+        {/* Third row - Engine Number, Seats, Number of Keys */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           <FormField
-            label="Mileage (km)"
-            field="mileage_km"
-            type="number"
-            placeholder="e.g., 50000"
+            label="Engine Number"
+            field="engine_number"
+            type="text"
+            placeholder="Engine identification number"
             required={false}
-            value={formData.mileage_km}
-            error={errors.mileage_km}
+            maxLength={64}
+            value={formData.engine_number}
+            error={errors.engine_number}
             isViewMode={isViewMode}
-            onChange={(value) => onInputChange("mileage_km", value)}
-          />
-          <FormField
-            label="Engine Capacity (cc)"
-            field="engine_cc"
-            type="number"
-            placeholder="e.g., 2000"
-            required={false}
-            value={formData.engine_cc}
-            error={errors.engine_cc}
-            isViewMode={isViewMode}
-            onChange={(value) => onInputChange("engine_cc", value)}
+            onChange={(value) => onInputChange("engine_number", value)}
           />
           <FormField
             label="Seats"
@@ -121,6 +125,37 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             error={errors.seats}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("seats", value)}
+          />
+          <FormField
+            label="Number of Keys"
+            field="number_of_keys"
+            type="number"
+            placeholder="e.g., 2, 3"
+            required={false}
+            value={formData.number_of_keys}
+            error={errors.number_of_keys}
+            isViewMode={isViewMode}
+            onChange={(value) =>
+              onInputChange(
+                "number_of_keys",
+                value ? Number(value) : undefined
+              )
+            }
+          />
+        </div>
+
+        {/* Fourth row - Key Features */}
+        <div className="grid grid-cols-1 gap-4">
+          <FormField
+            label="Key Features"
+            field="keys_feature"
+            type="text"
+            placeholder="e.g., Keyless entry, Remote start"
+            required={false}
+            value={formData.keys_feature}
+            error={errors.keys_feature}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("keys_feature", value)}
           />
         </div>
       </div>

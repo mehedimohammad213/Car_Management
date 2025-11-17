@@ -33,7 +33,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
         Basic Information
       </h3>
       <div className="space-y-6">
-        {/* First row - 5 fields */}
+        {/* Basic Information - Only these fields */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           <FormField
             label="Reference Number"
@@ -46,18 +46,6 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             error={errors.ref_no}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("ref_no", value)}
-          />
-          <FormField
-            label="Code"
-            field="code"
-            type="text"
-            placeholder="e.g., CAR001"
-            required={false}
-            maxLength={50}
-            value={formData.code}
-            error={errors.code}
-            isViewMode={isViewMode}
-            onChange={(value) => onInputChange("code", value)}
           />
           <FormField
             label="Make"
@@ -84,32 +72,28 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             onChange={(value) => onInputChange("model", value)}
           />
           <FormField
-            label="Model Code"
-            field="model_code"
+            label="Package"
+            field="package"
             type="text"
-            placeholder="e.g., XV50, FB"
+            placeholder="e.g., Premium, Standard"
             required={false}
-            maxLength={32}
-            value={formData.model_code}
-            error={errors.model_code}
+            maxLength={255}
+            value={formData.package}
+            error={errors.package}
             isViewMode={isViewMode}
-            onChange={(value) => onInputChange("model_code", value)}
+            onChange={(value) => onInputChange("package", value)}
           />
-        </div>
-
-        {/* Second row - 5 fields */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           <FormField
-            label="Variant"
-            field="variant"
+            label="Body Type"
+            field="body"
             type="text"
-            placeholder="e.g., Hybrid, Sport"
+            placeholder="e.g., Sedan, SUV, Hatchback"
             required={false}
             maxLength={64}
-            value={formData.variant}
-            error={errors.variant}
+            value={formData.body}
+            error={errors.body}
             isViewMode={isViewMode}
-            onChange={(value) => onInputChange("variant", value)}
+            onChange={(value) => onInputChange("body", value)}
           />
           <FormField
             label="Year"
@@ -121,6 +105,86 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             error={errors.year}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("year", value)}
+          />
+          <FormField
+            label="Color"
+            field="color"
+            type="text"
+            placeholder="e.g., Red, Blue, Silver, Black"
+            required={false}
+            maxLength={64}
+            value={formData.color}
+            error={errors.color}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("color", value)}
+          />
+          <FormField
+            label="Registration Year/Month"
+            field="reg_year_month"
+            type="text"
+            placeholder="e.g., 2023-03"
+            required={false}
+            maxLength={10}
+            value={formData.reg_year_month}
+            error={errors.reg_year_month}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("reg_year_month", value)}
+          />
+        </div>
+
+        {/* Commented out fields - can be uncommented if needed */}
+        {/*
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <FormField
+            label="Serial"
+            field="serial"
+            type="text"
+            placeholder="e.g., SER001"
+            required={false}
+            maxLength={64}
+            value={formData.serial}
+            error={errors.serial}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("serial", value)}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          <FormField
+            label="Code"
+            field="code"
+            type="text"
+            placeholder="e.g., CAR001"
+            required={false}
+            maxLength={50}
+            value={formData.code}
+            error={errors.code}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("code", value)}
+          />
+          <FormField
+            label="Model Code"
+            field="model_code"
+            type="text"
+            placeholder="e.g., XV50, FB"
+            required={false}
+            maxLength={32}
+            value={formData.model_code}
+            error={errors.model_code}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("model_code", value)}
+          />
+          <FormField
+            label="Variant"
+            field="variant"
+            type="text"
+            placeholder="e.g., Hybrid, Sport"
+            required={false}
+            maxLength={64}
+            value={formData.variant}
+            error={errors.variant}
+            isViewMode={isViewMode}
+            onChange={(value) => onInputChange("variant", value)}
           />
           <FormField
             label="Registration Year/Month"
@@ -153,6 +217,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             />
           </div>
         </div>
+        */}
       </div>
     </div>
   );

@@ -31,32 +31,8 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
         Location & Status
       </h3>
       <div className="space-y-6">
-        {/* First row - 5 fields */}
+        {/* Location & Status fields */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          <FormField
-            label="Chassis Number (Masked)"
-            field="chassis_no_masked"
-            type="text"
-            placeholder="e.g., ABC123******XYZ789"
-            required={false}
-            maxLength={32}
-            value={formData.chassis_no_masked}
-            error={errors.chassis_no_masked}
-            isViewMode={isViewMode}
-            onChange={(value) => onInputChange("chassis_no_masked", value)}
-          />
-          <FormField
-            label="Chassis Number (Full)"
-            field="chassis_no_full"
-            type="text"
-            placeholder="Complete chassis number"
-            required={false}
-            maxLength={64}
-            value={formData.chassis_no_full}
-            error={errors.chassis_no_full}
-            isViewMode={isViewMode}
-            onChange={(value) => onInputChange("chassis_no_full", value)}
-          />
           <FormField
             label="Location"
             field="location"
@@ -92,91 +68,6 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
               error={errors.status}
               isViewMode={isViewMode}
               onChange={(value) => onInputChange("status", value)}
-            />
-          </div>
-        </div>
-
-        {/* Second row - New fields */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <FormField
-            label="Package"
-            field="package"
-            type="text"
-            placeholder="e.g., Premium, Standard"
-            required={false}
-            maxLength={255}
-            value={formData.package}
-            error={errors.package}
-            isViewMode={isViewMode}
-            onChange={(value) => onInputChange("package", value)}
-          />
-          <FormField
-            label="Body"
-            field="body"
-            type="text"
-            placeholder="e.g., Sedan, SUV, Hatchback"
-            required={false}
-            maxLength={64}
-            value={formData.body}
-            error={errors.body}
-            isViewMode={isViewMode}
-            onChange={(value) => onInputChange("body", value)}
-          />
-          <FormField
-            label="Type"
-            field="type"
-            type="text"
-            placeholder="e.g., Standard, Luxury, Sport"
-            required={false}
-            maxLength={64}
-            value={formData.type}
-            error={errors.type}
-            isViewMode={isViewMode}
-            onChange={(value) => onInputChange("type", value)}
-          />
-          <FormField
-            label="Engine Number"
-            field="engine_number"
-            type="text"
-            placeholder="Engine identification number"
-            required={false}
-            maxLength={64}
-            value={formData.engine_number}
-            error={errors.engine_number}
-            isViewMode={isViewMode}
-            onChange={(value) => onInputChange("engine_number", value)}
-          />
-        </div>
-
-        {/* Third row - Keys fields */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <FormField
-            label="Number of Keys"
-            field="number_of_keys"
-            type="number"
-            placeholder="e.g., 2, 3"
-            required={false}
-            value={formData.number_of_keys}
-            error={errors.number_of_keys}
-            isViewMode={isViewMode}
-            onChange={(value) =>
-              onInputChange(
-                "number_of_keys",
-                value ? Number(value) : undefined
-              )
-            }
-          />
-          <div className="w-full">
-            <FormField
-              label="Keys Feature"
-              field="keys_feature"
-              type="text"
-              placeholder="e.g., Keyless entry, Remote start"
-              required={false}
-              value={formData.keys_feature}
-              error={errors.keys_feature}
-              isViewMode={isViewMode}
-              onChange={(value) => onInputChange("keys_feature", value)}
             />
           </div>
         </div>
