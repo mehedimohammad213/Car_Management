@@ -608,6 +608,7 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
               formData={formData}
               errors={errors}
               categories={categories}
+              filterOptions={filterOptions}
               isViewMode={isViewMode}
               onInputChange={handleInputChange}
             />

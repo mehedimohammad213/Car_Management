@@ -202,6 +202,7 @@ export interface CarResponse {
 export interface CarFilterOptions {
   categories: Array<{ id: number; name: string }>;
   makes: string[];
+  models: string[];
   years: number[];
   transmissions: string[];
   fuels: string[];

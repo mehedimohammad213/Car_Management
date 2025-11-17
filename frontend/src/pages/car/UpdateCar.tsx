@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftIcon, CarIcon } from "lucide-react";
 import CarFormModal from "../../components/car/CarFormModal";
-import { carApi, Car, CreateCarData } from "../../services/carApi";
+import { carApi, Car, CreateCarData, CarFilterOptions } from "../../services/carApi";
 import { categoryApi, Category } from "../../services/categoryApi";
 
 const UpdateCar: React.FC = () => {
@@ -12,6 +12,7 @@ const UpdateCar: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [car, setCar] = useState<Car | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [filterOptions, setFilterOptions] = useState<CarFilterOptions | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -24,9 +25,10 @@ const UpdateCar: React.FC = () => {
 
       try {
         setIsLoading(true);
-        const [carData, categoriesData] = await Promise.all([
+        const [carData, categoriesData, filterOptionsData] = await Promise.all([
           carApi.getCar(parseInt(id)),
           categoryApi.getCategories(),
+          carApi.getFilterOptions(),
         ]);
 
         // Extract car from response - handle both single car and paginated responses
@@ -43,6 +45,7 @@ const UpdateCar: React.FC = () => {
         }
         setCar(car);
         setCategories(categoriesData.data.categories || []);
+        setFilterOptions(filterOptionsData.data);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load car data");
@@ -61,7 +64,7 @@ const UpdateCar: React.FC = () => {
     setError(null);
     try {
       console.log("Updating car data:", formData);
-      
+
       // Handle FormData differently
       let response;
       if (formData instanceof FormData) {
@@ -174,7 +177,7 @@ const UpdateCar: React.FC = () => {
           mode="update"
           car={car}
           categories={categories || []}
-          filterOptions={null}
+          filterOptions={filterOptions}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           isSubmitting={isSaving}

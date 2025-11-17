@@ -1,6 +1,6 @@
 import React from "react";
 import { Car } from "lucide-react";
-import { CreateCarData } from "../../../services/carApi";
+import { CreateCarData, CarFilterOptions } from "../../../services/carApi";
 import { Category } from "../../../services/categoryApi";
 import FormField from "./FormField";
 import SelectField from "./SelectField";
@@ -9,6 +9,7 @@ interface BasicInfoSectionProps {
   formData: CreateCarData;
   errors: Record<string, string>;
   categories: Category[];
+  filterOptions?: CarFilterOptions | null;
   isViewMode: boolean;
   onInputChange: (field: keyof CreateCarData, value: any) => void;
 }
@@ -17,9 +18,249 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
   formData,
   errors,
   categories,
+  filterOptions,
   isViewMode,
   onInputChange,
 }) => {
+  // Common body types
+  const bodyTypes = [
+    "Sedan",
+    "SUV",
+    "Hatchback",
+    "Coupe",
+    "Convertible",
+    "Wagon",
+    "Pickup Truck",
+    "Van",
+    "Minivan",
+    "Crossover",
+    "Sports Car",
+    "Luxury",
+  ];
+
+  // Common car makes
+  const makes = [
+    "Toyota",
+    "Honda",
+    "Nissan",
+    "Mazda",
+    "Subaru",
+    "Mitsubishi",
+    "Suzuki",
+    "Daihatsu",
+    "Isuzu",
+    "Lexus",
+    "Acura",
+    "BMW",
+    "Mercedes-Benz",
+    "Audi",
+    "Volkswagen",
+    "Porsche",
+    "Volvo",
+    "Ford",
+    "Chevrolet",
+    "Jeep",
+    "Dodge",
+    "Ram",
+    "Chrysler",
+    "Cadillac",
+    "Buick",
+    "Lincoln",
+    "GMC",
+    "Hyundai",
+    "Kia",
+    "Genesis",
+    "Tesla",
+    "Jaguar",
+    "Land Rover",
+    "Mini",
+    "Fiat",
+    "Alfa Romeo",
+    "Maserati",
+    "Bentley",
+    "Rolls-Royce",
+    "Ferrari",
+    "Lamborghini",
+    "McLaren",
+    "Aston Martin",
+    "Infiniti",
+    "Scion",
+    "Smart",
+    "Saturn",
+    "Pontiac",
+    "Hummer",
+    "Other",
+  ];
+
+  // Common car models
+  const models = [
+    // Toyota
+    "Camry",
+    "Corolla",
+    "Prius",
+    "RAV4",
+    "Highlander",
+    "4Runner",
+    "Sienna",
+    "Tacoma",
+    "Tundra",
+    "Land Cruiser",
+    "Yaris",
+    "C-HR",
+    "Avalon",
+    "Venza",
+    "Sequoia",
+    "Tundra",
+    // Honda
+    "Civic",
+    "Accord",
+    "CR-V",
+    "Pilot",
+    "Odyssey",
+    "Ridgeline",
+    "HR-V",
+    "Passport",
+    "Insight",
+    "Fit",
+    "Clarity",
+    // Nissan
+    "Altima",
+    "Sentra",
+    "Maxima",
+    "Rogue",
+    "Pathfinder",
+    "Armada",
+    "Murano",
+    "Frontier",
+    "Titan",
+    "370Z",
+    "GT-R",
+    "Leaf",
+    "Versa",
+    "Kicks",
+    // Mazda
+    "Mazda3",
+    "Mazda6",
+    "CX-3",
+    "CX-5",
+    "CX-9",
+    "MX-5 Miata",
+    "CX-30",
+    // Subaru
+    "Outback",
+    "Forester",
+    "Crosstrek",
+    "Legacy",
+    "Impreza",
+    "Ascent",
+    "WRX",
+    "BRZ",
+    // Mitsubishi
+    "Outlander",
+    "Eclipse Cross",
+    "Mirage",
+    "Lancer",
+    "Montero",
+    // Suzuki
+    "Swift",
+    "Vitara",
+    "SX4",
+    "Jimny",
+    // BMW
+    "3 Series",
+    "5 Series",
+    "7 Series",
+    "X1",
+    "X3",
+    "X5",
+    "X7",
+    "Z4",
+    "i3",
+    "i8",
+    // Mercedes-Benz
+    "C-Class",
+    "E-Class",
+    "S-Class",
+    "A-Class",
+    "GLA",
+    "GLC",
+    "GLE",
+    "GLS",
+    "CLA",
+    "G-Class",
+    // Audi
+    "A3",
+    "A4",
+    "A6",
+    "A8",
+    "Q3",
+    "Q5",
+    "Q7",
+    "Q8",
+    "TT",
+    "R8",
+    // Volkswagen
+    "Jetta",
+    "Passat",
+    "Tiguan",
+    "Atlas",
+    "Golf",
+    "Beetle",
+    "Arteon",
+    // Ford
+    "F-150",
+    "Mustang",
+    "Explorer",
+    "Escape",
+    "Edge",
+    "Expedition",
+    "Focus",
+    "Fusion",
+    "Bronco",
+    "Ranger",
+    // Chevrolet
+    "Silverado",
+    "Equinox",
+    "Tahoe",
+    "Suburban",
+    "Traverse",
+    "Malibu",
+    "Cruze",
+    "Camaro",
+    "Corvette",
+    "Trax",
+    // Other popular models
+    "Model 3",
+    "Model S",
+    "Model X",
+    "Model Y",
+    "Wrangler",
+    "Grand Cherokee",
+    "Challenger",
+    "Charger",
+    "Durango",
+    "1500",
+    "2500",
+    "3500",
+    "Escalade",
+    "XTS",
+    "Enclave",
+    "Navigator",
+    "Tahoe",
+    "Yukon",
+    "Tucson",
+    "Santa Fe",
+    "Elantra",
+    "Sonata",
+    "Sorento",
+    "Sportage",
+    "Telluride",
+    "XC60",
+    "XC90",
+    "S60",
+    "S90",
+    "Other",
+  ];
   console.log("BasicInfoSection received categories:", categories);
   console.log(
     "Filtered categories:",
@@ -47,25 +288,29 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("ref_no", value)}
           />
-          <FormField
+          <SelectField
             label="Make"
             field="make"
-            type="text"
-            placeholder="e.g., Toyota, Honda"
+            options={makes.map((make) => ({
+              value: make,
+              label: make,
+            }))}
             required={true}
-            maxLength={64}
+            placeholder="Select Make"
             value={formData.make}
             error={errors.make}
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("make", value)}
           />
-          <FormField
+          <SelectField
             label="Model"
             field="model"
-            type="text"
-            placeholder="e.g., Camry, Civic"
+            options={models.map((model) => ({
+              value: model,
+              label: model,
+            }))}
             required={true}
-            maxLength={64}
+            placeholder="Select Model"
             value={formData.model}
             error={errors.model}
             isViewMode={isViewMode}
@@ -83,13 +328,15 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("package", value)}
           />
-          <FormField
+          <SelectField
             label="Body Type"
             field="body"
-            type="text"
-            placeholder="e.g., Sedan, SUV, Hatchback"
+            options={bodyTypes.map((bodyType) => ({
+              value: bodyType,
+              label: bodyType,
+            }))}
             required={false}
-            maxLength={64}
+            placeholder="Select Body Type"
             value={formData.body}
             error={errors.body}
             isViewMode={isViewMode}

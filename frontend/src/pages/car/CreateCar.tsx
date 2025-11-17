@@ -2,21 +2,26 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeftIcon, CarIcon } from "lucide-react";
 import CarFormModal from "../../components/car/CarFormModal";
-import { carApi, CreateCarData } from "../../services/carApi";
+import { carApi, CreateCarData, CarFilterOptions } from "../../services/carApi";
 import { categoryApi, Category } from "../../services/categoryApi";
 
 const CreateCar: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [filterOptions, setFilterOptions] = useState<CarFilterOptions | null>(null);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
         setIsLoadingCategories(true);
-        const categoriesData = await categoryApi.getCategories();
+        const [categoriesData, filterOptionsData] = await Promise.all([
+          categoryApi.getCategories(),
+          carApi.getFilterOptions(),
+        ]);
+
         console.log("Categories API response:", categoriesData);
         console.log("Response structure:", {
           success: categoriesData.success,
@@ -40,15 +45,16 @@ const CreateCar: React.FC = () => {
         console.log("Processed categories:", categoriesList);
         console.log("Categories list length:", categoriesList.length);
         setCategories(categoriesList);
+        setFilterOptions(filterOptionsData.data);
       } catch (error) {
-        console.error("Error fetching categories:", error);
-        setError("Failed to load categories. Please try again.");
+        console.error("Error fetching data:", error);
+        setError("Failed to load data. Please try again.");
       } finally {
         setIsLoadingCategories(false);
       }
     };
 
-    fetchCategories();
+    fetchData();
   }, []);
 
   const handleSubmit = async (formData: CreateCarData | FormData) => {
@@ -166,7 +172,7 @@ const CreateCar: React.FC = () => {
           <CarFormModal
             mode="create"
             categories={categories || []}
-            filterOptions={null}
+            filterOptions={filterOptions}
             onSubmit={handleSubmit}
             onCancel={handleCancel}
             isSubmitting={isLoading}
