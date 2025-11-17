@@ -297,6 +297,14 @@ const PaymentHistoryDetails: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-500 mb-1">
+                  Customer Name
+                </label>
+                <p className="text-gray-900 font-medium">
+                  {paymentHistory.customer_name || "N/A"}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
                   NID Number
                 </label>
                 <p className="text-gray-900 font-medium">

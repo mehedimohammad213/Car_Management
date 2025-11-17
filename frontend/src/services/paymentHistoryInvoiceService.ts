@@ -301,7 +301,7 @@ export class PaymentHistoryInvoiceService {
     const customerInfo = [
       {
         label: "Customer Name:",
-        value: "N/A", // Not in payment history, can be added
+        value: data.paymentHistory.customer_name || "N/A",
       },
       {
         label: "NID Number:",

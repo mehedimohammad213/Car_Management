@@ -41,13 +41,14 @@ export interface PaymentHistory {
   purchase_amount: number | null;
   purchase_date: string | null;
   nid_number: string | null;
+  customer_name: string | null;
   tin_certificate: string | null;
   customer_address: string | null;
   contact_number: string | null;
   email: string | null;
   created_at: string;
   updated_at: string;
-  
+
   // Relationships
   car?: Car;
   installments?: Installment[];
@@ -75,6 +76,7 @@ export interface CreatePaymentHistoryData {
   purchase_amount?: number | null;
   purchase_date?: string | null;
   nid_number?: string | null;
+  customer_name?: string | null;
   tin_certificate?: string | null;
   customer_address?: string | null;
   contact_number?: string | null;
@@ -156,4 +158,3 @@ class PaymentHistoryApi {
 }
 
 export const paymentHistoryApi = new PaymentHistoryApi();
-

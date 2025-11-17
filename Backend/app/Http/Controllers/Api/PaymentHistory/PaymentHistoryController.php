@@ -26,6 +26,7 @@ class PaymentHistoryController extends Controller
                 $query->where(function ($q) use ($search) {
                     $q->where('showroom_name', 'like', "%{$search}%")
                       ->orWhere('nid_number', 'like', "%{$search}%")
+                      ->orWhere('customer_name', 'like', "%{$search}%")
                       ->orWhere('contact_number', 'like', "%{$search}%")
                       ->orWhere('email', 'like', "%{$search}%")
                       ->orWhere('tin_certificate', 'like', "%{$search}%");
@@ -81,6 +82,7 @@ class PaymentHistoryController extends Controller
                 'purchase_amount' => 'nullable|numeric|min:0',
                 'purchase_date' => 'nullable|date',
                 'nid_number' => 'nullable|string|max:255',
+                'customer_name' => 'nullable|string|max:255',
                 'tin_certificate' => 'nullable|string|max:255',
                 'customer_address' => 'nullable|string',
                 'contact_number' => 'nullable|string|max:255',
@@ -114,6 +116,7 @@ class PaymentHistoryController extends Controller
                     'purchase_amount',
                     'purchase_date',
                     'nid_number',
+                    'customer_name',
                     'tin_certificate',
                     'customer_address',
                     'contact_number',
@@ -202,6 +205,7 @@ class PaymentHistoryController extends Controller
                 'purchase_amount' => 'nullable|numeric|min:0',
                 'purchase_date' => 'nullable|date',
                 'nid_number' => 'nullable|string|max:255',
+                'customer_name' => 'nullable|string|max:255',
                 'tin_certificate' => 'nullable|string|max:255',
                 'customer_address' => 'nullable|string',
                 'contact_number' => 'nullable|string|max:255',
@@ -236,6 +240,7 @@ class PaymentHistoryController extends Controller
                     'purchase_amount',
                     'purchase_date',
                     'nid_number',
+                    'customer_name',
                     'tin_certificate',
                     'customer_address',
                     'contact_number',
@@ -264,7 +269,7 @@ class PaymentHistoryController extends Controller
                             $installment = Installment::where('id', $installmentData['id'])
                                 ->where('payment_history_id', $paymentHistory->id)
                                 ->first();
-                            
+
                             if ($installment) {
                                 unset($installmentData['id']);
                                 $installment->update($installmentData);

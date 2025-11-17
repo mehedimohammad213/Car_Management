@@ -18,6 +18,7 @@ class PaymentHistory extends Model
         'purchase_amount',
         'purchase_date',
         'nid_number',
+        'customer_name',
         'tin_certificate',
         'customer_address',
         'contact_number',

@@ -38,6 +38,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
     purchase_amount: null,
     purchase_date: null,
     nid_number: null,
+    customer_name: null,
     tin_certificate: null,
     customer_address: null,
     contact_number: null,
@@ -64,6 +65,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
         purchase_amount: paymentHistory.purchase_amount,
         purchase_date: formatDateForInput(paymentHistory.purchase_date),
         nid_number: paymentHistory.nid_number,
+        customer_name: paymentHistory.customer_name,
         tin_certificate: paymentHistory.tin_certificate,
         customer_address: paymentHistory.customer_address,
         contact_number: paymentHistory.contact_number,
@@ -98,6 +100,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
         purchase_amount: null,
         purchase_date: null,
         nid_number: null,
+        customer_name: null,
         tin_certificate: null,
         customer_address: null,
         contact_number: null,
@@ -288,6 +291,17 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
             <div className="border-b border-gray-200 pb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Customer Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Customer Name
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.customer_name || ""}
+                    onChange={(e) => handleInputChange("customer_name", e.target.value || null)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     NID Number
