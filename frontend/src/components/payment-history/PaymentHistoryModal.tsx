@@ -238,42 +238,46 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
             {/* Wholesaler Information */}
             <div className="border-b border-gray-200 pb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Wholesaler Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Showroom Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.showroom_name || ""}
-                    onChange={(e) => handleInputChange("showroom_name", e.target.value || null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+              <div className="space-y-6">
+                {/* First row: 3 fields in same row */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Showroom Name
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.showroom_name || ""}
+                      onChange={(e) => handleInputChange("showroom_name", e.target.value || null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Selling Price
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={formData.purchase_amount || ""}
+                      onChange={(e) => handleInputChange("purchase_amount", e.target.value ? parseFloat(e.target.value) : null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Selling Date
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.purchase_date || ""}
+                      onChange={(e) => handleInputChange("purchase_date", e.target.value || null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
                 </div>
+                {/* Second row: Wholesaler Address */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Selling Price
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.purchase_amount || ""}
-                    onChange={(e) => handleInputChange("purchase_amount", e.target.value ? parseFloat(e.target.value) : null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Selling Date
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.purchase_date || ""}
-                    onChange={(e) => handleInputChange("purchase_date", e.target.value || null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Wholesaler Address
                   </label>
@@ -290,72 +294,78 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
             {/* Customer Information */}
             <div className="border-b border-gray-200 pb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Customer Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Customer Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.customer_name || ""}
-                    onChange={(e) => handleInputChange("customer_name", e.target.value || null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+              <div className="space-y-6">
+                {/* First row: 4 fields in same row */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Customer Name
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.customer_name || ""}
+                      onChange={(e) => handleInputChange("customer_name", e.target.value || null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      NID Number
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.nid_number || ""}
+                      onChange={(e) => handleInputChange("nid_number", e.target.value || null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      TIN Certificate
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.tin_certificate || ""}
+                      onChange={(e) => handleInputChange("tin_certificate", e.target.value || null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Contact Number
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.contact_number || ""}
+                      onChange={(e) => handleInputChange("contact_number", e.target.value || null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    NID Number
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.nid_number || ""}
-                    onChange={(e) => handleInputChange("nid_number", e.target.value || null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    TIN Certificate
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.tin_certificate || ""}
-                    onChange={(e) => handleInputChange("tin_certificate", e.target.value || null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Contact Number
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.contact_number || ""}
-                    onChange={(e) => handleInputChange("contact_number", e.target.value || null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.email || ""}
-                    onChange={(e) => handleInputChange("email", e.target.value || null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Customer Address
-                  </label>
-                  <textarea
-                    value={formData.customer_address || ""}
-                    onChange={(e) => handleInputChange("customer_address", e.target.value || null)}
-                    rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+                {/* Second row: Email and Address */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={formData.email || ""}
+                      onChange={(e) => handleInputChange("email", e.target.value || null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Customer Address
+                    </label>
+                    <textarea
+                      value={formData.customer_address || ""}
+                      onChange={(e) => handleInputChange("customer_address", e.target.value || null)}
+                      rows={3}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -390,58 +400,62 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Installment Date
-                          </label>
-                          <input
-                            type="date"
-                            value={installment.installment_date || ""}
-                            onChange={(e) => updateInstallment(index, "installment_date", e.target.value || null)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                          />
+                      <div className="space-y-4">
+                        {/* First row: 4 fields in same row */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Installment Date
+                            </label>
+                            <input
+                              type="date"
+                              value={installment.installment_date || ""}
+                              onChange={(e) => updateInstallment(index, "installment_date", e.target.value || null)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Amount
+                            </label>
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={installment.amount || ""}
+                              onChange={(e) => updateInstallment(index, "amount", e.target.value ? parseFloat(e.target.value) : null)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Payment Method
+                            </label>
+                            <select
+                              value={installment.payment_method || ""}
+                              onChange={(e) => updateInstallment(index, "payment_method", e.target.value || null)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            >
+                              <option value="">Select method</option>
+                              <option value="Bank">Bank</option>
+                              <option value="Cash">Cash</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Balance
+                            </label>
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={installment.balance || ""}
+                              onChange={(e) => updateInstallment(index, "balance", e.target.value ? parseFloat(e.target.value) : null)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            />
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Amount
-                          </label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={installment.amount || ""}
-                            onChange={(e) => updateInstallment(index, "amount", e.target.value ? parseFloat(e.target.value) : null)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Payment Method
-                          </label>
-                          <select
-                            value={installment.payment_method || ""}
-                            onChange={(e) => updateInstallment(index, "payment_method", e.target.value || null)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                          >
-                            <option value="">Select method</option>
-                            <option value="Bank">Bank</option>
-                            <option value="Cash">Cash</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Balance
-                          </label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={installment.balance || ""}
-                            onChange={(e) => updateInstallment(index, "balance", e.target.value ? parseFloat(e.target.value) : null)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                          />
-                        </div>
+                        {/* Second row: Bank fields (conditional) */}
                         {installment.payment_method === "Bank" && (
-                          <>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Bank Name
@@ -464,29 +478,32 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                               />
                             </div>
-                          </>
+                          </div>
                         )}
-                        <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Description
-                          </label>
-                          <input
-                            type="text"
-                            value={installment.description || ""}
-                            onChange={(e) => updateInstallment(index, "description", e.target.value || null)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                          />
-                        </div>
-                        <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Remarks
-                          </label>
-                          <textarea
-                            value={installment.remarks || ""}
-                            onChange={(e) => updateInstallment(index, "remarks", e.target.value || null)}
-                            rows={2}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                          />
+                        {/* Third row: Description and Remarks */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Description
+                            </label>
+                            <input
+                              type="text"
+                              value={installment.description || ""}
+                              onChange={(e) => updateInstallment(index, "description", e.target.value || null)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Remarks
+                            </label>
+                            <textarea
+                              value={installment.remarks || ""}
+                              onChange={(e) => updateInstallment(index, "remarks", e.target.value || null)}
+                              rows={2}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
