@@ -375,27 +375,19 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
     "Luxury",
   ];
 
-  // Common car makes - use filterOptions if available, otherwise use hardcoded list
+  // Common car makes - use static data only
   const makes = useMemo(() => {
-    if (filterOptions?.makes && filterOptions.makes.length > 0) {
-      // Combine filterOptions makes with hardcoded makes, removing duplicates
-      const allMakes = new Set([
-        ...filterOptions.makes,
-        ...Object.keys(makeToModels),
-      ]);
-      return Array.from(allMakes).sort();
-    }
     return Object.keys(makeToModels).sort();
-  }, [filterOptions]);
+  }, []);
 
-  // Get filtered models based on selected make
+  // Get filtered models based on selected make - use static data only
   const availableModels = useMemo(() => {
     if (!formData.make) {
-      // If no make is selected, return all models or empty array
-      return filterOptions?.models || [];
+      // If no make is selected, return empty array
+      return [];
     }
 
-    // Get models for the selected make from the mapping
+    // Get models for the selected make from the static mapping
     const mappedModels = makeToModels[formData.make] || [];
 
     // If there's a current model that's not in the mapped list, include it
@@ -405,21 +397,9 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
       modelsList.push(formData.model);
     }
 
-    // If we have filterOptions, also filter those models by the selected make
-    // by checking if they exist in cars with that make
-    if (filterOptions?.models && filterOptions.models.length > 0) {
-      // For now, use the mapped models if available, otherwise use filterOptions
-      // In a real scenario, you might want to query the API for models by make
-      if (modelsList.length > 0) {
-        return modelsList;
-      }
-      // Fallback: return all models from filterOptions (not ideal, but better than nothing)
-      return filterOptions.models;
-    }
-
     // Use mapped models or add "Other" option
     return modelsList.length > 0 ? modelsList : ["Other"];
-  }, [formData.make, formData.model, filterOptions]);
+  }, [formData.make, formData.model]);
 
   // Handle make change - reset model when make changes
   const handleMakeChange = (value: string) => {
