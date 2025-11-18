@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Car } from "lucide-react";
 import { CreateCarData, CarFilterOptions } from "../../../services/carApi";
 import { Category } from "../../../services/categoryApi";
@@ -13,6 +13,290 @@ interface BasicInfoSectionProps {
   isViewMode: boolean;
   onInputChange: (field: keyof CreateCarData, value: any) => void;
 }
+
+// Make to Models mapping
+const makeToModels: Record<string, string[]> = {
+  Toyota: [
+    "Camry",
+    "Corolla",
+    "Prius",
+    "RAV4",
+    "Highlander",
+    "4Runner",
+    "Sienna",
+    "Tacoma",
+    "Tundra",
+    "Land Cruiser",
+    "Yaris",
+    "C-HR",
+    "Avalon",
+    "Venza",
+    "Sequoia",
+  ],
+  Honda: [
+    "Civic",
+    "Accord",
+    "CR-V",
+    "Pilot",
+    "Odyssey",
+    "Ridgeline",
+    "HR-V",
+    "Passport",
+    "Insight",
+    "Fit",
+    "Clarity",
+  ],
+  Nissan: [
+    "Altima",
+    "Sentra",
+    "Maxima",
+    "Rogue",
+    "Pathfinder",
+    "Armada",
+    "Murano",
+    "Frontier",
+    "Titan",
+    "370Z",
+    "GT-R",
+    "Leaf",
+    "Versa",
+    "Kicks",
+  ],
+  Mazda: [
+    "Mazda3",
+    "Mazda6",
+    "CX-3",
+    "CX-5",
+    "CX-9",
+    "MX-5 Miata",
+    "CX-30",
+  ],
+  Subaru: [
+    "Outback",
+    "Forester",
+    "Crosstrek",
+    "Legacy",
+    "Impreza",
+    "Ascent",
+    "WRX",
+    "BRZ",
+  ],
+  Mitsubishi: [
+    "Outlander",
+    "Eclipse Cross",
+    "Mirage",
+    "Lancer",
+    "Montero",
+  ],
+  Suzuki: [
+    "Swift",
+    "Vitara",
+    "SX4",
+    "Jimny",
+  ],
+  Daihatsu: [],
+  Isuzu: [],
+  Lexus: [
+    "ES",
+    "IS",
+    "LS",
+    "GS",
+    "RX",
+    "NX",
+    "GX",
+    "LX",
+    "UX",
+    "LC",
+    "RC",
+  ],
+  Acura: [
+    "TLX",
+    "ILX",
+    "RLX",
+    "RDX",
+    "MDX",
+    "NSX",
+  ],
+  BMW: [
+    "3 Series",
+    "5 Series",
+    "7 Series",
+    "X1",
+    "X3",
+    "X5",
+    "X7",
+    "Z4",
+    "i3",
+    "i8",
+  ],
+  "Mercedes-Benz": [
+    "C-Class",
+    "E-Class",
+    "S-Class",
+    "A-Class",
+    "GLA",
+    "GLC",
+    "GLE",
+    "GLS",
+    "CLA",
+    "G-Class",
+  ],
+  Audi: [
+    "A3",
+    "A4",
+    "A6",
+    "A8",
+    "Q3",
+    "Q5",
+    "Q7",
+    "Q8",
+    "TT",
+    "R8",
+  ],
+  Volkswagen: [
+    "Jetta",
+    "Passat",
+    "Tiguan",
+    "Atlas",
+    "Golf",
+    "Beetle",
+    "Arteon",
+  ],
+  Porsche: [
+    "911",
+    "Cayenne",
+    "Macan",
+    "Panamera",
+    "Boxster",
+    "Cayman",
+  ],
+  Volvo: [
+    "XC60",
+    "XC90",
+    "S60",
+    "S90",
+    "V60",
+    "V90",
+  ],
+  Ford: [
+    "F-150",
+    "Mustang",
+    "Explorer",
+    "Escape",
+    "Edge",
+    "Expedition",
+    "Focus",
+    "Fusion",
+    "Bronco",
+    "Ranger",
+  ],
+  Chevrolet: [
+    "Silverado",
+    "Equinox",
+    "Tahoe",
+    "Suburban",
+    "Traverse",
+    "Malibu",
+    "Cruze",
+    "Camaro",
+    "Corvette",
+    "Trax",
+  ],
+  Jeep: [
+    "Wrangler",
+    "Grand Cherokee",
+    "Cherokee",
+    "Compass",
+    "Renegade",
+  ],
+  Dodge: [
+    "Challenger",
+    "Charger",
+    "Durango",
+    "Journey",
+  ],
+  Ram: [
+    "1500",
+    "2500",
+    "3500",
+  ],
+  Chrysler: [],
+  Cadillac: [
+    "Escalade",
+    "XTS",
+    "CT6",
+    "XT5",
+    "XT4",
+  ],
+  Buick: [
+    "Enclave",
+    "Encore",
+    "LaCrosse",
+  ],
+  Lincoln: [
+    "Navigator",
+    "Aviator",
+    "MKZ",
+  ],
+  GMC: [
+    "Sierra",
+    "Yukon",
+    "Acadia",
+  ],
+  Hyundai: [
+    "Tucson",
+    "Santa Fe",
+    "Elantra",
+    "Sonata",
+    "Kona",
+    "Palisade",
+  ],
+  Kia: [
+    "Sorento",
+    "Sportage",
+    "Telluride",
+    "Optima",
+    "Forte",
+  ],
+  Genesis: [
+    "G70",
+    "G80",
+    "G90",
+    "GV70",
+    "GV80",
+  ],
+  Tesla: [
+    "Model 3",
+    "Model S",
+    "Model X",
+    "Model Y",
+  ],
+  Jaguar: [],
+  "Land Rover": [],
+  Mini: [],
+  Fiat: [],
+  "Alfa Romeo": [],
+  Maserati: [],
+  Bentley: [],
+  "Rolls-Royce": [],
+  Ferrari: [],
+  Lamborghini: [],
+  McLaren: [],
+  "Aston Martin": [],
+  Infiniti: [
+    "Q50",
+    "Q60",
+    "QX50",
+    "QX60",
+    "QX80",
+  ],
+  Scion: [],
+  Smart: [],
+  Saturn: [],
+  Pontiac: [],
+  Hummer: [],
+  Other: [],
+};
 
 const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
   formData,
@@ -38,229 +322,67 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
     "Luxury",
   ];
 
-  // Common car makes
-  const makes = [
-    "Toyota",
-    "Honda",
-    "Nissan",
-    "Mazda",
-    "Subaru",
-    "Mitsubishi",
-    "Suzuki",
-    "Daihatsu",
-    "Isuzu",
-    "Lexus",
-    "Acura",
-    "BMW",
-    "Mercedes-Benz",
-    "Audi",
-    "Volkswagen",
-    "Porsche",
-    "Volvo",
-    "Ford",
-    "Chevrolet",
-    "Jeep",
-    "Dodge",
-    "Ram",
-    "Chrysler",
-    "Cadillac",
-    "Buick",
-    "Lincoln",
-    "GMC",
-    "Hyundai",
-    "Kia",
-    "Genesis",
-    "Tesla",
-    "Jaguar",
-    "Land Rover",
-    "Mini",
-    "Fiat",
-    "Alfa Romeo",
-    "Maserati",
-    "Bentley",
-    "Rolls-Royce",
-    "Ferrari",
-    "Lamborghini",
-    "McLaren",
-    "Aston Martin",
-    "Infiniti",
-    "Scion",
-    "Smart",
-    "Saturn",
-    "Pontiac",
-    "Hummer",
-    "Other",
-  ];
+  // Common car makes - use filterOptions if available, otherwise use hardcoded list
+  const makes = useMemo(() => {
+    if (filterOptions?.makes && filterOptions.makes.length > 0) {
+      // Combine filterOptions makes with hardcoded makes, removing duplicates
+      const allMakes = new Set([
+        ...filterOptions.makes,
+        ...Object.keys(makeToModels),
+      ]);
+      return Array.from(allMakes).sort();
+    }
+    return Object.keys(makeToModels).sort();
+  }, [filterOptions]);
 
-  // Common car models
-  const models = [
-    // Toyota
-    "Camry",
-    "Corolla",
-    "Prius",
-    "RAV4",
-    "Highlander",
-    "4Runner",
-    "Sienna",
-    "Tacoma",
-    "Tundra",
-    "Land Cruiser",
-    "Yaris",
-    "C-HR",
-    "Avalon",
-    "Venza",
-    "Sequoia",
-    "Tundra",
-    // Honda
-    "Civic",
-    "Accord",
-    "CR-V",
-    "Pilot",
-    "Odyssey",
-    "Ridgeline",
-    "HR-V",
-    "Passport",
-    "Insight",
-    "Fit",
-    "Clarity",
-    // Nissan
-    "Altima",
-    "Sentra",
-    "Maxima",
-    "Rogue",
-    "Pathfinder",
-    "Armada",
-    "Murano",
-    "Frontier",
-    "Titan",
-    "370Z",
-    "GT-R",
-    "Leaf",
-    "Versa",
-    "Kicks",
-    // Mazda
-    "Mazda3",
-    "Mazda6",
-    "CX-3",
-    "CX-5",
-    "CX-9",
-    "MX-5 Miata",
-    "CX-30",
-    // Subaru
-    "Outback",
-    "Forester",
-    "Crosstrek",
-    "Legacy",
-    "Impreza",
-    "Ascent",
-    "WRX",
-    "BRZ",
-    // Mitsubishi
-    "Outlander",
-    "Eclipse Cross",
-    "Mirage",
-    "Lancer",
-    "Montero",
-    // Suzuki
-    "Swift",
-    "Vitara",
-    "SX4",
-    "Jimny",
-    // BMW
-    "3 Series",
-    "5 Series",
-    "7 Series",
-    "X1",
-    "X3",
-    "X5",
-    "X7",
-    "Z4",
-    "i3",
-    "i8",
-    // Mercedes-Benz
-    "C-Class",
-    "E-Class",
-    "S-Class",
-    "A-Class",
-    "GLA",
-    "GLC",
-    "GLE",
-    "GLS",
-    "CLA",
-    "G-Class",
-    // Audi
-    "A3",
-    "A4",
-    "A6",
-    "A8",
-    "Q3",
-    "Q5",
-    "Q7",
-    "Q8",
-    "TT",
-    "R8",
-    // Volkswagen
-    "Jetta",
-    "Passat",
-    "Tiguan",
-    "Atlas",
-    "Golf",
-    "Beetle",
-    "Arteon",
-    // Ford
-    "F-150",
-    "Mustang",
-    "Explorer",
-    "Escape",
-    "Edge",
-    "Expedition",
-    "Focus",
-    "Fusion",
-    "Bronco",
-    "Ranger",
-    // Chevrolet
-    "Silverado",
-    "Equinox",
-    "Tahoe",
-    "Suburban",
-    "Traverse",
-    "Malibu",
-    "Cruze",
-    "Camaro",
-    "Corvette",
-    "Trax",
-    // Other popular models
-    "Model 3",
-    "Model S",
-    "Model X",
-    "Model Y",
-    "Wrangler",
-    "Grand Cherokee",
-    "Challenger",
-    "Charger",
-    "Durango",
-    "1500",
-    "2500",
-    "3500",
-    "Escalade",
-    "XTS",
-    "Enclave",
-    "Navigator",
-    "Tahoe",
-    "Yukon",
-    "Tucson",
-    "Santa Fe",
-    "Elantra",
-    "Sonata",
-    "Sorento",
-    "Sportage",
-    "Telluride",
-    "XC60",
-    "XC90",
-    "S60",
-    "S90",
-    "Other",
-  ];
+  // Get filtered models based on selected make
+  const availableModels = useMemo(() => {
+    if (!formData.make) {
+      // If no make is selected, return all models or empty array
+      return filterOptions?.models || [];
+    }
+
+    // Get models for the selected make from the mapping
+    const mappedModels = makeToModels[formData.make] || [];
+
+    // If there's a current model that's not in the mapped list, include it
+    // This is useful for edit mode where the model might not be in our hardcoded list
+    const modelsList = [...mappedModels];
+    if (formData.model && !modelsList.includes(formData.model)) {
+      modelsList.push(formData.model);
+    }
+
+    // If we have filterOptions, also filter those models by the selected make
+    // by checking if they exist in cars with that make
+    if (filterOptions?.models && filterOptions.models.length > 0) {
+      // For now, use the mapped models if available, otherwise use filterOptions
+      // In a real scenario, you might want to query the API for models by make
+      if (modelsList.length > 0) {
+        return modelsList;
+      }
+      // Fallback: return all models from filterOptions (not ideal, but better than nothing)
+      return filterOptions.models;
+    }
+
+    // Use mapped models or add "Other" option
+    return modelsList.length > 0 ? modelsList : ["Other"];
+  }, [formData.make, formData.model, filterOptions]);
+
+  // Handle make change - reset model when make changes
+  const handleMakeChange = (value: string) => {
+    // Get models for the new make
+    const newMakeModels = makeToModels[value] || [];
+    const currentModel = formData.model;
+
+    // Update make
+    onInputChange("make", value);
+
+    // Reset model when make changes (unless the current model is still valid for the new make)
+    if (currentModel && !newMakeModels.includes(currentModel)) {
+      onInputChange("model", "");
+    }
+  };
+
   console.log("BasicInfoSection received categories:", categories);
   console.log(
     "Filtered categories:",
@@ -300,20 +422,21 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             value={formData.make}
             error={errors.make}
             isViewMode={isViewMode}
-            onChange={(value) => onInputChange("make", value)}
+            onChange={handleMakeChange}
           />
           <SelectField
             label="Model"
             field="model"
-            options={models.map((model) => ({
+            options={availableModels.map((model) => ({
               value: model,
               label: model,
             }))}
             required={true}
-            placeholder="Select Model"
+            placeholder={formData.make ? "Select Model" : "Select Make first"}
             value={formData.model}
             error={errors.model}
             isViewMode={isViewMode}
+            disabled={!formData.make}
             onChange={(value) => onInputChange("model", value)}
           />
           <FormField

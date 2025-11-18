@@ -14,6 +14,7 @@ interface SelectFieldProps {
   value: any;
   error?: string;
   isViewMode?: boolean;
+  disabled?: boolean;
   onChange: (value: any) => void;
 }
 
@@ -26,6 +27,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   value,
   error,
   isViewMode = false,
+  disabled = false,
   onChange,
 }) => {
   if (isViewMode) {
@@ -58,9 +60,10 @@ const SelectField: React.FC<SelectFieldProps> = ({
               : undefined
           )
         }
+        disabled={disabled}
         className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
           error ? "border-red-300" : "border-gray-200"
-        }`}
+        } ${disabled ? "bg-gray-100 cursor-not-allowed opacity-60" : ""}`}
       >
         <option value="">{placeholder}</option>
         {options.map((option) => (
