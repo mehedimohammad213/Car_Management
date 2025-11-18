@@ -40,7 +40,7 @@ const CarTable: React.FC<CarTableProps> = ({
         <div className="min-w-[1100px]">
           {/* Table Header - match payment page blue header */}
           <div className="bg-blue-600">
-            <div className="grid grid-cols-12 gap-1 p-3 text-sm font-bold text-white uppercase tracking-wide">
+            <div className="grid grid-cols-12 gap-1 p-4 text-sm font-bold text-white uppercase tracking-wide">
               <div className="col-span-3">Car Information</div>
               <div className="col-span-1">Mileage</div>
               <div className="col-span-1">Engine</div>
