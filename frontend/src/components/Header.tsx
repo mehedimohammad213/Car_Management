@@ -93,7 +93,6 @@ const Header: React.FC = () => {
 
   const adminNavItems: NavItem[] = [
     { path: "/admin", label: "Dashboard", icon: BarChartIcon },
-    { path: "/admin/categories", label: "Category", icon: FolderIcon },
     { path: "/admin/cars", label: "Car", icon: CarIcon },
     {
       path: "/admin/purchase-history",
@@ -127,8 +126,8 @@ const Header: React.FC = () => {
     <>
       <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
         <div className="mx-auto max-w-7xl px-3 sm:px-4 lg:px-6">
-          <div className="flex items-center justify-between h-16 gap-3">
-            {/* Logo */}
+          <div className="relative flex items-center justify-between h-16 gap-3">
+            {/* Logo - Left side */}
             <div className="flex items-center flex-shrink-0">
               <Link
                 to={user.role === "admin" ? "/admin" : "/dashboard"}
@@ -141,8 +140,8 @@ const Header: React.FC = () => {
               </Link>
             </div>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 flex-1 justify-center">
+            {/* Desktop Navigation - Centered */}
+            <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 absolute left-1/2 transform -translate-x-1/2">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActiveRoute = isActive(item.path);
@@ -169,8 +168,8 @@ const Header: React.FC = () => {
               })}
             </nav>
 
-            {/* Right side actions */}
-            <div className="flex items-center justify-end flex-shrink-0">
+            {/* Right side actions - Right side */}
+            <div className="flex items-center justify-end flex-shrink-0 ml-auto">
               {/* Profile Dropdown */}
               <div className="relative profile-dropdown">
                 <button
