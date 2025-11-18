@@ -127,7 +127,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
         <div className="md:flex-1 w-full">
           {/* First Row - Always Visible */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-            <select
+            {/* <select
               value={makeFilter}
               onChange={(e) => setMakeFilter(e.target.value)}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
@@ -138,9 +138,9 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
                   {make}
                 </option>
               ))}
-            </select>
+            </select> */}
 
-            <select
+            {/* <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
@@ -160,9 +160,9 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
                     .replace(/\b\w/g, (c: string) => c.toUpperCase())}
                 </option>
               ))}
-            </select>
+            </select> */}
 
-            <select
+            {/* <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
@@ -173,7 +173,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
                   {category.name}
                 </option>
               ))}
-            </select>
+            </select> */}
 
             <select
               value={yearFilter}

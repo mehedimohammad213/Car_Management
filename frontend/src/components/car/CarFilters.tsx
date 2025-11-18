@@ -63,7 +63,7 @@ const CarFilters: React.FC<CarFiltersProps> = ({
         </div>
 
         {/* Status Filter */}
-        <select
+        {/* <select
           value={statusFilter}
           onChange={(e) => onStatusChange(e.target.value)}
           className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base"
@@ -74,10 +74,10 @@ const CarFilters: React.FC<CarFiltersProps> = ({
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </option>
           ))}
-        </select>
+        </select> */}
 
         {/* Category Filter */}
-        <select
+        {/* <select
           value={categoryFilter}
           onChange={(e) => onCategoryChange(e.target.value)}
           className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base"
@@ -88,10 +88,10 @@ const CarFilters: React.FC<CarFiltersProps> = ({
               {category.name}
             </option>
           ))}
-        </select>
+        </select> */}
 
         {/* Make Filter */}
-        <select
+        {/* <select
           value={makeFilter}
           onChange={(e) => onMakeChange(e.target.value)}
           className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base"
@@ -102,7 +102,7 @@ const CarFilters: React.FC<CarFiltersProps> = ({
               {make}
             </option>
           ))}
-        </select>
+        </select> */}
 
         {/* Clear Filters */}
         <button
