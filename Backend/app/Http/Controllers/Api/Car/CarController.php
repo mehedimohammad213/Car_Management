@@ -549,8 +549,8 @@ class CarController extends Controller
         }
 
         $validator = Validator::make($validationData, [
-            'category_id' => 'sometimes|exists:categories,id',
-            'subcategory_id' => 'nullable|exists:categories,id',
+            'category_id' => 'nullable|integer|exists:categories,id',
+            'subcategory_id' => 'nullable|integer|exists:categories,id',
             'ref_no' => [
                 'sometimes',
                 'string',
