@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, Download, Plus } from "lucide-react";
+import { Search, Download, Plus, Filter, Car } from "lucide-react";
 
 interface SearchFiltersProps {
   searchTerm: string;
@@ -57,46 +57,46 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
     filterOptions,
     categories,
   } = props;
+
+  // Check if any filters are active
+  const hasActiveFilters =
+    searchTerm ||
+    yearFilter ||
+    colorFilter ||
+    fuelFilter ||
+    makeFilter ||
+    statusFilter ||
+    categoryFilter ||
+    transmissionFilter;
+
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-6">
-      {/* Search Input with Buttons */}
-      <div className="mb-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center">
-          <div className="relative md:flex-1">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search cars by make, model, year, chassis number, or any keyword..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
-            />
+    <>
+      {/* Header */}
+      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+              <Car className="w-8 h-8 text-blue-600" />
+              Car Information
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Search and filter car inventory
+            </p>
           </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-wrap gap-3 w-full md:w-auto">
-            {/* Advanced Search button temporarily disabled
-            <button
-              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="flex items-center gap-3 px-6 py-3 text-blue-600 border-2 border-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-200 font-semibold text-sm shadow-md hover:shadow-lg"
-            >
-              <span>Advanced Search</span>
-              <span className="text-lg">{showAdvancedFilters ? "−" : "+"}</span>
-            </button>
-            */}
-
+          <div className="flex flex-wrap gap-3">
+            {/* Download PDF Button */}
             <button
               onClick={onGeneratePDF}
               disabled={isGeneratingPDF}
-              className={`flex items-center justify-center gap-3 px-6 py-3 border-2 rounded-xl transition-all duration-200 font-semibold text-sm shadow-md hover:shadow-lg w-full md:w-auto ${
+              className={`flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors ${
                 isGeneratingPDF
-                  ? "text-gray-400 border-gray-400 cursor-not-allowed"
-                  : "text-green-600 border-green-600 hover:bg-green-50"
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-gray-700"
               }`}
             >
               {isGeneratingPDF ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-400 border-t-transparent"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-400 border-t-transparent"></div>
                   <span>Generating...</span>
                 </>
               ) : (
@@ -111,74 +111,37 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             {isAdmin && onAddCar && (
               <button
                 onClick={onAddCar}
-                className="flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold text-sm shadow-md hover:shadow-lg w-full md:w-auto"
+                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
               >
                 <Plus className="w-5 h-5" />
-                <span>Add New Car</span>
+                Add New Car
               </button>
             )}
           </div>
         </div>
       </div>
 
-      {/* Filter Grid with Search Button on Same Line */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-start mb-6">
-        {/* Filter Grid */}
-        <div className="md:flex-1 w-full">
-          {/* First Row - Always Visible */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-            {/* <select
-              value={makeFilter}
-              onChange={(e) => setMakeFilter(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
-            >
-              <option value="">All Makes</option>
-              {filterOptions?.makes?.map((make: string) => (
-                <option key={make} value={make}>
-                  {make}
-                </option>
-              ))}
-            </select> */}
+      {/* Filters */}
+      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        <div className="flex flex-col lg:flex-row gap-4 items-end">
+          {/* Search */}
+          <div className="flex-1 relative w-full lg:w-auto">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search cars by make, model, year, chassis number, or any keyword..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
 
-            {/* <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
-            >
-              <option value="">All Statuses</option>
-              {(
-                filterOptions?.statuses || [
-                  "available",
-                  "reserved",
-                  "sold",
-                  "in_transit",
-                ]
-              ).map((status: string) => (
-                <option key={status} value={status}>
-                  {status
-                    .replace(/_/g, " ")
-                    .replace(/\b\w/g, (c: string) => c.toUpperCase())}
-                </option>
-              ))}
-            </select> */}
-
-            {/* <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
-            >
-              <option value="">All Categories</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select> */}
-
+          {/* Year Filter */}
+          <div className="w-full lg:w-auto">
             <select
               value={yearFilter}
               onChange={(e) => setYearFilter(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
+              className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">All Years</option>
               {filterOptions?.years?.map((year: number) => (
@@ -187,11 +150,14 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
                 </option>
               ))}
             </select>
+          </div>
 
+          {/* Color Filter */}
+          <div className="w-full lg:w-auto">
             <select
               value={colorFilter}
               onChange={(e) => setColorFilter(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
+              className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent capitalize"
             >
               <option value="">All Colors</option>
               {filterOptions?.colors?.map((color: string) => (
@@ -200,11 +166,14 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
                 </option>
               ))}
             </select>
+          </div>
 
+          {/* Fuel Type Filter */}
+          <div className="w-full lg:w-auto">
             <select
               value={fuelFilter}
               onChange={(e) => setFuelFilter(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
+              className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent capitalize"
             >
               <option value="">All Fuel Types</option>
               {filterOptions?.fuels?.map((fuel: string) => (
@@ -214,19 +183,19 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
               ))}
             </select>
           </div>
-        </div>
 
-        {/* Reset Button */}
-        <div className="flex items-center gap-4 md:justify-end">
-          <button
-            onClick={onClearFilters}
-            className="px-4 py-3 text-blue-600 hover:text-blue-800 border border-blue-300 hover:bg-blue-50 rounded-xl font-semibold text-sm transition-all duration-200 w-full md:w-auto text-center"
-          >
-            Reset
-          </button>
+          {/* Clear Filters Button */}
+          {hasActiveFilters && (
+            <button
+              onClick={onClearFilters}
+              className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors whitespace-nowrap"
+            >
+              Clear Filters
+            </button>
+          )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
