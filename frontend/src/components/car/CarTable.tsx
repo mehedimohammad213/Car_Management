@@ -260,10 +260,10 @@ const CarTable: React.FC<CarTableProps> = ({
                     <div className="flex flex-col">
                       <span className="text-sm font-semibold text-gray-900">
                         {car.price_amount
-                          ? car.price_amount.toLocaleString("en-US", {
+                          ? new Intl.NumberFormat("en-US", {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
-                            })
+                            }).format(car.price_amount)
                           : "Price on request"}
                       </span>
                     </div>
