@@ -88,15 +88,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             <button
               onClick={onGeneratePDF}
               disabled={isGeneratingPDF}
-              className={`flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-colors font-medium ${
                 isGeneratingPDF
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "text-gray-700"
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-green-600 text-white hover:bg-green-700"
               }`}
             >
               {isGeneratingPDF ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-400 border-t-transparent"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-500 border-t-transparent"></div>
                   <span>Generating...</span>
                 </>
               ) : (
