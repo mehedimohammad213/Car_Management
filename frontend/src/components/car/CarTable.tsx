@@ -41,7 +41,7 @@ const CarTable: React.FC<CarTableProps> = ({
         <div className="min-w-[1200px]">
           {/* Professional Table Header with Gradient */}
           <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 shadow-lg">
-            <div className="grid grid-cols-12 gap-2 p-5 text-sm font-bold text-white uppercase tracking-wider">
+            <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
               <div className="col-span-3 flex items-center gap-2">
                 <Car className="w-4 h-4" />
                 <span>Car Information</span>
@@ -82,7 +82,7 @@ const CarTable: React.FC<CarTableProps> = ({
                 <div
                   key={car.id}
                   onClick={() => onViewCar(car)}
-                  className="grid grid-cols-12 gap-2 p-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-blue-500"
+                  className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-blue-500"
                 >
                   {/* Car Information - Enhanced */}
                   <div className="col-span-3 flex items-center gap-3">
@@ -230,19 +230,25 @@ const CarTable: React.FC<CarTableProps> = ({
 
                   {/* Key Features - Enhanced */}
                   <div className="col-span-3 flex items-center">
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1.5 max-w-full">
                       {(car.keys_feature
                         ?.split(",")
                         .map((feature) => feature.trim())
-                        .filter(Boolean) || []
+                        .filter(Boolean)
+                        .slice(0, 8) || []
                       ).map((feature) => (
                         <span
                           key={feature}
-                          className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-200 shadow-sm hover:shadow-md transition-shadow"
+                          className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200"
                         >
                           {feature}
                         </span>
                       ))}
+                      {car.keys_feature && car.keys_feature.split(",").filter(Boolean).length > 8 && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium text-gray-500">
+                          +{car.keys_feature.split(",").filter(Boolean).length - 8} more
+                        </span>
+                      )}
                       {!car.keys_feature && (
                         <span className="text-xs text-gray-400 italic">No features listed</span>
                       )}
@@ -252,7 +258,7 @@ const CarTable: React.FC<CarTableProps> = ({
                   {/* Price - Enhanced */}
                   <div className="col-span-1 flex items-center">
                     <div className="flex flex-col">
-                      <span className="text-base font-bold text-gray-900">
+                      <span className="text-sm font-semibold text-gray-900">
                         {car.price_amount
                           ? car.price_amount.toLocaleString("en-US", {
                               minimumFractionDigits: 2,
@@ -260,14 +266,6 @@ const CarTable: React.FC<CarTableProps> = ({
                             })
                           : "Price on request"}
                       </span>
-                      {/* {car.price_amount && car.price_currency === "USD" && (
-                        <span className="text-xs text-gray-500 mt-0.5">
-                          ≈ ${(car.price_amount / 110).toLocaleString(undefined, {
-                            minimumFractionDigits: 0,
-                            maximumFractionDigits: 0,
-                          })}
-                        </span>
-                      )} */}
                     </div>
                   </div>
 
