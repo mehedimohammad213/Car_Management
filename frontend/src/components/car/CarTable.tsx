@@ -2,6 +2,7 @@ import React from "react";
 import { Car, Eye, ShoppingCart, Edit, Trash2, Gauge, Settings, Palette, Award, Tag } from "lucide-react";
 import { Car as CarType } from "../../services/carApi";
 import { Stock } from "../../services/stockApi";
+import { CurrencyBDTIcon } from "../icons/CurrencyBDTIcon";
 
 interface CarTableProps {
   cars: CarType[];
@@ -65,7 +66,10 @@ const CarTable: React.FC<CarTableProps> = ({
                 <Tag className="w-4 h-4" />
                 <span>Key Features</span>
               </div>
-              <div className="col-span-1">Price</div>
+              <div className="col-span-1 flex items-center gap-2">
+                <CurrencyBDTIcon className="w-4 h-4" />
+                <span>Price</span>
+              </div>
               <div className="col-span-1 text-center">Actions</div>
             </div>
           </div>
@@ -155,11 +159,6 @@ const CarTable: React.FC<CarTableProps> = ({
                           ? `${car.mileage_km.toLocaleString()} km`
                           : "N/A"}
                       </span>
-                      {car.mileage_km && (
-                        <span className="text-xs text-gray-500 mt-0.5">
-                          {Math.round(car.mileage_km / 1.609).toLocaleString()} mi
-                        </span>
-                      )}
                     </div>
                   </div>
 
@@ -255,7 +254,10 @@ const CarTable: React.FC<CarTableProps> = ({
                     <div className="flex flex-col">
                       <span className="text-base font-bold text-gray-900">
                         {car.price_amount
-                          ? formatPrice(car.price_amount, car.price_currency)
+                          ? car.price_amount.toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
                           : "Price on request"}
                       </span>
                       {/* {car.price_amount && car.price_currency === "USD" && (
