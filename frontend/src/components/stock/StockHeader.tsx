@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import {
-  PackageIcon,
-  TrendingUpIcon,
-  PlusIcon,
-  FileTextIcon,
+  Package,
+  Plus,
+  FileText,
 } from "lucide-react";
 import { InvoiceCreationModal } from "./InvoiceCreationModal";
 
@@ -70,32 +69,34 @@ export const StockHeader: React.FC<StockHeaderProps> = ({ onCreateStock }) => {
   };
 
   return (
-    <div className="mb-6 sm:mb-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
-        <div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">
-            Stock Management
-          </h1>
-          <p className="text-sm sm:text-base text-gray-600 mt-2">
-            View and manage your vehicle inventory stock levels
-          </p>
-        </div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <button
-            onClick={() => setShowInvoiceModal(true)}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm"
-          >
-            <FileTextIcon className="w-4 h-4" />
-            <span className="hidden sm:inline">Create Invoice</span>
-            <span className="sm:hidden">Invoice</span>
-          </button>
-          <button
-            onClick={onCreateStock}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm"
-          >
-            <PlusIcon className="w-4 h-4" />
-            Add Stock
-          </button>
+    <>
+      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+              <Package className="w-8 h-8 text-blue-600" />
+              Stock Management
+            </h1>
+            <p className="text-gray-600 mt-1">
+              View and manage your vehicle inventory stock levels
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => setShowInvoiceModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium"
+            >
+              <FileText className="w-5 h-5" />
+              <span>Create Invoice</span>
+            </button>
+            <button
+              onClick={onCreateStock}
+              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+            >
+              <Plus className="w-5 h-5" />
+              <span>Add Stock</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -104,6 +105,6 @@ export const StockHeader: React.FC<StockHeaderProps> = ({ onCreateStock }) => {
         onClose={() => setShowInvoiceModal(false)}
         onCreateInvoice={handleCreateInvoice}
       />
-    </div>
+    </>
   );
 };

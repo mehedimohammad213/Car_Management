@@ -187,65 +187,67 @@ const StockManagement: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
-      <StockHeader onCreateStock={handleCreateStock} />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 py-6">
+      <div className="max-w-full mx-auto px-4">
+        <StockHeader onCreateStock={handleCreateStock} />
 
-      <MessageDisplay message={message} />
+        <MessageDisplay message={message} />
 
-      <StockFilters
-        searchTerm={searchTerm}
-        statusFilter={statusFilter}
-        onSearchChange={setSearchTerm}
-        onStatusFilterChange={setStatusFilter}
-        onClearFilters={handleClearFilters}
-      />
-
-      <StockTable
-        stocks={stocks}
-        isLoading={isLoading}
-        sortBy={sortBy}
-        sortOrder={sortOrder}
-        onSort={handleSort}
-        onEdit={handleEditStock}
-        onDelete={handleDeleteStock}
-        onRefresh={fetchStocks}
-      />
-
-      <StockPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalItems={totalItems}
-        perPage={perPage}
-        onPageChange={(page) => {
-          console.log("Page changed to:", page);
-          setCurrentPage(page);
-        }}
-      />
-
-      <StockDrawer
-        isOpen={showDrawer}
-        onClose={handleDrawerClose}
-        title={drawerMode === "create" ? "Create New Stock" : "Edit Stock"}
-        size="md"
-        showActions={false}
-      >
-        <StockDrawerForm
-          stock={selectedStock}
-          onSubmit={handleDrawerSubmit}
-          onCancel={handleDrawerClose}
-          isLoading={false}
-          onError={(error) => showMessage("error", error)}
+        <StockFilters
+          searchTerm={searchTerm}
+          statusFilter={statusFilter}
+          onSearchChange={setSearchTerm}
+          onStatusFilterChange={setStatusFilter}
+          onClearFilters={handleClearFilters}
         />
-      </StockDrawer>
 
-      <DeleteConfirmationModal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={confirmDelete}
-        title="Delete Stock"
-        message={`Are you sure you want to delete this stock item? This action cannot be undone.`}
-        isLoading={isDeleting}
-      />
+        <StockTable
+          stocks={stocks}
+          isLoading={isLoading}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSort={handleSort}
+          onEdit={handleEditStock}
+          onDelete={handleDeleteStock}
+          onRefresh={fetchStocks}
+        />
+
+        <StockPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          perPage={perPage}
+          onPageChange={(page) => {
+            console.log("Page changed to:", page);
+            setCurrentPage(page);
+          }}
+        />
+
+        <StockDrawer
+          isOpen={showDrawer}
+          onClose={handleDrawerClose}
+          title={drawerMode === "create" ? "Create New Stock" : "Edit Stock"}
+          size="md"
+          showActions={false}
+        >
+          <StockDrawerForm
+            stock={selectedStock}
+            onSubmit={handleDrawerSubmit}
+            onCancel={handleDrawerClose}
+            isLoading={false}
+            onError={(error) => showMessage("error", error)}
+          />
+        </StockDrawer>
+
+        <DeleteConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={confirmDelete}
+          title="Delete Stock"
+          message={`Are you sure you want to delete this stock item? This action cannot be undone.`}
+          isLoading={isDeleting}
+        />
+      </div>
     </div>
   );
 };

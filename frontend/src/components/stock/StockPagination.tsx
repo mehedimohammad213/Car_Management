@@ -15,16 +15,8 @@ const StockPagination: React.FC<StockPaginationProps> = ({
   perPage,
   onPageChange,
 }) => {
-  // Debug logging
-  console.log("Pagination Props:", {
-    currentPage,
-    totalPages,
-    totalItems,
-    perPage,
-  });
-
-  // Show pagination when there are items, even if only one page
-  if (totalItems === 0) return null;
+  // Show pagination only when there are 10 or more items per page
+  if (totalItems < perPage) return null;
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 mt-6">

@@ -745,6 +745,8 @@ const UserCarCatalog: React.FC = () => {
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
+          totalItems={totalItems}
+          perPage={perPage}
           onPageChange={setCurrentPage}
         />
       </div>

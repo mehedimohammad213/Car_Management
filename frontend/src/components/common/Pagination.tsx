@@ -15,7 +15,8 @@ const Pagination: React.FC<PaginationProps> = ({
   perPage,
   onPageChange,
 }) => {
-  if (totalPages <= 1) return null;
+  // Show pagination only when there are 10 or more items per page
+  if (totalItems < perPage) return null;
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 mt-6">

@@ -4,14 +4,20 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
+  totalItems?: number;
+  perPage?: number;
   onPageChange: (page: number) => void;
 }
 
 const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   totalPages,
+  totalItems,
+  perPage = 12,
   onPageChange,
 }) => {
+  // Show pagination only when there are 10 or more items per page
+  if (totalItems !== undefined && totalItems < perPage) return null;
   if (totalPages <= 1) return null;
 
   return (

@@ -18,12 +18,13 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
   onClearFilters,
   onFiltersClick = onClearFilters,
 }) => {
+  const hasActiveFilters = searchTerm || statusFilter;
+
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
-      <div className="flex items-center gap-2 mb-4"></div>
-      <div className="flex flex-col sm:flex-row gap-4">
+    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+      <div className="flex flex-col lg:flex-row gap-4 items-end">
         {/* Search */}
-        <div className="flex-1 relative">
+        <div className="flex-1 relative w-full lg:w-auto">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
@@ -34,16 +35,32 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
           />
         </div>
 
-        <button
-          type="button"
-          onClick={onFiltersClick}
-          className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
-        >
-          <Filter className="w-4 h-4" />
-          Filters
-        </button>
+        {/* Status Filter */}
+        <div className="w-full lg:w-auto">
+          <select
+            value={statusFilter}
+            onChange={(e) => onStatusFilterChange(e.target.value)}
+            className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent capitalize"
+          >
+            <option value="">All Status</option>
+            <option value="available">Available</option>
+            <option value="sold">Sold</option>
+            <option value="reserved">Reserved</option>
+            <option value="damaged">Damaged</option>
+            <option value="lost">Lost</option>
+            <option value="stolen">Stolen</option>
+          </select>
+        </div>
 
-        {/* Clear Filters button intentionally commented out */}
+        {/* Clear Filters Button */}
+        {hasActiveFilters && (
+          <button
+            onClick={onClearFilters}
+            className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors whitespace-nowrap"
+          >
+            Clear Filters
+          </button>
+        )}
       </div>
     </div>
   );
