@@ -22,7 +22,6 @@ const StockManagement: React.FC = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
   const [sortBy, setSortBy] = useState("created_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
@@ -46,14 +45,13 @@ const StockManagement: React.FC = () => {
 
   useEffect(() => {
     fetchStocks();
-  }, [currentPage, searchTerm, statusFilter, sortBy, sortOrder]);
+  }, [currentPage, searchTerm, sortBy, sortOrder]);
 
   const fetchStocks = async () => {
     try {
       setIsLoading(true);
       const response = await stockApi.getStocks({
         search: searchTerm || undefined,
-        status: statusFilter || undefined,
         sort_by: sortBy,
         sort_order: sortOrder,
         per_page: perPage,
@@ -182,7 +180,6 @@ const StockManagement: React.FC = () => {
 
   const handleClearFilters = () => {
     setSearchTerm("");
-    setStatusFilter("");
     setCurrentPage(1);
   };
 
@@ -195,9 +192,7 @@ const StockManagement: React.FC = () => {
 
         <StockFilters
           searchTerm={searchTerm}
-          statusFilter={statusFilter}
           onSearchChange={setSearchTerm}
-          onStatusFilterChange={setStatusFilter}
           onClearFilters={handleClearFilters}
         />
 
