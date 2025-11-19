@@ -194,65 +194,67 @@ const AdminOrders: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
-      <OrderManagementHeader />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 py-6">
+      <div className="max-w-full mx-auto px-4">
+        <OrderManagementHeader />
 
-      <OrderFilters
-        searchTerm={searchTerm}
-        statusFilter={statusFilter}
-        dateFilter={dateFilter}
-        onSearchChange={setSearchTerm}
-        onStatusFilterChange={setStatusFilter}
-        onDateFilterChange={setDateFilter}
-        onClearFilters={() => {
-          setDateFilter("");
-          setSearchTerm("");
-          setStatusFilter("all");
-        }}
-      />
-
-      <OrderTable
-        orders={paginatedOrders}
-        isLoading={loading}
-        onView={setSelectedOrder}
-        onDownloadInvoice={handleDownloadInvoice}
-        onDelete={openDeletePopup}
-        onRefresh={loadOrders}
-        getStatusColor={getStatusColor}
-        getStatusIcon={getStatusIcon}
-        formatDate={formatDate}
-      />
-
-      {/* Pagination */}
-      {totalItems > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          perPage={perPage}
-          onPageChange={setCurrentPage}
+        <OrderFilters
+          searchTerm={searchTerm}
+          statusFilter={statusFilter}
+          dateFilter={dateFilter}
+          onSearchChange={setSearchTerm}
+          onStatusFilterChange={setStatusFilter}
+          onDateFilterChange={setDateFilter}
+          onClearFilters={() => {
+            setDateFilter("");
+            setSearchTerm("");
+            setStatusFilter("all");
+          }}
         />
-      )}
 
-      {/* Order Modal */}
-      <OrderModal
-        order={selectedOrder}
-        isUpdatingStatus={isUpdatingStatus}
-        onClose={() => setSelectedOrder(null)}
-        onUpdateStatus={handleUpdateStatus}
-        getStatusColor={getStatusColor}
-        getStatusIcon={getStatusIcon}
-        formatDate={formatDate}
-      />
+        <OrderTable
+          orders={paginatedOrders}
+          isLoading={loading}
+          onView={setSelectedOrder}
+          onDownloadInvoice={handleDownloadInvoice}
+          onDelete={openDeletePopup}
+          onRefresh={loadOrders}
+          getStatusColor={getStatusColor}
+          getStatusIcon={getStatusIcon}
+          formatDate={formatDate}
+        />
 
-      {/* Delete Order Modal */}
-      <DeleteOrderModal
-        order={orderToDelete}
-        isOpen={showDeletePopup}
-        onClose={closeDeletePopup}
-        onConfirm={handleDeleteOrder}
-        formatDate={formatDate}
-      />
+        {/* Pagination */}
+        {totalItems > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            perPage={perPage}
+            onPageChange={setCurrentPage}
+          />
+        )}
+
+        {/* Order Modal */}
+        <OrderModal
+          order={selectedOrder}
+          isUpdatingStatus={isUpdatingStatus}
+          onClose={() => setSelectedOrder(null)}
+          onUpdateStatus={handleUpdateStatus}
+          getStatusColor={getStatusColor}
+          getStatusIcon={getStatusIcon}
+          formatDate={formatDate}
+        />
+
+        {/* Delete Order Modal */}
+        <DeleteOrderModal
+          order={orderToDelete}
+          isOpen={showDeletePopup}
+          onClose={closeDeletePopup}
+          onConfirm={handleDeleteOrder}
+          formatDate={formatDate}
+        />
+      </div>
     </div>
   );
 };
