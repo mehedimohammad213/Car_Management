@@ -280,7 +280,7 @@ const CarTable: React.FC<CarTableProps> = ({
                           ? onViewCarAdmin(car)
                           : onViewCar(car)
                       }
-                      className="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md group/btn"
+                      className="p-2.5 text-blue-600 hover:text-blue-700 rounded-lg transition-all duration-200 group/btn"
                       title={
                         isAdmin ? "View Car Details (Admin)" : "View Car Details"
                       }
@@ -292,7 +292,7 @@ const CarTable: React.FC<CarTableProps> = ({
                     {isAdmin && onEditCar && (
                       <button
                         onClick={() => onEditCar(car)}
-                        className="p-2.5 bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md group/btn"
+                        className="p-2.5 text-amber-600 hover:text-amber-700 rounded-lg transition-all duration-200 group/btn"
                         title="Edit Car"
                       >
                         <Edit className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
@@ -303,7 +303,7 @@ const CarTable: React.FC<CarTableProps> = ({
                     {isAdmin && onDeleteCar && (
                       <button
                         onClick={() => onDeleteCar(car)}
-                        className="p-2.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md group/btn"
+                        className="p-2.5 text-red-600 hover:text-red-700 rounded-lg transition-all duration-200 group/btn"
                         title="Delete Car"
                       >
                         <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
@@ -315,7 +315,7 @@ const CarTable: React.FC<CarTableProps> = ({
                       <button
                         onClick={() => onAddToCart(car)}
                         disabled={isCarLoading(car.id)}
-                        className="p-2.5 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed disabled:hover:shadow-sm group/btn"
+                        className="p-2.5 text-green-600 hover:text-green-700 rounded-lg transition-all duration-200 disabled:text-gray-400 disabled:cursor-not-allowed group/btn"
                         title="Add to Cart"
                       >
                         {isCarLoading(car.id) ? (
