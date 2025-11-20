@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Filter, Edit, Trash2, Eye } from "lucide-react";
+import { Plus, Search, Filter } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   paymentHistoryApi,
@@ -9,6 +9,7 @@ import {
   UpdatePaymentHistoryData,
 } from "../../services/paymentHistoryApi";
 import PaymentHistoryModal from "../../components/payment-history/PaymentHistoryModal";
+import PaymentHistoryTable from "../../components/payment-history/PaymentHistoryTable";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 import Pagination from "../../components/common/Pagination";
 
@@ -146,22 +147,6 @@ const PaymentHistoryPage: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const formatCurrency = (amount: number | null) => {
-    if (amount === null) return "N/A";
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "BDT",
-    }).format(amount);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
@@ -247,124 +232,27 @@ const PaymentHistoryPage: React.FC = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
-        ) : paymentHistories.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No payment histories found</p>
-          </div>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-blue-600 text-white">
-                  <tr>
-                    <th className="px-6 py-4 text-left font-semibold">ID</th>
-                    <th className="px-6 py-4 text-left font-semibold">Car</th>
-                    <th className="px-6 py-4 text-left font-semibold">Showroom Name</th>
-                    <th className="px-6 py-4 text-left font-semibold">Selling Date</th>
-                    <th className="px-6 py-4 text-left font-semibold">Selling Amount</th>
-                    <th className="px-6 py-4 text-left font-semibold">Customer</th>
-                    <th className="px-6 py-4 text-left font-semibold">Installments</th>
-                    <th className="px-6 py-4 text-left font-semibold">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {paymentHistories.map((ph) => (
-                    <tr
-                      key={ph.id}
-                      className="hover:bg-gray-50 transition-colors cursor-pointer"
-                      onClick={(e) => {
-                        // Only navigate if clicking on the row, not on buttons
-                        if ((e.target as HTMLElement).closest("button")) return;
-                        handleView(ph);
-                      }}
-                    >
-                      <td className="px-6 py-4">{ph.id}</td>
-                      <td className="px-6 py-4">
-                        {ph.car
-                          ? (() => {
-                              const chassisNo = ph.car.chassis_no_full || ph.car.chassis_no_masked;
-                              return `${ph.car.make} ${ph.car.model}${chassisNo ? ` (${chassisNo})` : ""}`;
-                            })()
-                          : "N/A"}
-                      </td>
-                      <td className="px-6 py-4">{ph.showroom_name || "N/A"}</td>
-                      <td className="px-6 py-4">{formatDate(ph.purchase_date)}</td>
-                      <td className="px-6 py-4">{formatCurrency(ph.purchase_amount)}</td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm">
-                          <div>{ph.contact_number || "N/A"}</div>
-                          <div className="text-gray-500 text-xs">{ph.email || ""}</div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        {ph.installments && ph.installments.length > 0 ? (
-                          <div className="max-h-40 overflow-y-auto pr-2 space-y-2">
-                            {ph.installments.map((ins) => (
-                              <div key={ins.id} className="flex items-start justify-between gap-3 text-sm">
-                                <div className="font-medium text-gray-800">
-                                  {formatDate(ins.installment_date)}
-                                </div>
-                                <div className="text-right min-w-[120px] text-gray-900">
-                                  {formatCurrency(ins.amount)}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-gray-500 text-sm">No installments</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleView(ph)}
-                            className="p-2 text-green-600 hover:text-green-700 transition-colors"
-                            title="View Details"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleEdit(ph)}
-                            className="p-2 text-blue-600 hover:text-blue-700 transition-colors"
-                            title="Edit"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(ph)}
-                            className="p-2 text-red-600 hover:text-red-700 transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+      <PaymentHistoryTable
+        paymentHistories={paymentHistories}
+        isLoading={loading}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onView={handleView}
+        onRefresh={fetchPaymentHistories}
+      />
 
-            {/* Pagination */}
-            {totalItems > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  totalItems={totalItems}
-                  perPage={perPage}
-                  onPageChange={setCurrentPage}
-                />
-              </div>
-            )}
-          </>
-        )}
-      </div>
+      {/* Pagination */}
+      {!loading && totalItems > 0 && (
+        <div className="mt-6 bg-white rounded-2xl shadow-lg p-6">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            perPage={perPage}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
 
       {/* Modal */}
       <PaymentHistoryModal
