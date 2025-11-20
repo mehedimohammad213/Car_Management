@@ -27,8 +27,8 @@ const PurchaseHistoryTableRow: React.FC<PurchaseHistoryTableRowProps> = ({
   const formatCurrency = (amount: number | null) => {
     if (amount === null) return "N/A";
     return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "BDT",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(amount);
   };
 
@@ -68,7 +68,7 @@ const PurchaseHistoryTableRow: React.FC<PurchaseHistoryTableRowProps> = ({
 
       {/* Purchase Amount */}
       <div className="col-span-2 flex items-center">
-        <span className="inline-flex items-center px-3 py-1 rounded-lg text-sm font-semibold bg-green-100 text-green-700 border border-green-200">
+        <span className="text-sm text-gray-700">
           {formatCurrency(purchaseHistory.purchase_amount)}
         </span>
       </div>

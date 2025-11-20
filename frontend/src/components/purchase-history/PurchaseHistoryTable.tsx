@@ -1,6 +1,7 @@
 import React from "react";
-import { Calendar, Car, DollarSign, FileText, Building2 } from "lucide-react";
+import { Calendar, Car, FileText, Building2 } from "lucide-react";
 import { PurchaseHistory } from "../../services/purchaseHistoryApi";
+import { CurrencyBDTIcon } from "../icons/CurrencyBDTIcon";
 import PurchaseHistoryTableRow from "./PurchaseHistoryTableRow";
 
 interface PurchaseHistoryTableProps {
@@ -75,7 +76,7 @@ const PurchaseHistoryTable: React.FC<PurchaseHistoryTableProps> = ({
                 <span>Purchase Date</span>
               </div>
               <div className="col-span-2 flex items-center gap-2">
-                <DollarSign className="w-4 h-4" />
+                <CurrencyBDTIcon className="w-4 h-4" />
                 <span>Amount</span>
               </div>
               <div className="col-span-2 flex items-center gap-2">
