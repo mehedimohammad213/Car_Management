@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Plus, Search, Filter, X, Eye, Edit, Trash2 } from "lucide-react";
+import { Plus, Search, FileText } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   purchaseHistoryApi,
@@ -9,6 +9,7 @@ import {
   UpdatePurchaseHistoryData,
 } from "../../services/purchaseHistoryApi";
 import PurchaseHistoryModal from "../../components/purchase-history/PurchaseHistoryModal";
+import PurchaseHistoryTable from "../../components/purchase-history/PurchaseHistoryTable";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 import Pagination from "../../components/common/Pagination";
 
@@ -30,9 +31,6 @@ const PurchaseHistoryPage: React.FC = () => {
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
-  const [purchaseDateFrom, setPurchaseDateFrom] = useState("");
-  const [purchaseDateTo, setPurchaseDateTo] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,7 +40,7 @@ const PurchaseHistoryPage: React.FC = () => {
 
   useEffect(() => {
     fetchPurchaseHistories();
-  }, [currentPage, searchTerm, purchaseDateFrom, purchaseDateTo]);
+  }, [currentPage, searchTerm]);
 
   // Open edit modal if navigated with state { editId }
   useEffect(() => {
@@ -70,8 +68,6 @@ const PurchaseHistoryPage: React.FC = () => {
       };
 
       if (searchTerm) params.search = searchTerm;
-      if (purchaseDateFrom) params.purchase_date_from = purchaseDateFrom;
-      if (purchaseDateTo) params.purchase_date_to = purchaseDateTo;
 
       const response = await purchaseHistoryApi.getPurchaseHistories(params);
 
@@ -167,39 +163,20 @@ const PurchaseHistoryPage: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const formatCurrency = (amount: number | null) => {
-    if (amount === null) return "N/A";
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "BDT",
-    }).format(amount);
-  };
-
-  const getPdfUrl = (path: string | null) => {
-    if (!path) return null;
-    if (path.startsWith("http")) return path;
-    const baseUrl =
-      import.meta.env.VITE_API_BASE_URL?.replace("/api", "") ||
-      "http://localhost:8000";
-    return `${baseUrl}${path}`;
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setCurrentPage(1);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 py-6">
+      <div className="max-w-full mx-auto px-4">
       {/* Header */}
       <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+              <FileText className="w-8 h-8 text-blue-600" />
               Purchase History
             </h1>
             <p className="text-gray-600 mt-1">
@@ -218,8 +195,9 @@ const PurchaseHistoryPage: React.FC = () => {
 
       {/* Filters */}
       <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-        <div className="flex flex-col sm:flex-row gap-4 mb-4">
-          <div className="flex-1 relative">
+        <div className="flex flex-col lg:flex-row gap-4 items-end">
+          {/* Search */}
+          <div className="flex-1 relative w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
@@ -229,169 +207,41 @@ const PurchaseHistoryPage: React.FC = () => {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
-          >
-            <Filter className="w-5 h-5" />
-            Filters
-          </button>
-        </div>
 
-        {showFilters && (
-          <div className="border-t border-gray-200 pt-4 mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Purchase Date From
-                </label>
-                <input
-                  type="date"
-                  value={purchaseDateFrom}
-                  onChange={(e) => setPurchaseDateFrom(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Purchase Date To
-                </label>
-                <input
-                  type="date"
-                  value={purchaseDateTo}
-                  onChange={(e) => setPurchaseDateTo(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div className="flex items-end">
-                <button
-                  onClick={() => {
-                    setPurchaseDateFrom("");
-                    setPurchaseDateTo("");
-                    setSearchTerm("");
-                  }}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
-                >
-                  Clear Filters
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+          {/* Clear Filters Button */}
+          {searchTerm && (
+            <button
+              onClick={handleClearFilters}
+              className="px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors whitespace-nowrap"
+            >
+              Clear Filters
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
-        ) : purchaseHistories.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No purchase histories found</p>
-          </div>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-blue-600 text-white">
-                  <tr>
-                    <th className="px-6 py-4 text-left font-semibold">ID</th>
-                    <th className="px-6 py-4 text-left font-semibold">Car</th>
-                    <th className="px-6 py-4 text-left font-semibold">
-                      Purchase Date
-                    </th>
-                    <th className="px-6 py-4 text-left font-semibold">
-                      Purchase Amount
-                    </th>
-                    <th className="px-6 py-4 text-left font-semibold">
-                      LC Number
-                    </th>
-                    <th className="px-6 py-4 text-left font-semibold">
-                      LC Bank
-                    </th>
-                    <th className="px-6 py-4 text-left font-semibold">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {purchaseHistories.map((ph) => (
-                    <tr
-                      key={ph.id}
-                      className="hover:bg-gray-50 transition-colors cursor-pointer"
-                      onClick={(e) => {
-                        // Only navigate if clicking on the row, not on buttons
-                        if ((e.target as HTMLElement).closest("button")) return;
-                        handleView(ph);
-                      }}
-                    >
-                      <td className="px-6 py-4">{ph.id}</td>
-                      <td className="px-6 py-4">
-                        {ph.car
-                          ? (() => {
-                              const chassisNo = ph.car.chassis_no_full || ph.car.chassis_no_masked;
-                              return `${ph.car.make} ${ph.car.model}${chassisNo ? ` (${chassisNo})` : ""}`;
-                            })()
-                          : "N/A"}
-                      </td>
-                      <td className="px-6 py-4">
-                        {formatDate(ph.purchase_date)}
-                      </td>
-                      <td className="px-6 py-4">
-                        {formatCurrency(ph.purchase_amount)}
-                      </td>
-                      <td className="px-6 py-4">{ph.lc_number || "N/A"}</td>
-                      <td className="px-6 py-4">{ph.lc_bank_name || "N/A"}</td>
-                      <td
-                        className="px-6 py-4"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleView(ph)}
-                            className="p-2 text-green-600 hover:text-green-700 rounded-lg transition-colors"
-                            title="View Details"
-                          >
-                            <Eye className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => handleEdit(ph)}
-                            className="p-2 text-blue-600 hover:text-blue-700 rounded-lg transition-colors"
-                            title="Edit"
-                          >
-                            <Edit className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(ph)}
-                            className="p-2 text-red-600 hover:text-red-700 rounded-lg transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+      <PurchaseHistoryTable
+        purchaseHistories={purchaseHistories}
+        isLoading={loading}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onView={handleView}
+        onRefresh={fetchPurchaseHistories}
+      />
 
-            {/* Pagination */}
-            {totalItems > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  totalItems={totalItems}
-                  perPage={perPage}
-                  onPageChange={setCurrentPage}
-                />
-              </div>
-            )}
-          </>
-        )}
-      </div>
+      {/* Pagination */}
+      {totalItems > 0 && (
+        <div className="mt-6">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            perPage={perPage}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
 
       {/* Modal */}
       <PurchaseHistoryModal
@@ -417,6 +267,7 @@ const PurchaseHistoryPage: React.FC = () => {
         onConfirm={confirmDelete}
         isLoading={isDeleting}
       />
+      </div>
     </div>
   );
 };
