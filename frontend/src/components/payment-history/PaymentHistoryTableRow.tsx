@@ -122,7 +122,7 @@ const PaymentHistoryTableRow: React.FC<PaymentHistoryTableRowProps> = ({
                       </div>
                     )}
                   </div>
-                  <div className="text-right min-w-[80px] text-gray-900 font-semibold">
+                  <div className="text-left min-w-[80px] text-gray-900 font-semibold">
                     {formatCurrency(ins.amount)}
                   </div>
                 </div>
