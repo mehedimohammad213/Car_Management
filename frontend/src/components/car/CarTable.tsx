@@ -1,5 +1,5 @@
 import React from "react";
-import { Car, Eye, ShoppingCart, Edit, Trash2, Gauge, Settings, Palette, Award, Tag, Package } from "lucide-react";
+import { Car, Eye, ShoppingCart, Edit, Trash2, Gauge, Settings, Palette, Award, Tag, Package, MoreVertical } from "lucide-react";
 import { Car as CarType } from "../../services/carApi";
 import { Stock } from "../../services/stockApi";
 import { CurrencyBDTIcon } from "../icons/CurrencyBDTIcon";
@@ -74,7 +74,9 @@ const CarTable: React.FC<CarTableProps> = ({
                 <CurrencyBDTIcon className="w-4 h-4" />
                 <span>Price</span>
               </div>
-              <div className="col-span-1 text-center">Actions</div>
+              <div className="col-span-1 flex items-center justify-center">
+                <MoreVertical className="w-4 h-4" />
+              </div>
             </div>
           </div>
 
@@ -284,7 +286,7 @@ const CarTable: React.FC<CarTableProps> = ({
 
                   {/* Actions - Enhanced */}
                   <div
-                    className="col-span-1 flex items-center justify-center gap-1.5"
+                    className="col-span-1 flex flex-col items-center justify-center gap-1.5"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button
