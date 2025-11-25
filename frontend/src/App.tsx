@@ -22,6 +22,7 @@ import PaymentHistory from "./pages/payment-history/PaymentHistory";
 import PaymentHistoryDetails from "./pages/payment-history/PaymentHistoryDetails";
 
 import CarDetails from "./pages/car/CarDetails";
+import CarViewPage from "./pages/car/CarViewPage";
 import UserCarCatalog from "./pages/car/UserCarCatalog";
 import Cart from "./pages/cart/Cart";
 import Orders from "./pages/order/Orders";
@@ -166,6 +167,7 @@ function App() {
                     {/* User Routes */}
                     <Route path="/" element={<HomeRedirect />} />
                     <Route path="/car/:id" element={<CarDetails />} />
+                    <Route path="/car-view/:id" element={<CarViewPage />} />
                     <Route path="/cars" element={<UserCarCatalog />} />
                     <Route
                       path="/dashboard"

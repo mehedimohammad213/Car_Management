@@ -100,11 +100,11 @@ const ViewCar: React.FC = () => {
 
   const handleDownloadFile = async () => {
     if (!car || !attachedFileInfo) return;
-    
+
     try {
       setIsLoadingFile(true);
       const blob = await carApi.downloadAttachedFile(car.id);
-      
+
       // Create download link
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
