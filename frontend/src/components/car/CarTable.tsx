@@ -135,7 +135,7 @@ const CarTable: React.FC<CarTableProps> = ({
                           {car.status?.charAt(0).toUpperCase() + car.status?.slice(1)}
                         </span>
                         {car.package && (
-                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-md hover:shadow-lg transition-all duration-200 border border-purple-400/30">
+                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
                             {car.package}
                           </span>
                         )}
