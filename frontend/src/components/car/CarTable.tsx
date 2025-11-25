@@ -263,7 +263,7 @@ const CarTable: React.FC<CarTableProps> = ({
                         </span>
                       )}
                       {!car.keys_feature && (
-                        <span className="text-xs text-gray-400 italic">No features listed</span>
+                        <span className="text-xs text-gray-400">N/A</span>
                       )}
                     </div>
                   </div>
@@ -277,7 +277,7 @@ const CarTable: React.FC<CarTableProps> = ({
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                             }).format(car.price_amount)
-                          : "Price on request"}
+                          : "N/A"}
                       </span>
                     </div>
                   </div>
