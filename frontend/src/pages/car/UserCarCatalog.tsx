@@ -321,10 +321,8 @@ const UserCarCatalog: React.FC = () => {
             car.chassis_no_full || car.chassis_no_masked || "N/A";
 
           return [
-            `${car.year || "N/A"} ${car.make || "N/A"} ${car.model || "N/A"}${
-              car.variant ? ` - ${car.variant}` : ""
-            }\nRef: ${reference}${
-              chassis && chassis !== "N/A" ? ` | Chassis: ${chassis}` : ""
+            `${car.year || "N/A"} ${car.make || "N/A"} ${car.model || "N/A"}${car.variant ? ` - ${car.variant}` : ""
+            }\nRef: ${reference}${chassis && chassis !== "N/A" ? ` | Chassis: ${chassis}` : ""
             }`,
             car.mileage_km ? `${car.mileage_km.toLocaleString()} km` : "N/A",
             car.engine_cc ? `${car.engine_cc.toLocaleString()} cc` : "N/A",
@@ -441,8 +439,8 @@ const UserCarCatalog: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <div className="max-w-full mx-auto px-4 py-6">
+    <div className="min-h-screen">
+      <div className="max-w-full mx-auto px-4 pb-6">
         {/* Search Filters */}
         <SearchFilters
           searchTerm={searchTerm}
