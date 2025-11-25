@@ -1,5 +1,5 @@
 import React from "react";
-import { Car, Eye, ShoppingCart, Edit, Trash2, Gauge, Settings, Palette, Award, Tag } from "lucide-react";
+import { Car, Eye, ShoppingCart, Edit, Trash2, Gauge, Settings, Palette, Award, Tag, Package } from "lucide-react";
 import { Car as CarType } from "../../services/carApi";
 import { Stock } from "../../services/stockApi";
 import { CurrencyBDTIcon } from "../icons/CurrencyBDTIcon";
@@ -59,10 +59,14 @@ const CarTable: React.FC<CarTableProps> = ({
                 <span>Color</span>
               </div>
               <div className="col-span-1 flex items-center gap-2">
+                <Package className="w-4 h-4" />
+                <span>Package</span>
+              </div>
+              <div className="col-span-1 flex items-center gap-2">
                 <Award className="w-4 h-4" />
                 <span>AA Score</span>
               </div>
-              <div className="col-span-3 flex items-center gap-2">
+              <div className="col-span-2 flex items-center gap-2">
                 <Tag className="w-4 h-4" />
                 <span>Key Features</span>
               </div>
@@ -196,6 +200,15 @@ const CarTable: React.FC<CarTableProps> = ({
                     </div>
                   </div>
 
+                  {/* Package - Enhanced */}
+                  <div className="col-span-1 flex items-center">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold text-gray-900">
+                        {car.package || "N/A"}
+                      </span>
+                    </div>
+                  </div>
+
                   {/* AA Score - Enhanced */}
                   <div className="col-span-1 flex items-center justify-center">
                     <div className="flex flex-col items-center gap-1">
@@ -229,7 +242,7 @@ const CarTable: React.FC<CarTableProps> = ({
                   </div>
 
                   {/* Key Features - Enhanced */}
-                  <div className="col-span-3 flex items-center">
+                  <div className="col-span-2 flex items-center">
                     <div className="flex flex-wrap gap-1.5 max-w-full">
                       {(car.keys_feature
                         ?.split(",")
