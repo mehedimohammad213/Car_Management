@@ -202,8 +202,8 @@ const CarTable: React.FC<CarTableProps> = ({
                   </div>
 
                   {/* Grade - Enhanced */}
-                  <div className="col-span-1 flex items-center justify-center">
-                    <div className="flex flex-col items-center gap-1">
+                  <div className="col-span-1 flex items-center">
+                    <div className="flex flex-col items-start gap-1">
                       {car.grade_overall && (
                         <span
                           className={`inline-flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold shadow-md ${getGradeColor(
