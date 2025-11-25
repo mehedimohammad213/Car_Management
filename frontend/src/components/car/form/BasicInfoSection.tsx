@@ -361,20 +361,20 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
   isViewMode,
   onInputChange,
 }) => {
-  // Common body types
+  // Common body types - sorted alphabetically
   const bodyTypes = [
-    "Sedan",
-    "SUV",
-    "Hatchback",
-    "Coupe",
     "Convertible",
-    "Wagon",
-    "Pickup Truck",
-    "Van",
-    "Minivan",
+    "Coupe",
     "Crossover",
-    "Sports Car",
+    "Hatchback",
     "Luxury",
+    "Minivan",
+    "Pickup Truck",
+    "Sedan",
+    "Sports Car",
+    "SUV",
+    "Van",
+    "Wagon",
   ];
 
   // Common car makes - use static data only

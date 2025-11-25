@@ -133,6 +133,12 @@ const UserCarCatalog: React.FC = () => {
             return sortDirection === "asc" ? priceA - priceB : priceB - priceA;
           });
         }
+        // Sort by model alphabetically
+        processedCars.sort((a, b) => {
+          const modelA = (a.model || "").toLowerCase();
+          const modelB = (b.model || "").toLowerCase();
+          return modelA.localeCompare(modelB);
+        });
         setCars(processedCars);
         setTotalPages(response.data.last_page || 1);
         setTotalItems(response.data.total || 0);
