@@ -44,7 +44,7 @@ class CarsImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnErro
             'fuel' => $row['fuel'] ?? null,
             'color' => $row['color'] ?? null,
             'seats' => $this->parseInteger($row['seats'] ?? null),
-            'grade_overall' => $this->parseDecimal($row['grade_overall'] ?? null),
+            'grade_overall' => $row['grade_overall'] ?? null,
             'grade_exterior' => $row['grade_exterior'] ?? null,
             'grade_interior' => $row['grade_interior'] ?? null,
             'price_amount' => $this->parseDecimal($row['price_amount'] ?? null),
@@ -111,7 +111,7 @@ class CarsImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnErro
         if (is_numeric($value)) {
             return (int) $value;
         }
-        
+
         // Try to extract year from string (e.g., "2020", "2020-01", etc.)
         if (is_string($value)) {
             $year = (int) substr($value, 0, 4);
@@ -119,7 +119,7 @@ class CarsImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnErro
                 return $year;
             }
         }
-        
+
         return date('Y'); // Default to current year
     }
 
@@ -131,13 +131,13 @@ class CarsImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnErro
         if (is_numeric($value)) {
             return (int) $value;
         }
-        
+
         if (is_string($value)) {
             // Remove non-numeric characters
             $cleanValue = preg_replace('/[^0-9]/', '', $value);
             return $cleanValue ? (int) $cleanValue : null;
         }
-        
+
         return null;
     }
 
@@ -149,13 +149,13 @@ class CarsImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnErro
         if (is_numeric($value)) {
             return (float) $value;
         }
-        
+
         if (is_string($value)) {
             // Remove non-numeric characters except decimal point
             $cleanValue = preg_replace('/[^0-9.]/', '', $value);
             return $cleanValue ? (float) $cleanValue : null;
         }
-        
+
         return null;
     }
 

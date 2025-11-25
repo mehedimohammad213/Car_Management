@@ -481,13 +481,6 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
     }
 
     if (
-      formData.grade_overall &&
-      (formData.grade_overall < 1 || formData.grade_overall > 10)
-    ) {
-      newErrors.grade_overall = "Overall grade must be between 1 and 10";
-    }
-
-    if (
       formData.price_amount &&
       (formData.price_amount < 0 || formData.price_amount > 999999999)
     ) {

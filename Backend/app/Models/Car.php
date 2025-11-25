@@ -58,7 +58,6 @@ class Car extends Model
         'engine_cc' => 'integer',
         'seats' => 'integer',
         'number_of_keys' => 'integer',
-        'grade_overall' => 'decimal:1',
         'price_amount' => 'decimal:2',
         'fob_value_usd' => 'decimal:2',
         'freight_usd' => 'decimal:2',
