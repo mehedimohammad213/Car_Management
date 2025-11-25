@@ -53,7 +53,7 @@ export interface Car {
   fuel?: string;
   color?: string;
   seats?: number;
-  grade_overall?: number;
+  grade_overall?: number | string;
   grade_exterior?: string;
   grade_interior?: string;
   price_amount?: number;
@@ -116,7 +116,7 @@ export interface CreateCarData {
   fuel?: string;
   color?: string;
   seats?: number;
-  grade_overall?: number;
+  grade_overall?: number | string;
   grade_exterior?: string;
   grade_interior?: string;
   price_amount?: number;

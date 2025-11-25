@@ -37,6 +37,7 @@ const makeToModels: Record<string, string[]> = {
     "Kluger",
     "Raize",
     "Urban Cruiser",
+    "Harrier",
     // Trucks and commercial vehicles
     "Hilux",
     "Hiace",
@@ -49,6 +50,7 @@ const makeToModels: Record<string, string[]> = {
     "Voxy",
     "Avanza",
     "Veloz",
+    "Vellfire",
     // Sports cars
     "GR86",
     "GR Yaris",

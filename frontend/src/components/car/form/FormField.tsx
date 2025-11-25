@@ -12,6 +12,7 @@ interface FormFieldProps {
   isViewMode?: boolean;
   onChange: (value: any) => void;
   inline?: boolean;
+  options?: string[];
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -26,6 +27,7 @@ const FormField: React.FC<FormFieldProps> = ({
   isViewMode = false,
   onChange,
   inline = false,
+  options,
 }) => {
   if (isViewMode) {
     return (
@@ -36,6 +38,32 @@ const FormField: React.FC<FormFieldProps> = ({
         <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900">
           {value || "Not specified"}
         </div>
+      </div>
+    );
+  }
+
+  // Render select dropdown if options are provided
+  if (options && options.length > 0) {
+    return (
+      <div className={inline ? "flex-1" : ""}>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
+        <select
+          value={value || ""}
+          onChange={(e) => onChange(e.target.value || undefined)}
+          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+            error ? "border-red-300" : "border-gray-200"
+          }`}
+        >
+          <option value="">Select {label}</option>
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
       </div>
     );
   }
