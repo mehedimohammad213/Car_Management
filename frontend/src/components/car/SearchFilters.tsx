@@ -154,7 +154,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
           {hasActiveFilters && (
             <button
               onClick={onClearFilters}
-              className="w-full lg:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors whitespace-nowrap"
+              className="w-10 h-10 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-sm"
+              title="Clear Filters"
             >
               <X className="w-5 h-5" />
             </button>
@@ -164,10 +165,11 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
           <button
             onClick={onGeneratePDF}
             disabled={isGeneratingPDF}
-            className={`w-full lg:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-colors font-medium ${isGeneratingPDF
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-green-600 text-white hover:bg-green-700"
+            className={`flex items-center justify-center transition-colors font-medium shadow-sm ${isGeneratingPDF
+                ? "w-auto px-4 py-2 rounded-full bg-gray-300 text-gray-500 cursor-not-allowed gap-2"
+                : "w-10 h-10 rounded-full bg-green-600 text-white hover:bg-green-700"
               }`}
+            title="Download PDF"
           >
             {isGeneratingPDF ? (
               <>
@@ -175,9 +177,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
                 <span>Generating...</span>
               </>
             ) : (
-              <>
-                <Download className="w-5 h-5" />
-              </>
+              <Download className="w-5 h-5" />
             )}
           </button>
 
