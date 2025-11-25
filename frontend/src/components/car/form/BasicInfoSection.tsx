@@ -399,6 +399,9 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
       modelsList.push(formData.model);
     }
 
+    // Sort models alphabetically
+    modelsList.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
     // Use mapped models or add "Other" option
     return modelsList.length > 0 ? modelsList : ["Other"];
   }, [formData.make, formData.model]);
