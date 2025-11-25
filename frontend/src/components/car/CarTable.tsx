@@ -85,33 +85,26 @@ const CarTable: React.FC<CarTableProps> = ({
                   className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-blue-500"
                 >
                   {/* Car Information - Enhanced */}
-                  <div className="col-span-3 flex items-start gap-3">
-                    <div className="flex flex-col gap-2 flex-shrink-0">
-                      <div className="relative w-28 h-24 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 rounded-xl overflow-hidden flex-shrink-0 shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-gray-200 group-hover:border-blue-300">
-                        {car.photos && car.photos.length > 0 ? (
-                          <img
-                            src={
-                              car.photos.find((p: any) => p.is_primary)?.url ||
-                              car.photos[0].url
-                            }
-                            alt={`${car.make} ${car.model}`}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                            <Car className="w-10 h-10 text-gray-400" />
-                          </div>
-                        )}
-                        {stock && stock.quantity > 0 && (
-                          <div className="absolute top-1 right-1 bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-md">
-                            {stock.quantity}
-                          </div>
-                        )}
-                      </div>
-                      {car.package && (
-                        <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-lg text-xs font-bold bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-md hover:shadow-lg transition-all duration-200 border border-purple-400/30 w-full">
-                          {car.package}
-                        </span>
+                  <div className="col-span-3 flex items-center gap-3">
+                    <div className="relative w-28 h-24 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 rounded-xl overflow-hidden flex-shrink-0 shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-gray-200 group-hover:border-blue-300">
+                      {car.photos && car.photos.length > 0 ? (
+                        <img
+                          src={
+                            car.photos.find((p: any) => p.is_primary)?.url ||
+                            car.photos[0].url
+                          }
+                          alt={`${car.make} ${car.model}`}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                          <Car className="w-10 h-10 text-gray-400" />
+                        </div>
+                      )}
+                      {stock && stock.quantity > 0 && (
+                        <div className="absolute top-1 right-1 bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-md">
+                          {stock.quantity}
+                        </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -141,6 +134,11 @@ const CarTable: React.FC<CarTableProps> = ({
                         >
                           {car.status?.charAt(0).toUpperCase() + car.status?.slice(1)}
                         </span>
+                        {car.package && (
+                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-md hover:shadow-lg transition-all duration-200 border border-purple-400/30">
+                            {car.package}
+                          </span>
+                        )}
                         {stock && (
                           <span
                             className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold ${
