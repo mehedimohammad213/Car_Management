@@ -60,7 +60,7 @@ const CarTable: React.FC<CarTableProps> = ({
               </div>
               <div className="col-span-1 flex items-center gap-2">
                 <Award className="w-4 h-4" />
-                <span>AA Score</span>
+                <span>Grade</span>
               </div>
               <div className="col-span-3 flex items-center gap-2">
                 <Tag className="w-4 h-4" />
@@ -201,7 +201,7 @@ const CarTable: React.FC<CarTableProps> = ({
                     </div>
                   </div>
 
-                  {/* AA Score - Enhanced */}
+                  {/* Grade - Enhanced */}
                   <div className="col-span-1 flex items-center justify-center">
                     <div className="flex flex-col items-center gap-1">
                       {car.grade_overall && (
