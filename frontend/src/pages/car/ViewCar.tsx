@@ -478,7 +478,7 @@ const ViewCar: React.FC = () => {
                         <Star
                           key={i}
                           className={`w-4 h-4 ${
-                            i < Math.floor(car.grade_overall || 0)
+                            i < Math.floor(Number(car.grade_overall) || 0)
                               ? "text-yellow-400 fill-current"
                               : "text-gray-300"
                           }`}
