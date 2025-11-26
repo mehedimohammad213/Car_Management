@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   Car,
   ChevronLeft,
@@ -20,6 +20,7 @@ import {
 const CarViewPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const [car, setCar] = useState<CarType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -168,7 +169,7 @@ const CarViewPage: React.FC = () => {
             Car not found
           </h2>
           <button
-            onClick={() => navigate("/cars")}
+            onClick={() => navigate(`/cars?${searchParams.toString()}`)}
             className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
           >
             Back to Catalog
@@ -275,7 +276,7 @@ const CarViewPage: React.FC = () => {
         {/* Header */}
         <div className="mb-4 sm:mb-6">
           <button
-            onClick={() => navigate("/cars")}
+            onClick={() => navigate(`/cars?${searchParams.toString()}`)}
             className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-3 sm:mb-4 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />

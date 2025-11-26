@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { Car, X, Plus, Edit, Trash2 } from "lucide-react";
@@ -27,6 +27,8 @@ import {
 const UserCarCatalog: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [cars, setCars] = useState<CarType[]>([]);
   const [categories, setCategories] = useState<
     Array<{ id: number; name: string }>
@@ -35,18 +37,23 @@ const UserCarCatalog: React.FC = () => {
     null
   );
   const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [makeFilter, setMakeFilter] = useState("");
-  const [yearFilter, setYearFilter] = useState("");
-  const [transmissionFilter, setTransmissionFilter] = useState("");
-  const [fuelFilter, setFuelFilter] = useState("");
-  const [colorFilter, setColorFilter] = useState("");
-  const [priceRange, setPriceRange] = useState({ min: "", max: "" });
-  const [sortBy, setSortBy] = useState("price_amount");
-  const [sortDirection, setSortDirection] = useState("desc");
-  const [currentPage, setCurrentPage] = useState(1);
+
+  // Initialize state from URL parameters
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
+  const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "");
+  const [categoryFilter, setCategoryFilter] = useState(searchParams.get("category") || "");
+  const [makeFilter, setMakeFilter] = useState(searchParams.get("make") || "");
+  const [yearFilter, setYearFilter] = useState(searchParams.get("year") || "");
+  const [transmissionFilter, setTransmissionFilter] = useState(searchParams.get("transmission") || "");
+  const [fuelFilter, setFuelFilter] = useState(searchParams.get("fuel") || "");
+  const [colorFilter, setColorFilter] = useState(searchParams.get("color") || "");
+  const [priceRange, setPriceRange] = useState({
+    min: searchParams.get("priceMin") || "",
+    max: searchParams.get("priceMax") || ""
+  });
+  const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "price_amount");
+  const [sortDirection, setSortDirection] = useState(searchParams.get("sortDirection") || "desc");
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get("page") || "1"));
   const [perPage] = useState(12);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -62,6 +69,41 @@ const UserCarCatalog: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { addToCart, isCarLoading } = useCart();
+
+  // Update URL parameters when state changes
+  useEffect(() => {
+    const params: any = {};
+
+    if (searchTerm) params.search = searchTerm;
+    if (statusFilter) params.status = statusFilter;
+    if (categoryFilter) params.category = categoryFilter;
+    if (makeFilter) params.make = makeFilter;
+    if (yearFilter) params.year = yearFilter;
+    if (transmissionFilter) params.transmission = transmissionFilter;
+    if (fuelFilter) params.fuel = fuelFilter;
+    if (colorFilter) params.color = colorFilter;
+    if (priceRange.min) params.priceMin = priceRange.min;
+    if (priceRange.max) params.priceMax = priceRange.max;
+    if (sortBy !== "price_amount") params.sortBy = sortBy;
+    if (sortDirection !== "desc") params.sortDirection = sortDirection;
+    if (currentPage !== 1) params.page = currentPage.toString();
+
+    setSearchParams(params, { replace: true });
+  }, [
+    searchTerm,
+    statusFilter,
+    categoryFilter,
+    makeFilter,
+    yearFilter,
+    transmissionFilter,
+    fuelFilter,
+    colorFilter,
+    priceRange,
+    sortBy,
+    sortDirection,
+    currentPage,
+    setSearchParams,
+  ]);
 
   useEffect(() => {
     console.log("UserCarCatalog: Component mounted, fetching data...");
@@ -215,12 +257,14 @@ const UserCarCatalog: React.FC = () => {
   };
 
   const handleViewCar = (car: CarType) => {
-    navigate(`/car-view/${car.id}`);
+    // Preserve current URL params when navigating
+    navigate(`/car-view/${car.id}?${searchParams.toString()}`);
   };
 
   // Admin view handler - redirect to view page
   const handleViewCarAdmin = (car: CarType) => {
-    navigate(`/view-car/${car.id}`);
+    // Preserve current URL params when navigating
+    navigate(`/view-car/${car.id}?${searchParams.toString()}`);
   };
 
   const handleAddToCart = (car: CarType) => {

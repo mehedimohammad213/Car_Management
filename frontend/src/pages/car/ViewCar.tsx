@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowLeftIcon,
   EditIcon,
@@ -30,6 +30,7 @@ import { categoryApi, Category } from "../../services/categoryApi";
 const ViewCar: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const [car, setCar] = useState<Car | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -129,7 +130,7 @@ const ViewCar: React.FC = () => {
     setIsDeleting(true);
     try {
       await carApi.deleteCar(car.id);
-      navigate("/admin/cars", {
+      navigate(`/cars?${searchParams.toString()}`, {
         state: { message: "Car deleted successfully!" },
       });
     } catch (error) {
@@ -212,7 +213,7 @@ const ViewCar: React.FC = () => {
             Car not found
           </h2>
           <button
-            onClick={() => navigate("/admin/cars")}
+            onClick={() => navigate(`/cars?${searchParams.toString()}`)}
             className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
           >
             Back to Car Management
@@ -230,7 +231,7 @@ const ViewCar: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => navigate("/admin/cars")}
+                onClick={() => navigate(`/cars?${searchParams.toString()}`)}
                 className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors border border-gray-200 dark:border-gray-700 shadow-sm"
               >
                 <ArrowLeftIcon className="w-4 h-4" />
