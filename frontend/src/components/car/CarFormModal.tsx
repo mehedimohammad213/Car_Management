@@ -156,25 +156,25 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
             title: sd.title,
             description: sd.description,
           })) || [
-            {
-              title: "",
-              description: "",
-            },
-          ],
-        })) || [
-          {
-            short_title: "",
-            full_title: "",
-            description: "",
-            images: [],
-            sub_details: [
               {
                 title: "",
                 description: "",
               },
             ],
-          },
-        ],
+        })) || [
+            {
+              short_title: "",
+              full_title: "",
+              description: "",
+              images: [],
+              sub_details: [
+                {
+                  title: "",
+                  description: "",
+                },
+              ],
+            },
+          ],
       });
     }
   }, [car]);
@@ -239,12 +239,12 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
         prev.details?.map((detail, index) =>
           index === detailIndex
             ? {
-                ...detail,
-                images:
-                  detail.images?.map((image, i) =>
-                    i === imageIndex ? value : image
-                  ) || [],
-              }
+              ...detail,
+              images:
+                detail.images?.map((image, i) =>
+                  i === imageIndex ? value : image
+                ) || [],
+            }
             : detail
         ) || [],
     }));
@@ -257,9 +257,9 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
         prev.details?.map((detail, index) =>
           index === detailIndex
             ? {
-                ...detail,
-                images: [...(detail.images || []), ""],
-              }
+              ...detail,
+              images: [...(detail.images || []), ""],
+            }
             : detail
         ) || [],
     }));
@@ -272,9 +272,9 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
         prev.details?.map((detail, index) =>
           index === detailIndex
             ? {
-                ...detail,
-                images: detail.images?.filter((_, i) => i !== imageIndex) || [],
-              }
+              ...detail,
+              images: detail.images?.filter((_, i) => i !== imageIndex) || [],
+            }
             : detail
         ) || [],
     }));
@@ -328,15 +328,15 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
       details: (prev.details || []).map((detail, index) =>
         index === detailIndex
           ? {
-              ...detail,
-              sub_details: [
-                ...(detail.sub_details || []),
-                {
-                  title: "",
-                  description: "",
-                },
-              ],
-            }
+            ...detail,
+            sub_details: [
+              ...(detail.sub_details || []),
+              {
+                title: "",
+                description: "",
+              },
+            ],
+          }
           : detail
       ),
     }));
@@ -348,11 +348,11 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
       details: (prev.details || []).map((detail, index) =>
         index === detailIndex
           ? {
-              ...detail,
-              sub_details:
-                detail.sub_details?.filter((_, i) => i !== subDetailIndex) ||
-                [],
-            }
+            ...detail,
+            sub_details:
+              detail.sub_details?.filter((_, i) => i !== subDetailIndex) ||
+              [],
+          }
           : detail
       ),
     }));
@@ -369,14 +369,14 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
       details: (prev.details || []).map((detail, index) =>
         index === detailIndex
           ? {
-              ...detail,
-              sub_details: (detail.sub_details || []).map(
-                (subDetail, subIndex) =>
-                  subIndex === subDetailIndex
-                    ? { ...subDetail, [field]: value }
-                    : subDetail
-              ),
-            }
+            ...detail,
+            sub_details: (detail.sub_details || []).map(
+              (subDetail, subIndex) =>
+                subIndex === subDetailIndex
+                  ? { ...subDetail, [field]: value }
+                  : subDetail
+            ),
+          }
           : detail
       ),
     }));
@@ -511,12 +511,15 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
 
         // Add all form fields except the file
         Object.keys(formData).forEach(key => {
-          if (key !== 'attached_file' && formData[key as keyof CreateCarData] !== undefined) {
+          if (key !== 'attached_file') {
             const value = formData[key as keyof CreateCarData];
-            if (key === 'photos' || key === 'details') {
-              submitData.append(key, JSON.stringify(value));
-            } else {
-              submitData.append(key, String(value));
+            if (value !== undefined) {
+              if (key === 'photos' || key === 'details') {
+                submitData.append(key, JSON.stringify(value));
+              } else {
+                // Convert null to empty string for FormData
+                submitData.append(key, value === null ? '' : String(value));
+              }
             }
           }
         });
@@ -566,15 +569,15 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
                 {isEditMode
                   ? "Edit Vehicle"
                   : isViewMode
-                  ? "View Vehicle Details"
-                  : "Create New Vehicle"}
+                    ? "View Vehicle Details"
+                    : "Create New Vehicle"}
               </h2>
               <p className="text-gray-300 text-lg">
                 {isEditMode
                   ? "Update vehicle information and specifications"
                   : isViewMode
-                  ? "Review comprehensive vehicle details"
-                  : "Add a new vehicle to your inventory management system"}
+                    ? "Review comprehensive vehicle details"
+                    : "Add a new vehicle to your inventory management system"}
               </p>
             </div>
             <button
@@ -720,8 +723,8 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
                   {isSubmitting
                     ? "Saving..."
                     : isEditMode
-                    ? "Update Vehicle"
-                    : "Create Vehicle"}
+                      ? "Update Vehicle"
+                      : "Create Vehicle"}
                 </button>
               </div>
             </div>
