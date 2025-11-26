@@ -253,22 +253,6 @@ class CarController extends Controller
                 'package', 'body', 'type', 'engine_number', 'number_of_keys', 'keys_feature', 'notes'
             ])->toArray();
 
-            // Convert empty strings to NULL for nullable fields
-            $nullableFields = [
-                'subcategory_id', 'ref_no', 'code', 'model_code', 'variant', 'reg_year_month',
-                'mileage_km', 'engine_cc', 'transmission', 'drive', 'steering', 'fuel', 'color',
-                'seats', 'grade_overall', 'grade_exterior', 'grade_interior', 'price_amount',
-                'price_currency', 'price_basis', 'fob_value_usd', 'freight_usd',
-                'chassis_no_masked', 'chassis_no_full', 'location', 'country_origin',
-                'package', 'body', 'type', 'engine_number', 'number_of_keys', 'keys_feature', 'notes'
-            ];
-
-            foreach ($nullableFields as $field) {
-                if (array_key_exists($field, $carData) && $carData[$field] === '') {
-                    $carData[$field] = null;
-                }
-            }
-
             // Add attached file URL if uploaded
             if ($attachedFileUrl) {
                 $carData['attached_file'] = $attachedFileUrl;
@@ -659,22 +643,6 @@ class CarController extends Controller
                 'chassis_no_masked', 'chassis_no_full', 'location', 'country_origin', 'status',
                 'package', 'body', 'type', 'engine_number', 'number_of_keys', 'keys_feature', 'notes'
             ])->toArray();
-
-            // Convert empty strings to NULL for nullable fields
-            $nullableFields = [
-                'subcategory_id', 'ref_no', 'code', 'model_code', 'variant', 'reg_year_month',
-                'mileage_km', 'engine_cc', 'transmission', 'drive', 'steering', 'fuel', 'color',
-                'seats', 'grade_overall', 'grade_exterior', 'grade_interior', 'price_amount',
-                'price_currency', 'price_basis', 'fob_value_usd', 'freight_usd',
-                'chassis_no_masked', 'chassis_no_full', 'location', 'country_origin',
-                'package', 'body', 'type', 'engine_number', 'number_of_keys', 'keys_feature', 'notes'
-            ];
-
-            foreach ($nullableFields as $field) {
-                if (array_key_exists($field, $carData) && $carData[$field] === '') {
-                    $carData[$field] = null;
-                }
-            }
 
             // Add attached file URL if uploaded
             if ($attachedFileUrl) {
