@@ -255,7 +255,7 @@ const ViewCar: React.FC = () => {
                 {car.status.replace("_", " ").toUpperCase()}
               </span>
               <button
-                onClick={() => navigate(`/update-car/${car.id}`)}
+                onClick={() => navigate(`/update-car/${car.id}?${searchParams.toString()}`)}
                 className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
               >
                 <EditIcon className="w-4 h-4 mr-2" />

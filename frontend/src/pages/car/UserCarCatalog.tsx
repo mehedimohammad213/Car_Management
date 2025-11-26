@@ -277,7 +277,8 @@ const UserCarCatalog: React.FC = () => {
   };
 
   const handleEditCar = (car: CarType) => {
-    navigate(`/update-car/${car.id}`);
+    // Preserve current URL params when navigating
+    navigate(`/update-car/${car.id}?${searchParams.toString()}`);
   };
 
   const handleDeleteCar = (car: CarType) => {
