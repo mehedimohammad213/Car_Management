@@ -21,6 +21,8 @@ const makeToModels: Record<string, string[]> = {
     "Corolla",
     "Camry",
     "Corolla Altis",
+    "Axio",
+    "Premio",
     "Yaris",
     "Crown",
     "Century",
@@ -47,6 +49,7 @@ const makeToModels: Record<string, string[]> = {
     // Minivans and MPVs
     "Alphard",
     "Prius Alpha",
+    "Noah",
     "Voxy",
     "Avanza",
     "Veloz",
