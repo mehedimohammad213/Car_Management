@@ -414,8 +414,8 @@ const UserCarCatalog: React.FC = () => {
         "Price",
       ];
 
-      // Store image URLs for linking
-      const imageUrls: string[] = [];
+      // Store all image URLs for each car (array of arrays)
+      const allImageUrls: string[][] = [];
 
       const tableData = availableCars.map((car) => {
         try {
@@ -435,16 +435,22 @@ const UserCarCatalog: React.FC = () => {
           const chassis =
             car.chassis_no_full || car.chassis_no_masked || "N/A";
 
-          // Get primary photo or first photo
-          const primaryPhoto = car.photos?.find((p) => p.is_primary) || car.photos?.[0];
-          const imageUrl = primaryPhoto?.url || "";
-          imageUrls.push(imageUrl);
+          // Get all photos
+          const photos = car.photos || [];
+          const imageUrls = photos.map((p) => p.url).filter((url) => url);
+          allImageUrls.push(imageUrls);
+
+          // Create image links text as a horizontal list
+          let imageLinksText = "N/A";
+          if (imageUrls.length > 0) {
+            imageLinksText = imageUrls.map((_, index) => `${index + 1}`).join(", ");
+          }
 
           return [
             `${car.year || "N/A"} ${car.make || "N/A"} ${car.model || "N/A"}${car.variant ? ` - ${car.variant}` : ""
             }\nRef: ${reference}${chassis && chassis !== "N/A" ? ` | Chassis: ${chassis}` : ""
             }`,
-            imageUrl ? "View Image" : "N/A",
+            imageLinksText,
             car.mileage_km ? `${car.mileage_km.toLocaleString()} km` : "N/A",
             car.engine_cc ? `${car.engine_cc.toLocaleString()} cc` : "N/A",
             car.color || "N/A",
@@ -456,7 +462,7 @@ const UserCarCatalog: React.FC = () => {
           ];
         } catch (error) {
           console.error("Error processing car data:", error, car);
-          imageUrls.push("");
+          allImageUrls.push([]);
           return [
             "Error",
             "N/A",
@@ -490,7 +496,7 @@ const UserCarCatalog: React.FC = () => {
           },
           columnStyles: {
             0: { cellWidth: 40 },
-            1: { cellWidth: 25 },
+            1: { cellWidth: 30, cellPadding: { top: 2, bottom: 2, left: 3, right: 3 } },
             2: { cellWidth: 18 },
             3: { cellWidth: 18 },
             4: { cellWidth: 15 },
@@ -500,28 +506,48 @@ const UserCarCatalog: React.FC = () => {
           },
           didParseCell: function (data: any) {
             // Add clickable links to Image column (column index 1)
-            if (data.column.index === 1 && data.cell.text && data.cell.text[0] === "View Image") {
+            if (data.column.index === 1 && data.cell.text && data.cell.text[0] !== "N/A") {
               const rowIndex = data.row.index;
-              if (rowIndex >= 0 && rowIndex < imageUrls.length && imageUrls[rowIndex]) {
-                // Store link data for later use in didDrawCell
-                data.cell.link = imageUrls[rowIndex];
-                // Style as link (blue color)
-                data.cell.styles.textColor = [0, 0, 255];
+              if (rowIndex >= 0 && rowIndex < allImageUrls.length) {
+                const carImageUrls = allImageUrls[rowIndex];
+                if (carImageUrls && carImageUrls.length > 0) {
+                  // Store all image URLs for this car
+                  data.cell.imageUrls = carImageUrls;
+                  // Style as link (blue color)
+                  data.cell.styles.textColor = [0, 0, 255];
+                  // Enable word wrap for multiple lines
+                  data.cell.styles.cellPadding = { top: 2, bottom: 2, left: 3, right: 3 };
+                }
               }
             }
           },
           didDrawCell: function (data: any) {
-            // Add clickable link to Image column
-            if (data.column.index === 1 && data.cell.link) {
-              // Calculate cell position
+            // Add clickable links to Image column
+            if (data.column.index === 1 && data.cell.imageUrls && data.cell.imageUrls.length > 0) {
               const cellX = data.cell.x;
               const cellY = data.cell.y;
               const cellWidth = data.cell.width;
               const cellHeight = data.cell.height;
 
-              // Add link annotation
-              doc.link(cellX, cellY, cellWidth, cellHeight, {
-                url: data.cell.link,
+              // Calculate approximate width per number (including comma and space)
+              // Font size 8, approximate width: "1, " = ~8-10 points
+              const numberWidth = 10;
+              const lineHeight = 10;
+
+              // Calculate how many numbers fit per line
+              const numbersPerLine = Math.floor(cellWidth / numberWidth);
+
+              // Add link annotation for each image (horizontal with wrapping)
+              data.cell.imageUrls.forEach((imageUrl: string, index: number) => {
+                const lineNumber = Math.floor(index / numbersPerLine);
+                const positionInLine = index % numbersPerLine;
+
+                const linkX = cellX + (positionInLine * numberWidth);
+                const linkY = cellY + (lineNumber * lineHeight);
+
+                doc.link(linkX, linkY, numberWidth, lineHeight, {
+                  url: imageUrl,
+                });
               });
             }
           },
