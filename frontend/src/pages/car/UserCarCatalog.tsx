@@ -513,8 +513,6 @@ const UserCarCatalog: React.FC = () => {
                 if (carImageUrls && carImageUrls.length > 0) {
                   // Store all image URLs for this car
                   data.cell.imageUrls = carImageUrls;
-                  // Style as link (blue color)
-                  data.cell.styles.textColor = [0, 0, 255];
                   // Enable word wrap for multiple lines
                   data.cell.styles.cellPadding = { top: 2, bottom: 2, left: 3, right: 3 };
                 }
