@@ -305,26 +305,91 @@ const UserCarCatalog: React.FC = () => {
   };
 
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
     if (isGeneratingPDF) return;
 
     try {
       setIsGeneratingPDF(true);
-      console.log("Generating PDF...", { carsCount: cars.length });
+      console.log("Generating PDF... Fetching all cars...");
 
-      if (cars.length === 0) {
-        alert("No cars to export. Please load some cars first.");
+      // Fetch all available cars with current filters (no pagination)
+      const response = await carApi.getCars({
+        search: searchTerm || undefined,
+        status: "available", // Only available cars
+        category_id: categoryFilter || undefined,
+        make: makeFilter || undefined,
+        year: yearFilter || undefined,
+        transmission: transmissionFilter || undefined,
+        fuel: fuelFilter || undefined,
+        color: colorFilter || undefined,
+        price_from: priceRange.min || undefined,
+        price_to: priceRange.max || undefined,
+        sort_by: sortBy,
+        sort_direction: sortDirection,
+        per_page: 10000, // Large number to get all cars
+        page: 1,
+      });
+
+      let allCars: CarType[] = [];
+
+      if (response.success && response.data.data) {
+        allCars = response.data.data;
+
+        // If there are more pages, fetch them all
+        const totalPages = response.data.last_page || 1;
+        if (totalPages > 1) {
+          console.log(`Fetching ${totalPages - 1} additional pages...`);
+          const additionalPages = [];
+          for (let page = 2; page <= totalPages; page++) {
+            additionalPages.push(
+              carApi.getCars({
+                search: searchTerm || undefined,
+                status: "available",
+                category_id: categoryFilter || undefined,
+                make: makeFilter || undefined,
+                year: yearFilter || undefined,
+                transmission: transmissionFilter || undefined,
+                fuel: fuelFilter || undefined,
+                color: colorFilter || undefined,
+                price_from: priceRange.min || undefined,
+                price_to: priceRange.max || undefined,
+                sort_by: sortBy,
+                sort_direction: sortDirection,
+                per_page: 10000,
+                page: page,
+              })
+            );
+          }
+          const additionalResponses = await Promise.all(additionalPages);
+          additionalResponses.forEach((resp) => {
+            if (resp.success && resp.data.data) {
+              allCars = [...allCars, ...resp.data.data];
+            }
+          });
+        }
+
+        // Sort by model alphabetically
+        allCars.sort((a, b) => {
+          const modelA = (a.model || "").toLowerCase();
+          const modelB = (b.model || "").toLowerCase();
+          return modelA.localeCompare(modelB);
+        });
+      } else {
+        console.error("Failed to fetch cars for PDF:", response);
+        alert("Failed to fetch car data. Please try again.");
+        setIsGeneratingPDF(false);
         return;
       }
 
-      const availableCars = cars.filter(
-        (car) => car.status?.toLowerCase() === "available"
-      );
-
-      if (availableCars.length === 0) {
+      if (allCars.length === 0) {
         alert("No available cars to export. Please ensure some cars are marked as available.");
+        setIsGeneratingPDF(false);
         return;
       }
+
+      console.log(`Generating PDF with ${allCars.length} cars`);
+
+      const availableCars = allCars;
 
       const doc = new jsPDF();
 
@@ -332,13 +397,15 @@ const UserCarCatalog: React.FC = () => {
       doc.setFontSize(20);
       doc.text("Car Catalog Report", 14, 22);
 
-      // Add date
+      // Add date and total count
       doc.setFontSize(10);
       doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+      doc.text(`Total Cars: ${availableCars.length}`, 14, 36);
 
       // Prepare table data
       const tableColumns = [
         "Car Info",
+        "Image",
         "Mileage",
         "Engine",
         "Color",
@@ -346,6 +413,9 @@ const UserCarCatalog: React.FC = () => {
         "Key Features",
         "Price",
       ];
+
+      // Store image URLs for linking
+      const imageUrls: string[] = [];
 
       const tableData = availableCars.map((car) => {
         try {
@@ -365,10 +435,16 @@ const UserCarCatalog: React.FC = () => {
           const chassis =
             car.chassis_no_full || car.chassis_no_masked || "N/A";
 
+          // Get primary photo or first photo
+          const primaryPhoto = car.photos?.find((p) => p.is_primary) || car.photos?.[0];
+          const imageUrl = primaryPhoto?.url || "";
+          imageUrls.push(imageUrl);
+
           return [
             `${car.year || "N/A"} ${car.make || "N/A"} ${car.model || "N/A"}${car.variant ? ` - ${car.variant}` : ""
             }\nRef: ${reference}${chassis && chassis !== "N/A" ? ` | Chassis: ${chassis}` : ""
             }`,
+            imageUrl ? "View Image" : "N/A",
             car.mileage_km ? `${car.mileage_km.toLocaleString()} km` : "N/A",
             car.engine_cc ? `${car.engine_cc.toLocaleString()} cc` : "N/A",
             car.color || "N/A",
@@ -380,9 +456,10 @@ const UserCarCatalog: React.FC = () => {
           ];
         } catch (error) {
           console.error("Error processing car data:", error, car);
+          imageUrls.push("");
           return [
             "Error",
-            "Error",
+            "N/A",
             "Error",
             "Error",
             "Error",
@@ -398,7 +475,7 @@ const UserCarCatalog: React.FC = () => {
         autoTable(doc, {
           head: [tableColumns],
           body: tableData,
-          startY: 40,
+          startY: 45,
           styles: {
             fontSize: 8,
             cellPadding: 3,
@@ -412,13 +489,41 @@ const UserCarCatalog: React.FC = () => {
             fillColor: [245, 245, 245],
           },
           columnStyles: {
-            0: { cellWidth: 45 },
-            1: { cellWidth: 20 },
-            2: { cellWidth: 20 },
-            3: { cellWidth: 15 },
-            4: { cellWidth: 20 },
-            5: { cellWidth: 25 },
+            0: { cellWidth: 40 },
+            1: { cellWidth: 25 },
+            2: { cellWidth: 18 },
+            3: { cellWidth: 18 },
+            4: { cellWidth: 15 },
+            5: { cellWidth: 18 },
             6: { cellWidth: 25 },
+            7: { cellWidth: 25 },
+          },
+          didParseCell: function (data: any) {
+            // Add clickable links to Image column (column index 1)
+            if (data.column.index === 1 && data.cell.text && data.cell.text[0] === "View Image") {
+              const rowIndex = data.row.index;
+              if (rowIndex >= 0 && rowIndex < imageUrls.length && imageUrls[rowIndex]) {
+                // Store link data for later use in didDrawCell
+                data.cell.link = imageUrls[rowIndex];
+                // Style as link (blue color)
+                data.cell.styles.textColor = [0, 0, 255];
+              }
+            }
+          },
+          didDrawCell: function (data: any) {
+            // Add clickable link to Image column
+            if (data.column.index === 1 && data.cell.link) {
+              // Calculate cell position
+              const cellX = data.cell.x;
+              const cellY = data.cell.y;
+              const cellWidth = data.cell.width;
+              const cellHeight = data.cell.height;
+
+              // Add link annotation
+              doc.link(cellX, cellY, cellWidth, cellHeight, {
+                url: data.cell.link,
+              });
+            }
           },
           didDrawPage: function (data: any) {
             // Add page numbers
