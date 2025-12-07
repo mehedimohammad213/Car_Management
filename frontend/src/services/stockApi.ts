@@ -45,6 +45,7 @@ export interface Stock {
     location?: string;
     country_origin?: string;
     status: string;
+    package?: string;
     notes?: string;
     created_at: string;
     updated_at: string;

@@ -20,6 +20,7 @@ interface AvailableCar {
   make: string;
   model: string;
   year: number;
+  package?: string;
   ref_no?: string;
   category?: {
     id: number;
@@ -29,6 +30,15 @@ interface AvailableCar {
     id: number;
     name: string;
   };
+}
+
+interface CarGroup {
+  key: string; // make_model_package combination
+  make: string;
+  model: string;
+  package?: string;
+  carIds: number[]; // All car IDs with this combination
+  representativeCar: AvailableCar; // First car for display
 }
 
 const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
@@ -48,7 +58,9 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [availableCars, setAvailableCars] = useState<AvailableCar[]>([]);
+  const [carGroups, setCarGroups] = useState<CarGroup[]>([]);
   const [isLoadingCars, setIsLoadingCars] = useState(false);
+  const [selectedCarGroup, setSelectedCarGroup] = useState<string>("");
 
   useEffect(() => {
     fetchAvailableCars();
@@ -69,8 +81,15 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
         status: stock.status,
         notes: stock.notes || "",
       });
+
+      // Set selected car group for edit mode
+      if (stock.car) {
+        const packageName = (stock.car as any).package || "";
+        const key = `${stock.car.make}_${stock.car.model}_${packageName}`.toLowerCase();
+        setSelectedCarGroup(key);
+      }
     }
-  }, [stock]);
+  }, [stock, carGroups]);
 
   const fetchAvailableCars = async () => {
     try {
@@ -78,6 +97,30 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
       const response = await stockApi.getAvailableCars();
       if (response.success && response.data) {
         setAvailableCars(response.data);
+
+        // Group cars by make, model, and package
+        const grouped = new Map<string, CarGroup>();
+
+        response.data.forEach((car: AvailableCar) => {
+          const packageName = car.package || "";
+          const key = `${car.make}_${car.model}_${packageName}`.toLowerCase();
+
+          if (!grouped.has(key)) {
+            grouped.set(key, {
+              key,
+              make: car.make,
+              model: car.model,
+              package: car.package,
+              carIds: [car.id],
+              representativeCar: car,
+            });
+          } else {
+            const group = grouped.get(key)!;
+            group.carIds.push(car.id);
+          }
+        });
+
+        setCarGroups(Array.from(grouped.values()));
       }
     } catch (error) {
       console.error("Error fetching available cars:", error);
@@ -89,8 +132,8 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    // Only validate car_id for new stocks, not updates
-    if (!stock && formData.car_id === 0) {
+    // Only validate car selection for new stocks, not updates
+    if (!stock && !selectedCarGroup) {
       newErrors.car_id = "Car selection is required";
     }
 
@@ -110,17 +153,63 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
     e.preventDefault();
     if (validateForm()) {
       try {
-        // For updates, only send the fields that can be updated (exclude car_id)
-        const submitData = stock
-          ? {
+        if (stock) {
+          // For updates, find all cars with same make+model+package and update their stock
+          const car = stock.car;
+          if (car) {
+            const packageName = (car as any).package || "";
+            const key = `${car.make}_${car.model}_${packageName}`.toLowerCase();
+            const group = carGroups.find(g => g.key === key);
+
+            if (group) {
+              // Update stock for all cars with same make+model+package
+              const updateData = {
+                make: car.make,
+                model: car.model,
+                package: (car as any).package || "",
+                car_ids: group.carIds,
+                quantity: formData.quantity,
+                price: formData.price,
+                status: formData.status,
+                notes: formData.notes,
+              };
+              onSubmit(updateData as any);
+            } else {
+              // Fallback to single stock update
+              const submitData = {
+                quantity: formData.quantity,
+                price: formData.price,
+                status: formData.status,
+                notes: formData.notes,
+              };
+              onSubmit(submitData);
+            }
+          } else {
+            const submitData = {
               quantity: formData.quantity,
               price: formData.price,
               status: formData.status,
               notes: formData.notes,
-            }
-          : formData;
-
-        onSubmit(submitData);
+            };
+            onSubmit(submitData);
+          }
+        } else {
+          // For new stock, find selected group and create stock for all cars
+          const group = carGroups.find(g => g.key === selectedCarGroup);
+          if (group) {
+            const createData = {
+              make: group.make,
+              model: group.model,
+              package: group.package || "",
+              car_ids: group.carIds,
+              quantity: formData.quantity,
+              price: formData.price,
+              status: formData.status,
+              notes: formData.notes,
+            };
+            onSubmit(createData as any);
+          }
+        }
       } catch (error: any) {
         console.error("Form submission error:", error);
         if (onError) {
@@ -150,16 +239,10 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
     }
   };
 
-  const formatCarLabel = (car: AvailableCar) => {
-    const category = car.category?.name || "";
-    const subcategory = car.subcategory?.name || "";
-    const categoryInfo =
-      category && subcategory
-        ? ` (${category} > ${subcategory})`
-        : category
-        ? ` (${category})`
-        : "";
-    return `${car.make} ${car.model} ${car.year}${categoryInfo}`;
+  const formatCarLabel = (group: CarGroup) => {
+    const packageName = group.package ? ` - ${group.package}` : "";
+    const count = group.carIds.length > 1 ? ` (${group.carIds.length} cars)` : "";
+    return `${group.make} ${group.model}${packageName}${count}`;
   };
 
   return (
@@ -181,21 +264,19 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
             </div>
           ) : (
             <select
-              value={formData.car_id}
-              onChange={(e) =>
-                handleInputChange("car_id", parseInt(e.target.value))
-              }
+              value={selectedCarGroup}
+              onChange={(e) => setSelectedCarGroup(e.target.value)}
               disabled={isLoadingCars}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
                 errors.car_id ? "border-red-300" : "border-gray-300"
               } ${isLoadingCars ? "bg-gray-100 cursor-not-allowed" : ""}`}
             >
-              <option value={0}>
+              <option value="">
                 {isLoadingCars ? "Loading cars..." : "Select a car"}
               </option>
-              {availableCars.map((car) => (
-                <option key={car.id} value={car.id}>
-                  {formatCarLabel(car)}
+              {carGroups.map((group) => (
+                <option key={group.key} value={group.key}>
+                  {formatCarLabel(group)}
                 </option>
               ))}
             </select>
