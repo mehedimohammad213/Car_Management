@@ -1,7 +1,8 @@
 import React from "react";
-import { Package, Car, Hash, PackageCheck, Tag } from "lucide-react";
+import { Package, Car, Gauge, Settings, Palette, Award, Tag } from "lucide-react";
 import { Stock } from "../../services/stockApi";
 import StockTableRow from "./StockTableRow";
+import { CurrencyBDTIcon } from "../icons/CurrencyBDTIcon";
 
 interface StockTableProps {
   stocks: Stock[];
@@ -69,27 +70,39 @@ const StockTable: React.FC<StockTableProps> = ({
   return (
     <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
       <div className="overflow-x-auto">
-        <div className="min-w-[1000px]">
+        <div className="min-w-[1200px]">
           {/* Professional Table Header with Gradient */}
           <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 shadow-lg">
             <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
-              {/* <div className="col-span-1 flex items-center gap-2">
-                <Hash className="w-4 h-4" />
-                <span>Stock ID</span>
-              </div> */}
-              <div className="col-span-6 flex items-center gap-2">
+              <div className="col-span-3 flex items-center gap-2">
                 <Car className="w-4 h-4" />
-                <span>Car Details</span>
+                <span>Car Information</span>
               </div>
-              <div className="col-span-2 flex items-center gap-2">
-                <PackageCheck className="w-4 h-4" />
-                <span>Quantity</span>
+              <div className="col-span-1 flex items-center gap-2">
+                <Gauge className="w-4 h-4" />
+                <span>Mileage</span>
               </div>
-              <div className="col-span-2 flex items-center gap-2">
+              <div className="col-span-1 flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                <span>Engine</span>
+              </div>
+              <div className="col-span-1 flex items-center gap-2">
+                <Palette className="w-4 h-4" />
+                <span>Color</span>
+              </div>
+              <div className="col-span-1 flex items-center gap-2">
+                <Award className="w-4 h-4" />
+                <span>Grade</span>
+              </div>
+              <div className="col-span-3 flex items-center gap-2">
                 <Tag className="w-4 h-4" />
-                <span>Status</span>
+                <span>Key Features</span>
               </div>
-              <div className="col-span-2 text-center">Actions</div>
+              <div className="col-span-1 flex items-center gap-2">
+                <CurrencyBDTIcon className="w-4 h-4" />
+                <span>Price</span>
+              </div>
+              <div className="col-span-1 text-center">Actions</div>
             </div>
           </div>
 
