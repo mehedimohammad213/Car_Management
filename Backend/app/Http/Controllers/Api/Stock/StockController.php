@@ -62,13 +62,28 @@ class StockController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'car_id' => 'required|exists:cars,id',
+            // Check if using new format (make, model, package, car_ids) or old format (car_id)
+            $isBulkMode = $request->has('car_ids') && is_array($request->car_ids) && count($request->car_ids) > 0;
+
+            // Use unified validation that handles both modes
+            $rules = [
                 'quantity' => 'required|integer|min:0',
                 'price' => 'nullable|numeric|min:0',
                 'status' => 'required|in:available,sold,reserved,damaged,lost,stolen',
                 'notes' => 'nullable|string|max:1000',
-            ]);
+            ];
+
+            if ($isBulkMode) {
+                $rules['make'] = 'required|string';
+                $rules['model'] = 'required|string';
+                $rules['package'] = 'nullable|string';
+                $rules['car_ids'] = 'required|array|min:1';
+                $rules['car_ids.*'] = 'required|exists:cars,id';
+            } else {
+                $rules['car_id'] = 'required|exists:cars,id';
+            }
+
+            $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return response()->json([
@@ -78,34 +93,90 @@ class StockController extends Controller
                 ], 422);
             }
 
-            // Check if stock already exists for this car
-            $existingStock = Stock::where('car_id', $request->car_id)->first();
-            if ($existingStock) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Stock already exists for this car. Use update instead.',
-                ], 409);
-            }
-
             DB::beginTransaction();
 
-            $stock = Stock::create($request->all());
+            if ($isBulkMode) {
+                // Bulk mode: Create/update stock for all cars with same make+model+package
+                $carIds = $request->car_ids;
+                $createdStocks = [];
+                $updatedCount = 0;
 
-            // Update car status if stock is created
-            $car = Car::find($request->car_id);
-            if ($car) {
-                $car->update(['status' => $request->status]);
+                foreach ($carIds as $carId) {
+                    // Check if stock already exists for this car
+                    $existingStock = Stock::where('car_id', $carId)->first();
+
+                    if ($existingStock) {
+                        // Update existing stock
+                        $existingStock->update([
+                            'quantity' => $request->quantity,
+                            'price' => $request->price,
+                            'status' => $request->status,
+                            'notes' => $request->notes,
+                        ]);
+                        $updatedCount++;
+                        $createdStocks[] = $existingStock;
+                    } else {
+                        // Create new stock
+                        $stock = Stock::create([
+                            'car_id' => $carId,
+                            'quantity' => $request->quantity,
+                            'price' => $request->price,
+                            'status' => $request->status,
+                            'notes' => $request->notes,
+                        ]);
+                        $createdStocks[] = $stock;
+                    }
+
+                    // Update car status
+                    $car = Car::find($carId);
+                    if ($car) {
+                        $car->update(['status' => $request->status]);
+                    }
+                }
+
+                // Load relationships for first stock
+                if (!empty($createdStocks)) {
+                    $createdStocks[0]->load(['car.category', 'car.subcategory', 'car.photos']);
+                }
+
+                DB::commit();
+
+                return response()->json([
+                    'success' => true,
+                    'data' => $createdStocks[0] ?? null,
+                    'message' => count($createdStocks) > 0
+                        ? "Stock created/updated for " . count($createdStocks) . " car(s) (Created: " . (count($createdStocks) - $updatedCount) . ", Updated: " . $updatedCount . ")"
+                        : 'Stock created successfully'
+                ], 201);
+            } else {
+                // Legacy mode: Single car stock creation
+                $existingStock = Stock::where('car_id', $request->car_id)->first();
+                if ($existingStock) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Stock already exists for this car. Use update instead.',
+                    ], 409);
+                }
+
+                $stock = Stock::create($request->all());
+
+                // Update car status if stock is created
+                $car = Car::find($request->car_id);
+                if ($car) {
+                    $car->update(['status' => $request->status]);
+                }
+
+                DB::commit();
+
+                $stock->load(['car.category', 'car.subcategory', 'car.photos']);
+
+                return response()->json([
+                    'success' => true,
+                    'data' => $stock,
+                    'message' => 'Stock created successfully'
+                ], 201);
             }
-
-            DB::commit();
-
-            $stock->load(['car.category', 'car.subcategory', 'car.photos']);
-
-            return response()->json([
-                'success' => true,
-                'data' => $stock,
-                'message' => 'Stock created successfully'
-            ], 201);
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -152,12 +223,29 @@ class StockController extends Controller
                 'request_data' => $request->all()
             ]);
 
-            $validator = Validator::make($request->all(), [
-                'quantity' => 'sometimes|integer|min:0',
-                'price' => 'sometimes|nullable|numeric|min:0',
-                'status' => 'sometimes|in:available,sold,reserved,damaged,lost,stolen',
-                'notes' => 'sometimes|nullable|string|max:1000',
-            ]);
+            // Check if using new format (make, model, package, car_ids) or old format
+            $isBulkMode = $request->has('car_ids') && is_array($request->car_ids);
+
+            if ($isBulkMode) {
+                $validator = Validator::make($request->all(), [
+                    'make' => 'required|string',
+                    'model' => 'required|string',
+                    'package' => 'nullable|string',
+                    'car_ids' => 'required|array',
+                    'car_ids.*' => 'exists:cars,id',
+                    'quantity' => 'sometimes|integer|min:0',
+                    'price' => 'sometimes|nullable|numeric|min:0',
+                    'status' => 'sometimes|in:available,sold,reserved,damaged,lost,stolen',
+                    'notes' => 'sometimes|nullable|string|max:1000',
+                ]);
+            } else {
+                $validator = Validator::make($request->all(), [
+                    'quantity' => 'sometimes|integer|min:0',
+                    'price' => 'sometimes|nullable|numeric|min:0',
+                    'status' => 'sometimes|in:available,sold,reserved,damaged,lost,stolen',
+                    'notes' => 'sometimes|nullable|string|max:1000',
+                ]);
+            }
 
             if ($validator->fails()) {
                 \Log::warning('Stock update validation failed', [
@@ -173,47 +261,112 @@ class StockController extends Controller
 
             DB::beginTransaction();
 
-            // Only update fields that are provided in the request
-            $updateData = $request->only(['quantity', 'price', 'status', 'notes']);
-            $stock->update($updateData);
+            if ($isBulkMode) {
+                // Bulk mode: Update stock for all cars with same make+model+package
+                $carIds = $request->car_ids;
+                $updateData = $request->only(['quantity', 'price', 'status', 'notes']);
+                $updatedStocks = [];
+                $updatedCount = 0;
 
-            // Update car status if stock status changed
-            if ($request->has('status') && $stock->car) {
-                $stock->car->update(['status' => $request->status]);
-                \Log::info('Car status updated', [
-                    'car_id' => $stock->car->id,
-                    'new_status' => $request->status
+                foreach ($carIds as $carId) {
+                    $existingStock = Stock::where('car_id', $carId)->first();
+
+                    if ($existingStock) {
+                        // Update existing stock with provided fields only
+                        $stockUpdateData = [];
+                        foreach ($updateData as $key => $value) {
+                            if ($request->has($key)) {
+                                $stockUpdateData[$key] = $value;
+                            }
+                        }
+
+                        if (!empty($stockUpdateData)) {
+                            $existingStock->update($stockUpdateData);
+                            $updatedStocks[] = $existingStock;
+                            $updatedCount++;
+                        }
+
+                        // Update car status if status changed
+                        if ($request->has('status')) {
+                            $car = Car::find($carId);
+                            if ($car) {
+                                $car->update(['status' => $request->status]);
+                            }
+                        }
+                    }
+                }
+
+                // Load relationships for first stock
+                if (!empty($updatedStocks)) {
+                    $updatedStocks[0]->load(['car.category', 'car.subcategory', 'car.photos']);
+                }
+
+                DB::commit();
+
+                \Log::info('Bulk stock update successful', [
+                    'updated_count' => $updatedCount,
+                    'updated_fields' => array_keys($updateData)
                 ]);
-            }
 
-            DB::commit();
+                // Dispatch email notification for first stock if status changed
+                if ($request->has('status') && !empty($updatedStocks)) {
+                    try {
+                        SendStockUpdateNotification::dispatch($updatedStocks[0], $updateData);
+                    } catch (\Exception $e) {
+                        \Log::error('Failed to dispatch stock update notification job', [
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                }
 
-            $stock->load(['car.category', 'car.subcategory', 'car.photos']);
-
-            \Log::info('Stock updated successfully', [
-                'stock_id' => $stock->id,
-                'updated_fields' => array_keys($updateData)
-            ]);
-
-            // Dispatch email notification job to queue (don't wait for it)
-            try {
-                SendStockUpdateNotification::dispatch($stock, $updateData);
-                \Log::info('Stock update notification job dispatched', [
-                    'stock_id' => $stock->id
+                return response()->json([
+                    'success' => true,
+                    'data' => $updatedStocks[0] ?? $stock,
+                    'message' => "Stock updated for " . $updatedCount . " car(s)"
                 ]);
-            } catch (\Exception $e) {
-                \Log::error('Failed to dispatch stock update notification job', [
+            } else {
+                // Legacy mode: Single stock update
+                $updateData = $request->only(['quantity', 'price', 'status', 'notes']);
+                $stock->update($updateData);
+
+                // Update car status if stock status changed
+                if ($request->has('status') && $stock->car) {
+                    $stock->car->update(['status' => $request->status]);
+                    \Log::info('Car status updated', [
+                        'car_id' => $stock->car->id,
+                        'new_status' => $request->status
+                    ]);
+                }
+
+                DB::commit();
+
+                $stock->load(['car.category', 'car.subcategory', 'car.photos']);
+
+                \Log::info('Stock updated successfully', [
                     'stock_id' => $stock->id,
-                    'error' => $e->getMessage()
+                    'updated_fields' => array_keys($updateData)
                 ]);
-                // Don't fail the main request if email dispatch fails
-            }
 
-            return response()->json([
-                'success' => true,
-                'data' => $stock,
-                'message' => 'Stock updated successfully'
-            ]);
+                // Dispatch email notification job to queue (don't wait for it)
+                try {
+                    SendStockUpdateNotification::dispatch($stock, $updateData);
+                    \Log::info('Stock update notification job dispatched', [
+                        'stock_id' => $stock->id
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Failed to dispatch stock update notification job', [
+                        'stock_id' => $stock->id,
+                        'error' => $e->getMessage()
+                    ]);
+                    // Don't fail the main request if email dispatch fails
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'data' => $stock,
+                    'message' => 'Stock updated successfully'
+                ]);
+            }
 
         } catch (\Exception $e) {
             DB::rollBack();
