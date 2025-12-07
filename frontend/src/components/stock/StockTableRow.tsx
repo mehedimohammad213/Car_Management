@@ -185,10 +185,10 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
         <div className="flex flex-wrap gap-1.5 max-w-full">
           {(car?.keys_feature
             ?.split(",")
-            .map((feature) => feature.trim())
+            .map((feature: string) => feature.trim())
             .filter(Boolean)
             .slice(0, 8) || []
-          ).map((feature) => (
+          ).map((feature: string) => (
             <span
               key={feature}
               className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200"
