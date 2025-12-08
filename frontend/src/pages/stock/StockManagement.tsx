@@ -59,13 +59,41 @@ const StockManagement: React.FC = () => {
 
   useEffect(() => {
     fetchStocks();
-  }, [currentPage, searchTerm, sortBy, sortOrder]);
+  }, [sortBy, sortOrder]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, yearFilter, colorFilter, fuelFilter]);
 
   // Filter stocks on frontend for car properties
   useEffect(() => {
-    if (allStocks.length === 0) return;
+    if (allStocks.length === 0) {
+      setStocks([]);
+      setTotalPages(1);
+      setTotalItems(0);
+      return;
+    }
 
     let filtered = [...allStocks];
+
+    // Filter by search term
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter((stock) => {
+        const car = stock.car;
+        if (!car) return false;
+        return (
+          car.make?.toLowerCase().includes(searchLower) ||
+          car.model?.toLowerCase().includes(searchLower) ||
+          car.year?.toString().includes(searchLower) ||
+          car.chassis_no_full?.toLowerCase().includes(searchLower) ||
+          car.chassis_no_masked?.toLowerCase().includes(searchLower) ||
+          car.ref_no?.toLowerCase().includes(searchLower) ||
+          car.variant?.toLowerCase().includes(searchLower)
+        );
+      });
+    }
 
     // Filter by year
     if (yearFilter) {
@@ -86,6 +114,37 @@ const StockManagement: React.FC = () => {
       filtered = filtered.filter(
         (stock) => stock.car?.fuel?.toLowerCase() === fuelFilter.toLowerCase()
       );
+    }
+
+    // Apply sorting
+    if (sortBy) {
+      filtered.sort((a, b) => {
+        let aValue: any;
+        let bValue: any;
+
+        if (sortBy === "created_at") {
+          aValue = new Date(a.created_at || 0).getTime();
+          bValue = new Date(b.created_at || 0).getTime();
+        } else if (sortBy.startsWith("car.")) {
+          const field = sortBy.replace("car.", "");
+          aValue = (a.car as any)?.[field];
+          bValue = (b.car as any)?.[field];
+        } else {
+          aValue = (a as any)[sortBy];
+          bValue = (b as any)[sortBy];
+        }
+
+        if (aValue === undefined || aValue === null) return 1;
+        if (bValue === undefined || bValue === null) return -1;
+
+        if (typeof aValue === "string" && typeof bValue === "string") {
+          return sortOrder === "asc"
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+        }
+
+        return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+      });
     }
 
     // Apply pagination
@@ -113,51 +172,30 @@ const StockManagement: React.FC = () => {
       colors: Array.from(colors).sort(),
       fuels: Array.from(fuels).sort(),
     });
-  }, [allStocks, yearFilter, colorFilter, fuelFilter, currentPage, perPage]);
+  }, [allStocks, searchTerm, yearFilter, colorFilter, fuelFilter, currentPage, perPage, sortBy, sortOrder]);
 
   const fetchStocks = async () => {
     try {
       setIsLoading(true);
+      // Fetch all stocks without pagination for frontend filtering
       const response = await stockApi.getStocks({
-        search: searchTerm || undefined,
         sort_by: sortBy,
         sort_order: sortOrder,
-        per_page: perPage,
-        page: currentPage,
+        per_page: 10000, // Large number to get all stocks
+        page: 1,
       });
 
       if (response.success && response.data) {
-        console.log("Setting stocks:", response.data);
-        console.log("Pagination data:", {
-          current_page: response.current_page,
-          last_page: response.last_page,
-          total: response.total,
-        });
-
+        console.log("Setting all stocks:", response.data.length);
         // Store all stocks for frontend filtering
         setAllStocks(response.data);
-
-        // Apply pagination
-        const startIndex = (currentPage - 1) * perPage;
-        const endIndex = startIndex + perPage;
-        const paginatedStocks = response.data.slice(startIndex, endIndex);
-
-        setStocks(paginatedStocks);
-        if (response.current_page) {
-          setTotalPages(response.last_page);
-          setTotalItems(response.total);
-        }
       } else {
         console.log("No stocks found, setting empty array");
-        setStocks([]);
         setAllStocks([]);
-        setTotalPages(1);
-        setTotalItems(0);
       }
     } catch (error) {
       console.error("Error fetching stocks:", error);
       showMessage("error", "Failed to fetch stocks");
-      setStocks([]);
       setAllStocks([]);
     } finally {
       setIsLoading(false);
@@ -262,6 +300,9 @@ const StockManagement: React.FC = () => {
     setColorFilter("");
     setFuelFilter("");
     setCurrentPage(1);
+    // Reset sorting to default
+    setSortBy("created_at");
+    setSortOrder("desc");
   };
 
   const generatePDF = async () => {
@@ -462,8 +503,6 @@ const StockManagement: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 py-6">
       <div className="max-w-full mx-auto px-4">
         <StockHeader
-          onGeneratePDF={generatePDF}
-          isGeneratingPDF={isGeneratingPDF}
           onCreateInvoice={() => setShowInvoiceModal(true)}
         />
 
