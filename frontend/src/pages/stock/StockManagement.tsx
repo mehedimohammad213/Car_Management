@@ -398,6 +398,9 @@ const StockManagement: React.FC = () => {
         "View",
       ];
 
+      // Store car photos data for creating clickable links
+      const carPhotosMap: Map<number, string[]> = new Map();
+
       const tableData = allStocks.map((stock, index) => {
         try {
           const car = stock.car;
@@ -412,6 +415,18 @@ const StockManagement: React.FC = () => {
               "N/A",
               `Location: N/A\nStatus: ${stock.status || "N/A"}`,
             ];
+          }
+
+          // Store car photos for clickable links
+          let imageCount = 0;
+          if (car.photos && car.photos.length > 0) {
+            const imageUrls = car.photos
+              .filter((photo) => !photo.is_hidden && photo.url)
+              .map((photo) => photo.url);
+            if (imageUrls.length > 0) {
+              carPhotosMap.set(index, imageUrls);
+              imageCount = imageUrls.length;
+            }
           }
 
           // Car Name: Ref: #XXX, YEAR MAKE MODEL PACKAGE -FUEL TYPE, Chassis No: XXX
@@ -441,10 +456,16 @@ const StockManagement: React.FC = () => {
             ? `৳ ${typeof car.price_amount === "string" ? parseFloat(car.price_amount).toLocaleString("en-IN") : (car.price_amount as number).toLocaleString("en-IN")}`
             : "Price on request";
 
-          // View: View Car, Location, Status
+          // View: Image list (1,2,3,4...), Location, Status
           const location = car.location || "N/A";
           const status = stock.status === "available" && stock.quantity > 0 ? "Available" : (stock.status?.charAt(0).toUpperCase() + stock.status?.slice(1) || "N/A");
-          const viewText = `View Car\nLocation: ${location}\nStatus: ${status}`;
+
+          // Create image list like "1,2,3,4..."
+          const imageList = imageCount > 0
+            ? Array.from({ length: imageCount }, (_, i) => (i + 1).toString()).join(",")
+            : "N/A";
+
+          const viewText = `${imageList}\nLocation: ${location}\nStatus: ${status}`;
 
           return [
             (index + 1).toString(),
@@ -507,6 +528,54 @@ const StockManagement: React.FC = () => {
             5: { cellWidth: 40, halign: "left" }, // Key Features
             6: { cellWidth: 20, halign: "right" }, // Price
             7: { cellWidth: 24, halign: "left" }, // View
+          },
+          didParseCell: function (data: any) {
+            // Store image URLs for "View" column (column index 7)
+            if (data.column.index === 7 && data.row.index >= 0) {
+              const rowIndex = data.row.index;
+              const imageUrls = carPhotosMap.get(rowIndex);
+              if (imageUrls && imageUrls.length > 0) {
+                // Store all image URLs for this row
+                data.cell.imageUrls = imageUrls;
+              }
+            }
+          },
+          didDrawCell: function (data: any) {
+            // Add clickable links to image list in "View" column (column index 7)
+            // Each number (1,2,3,4...) is individually clickable and opens that specific image
+            if (data.column.index === 7 && data.cell.imageUrls && data.cell.imageUrls.length > 0) {
+              const cellX = data.cell.x;
+              const cellY = data.cell.y;
+              const cellWidth = data.cell.width;
+              const cellHeight = data.cell.height;
+
+              // Calculate approximate width per number (including comma and space)
+              // Font size 7, approximate width: "1, " = ~6-8 points
+              const numberWidth = 8;
+              const lineHeight = 8;
+
+              // Calculate how many numbers fit per line
+              const numbersPerLine = Math.floor(cellWidth / numberWidth);
+
+              // Add link annotation for each image number (horizontal with wrapping)
+              // Each number opens its corresponding image URL
+              data.cell.imageUrls.forEach((imageUrl: string, index: number) => {
+                const lineNumber = Math.floor(index / numbersPerLine);
+                const positionInLine = index % numbersPerLine;
+
+                const linkX = cellX + (positionInLine * numberWidth);
+                const linkY = cellY + (lineNumber * lineHeight);
+
+                // Each number links directly to its image URL
+                try {
+                  doc.link(linkX, linkY, numberWidth, lineHeight, {
+                    url: imageUrl,
+                  });
+                } catch (linkError) {
+                  console.warn(`Could not add link for image ${index + 1} in row ${data.row.index}`, linkError);
+                }
+              });
+            }
           },
           didDrawPage: function (data: any) {
             // Add page numbers
