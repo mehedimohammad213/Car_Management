@@ -74,6 +74,11 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
             {car?.chassis_no_full || car?.chassis_no_masked || "N/A"}
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
+            {stock.status === "available" && stock.quantity > 0 && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-green-100 text-green-700 border border-green-200">
+                Available
+              </span>
+            )}
             {car?.package && (
               <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
                 {car.package}
