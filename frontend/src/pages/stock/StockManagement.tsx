@@ -365,66 +365,103 @@ const StockManagement: React.FC = () => {
       console.log(`Generating PDF with ${allStocks.length} stocks`);
 
       const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
 
-      // Add title
-      doc.setFontSize(20);
-      doc.text("Stock Management Report", 14, 22);
+      // Header - Title
+      doc.setFontSize(18);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 0, 0);
+      doc.text("DREAM AGENT CAR VISION", 14, 20);
 
-      // Add date and total count
+      // Header - Address
       doc.setFontSize(10);
-      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
-      doc.text(`Total Stocks: ${allStocks.length}`, 14, 36);
+      doc.setFont("helvetica", "normal");
+      doc.text("57, Purana Palton Line, VIP Road, Dhaka-1000.", 14, 26);
+
+      // Header - Date (right aligned)
+      const currentDate = new Date();
+      const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+                      "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+      const dateStr = `${currentDate.getDate()} ${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+      doc.setFontSize(10);
+      doc.text(dateStr, pageWidth - 14, 20, { align: "right" });
 
       // Prepare table data
       const tableColumns = [
-        "Car Information",
-        "Quantity",
+        "Sl.",
+        "Car Name",
+        "Auction Grade",
         "Mileage",
-        "Engine",
-        "Color",
-        "Grade",
+        "Color/CC",
+        "Key Features",
         "Price",
+        "View",
       ];
 
-      const tableData = allStocks.map((stock) => {
+      const tableData = allStocks.map((stock, index) => {
         try {
           const car = stock.car;
           if (!car) {
             return [
-              "N/A",
-              stock.quantity.toString(),
-              stock.status,
+              (index + 1).toString(),
               "N/A",
               "N/A",
               "N/A",
               "N/A",
               "N/A",
+              "N/A",
+              `Location: N/A\nStatus: ${stock.status || "N/A"}`,
             ];
           }
 
-          const carInfo = `${car.year || "N/A"} ${car.make || "N/A"} ${car.model || "N/A"}${car.variant ? ` - ${car.variant}` : ""}\nRef: ${car.ref_no || "N/A"}\nChassis: ${car.chassis_no_full || car.chassis_no_masked || "N/A"}`;
+          // Car Name: Ref: #XXX, YEAR MAKE MODEL PACKAGE -FUEL TYPE, Chassis No: XXX
+          const refNo = car.ref_no || `#F${car.year?.toString().slice(-2) || "24"}TCR.SX2V-${String(index + 1).padStart(2, "0")}`;
+          const packageText = car.package ? `${car.package} ` : "";
+          const fuelType = car.fuel ? `-${car.fuel.toUpperCase()}` : "";
+          const carName = `Ref: ${refNo}\n${car.year || "N/A"} ${car.make || "N/A"} ${car.model || "N/A"} ${packageText}${fuelType}\nChassis No: ${car.chassis_no_full || car.chassis_no_masked || "N/A"}`;
 
-          const grade = [];
-          if (car.grade_overall) grade.push(`Overall: ${car.grade_overall}`);
-          if (car.grade_exterior) grade.push(`Ext: ${car.grade_exterior}`);
-          if (car.grade_interior) grade.push(`Int: ${car.grade_interior}`);
+          // Auction Grade
+          const grade = car.grade_overall || "N/A";
+
+          // Mileage
+          const mileage = car.mileage_km ? `${car.mileage_km.toLocaleString()} Km` : "N/A";
+
+          // Color/CC
+          const color = car.color ? car.color.toUpperCase() : "N/A";
+          const cc = car.engine_cc ? `${car.engine_cc.toLocaleString()} CC` : "";
+          const colorCC = cc ? `${color}, ${cc}` : color;
+
+          // Key Features
+          const keyFeatures = car.keys_feature
+            ? car.keys_feature.split(",").map((f: string) => f.trim()).join(", ")
+            : "N/A";
+
+          // Price
+          const price = car.price_amount
+            ? `৳ ${typeof car.price_amount === "string" ? parseFloat(car.price_amount).toLocaleString("en-IN") : (car.price_amount as number).toLocaleString("en-IN")}`
+            : "Price on request";
+
+          // View: View Car, Location, Status
+          const location = car.location || "N/A";
+          const status = stock.status === "available" && stock.quantity > 0 ? "Available" : (stock.status?.charAt(0).toUpperCase() + stock.status?.slice(1) || "N/A");
+          const viewText = `View Car\nLocation: ${location}\nStatus: ${status}`;
 
           return [
-            carInfo,
-            stock.quantity.toString(),
-            car.mileage_km ? `${car.mileage_km.toLocaleString()} km` : "N/A",
-            car.engine_cc ? `${car.engine_cc.toLocaleString()} cc` : "N/A",
-            car.color || "N/A",
-            grade.length > 0 ? grade.join(", ") : "N/A",
-            car.price_amount
-              ? `BDT ${typeof car.price_amount === "string" ? parseFloat(car.price_amount).toLocaleString() : (car.price_amount as number).toLocaleString()}`
-              : "Price on request",
+            (index + 1).toString(),
+            carName,
+            grade,
+            mileage,
+            colorCC,
+            keyFeatures,
+            price,
+            viewText,
           ];
         } catch (error) {
           console.error("Error processing stock data:", error, stock);
           return [
+            (index + 1).toString(),
             "Error",
-            stock.quantity.toString(),
+            "Error",
             "Error",
             "Error",
             "Error",
@@ -439,27 +476,37 @@ const StockManagement: React.FC = () => {
         autoTable(doc, {
           head: [tableColumns],
           body: tableData,
-          startY: 45,
+          startY: 35,
           styles: {
-            fontSize: 8,
-            cellPadding: 3,
+            fontSize: 7,
+            cellPadding: 2,
+            lineWidth: 0.1,
           },
           headStyles: {
-            fillColor: [41, 128, 185],
-            textColor: 255,
+            fillColor: [255, 255, 255],
+            textColor: [0, 0, 0],
             fontStyle: "bold",
+            lineWidth: 0.5,
+            lineColor: [0, 0, 0],
+          },
+          bodyStyles: {
+            fillColor: [255, 255, 255],
+            textColor: [0, 0, 0],
+            lineWidth: 0.1,
+            lineColor: [0, 0, 0],
           },
           alternateRowStyles: {
-            fillColor: [245, 245, 245],
+            fillColor: [250, 250, 250],
           },
           columnStyles: {
-            0: { cellWidth: 50 },
-            1: { cellWidth: 20 },
-            2: { cellWidth: 25 },
-            3: { cellWidth: 25 },
-            4: { cellWidth: 20 },
-            5: { cellWidth: 30 },
-            6: { cellWidth: 30 },
+            0: { cellWidth: 8, halign: "center" }, // Sl.
+            1: { cellWidth: 45, halign: "left" }, // Car Name
+            2: { cellWidth: 15, halign: "center" }, // Auction Grade
+            3: { cellWidth: 18, halign: "center" }, // Mileage
+            4: { cellWidth: 20, halign: "left" }, // Color/CC
+            5: { cellWidth: 40, halign: "left" }, // Key Features
+            6: { cellWidth: 20, halign: "right" }, // Price
+            7: { cellWidth: 24, halign: "left" }, // View
           },
           didDrawPage: function (data: any) {
             // Add page numbers
@@ -468,8 +515,9 @@ const StockManagement: React.FC = () => {
             doc.setFontSize(8);
             doc.text(
               `Page ${currentPage} of ${pageCount}`,
-              14,
-              doc.internal.pageSize.height - 10
+              pageWidth / 2,
+              doc.internal.pageSize.height - 10,
+              { align: "center" }
             );
           },
         });
