@@ -449,7 +449,7 @@ const StockManagement: React.FC = () => {
           // Color/CC
           const color = car.color ? car.color.toUpperCase() : "N/A";
           const cc = car.engine_cc ? `${car.engine_cc.toLocaleString()} CC` : "";
-          const colorCC = cc ? `${color}, ${cc}` : color;
+          const colorCC = cc ? `${color}\n${cc}` : color;
 
           // Key Features
           const keyFeatures = car.keys_feature
