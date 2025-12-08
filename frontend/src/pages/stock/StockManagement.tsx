@@ -367,24 +367,29 @@ const StockManagement: React.FC = () => {
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
 
-      // Header - Title
+      // Header - Title (centered)
       doc.setFontSize(18);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(0, 0, 0);
-      doc.text("DREAM AGENT CAR VISION", 14, 20);
+      doc.text("DREAM AGENT CAR VISION", pageWidth / 2, 20, { align: "center" });
 
-      // Header - Address
+      // Header - Address (centered)
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
-      doc.text("57, Purana Palton Line, VIP Road, Dhaka-1000.", 14, 26);
+      doc.text("57, Purana Palton Line, VIP Road, Dhaka-1000.", pageWidth / 2, 26, { align: "center" });
 
-      // Header - Date (right aligned)
+      // Header - Date (right aligned with "DATE: " prefix, positioned under address)
+      // Calculate table right edge: left margin (14) + sum of column widths (8+45+15+18+20+40+20+24=190)
+      const tableLeftMargin = 14;
+      const tableWidth = 8 + 45 + 15 + 18 + 20 + 40 + 20 + 24; // Sum of all column widths
+      const tableRightEdge = tableLeftMargin + tableWidth;
+
       const currentDate = new Date();
       const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
                       "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
-      const dateStr = `${currentDate.getDate()} ${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+      const dateStr = `DATE: ${currentDate.getDate()} ${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
       doc.setFontSize(10);
-      doc.text(dateStr, pageWidth - 14, 20, { align: "right" });
+      doc.text(dateStr, tableRightEdge, 32, { align: "right" });
 
       // Prepare table data
       const tableColumns = [
