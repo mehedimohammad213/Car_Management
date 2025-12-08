@@ -395,7 +395,7 @@ const StockManagement: React.FC = () => {
       const tableColumns = [
         "Sl.",
         "Car Name",
-        "Auction Grade",
+        "Grade",
         "Mileage",
         "Color/CC",
         "Key Features",
@@ -440,7 +440,7 @@ const StockManagement: React.FC = () => {
           const fuelType = car.fuel ? `-${car.fuel.toUpperCase()}` : "";
           const carName = `Ref: ${refNo}\n${car.year || "N/A"} ${car.make || "N/A"} ${car.model || "N/A"} ${packageText}${fuelType}\nChassis No: ${car.chassis_no_full || car.chassis_no_masked || "N/A"}`;
 
-          // Auction Grade
+          // Grade
           const grade = car.grade_overall || "N/A";
 
           // Mileage
@@ -527,7 +527,7 @@ const StockManagement: React.FC = () => {
           columnStyles: {
             0: { cellWidth: 8, halign: "center" }, // Sl.
             1: { cellWidth: 45, halign: "left" }, // Car Name
-            2: { cellWidth: 15, halign: "center" }, // Auction Grade
+            2: { cellWidth: 15, halign: "center" }, // Grade
             3: { cellWidth: 18, halign: "center" }, // Mileage
             4: { cellWidth: 20, halign: "left" }, // Color/CC
             5: { cellWidth: 40, halign: "left" }, // Key Features
