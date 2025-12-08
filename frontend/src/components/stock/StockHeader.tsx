@@ -3,6 +3,7 @@ import {
   Package,
   Plus,
   FileText,
+  Download,
 } from "lucide-react";
 import { InvoiceCreationModal } from "./InvoiceCreationModal";
 
@@ -14,9 +15,15 @@ interface InvoiceItem {
 
 interface StockHeaderProps {
   onCreateStock: () => void;
+  onGeneratePDF?: () => void;
+  isGeneratingPDF?: boolean;
 }
 
-export const StockHeader: React.FC<StockHeaderProps> = ({ onCreateStock }) => {
+export const StockHeader: React.FC<StockHeaderProps> = ({
+  onCreateStock,
+  onGeneratePDF,
+  isGeneratingPDF = false,
+}) => {
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
   const handleCreateInvoice = async (items: InvoiceItem[]) => {
@@ -82,6 +89,26 @@ export const StockHeader: React.FC<StockHeaderProps> = ({ onCreateStock }) => {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
+            {onGeneratePDF && (
+              <button
+                onClick={onGeneratePDF}
+                disabled={isGeneratingPDF}
+                className={`flex items-center justify-center transition-colors font-medium shadow-sm ${isGeneratingPDF
+                    ? "w-auto px-4 py-2 rounded-full bg-gray-300 text-gray-500 cursor-not-allowed gap-2"
+                    : "w-10 h-10 rounded-full bg-green-600 text-white hover:bg-green-700"
+                  }`}
+                title="Download PDF"
+              >
+                {isGeneratingPDF ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-500 border-t-transparent"></div>
+                    <span>Generating...</span>
+                  </>
+                ) : (
+                  <Download className="w-5 h-5" />
+                )}
+              </button>
+            )}
             <button
               onClick={() => setShowInvoiceModal(true)}
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium"
