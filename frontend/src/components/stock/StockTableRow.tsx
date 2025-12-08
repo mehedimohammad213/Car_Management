@@ -1,7 +1,7 @@
 import React from "react";
 import { Eye, Edit, Trash2, Car } from "lucide-react";
 import { Stock } from "../../services/stockApi";
-import { getStatusColor, getGradeColor, formatPrice as formatPriceUtil } from "../../utils/carUtils";
+import { getGradeColor, formatPrice as formatPriceUtil } from "../../utils/carUtils";
 
 interface StockTableRowProps {
   stock: Stock;
@@ -74,15 +74,6 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
             {car?.chassis_no_full || car?.chassis_no_masked || "N/A"}
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
-            {car?.status && (
-              <span
-                className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold border ${getStatusColor(
-                  car.status
-                )}`}
-              >
-                {car.status?.charAt(0).toUpperCase() + car.status?.slice(1)}
-              </span>
-            )}
             {car?.package && (
               <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
                 {car.package}

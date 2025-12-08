@@ -19,11 +19,16 @@ import {
   StockDrawer,
   StockDrawerForm,
 } from "../../components/stock";
+import { InvoiceCreationModal } from "../../components/stock/InvoiceCreationModal";
 
 const StockManagement: React.FC = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
+  const [allStocks, setAllStocks] = useState<Stock[]>([]); // For filtering
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [yearFilter, setYearFilter] = useState("");
+  const [colorFilter, setColorFilter] = useState("");
+  const [fuelFilter, setFuelFilter] = useState("");
   const [sortBy, setSortBy] = useState("created_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,6 +36,11 @@ const StockManagement: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [filterOptions, setFilterOptions] = useState<{
+    years?: number[];
+    colors?: string[];
+    fuels?: string[];
+  }>({});
 
   // Drawer states
   const [showDrawer, setShowDrawer] = useState(false);
@@ -39,6 +49,7 @@ const StockManagement: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [stockToDelete, setStockToDelete] = useState<Stock | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
   // Success/Error messages
   const [message, setMessage] = useState<{
@@ -49,6 +60,60 @@ const StockManagement: React.FC = () => {
   useEffect(() => {
     fetchStocks();
   }, [currentPage, searchTerm, sortBy, sortOrder]);
+
+  // Filter stocks on frontend for car properties
+  useEffect(() => {
+    if (allStocks.length === 0) return;
+
+    let filtered = [...allStocks];
+
+    // Filter by year
+    if (yearFilter) {
+      filtered = filtered.filter(
+        (stock) => stock.car?.year?.toString() === yearFilter
+      );
+    }
+
+    // Filter by color
+    if (colorFilter) {
+      filtered = filtered.filter(
+        (stock) => stock.car?.color?.toLowerCase() === colorFilter.toLowerCase()
+      );
+    }
+
+    // Filter by fuel
+    if (fuelFilter) {
+      filtered = filtered.filter(
+        (stock) => stock.car?.fuel?.toLowerCase() === fuelFilter.toLowerCase()
+      );
+    }
+
+    // Apply pagination
+    const startIndex = (currentPage - 1) * perPage;
+    const endIndex = startIndex + perPage;
+    const paginatedStocks = filtered.slice(startIndex, endIndex);
+
+    setStocks(paginatedStocks);
+    setTotalPages(Math.ceil(filtered.length / perPage));
+    setTotalItems(filtered.length);
+
+    // Extract filter options from all stocks
+    const years = new Set<number>();
+    const colors = new Set<string>();
+    const fuels = new Set<string>();
+
+    allStocks.forEach((stock) => {
+      if (stock.car?.year) years.add(stock.car.year);
+      if (stock.car?.color) colors.add(stock.car.color);
+      if (stock.car?.fuel) fuels.add(stock.car.fuel);
+    });
+
+    setFilterOptions({
+      years: Array.from(years).sort((a, b) => b - a),
+      colors: Array.from(colors).sort(),
+      fuels: Array.from(fuels).sort(),
+    });
+  }, [allStocks, yearFilter, colorFilter, fuelFilter, currentPage, perPage]);
 
   const fetchStocks = async () => {
     try {
@@ -69,7 +134,15 @@ const StockManagement: React.FC = () => {
           total: response.total,
         });
 
-        setStocks(response.data);
+        // Store all stocks for frontend filtering
+        setAllStocks(response.data);
+
+        // Apply pagination
+        const startIndex = (currentPage - 1) * perPage;
+        const endIndex = startIndex + perPage;
+        const paginatedStocks = response.data.slice(startIndex, endIndex);
+
+        setStocks(paginatedStocks);
         if (response.current_page) {
           setTotalPages(response.last_page);
           setTotalItems(response.total);
@@ -77,6 +150,7 @@ const StockManagement: React.FC = () => {
       } else {
         console.log("No stocks found, setting empty array");
         setStocks([]);
+        setAllStocks([]);
         setTotalPages(1);
         setTotalItems(0);
       }
@@ -84,6 +158,7 @@ const StockManagement: React.FC = () => {
       console.error("Error fetching stocks:", error);
       showMessage("error", "Failed to fetch stocks");
       setStocks([]);
+      setAllStocks([]);
     } finally {
       setIsLoading(false);
     }
@@ -183,6 +258,9 @@ const StockManagement: React.FC = () => {
 
   const handleClearFilters = () => {
     setSearchTerm("");
+    setYearFilter("");
+    setColorFilter("");
+    setFuelFilter("");
     setCurrentPage(1);
   };
 
@@ -260,7 +338,6 @@ const StockManagement: React.FC = () => {
       const tableColumns = [
         "Car Information",
         "Quantity",
-        "Status",
         "Mileage",
         "Engine",
         "Color",
@@ -294,13 +371,12 @@ const StockManagement: React.FC = () => {
           return [
             carInfo,
             stock.quantity.toString(),
-            stock.status.charAt(0).toUpperCase() + stock.status.slice(1),
             car.mileage_km ? `${car.mileage_km.toLocaleString()} km` : "N/A",
             car.engine_cc ? `${car.engine_cc.toLocaleString()} cc` : "N/A",
             car.color || "N/A",
             grade.length > 0 ? grade.join(", ") : "N/A",
             car.price_amount
-              ? `BDT ${typeof car.price_amount === "string" ? parseFloat(car.price_amount).toLocaleString() : car.price_amount.toLocaleString()}`
+              ? `BDT ${typeof car.price_amount === "string" ? parseFloat(car.price_amount).toLocaleString() : (car.price_amount as number).toLocaleString()}`
               : "Price on request",
           ];
         } catch (error) {
@@ -308,7 +384,6 @@ const StockManagement: React.FC = () => {
           return [
             "Error",
             stock.quantity.toString(),
-            stock.status,
             "Error",
             "Error",
             "Error",
@@ -341,10 +416,9 @@ const StockManagement: React.FC = () => {
             1: { cellWidth: 20 },
             2: { cellWidth: 25 },
             3: { cellWidth: 25 },
-            4: { cellWidth: 25 },
-            5: { cellWidth: 20 },
+            4: { cellWidth: 20 },
+            5: { cellWidth: 30 },
             6: { cellWidth: 30 },
-            7: { cellWidth: 30 },
           },
           didDrawPage: function (data: any) {
             // Add page numbers
@@ -388,9 +462,9 @@ const StockManagement: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 py-6">
       <div className="max-w-full mx-auto px-4">
         <StockHeader
-          onCreateStock={handleCreateStock}
           onGeneratePDF={generatePDF}
           isGeneratingPDF={isGeneratingPDF}
+          onCreateInvoice={() => setShowInvoiceModal(true)}
         />
 
         <MessageDisplay message={message} />
@@ -399,6 +473,17 @@ const StockManagement: React.FC = () => {
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           onClearFilters={handleClearFilters}
+          yearFilter={yearFilter}
+          onYearFilterChange={setYearFilter}
+          colorFilter={colorFilter}
+          onColorFilterChange={setColorFilter}
+          fuelFilter={fuelFilter}
+          onFuelFilterChange={setFuelFilter}
+          isGeneratingPDF={isGeneratingPDF}
+          onGeneratePDF={generatePDF}
+          onCreateInvoice={() => setShowInvoiceModal(true)}
+          onCreateStock={handleCreateStock}
+          filterOptions={filterOptions}
         />
 
         <StockTable
@@ -446,6 +531,38 @@ const StockManagement: React.FC = () => {
           title="Delete Stock"
           message={`Are you sure you want to delete this stock item? This action cannot be undone.`}
           isLoading={isDeleting}
+        />
+
+        <InvoiceCreationModal
+          isOpen={showInvoiceModal}
+          onClose={() => setShowInvoiceModal(false)}
+          onCreateInvoice={async (items) => {
+            try {
+              const { StockInvoiceService } = await import(
+                "../../services/stockInvoiceService"
+              );
+              // Convert InvoiceItem to StockInvoiceItem format
+              const stockInvoiceItems = items.map((item) => ({
+                car: {
+                  id: item.car.id.toString(),
+                  make: item.car.make,
+                  model: item.car.model,
+                  year: item.car.year,
+                  price: item.price || (typeof item.car.price_amount === "string" ? parseFloat(item.car.price_amount) : item.car.price_amount || 0),
+                  image_url: item.car.photos?.[0]?.url,
+                  mileage_km: item.car.mileage_km,
+                },
+                quantity: item.quantity,
+                price: item.price,
+              }));
+              StockInvoiceService.generateStockInvoice(stockInvoiceItems);
+              setShowInvoiceModal(false);
+              showMessage("success", "Invoice created successfully");
+            } catch (error) {
+              console.error("Error creating invoice:", error);
+              showMessage("error", "Failed to create invoice");
+            }
+          }}
         />
       </div>
     </div>

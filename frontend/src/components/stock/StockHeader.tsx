@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   Package,
-  Plus,
   FileText,
   Download,
 } from "lucide-react";
@@ -14,15 +13,15 @@ interface InvoiceItem {
 }
 
 interface StockHeaderProps {
-  onCreateStock: () => void;
   onGeneratePDF?: () => void;
   isGeneratingPDF?: boolean;
+  onCreateInvoice?: () => void;
 }
 
 export const StockHeader: React.FC<StockHeaderProps> = ({
-  onCreateStock,
   onGeneratePDF,
   isGeneratingPDF = false,
+  onCreateInvoice,
 }) => {
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
@@ -110,18 +109,11 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
               </button>
             )}
             <button
-              onClick={() => setShowInvoiceModal(true)}
+              onClick={() => onCreateInvoice ? onCreateInvoice() : setShowInvoiceModal(true)}
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium"
             >
               <FileText className="w-5 h-5" />
               <span>Create Invoice</span>
-            </button>
-            <button
-              onClick={onCreateStock}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
-            >
-              <Plus className="w-5 h-5" />
-              <span>Add Stock</span>
             </button>
           </div>
         </div>
