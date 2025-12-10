@@ -17,5 +17,16 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          charts: ['recharts'],
+          pdf: ['jspdf', 'jspdf-autotable'],
+          icons: ['react-icons', 'lucide-react'],
+          notifications: ['react-toastify'],
+        },
+      },
+    },
   },
 })
