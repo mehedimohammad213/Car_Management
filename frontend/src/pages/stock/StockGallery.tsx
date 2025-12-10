@@ -101,8 +101,8 @@ const StockGallery: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 md:p-6">
-      <div className="max-w-6xl mx-auto space-y-4 md:space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 px-0 sm:px-1 md:px-2 py-4 md:py-6">
+      <div className="w-full max-w-screen-2xl mx-auto space-y-4 md:space-y-5">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(-1)}
@@ -112,15 +112,15 @@ const StockGallery: React.FC = () => {
           </button>
           <div>
             <p className="text-sm text-gray-500">Stock Gallery</p>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
               {car.year} {car.make} {car.model}
             </h1>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-5 gap-4 md:gap-6">
+        <div className="grid lg:grid-cols-5 gap-3 md:gap-4">
           <div className="lg:col-span-3">
-            <div className="bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-hidden relative">
+            <div className="bg-white border border-gray-100 rounded-3xl shadow-2xl overflow-hidden relative">
               <div className="aspect-[4/3] bg-gray-100 relative">
                 {photos.length > 0 ? (
                   <img
@@ -146,7 +146,7 @@ const StockGallery: React.FC = () => {
                     Qty: {stock.quantity}
                   </span>
                 </div>
-                <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-3 py-1.5 rounded-full">
+                <div className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full">
                   {photos.length > 0
                     ? `${currentImageIndex + 1} / ${photos.length}`
                     : "0 / 0"}
@@ -180,7 +180,7 @@ const StockGallery: React.FC = () => {
           </div>
 
           <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white border border-gray-100 rounded-2xl shadow-2xl p-4 md:p-6 space-y-4">
+            <div className="bg-white border border-gray-100 rounded-3xl shadow-2xl p-4 md:p-6 space-y-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-sm text-gray-500">Reference</p>
@@ -190,7 +190,7 @@ const StockGallery: React.FC = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-gray-500">Price</p>
-                  <p className="text-xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-gray-900">
                     {priceAmount && !isNaN(priceAmount)
                       ? formatPrice(priceAmount, car.price_currency)
                       : "Price on request"}
