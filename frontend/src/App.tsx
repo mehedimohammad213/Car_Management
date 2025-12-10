@@ -20,6 +20,7 @@ import PurchaseHistory from "./pages/purchase-history/PurchaseHistory";
 import PurchaseHistoryDetails from "./pages/purchase-history/PurchaseHistoryDetails";
 import PaymentHistory from "./pages/payment-history/PaymentHistory";
 import PaymentHistoryDetails from "./pages/payment-history/PaymentHistoryDetails";
+import StockGallery from "./pages/stock/StockGallery";
 
 import CarViewPage from "./pages/car/CarViewPage";
 import UserCarCatalog from "./pages/car/UserCarCatalog";
@@ -42,6 +43,9 @@ function App() {
                 <Routes>
                   <Route path="/login" element={<Login />} />
                   <Route path="/auth-test" element={<AuthTest />} />
+                  {/* Public stock gallery (no header layout) */}
+                  <Route path="/stock-gallery/:id" element={<StockGallery />} />
+
                   <Route path="/" element={<Layout />}>
                     {/* Admin Routes */}
                     <Route
