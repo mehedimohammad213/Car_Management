@@ -453,7 +453,7 @@ const StockManagement: React.FC = () => {
           const location = car.location || "N/A";
           const status = stock.status === "available" && stock.quantity > 0 ? "Available" : (stock.status?.charAt(0).toUpperCase() + stock.status?.slice(1) || "N/A");
 
-          const viewLabel = "View";
+          const viewLabel = "View Cars";
           const viewText = `${viewLabel}\nLocation: ${location}\nStatus: ${status}`;
 
           // Build link to stock view page
