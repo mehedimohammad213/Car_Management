@@ -10,7 +10,7 @@ import CarDetailsSection from "../../components/car/CarDetailsSection";
 import CarAttachedFile from "../../components/car/CarAttachedFile";
 import ImageModal from "../../components/car/ImageModal";
 
-const CarViewPage: React.FC = () => {
+const ViewCar: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -284,4 +284,4 @@ const CarViewPage: React.FC = () => {
   );
 };
 
-export default CarViewPage;
+export default ViewCar;

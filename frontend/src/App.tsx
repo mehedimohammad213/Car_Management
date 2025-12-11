@@ -32,8 +32,8 @@ const PaymentHistoryDetails = lazy(
   () => import("./pages/payment-history/PaymentHistoryDetails"),
 );
 const StockGallery = lazy(() => import("./pages/stock/StockGallery"));
-const CarViewPage = lazy(() => import("./pages/car/CarViewPage"));
-const UserCarCatalog = lazy(() => import("./pages/car/UserCarCatalog"));
+const ViewCar = lazy(() => import("./pages/car/ViewCar"));
+const Car = lazy(() => import("./pages/car/Car"));
 const Cart = lazy(() => import("./pages/cart/Cart"));
 const UserOrders = lazy(() => import("./pages/order/UserOrders"));
 const AdminOrders = lazy(() => import("./pages/order/AdminOrders"));
@@ -75,7 +75,7 @@ function App() {
                         path="/admin/cars"
                         element={
                           <ProtectedRoute role="admin">
-                            <UserCarCatalog />
+                            <Car />
                           </ProtectedRoute>
                         }
                       />
@@ -175,8 +175,8 @@ function App() {
 
                       {/* User Routes */}
                       <Route path="/" element={<HomeRedirect />} />
-                      <Route path="/car-view/:id" element={<CarViewPage />} />
-                      <Route path="/cars" element={<UserCarCatalog />} />
+                      <Route path="/car-view/:id" element={<ViewCar />} />
+                      <Route path="/cars" element={<Car />} />
                       <Route
                         path="/dashboard"
                         element={

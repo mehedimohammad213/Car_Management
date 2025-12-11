@@ -24,7 +24,7 @@ import {
   getStockStatusColor,
 } from "../../utils/carUtils";
 
-const UserCarCatalog: React.FC = () => {
+const Car: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const {
@@ -78,7 +78,7 @@ const UserCarCatalog: React.FC = () => {
   const { generatePDF, isGeneratingPDF } = usePdfGenerator();
 
   useEffect(() => {
-    console.log("UserCarCatalog: Component mounted, fetching data...");
+    console.log("Car page: Component mounted, fetching data...");
     fetchCars();
     fetchCategories();
     fetchFilterOptions();
@@ -367,4 +367,4 @@ const UserCarCatalog: React.FC = () => {
   );
 };
 
-export default UserCarCatalog;
+export default Car;
