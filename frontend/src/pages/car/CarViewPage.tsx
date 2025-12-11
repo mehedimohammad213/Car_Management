@@ -3,7 +3,6 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { carApi, Car as CarType } from "../../services/carApi";
 import { stockApi, Stock } from "../../services/stockApi";
 import { useAuth } from "../../contexts/AuthContext";
-import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 import CarViewHeader from "../../components/car/CarViewHeader";
 import CarImageGallery from "../../components/car/CarImageGallery";
 import CarSpecifications from "../../components/car/CarSpecifications";
@@ -25,8 +24,6 @@ const CarViewPage: React.FC = () => {
     Array<{ name: string; url: string }>
   >([]);
   const [pdfLoading, setPdfLoading] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [attachedFileInfo, setAttachedFileInfo] = useState<{
     url: string;
     type: 'image' | 'pdf';
@@ -170,30 +167,6 @@ const CarViewPage: React.FC = () => {
     setCurrentImageIndex(index);
   };
 
-  const handleEdit = () => {
-    navigate(`/update-car/${car?.id}?${searchParams.toString()}`);
-  };
-
-  const handleDelete = () => {
-    setShowDeleteModal(true);
-  };
-
-  const confirmDelete = async () => {
-    if (!car) return;
-
-    setIsDeleting(true);
-    try {
-      await carApi.deleteCar(car.id);
-      navigate(`/cars?${searchParams.toString()}`, {
-        state: { message: "Car deleted successfully!" },
-      });
-    } catch (error) {
-      console.error("Error deleting car:", error);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
   const handleViewFile = () => {
     if (attachedFileInfo) {
       window.open(attachedFileInfo.url, '_blank');
@@ -259,9 +232,6 @@ const CarViewPage: React.FC = () => {
         <CarViewHeader
           car={car}
           isAdmin={isAdmin}
-          searchParams={searchParams}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
           getBackRoute={getBackRoute}
         />
 
@@ -310,17 +280,6 @@ const CarViewPage: React.FC = () => {
           onNext={handleNextImage}
         />
       )}
-
-      {/* Delete Confirmation Modal */}
-      <DeleteConfirmationModal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={confirmDelete}
-        title="Delete Car"
-        message="Are you sure you want to delete"
-        itemName={car ? `${car.make} ${car.model}` : ""}
-        isLoading={isDeleting}
-      />
     </div>
   );
 };
