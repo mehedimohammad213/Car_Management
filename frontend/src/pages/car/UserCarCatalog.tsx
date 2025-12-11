@@ -230,10 +230,7 @@ const UserCarCatalog: React.FC = () => {
 
   const handleViewCar = (car: CarType) => {
     // Preserve current URL params when navigating
-    const route = user?.role === "admin"
-      ? `/view-car/${car.id}?${searchParams.toString()}`
-      : `/car-view/${car.id}?${searchParams.toString()}`;
-    navigate(route);
+    navigate(`/car-view/${car.id}?${searchParams.toString()}`);
   };
 
   const handleAddToCart = (car: CarType) => {

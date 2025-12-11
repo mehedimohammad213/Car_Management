@@ -96,14 +96,6 @@ function App() {
                         }
                       />
                       <Route
-                        path="/view-car/:id"
-                        element={
-                          <ProtectedRoute role="admin">
-                            <CarViewPage />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
                         path="/update-car/:id"
                         element={
                           <ProtectedRoute role="admin">
@@ -183,7 +175,6 @@ function App() {
 
                       {/* User Routes */}
                       <Route path="/" element={<HomeRedirect />} />
-                      <Route path="/car/:id" element={<CarViewPage />} />
                       <Route path="/car-view/:id" element={<CarViewPage />} />
                       <Route path="/cars" element={<UserCarCatalog />} />
                       <Route
