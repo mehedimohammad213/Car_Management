@@ -258,13 +258,10 @@ const UserCarCatalog: React.FC = () => {
 
   const handleViewCar = (car: CarType) => {
     // Preserve current URL params when navigating
-    navigate(`/car-view/${car.id}?${searchParams.toString()}`);
-  };
-
-  // Admin view handler - redirect to view page
-  const handleViewCarAdmin = (car: CarType) => {
-    // Preserve current URL params when navigating
-    navigate(`/view-car/${car.id}?${searchParams.toString()}`);
+    const route = user?.role === "admin"
+      ? `/view-car/${car.id}?${searchParams.toString()}`
+      : `/car-view/${car.id}?${searchParams.toString()}`;
+    navigate(route);
   };
 
   const handleAddToCart = (car: CarType) => {
@@ -689,7 +686,6 @@ const UserCarCatalog: React.FC = () => {
             onViewCar={handleViewCar}
             onAddToCart={handleAddToCart}
             {...(user?.role === "admin" && {
-              onViewCarAdmin: handleViewCarAdmin,
               onEditCar: handleEditCar,
               onDeleteCar: handleDeleteCar,
             })}

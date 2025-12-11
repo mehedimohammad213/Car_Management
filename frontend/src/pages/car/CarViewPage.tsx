@@ -9,9 +9,18 @@ import {
   SlidersHorizontal,
   ArrowLeft,
   FileText,
+  Edit,
+  Trash2,
+  Eye,
+  EyeOff,
+  File,
+  Image,
 } from "lucide-react";
 import { carApi, Car as CarType } from "../../services/carApi";
 import { stockApi, Stock } from "../../services/stockApi";
+import { categoryApi, Category } from "../../services/categoryApi";
+import { useAuth } from "../../contexts/AuthContext";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 import {
   getStatusColor,
   getStockStatusColor,
@@ -19,17 +28,29 @@ import {
 } from "../../utils/carUtils";
 
 const CarViewPage: React.FC = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const [car, setCar] = useState<CarType | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showImageModal, setShowImageModal] = useState(false);
   const [stockData, setStockData] = useState<Stock | null>(null);
   const [pdfFiles, setPdfFiles] = useState<
     Array<{ name: string; url: string }>
   >([]);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [attachedFileInfo, setAttachedFileInfo] = useState<{
+    url: string;
+    type: 'image' | 'pdf';
+    filename: string;
+  } | null>(null);
+  const [isLoadingFile, setIsLoadingFile] = useState(false);
+  const isAdmin = user?.role === "admin";
 
   useEffect(() => {
     const fetchCarData = async () => {
@@ -38,6 +59,11 @@ const CarViewPage: React.FC = () => {
       try {
         setIsLoading(true);
         const carResponse = await carApi.getCar(parseInt(id));
+
+        let categoriesResponse = null;
+        if (isAdmin) {
+          categoriesResponse = await categoryApi.getCategories();
+        }
 
         // Extract car from response
         let carData: CarType | null = null;
@@ -54,6 +80,9 @@ const CarViewPage: React.FC = () => {
 
         if (carData) {
           setCar(carData);
+          if (isAdmin && categoriesResponse && categoriesResponse.data) {
+            setCategories(categoriesResponse.data.categories || []);
+          }
 
           // Fetch stock data
           try {
@@ -75,6 +104,18 @@ const CarViewPage: React.FC = () => {
 
           // Fetch PDF files
           await fetchPdfFiles(carData);
+
+          // Fetch attached file info if admin and car has attached_file
+          if (isAdmin && carData.attached_file) {
+            try {
+              const fileInfo = await carApi.getAttachedFile(carData.id);
+              if (fileInfo.success) {
+                setAttachedFileInfo(fileInfo.data);
+              }
+            } catch (error) {
+              console.error("Error fetching attached file info:", error);
+            }
+          }
         }
       } catch (error) {
         console.error("Error fetching car:", error);
@@ -84,7 +125,7 @@ const CarViewPage: React.FC = () => {
     };
 
     fetchCarData();
-  }, [id]);
+  }, [id, isAdmin]);
 
   const fetchPdfFiles = async (car: CarType) => {
     try {
@@ -154,6 +195,63 @@ const CarViewPage: React.FC = () => {
     setCurrentImageIndex(index);
   };
 
+  const handleEdit = () => {
+    navigate(`/update-car/${car?.id}?${searchParams.toString()}`);
+  };
+
+  const handleDelete = () => {
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!car) return;
+
+    setIsDeleting(true);
+    try {
+      await carApi.deleteCar(car.id);
+      navigate(`/cars?${searchParams.toString()}`, {
+        state: { message: "Car deleted successfully!" },
+      });
+    } catch (error) {
+      console.error("Error deleting car:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleViewFile = () => {
+    if (attachedFileInfo) {
+      window.open(attachedFileInfo.url, '_blank');
+    }
+  };
+
+  const handleDownloadFile = async () => {
+    if (!car || !attachedFileInfo) return;
+
+    try {
+      setIsLoadingFile(true);
+      const blob = await carApi.downloadAttachedFile(car.id);
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = attachedFileInfo.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      window.open(attachedFileInfo.url, '_blank');
+    } finally {
+      setIsLoadingFile(false);
+    }
+  };
+
+  const getBackRoute = () => {
+    return isAdmin ? `/admin/cars?${searchParams.toString()}` : `/cars?${searchParams.toString()}`;
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -170,7 +268,7 @@ const CarViewPage: React.FC = () => {
             Car not found
           </h2>
           <button
-            onClick={() => navigate(`/cars?${searchParams.toString()}`)}
+            onClick={() => navigate(getBackRoute())}
             className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
           >
             Back to Catalog
@@ -277,7 +375,7 @@ const CarViewPage: React.FC = () => {
         {/* Header */}
         <div className="mb-4 sm:mb-6">
           <button
-            onClick={() => navigate(`/cars?${searchParams.toString()}`)}
+            onClick={() => navigate(getBackRoute())}
             className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-3 sm:mb-4 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -291,6 +389,31 @@ const CarViewPage: React.FC = () => {
                 {car.variant && ` - ${car.variant}`}
               </h1>
             </div>
+            {isAdmin && (
+              <div className="flex items-center gap-3">
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                    car.status
+                  )}`}
+                >
+                  {car.status.replace("_", " ").toUpperCase()}
+                </span>
+                <button
+                  onClick={handleEdit}
+                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="flex items-center px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -307,7 +430,8 @@ const CarViewPage: React.FC = () => {
                       <img
                         src={car.photos[currentImageIndex].url}
                         alt={`${car.make} ${car.model}`}
-                        className="w-full h-full object-contain rounded-xl"
+                        className="w-full h-full object-contain rounded-xl cursor-pointer"
+                        onClick={() => setShowImageModal(true)}
                       />
                     </div>
                   ) : (
@@ -617,7 +741,101 @@ const CarViewPage: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Attached File - Admin Only */}
+        {isAdmin && attachedFileInfo && (
+          <div className="mt-4 sm:mt-6 lg:mt-8 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+              {attachedFileInfo.type === 'image' ? (
+                <Image className="w-5 h-5 text-green-600" />
+              ) : (
+                <File className="w-5 h-5 text-red-600" />
+              )}
+              Attached File
+            </h3>
+            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div className="flex items-center gap-3">
+                {attachedFileInfo.type === 'image' ? (
+                  <Image className="w-8 h-8 text-green-600" />
+                ) : (
+                  <File className="w-8 h-8 text-red-600" />
+                )}
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">{attachedFileInfo.filename}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{attachedFileInfo.type} file</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleViewFile}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Eye className="w-4 h-4" />
+                  View
+                </button>
+                <button
+                  onClick={handleDownloadFile}
+                  disabled={isLoadingFile}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
+                >
+                  {isLoadingFile ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4" />
+                  )}
+                  Download
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Image Modal */}
+      {showImageModal && car.photos && car.photos.length > 0 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+          <div className="relative max-w-4xl max-h-full">
+            <button
+              onClick={() => setShowImageModal(false)}
+              className="absolute top-4 right-4 z-10 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+            >
+              <EyeOff className="w-6 h-6" />
+            </button>
+            <img
+              src={car.photos[currentImageIndex].url}
+              alt={`${car.make} ${car.model}`}
+              className="max-w-full max-h-full object-contain rounded-lg"
+            />
+            {car.photos.length > 1 && (
+              <>
+                <button
+                  onClick={handlePrevImage}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-colors"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={handleNextImage}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-colors"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Car"
+        message="Are you sure you want to delete"
+        itemName={car ? `${car.make} ${car.model}` : ""}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

@@ -8,7 +8,6 @@ interface CarTableProps {
   cars: CarType[];
   stockData: Map<number, Stock>;
   onViewCar: (car: CarType) => void;
-  onViewCarAdmin?: (car: CarType) => void;
   onAddToCart: (car: CarType) => void;
   onEditCar?: (car: CarType) => void;
   onDeleteCar?: (car: CarType) => void;
@@ -24,7 +23,6 @@ const CarTable: React.FC<CarTableProps> = ({
   cars,
   stockData,
   onViewCar,
-  onViewCarAdmin,
   onAddToCart,
   onEditCar,
   onDeleteCar,
@@ -280,11 +278,7 @@ const CarTable: React.FC<CarTableProps> = ({
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button
-                      onClick={() =>
-                        isAdmin && onViewCarAdmin
-                          ? onViewCarAdmin(car)
-                          : onViewCar(car)
-                      }
+                      onClick={() => onViewCar(car)}
                       className="p-2.5 text-blue-600 hover:text-blue-700 rounded-lg transition-all duration-200 group/btn"
                       title={
                         isAdmin ? "View Car Details (Admin)" : "View Car Details"

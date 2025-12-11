@@ -16,7 +16,6 @@ const CategoryManagement = lazy(
   () => import("./pages/category/CategoryManagement"),
 );
 const CreateCar = lazy(() => import("./pages/car/CreateCar"));
-const ViewCar = lazy(() => import("./pages/car/ViewCar"));
 const UpdateCar = lazy(() => import("./pages/car/UpdateCar"));
 const StockManagement = lazy(() => import("./pages/stock/StockManagement"));
 const UserManagement = lazy(() => import("./pages/user/UserManagement"));
@@ -100,7 +99,7 @@ function App() {
                         path="/view-car/:id"
                         element={
                           <ProtectedRoute role="admin">
-                            <ViewCar />
+                            <CarViewPage />
                           </ProtectedRoute>
                         }
                       />
