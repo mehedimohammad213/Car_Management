@@ -38,7 +38,6 @@ const Cart = lazy(() => import("./pages/cart/Cart"));
 const UserOrders = lazy(() => import("./pages/order/UserOrders"));
 const AdminOrders = lazy(() => import("./pages/order/AdminOrders"));
 const Profile = lazy(() => import("./components/Profile"));
-const AuthTest = lazy(() => import("./pages/AuthTest"));
 
 function App() {
   return (
@@ -57,7 +56,6 @@ function App() {
                 <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
                   <Routes>
                     <Route path="/login" element={<Login />} />
-                    <Route path="/auth-test" element={<AuthTest />} />
                     {/* Public stock gallery (no header layout) */}
                     <Route path="/stock-gallery/:id" element={<StockGallery />} />
 
