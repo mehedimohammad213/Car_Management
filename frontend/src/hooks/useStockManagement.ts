@@ -354,18 +354,12 @@ export const useStockManagement = () => {
         align: "center",
       });
 
-      doc.setFontSize(14);
-      doc.setFont("helvetica", "bold");
-      doc.text("STOCK LIST", pageWidth / 2, 26, {
-        align: "center",
-      });
-
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       doc.text(
         "57, Purana Palton Line, VIP Road, Dhaka-1000. 01714211956",
         pageWidth / 2,
-        32,
+        26,
         { align: "center" }
       );
 
@@ -391,7 +385,11 @@ export const useStockManagement = () => {
       const dateStr = `DATE: ${currentDate.getDate()} ${
         months[currentDate.getMonth()]
       } ${currentDate.getFullYear()}`;
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text("STOCK LIST", pageWidth / 2, 38, { align: "center" });
       doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
       doc.text(dateStr, tableRightEdge, 38, { align: "right" });
 
       const tableColumns = [
