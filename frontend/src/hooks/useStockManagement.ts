@@ -533,7 +533,7 @@ export const useStockManagement = () => {
             7: { cellWidth: 24, halign: "left" },
           },
           didParseCell: function (data: any) {
-            if (data.column.index === 7 && data.row.index >= 0) {
+            if (data.column.index === 7 && data.row.index >= 0 && data.section !== 'head') {
               const rowIndex = data.row.index;
               const viewUrl = viewLinkMap.get(rowIndex);
               if (viewUrl) {
@@ -546,7 +546,7 @@ export const useStockManagement = () => {
             }
           },
           didDrawCell: function (data: any) {
-            if (data.column.index === 7 && data.cell.viewUrl && data.cell.originalText) {
+            if (data.column.index === 7 && data.cell.viewUrl && data.cell.originalText && data.section !== 'head') {
               const cellX = data.cell.x;
               const cellY = data.cell.y;
               const cellWidth = data.cell.width;
