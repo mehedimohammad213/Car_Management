@@ -421,14 +421,14 @@ export const useStockManagement = () => {
             ];
           }
 
-          const refNo =
-            car.ref_no ||
-            `#F${car.year?.toString().slice(-2) || "24"}TCR.SX2V-${String(
-              index + 1
-            ).padStart(2, "0")}`;
+          // const refNo =
+          //   car.ref_no ||
+          //   `#F${car.year?.toString().slice(-2) || "24"}TCR.SX2V-${String(
+          //     index + 1
+          //   ).padStart(2, "0")}`;
           const packageText = car.package ? `${car.package} ` : "";
           const fuelType = car.fuel ? `-${car.fuel.toUpperCase()}` : "";
-          const carName = `Ref: ${refNo}\n${car.year || "N/A"} ${
+          const carName = `${car.year || "N/A"} ${
             car.make || "N/A"
           } ${car.model || "N/A"} ${packageText}${fuelType}\nChassis No: ${
             car.chassis_no_full || car.chassis_no_masked || "N/A"
