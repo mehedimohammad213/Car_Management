@@ -357,7 +357,7 @@ export const useStockManagement = () => {
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       doc.text(
-        "57, Purana Palton Line, VIP Road, Dhaka-1000. 01714211956",
+        "57, Purana Palton Line, VIP Road, Dhaka-1000.    Contact No : 01714211956",
         pageWidth / 2,
         26,
         { align: "center" }
