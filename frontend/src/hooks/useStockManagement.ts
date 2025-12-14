@@ -538,18 +538,71 @@ export const useStockManagement = () => {
               const viewUrl = viewLinkMap.get(rowIndex);
               if (viewUrl) {
                 data.cell.viewUrl = viewUrl;
+                // Store original text for custom rendering
+                data.cell.originalText = data.cell.text;
+                // Clear text to prevent default rendering
+                data.cell.text = [];
               }
             }
           },
           didDrawCell: function (data: any) {
-            if (data.column.index === 7 && data.cell.viewUrl) {
+            if (data.column.index === 7 && data.cell.viewUrl && data.cell.originalText) {
               const cellX = data.cell.x;
               const cellY = data.cell.y;
               const cellWidth = data.cell.width;
-              const lineHeight = 8;
+              const cellHeight = data.cell.height;
+              const padding = data.cell.padding("left") || 2;
+              const lineHeight = 4;
 
               try {
-                doc.link(cellX, cellY, cellWidth, lineHeight, {
+                // Get the original cell text content
+                const cellText = data.cell.originalText || [];
+                const fullText = Array.isArray(cellText) ? cellText.join("\n") : cellText;
+
+                // Extract "View Cars" from the first line
+                const lines = fullText.split("\n");
+                const viewCarsText = "View Cars";
+
+                if (lines[0] && lines[0].includes(viewCarsText)) {
+                  // Calculate position for "View Cars" text
+                  const textX = cellX + padding;
+                  const textY = cellY + padding + 2;
+
+                  // Save current state
+                  const originalTextColor = doc.getTextColor();
+                  const originalFontSize = doc.getFontSize();
+
+                  // Set blue color and underline for "View Cars"
+                  doc.setFontSize(7);
+                  doc.setTextColor(0, 0, 255); // Blue color
+                  doc.setFont("helvetica", "normal");
+
+                  // Draw "View Cars" text
+                  doc.text(viewCarsText, textX, textY);
+
+                  // Draw underline
+                  const textWidth = doc.getTextWidth(viewCarsText);
+                  doc.setDrawColor(0, 0, 255);
+                  doc.setLineWidth(0.3);
+                  const underlineY = textY + 1;
+                  doc.line(textX, underlineY, textX + textWidth, underlineY);
+
+                  // Draw remaining text (Location and Status) in normal color
+                  if (lines.length > 1) {
+                    doc.setTextColor(0, 0, 0); // Black color
+                    const remainingText = lines.slice(1).join("\n");
+                    doc.text(remainingText, textX, textY + lineHeight, {
+                      maxWidth: cellWidth - 2 * padding,
+                    });
+                  }
+
+                  // Restore original state
+                  doc.setTextColor(originalTextColor);
+                  doc.setFontSize(originalFontSize);
+                }
+
+                // Add clickable link for the entire cell
+                doc.link(cellX, cellY, cellWidth, cellHeight, {
                   url: data.cell.viewUrl,
                 });
               } catch (linkError) {
