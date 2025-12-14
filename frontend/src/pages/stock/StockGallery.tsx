@@ -12,6 +12,8 @@ import {
   Palette,
   Hash,
   Tag,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { stockApi, Stock } from "../../services/stockApi";
 import { formatPrice, getStatusColor } from "../../utils/carUtils";
@@ -67,6 +69,18 @@ const StockGallery: React.FC = () => {
 
   const handleThumbClick = (index: number) => {
     setCurrentImageIndex(index);
+  };
+
+  const handlePreviousImage = () => {
+    if (photos.length > 0) {
+      setCurrentImageIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
+    }
+  };
+
+  const handleNextImage = () => {
+    if (photos.length > 0) {
+      setCurrentImageIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
+    }
   };
 
   if (isLoading) {
@@ -134,7 +148,25 @@ const StockGallery: React.FC = () => {
                     <span className="text-sm sm:text-base">No photos available</span>
                   </div>
                 )}
-                <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-wrap gap-1.5 sm:gap-2">
+                {photos.length > 1 && (
+                  <>
+                    <button
+                      onClick={handlePreviousImage}
+                      className="absolute left-2 sm:left-3 md:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-lg z-10"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                    </button>
+                    <button
+                      onClick={handleNextImage}
+                      className="absolute right-2 sm:right-3 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-lg z-10"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                    </button>
+                  </>
+                )}
+                <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-wrap gap-1.5 sm:gap-2 z-10">
                   <span
                     className={`px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold border ${getStatusColor(
                       stock.status
@@ -146,7 +178,7 @@ const StockGallery: React.FC = () => {
                     Qty: {stock.quantity}
                   </span>
                 </div>
-                <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 bg-black/70 text-white text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full">
+                <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 bg-black/70 text-white text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full z-10">
                   {photos.length > 0
                     ? `${currentImageIndex + 1} / ${photos.length}`
                     : "0 / 0"}
