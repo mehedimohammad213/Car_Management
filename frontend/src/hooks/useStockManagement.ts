@@ -387,7 +387,19 @@ export const useStockManagement = () => {
       } ${currentDate.getFullYear()}`;
       doc.setFontSize(14);
       doc.setFont("helvetica", "bold");
-      doc.text("STOCK LIST", pageWidth / 2, 38, { align: "center" });
+      const stockListText = "STOCK LIST";
+      const stockListTextWidth = doc.getTextWidth(stockListText);
+      doc.text(stockListText, pageWidth / 2, 38, { align: "center" });
+      // Draw underline for STOCK LIST
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth(0.5);
+      const underlineY = 38 + 2;
+      doc.line(
+        pageWidth / 2 - stockListTextWidth / 2,
+        underlineY,
+        pageWidth / 2 + stockListTextWidth / 2,
+        underlineY
+      );
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       doc.text(dateStr, tableRightEdge, 38, { align: "right" });
