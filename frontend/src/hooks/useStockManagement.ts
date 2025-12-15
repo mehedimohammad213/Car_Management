@@ -346,63 +346,48 @@ export const useStockManagement = () => {
 
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
-
-      doc.setFontSize(18);
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(0, 0, 0);
-      doc.text("DREAM AGENT CAR VISION", pageWidth / 2, 20, {
-        align: "center",
-      });
-
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-      doc.text(
-        "57, Purana Palton Line, VIP Road, Dhaka-1000.    Contact No : 01714211956",
-        pageWidth / 2,
-        26,
-        { align: "center" }
-      );
-
       const tableLeftMargin = 14;
       const tableWidth = 8 + 45 + 15 + 18 + 20 + 40 + 20 + 24;
       const tableRightEdge = tableLeftMargin + tableWidth;
+      const dateStr = "STOCK LIST DATE: 15 DECEMBER 2025";
 
-      const currentDate = new Date();
-      const months = [
-        "JANUARY",
-        "FEBRUARY",
-        "MARCH",
-        "APRIL",
-        "MAY",
-        "JUNE",
-        "JULY",
-        "AUGUST",
-        "SEPTEMBER",
-        "OCTOBER",
-        "NOVEMBER",
-        "DECEMBER",
-      ];
-      const dateStr = `DATE: ${currentDate.getDate()} ${
-        months[currentDate.getMonth()]
-      } ${currentDate.getFullYear()}`;
-      doc.setFontSize(14);
-      doc.setFont("helvetica", "bold");
-      const stockListText = "STOCK LIST";
-      const stockListTextWidth = doc.getTextWidth(stockListText);
-      doc.text(stockListText, pageWidth / 2, 38, { align: "center" });
-      // Draw underline for STOCK LIST
-      doc.setDrawColor(0, 0, 0);
-      doc.setLineWidth(0.5);
-      const underlineY = 38 + 2;
-      doc.line(
-        pageWidth / 2 - stockListTextWidth / 2,
-        underlineY,
-        pageWidth / 2 + stockListTextWidth / 2,
-        underlineY
-      );
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-      doc.text(dateStr, tableRightEdge, 38, { align: "right" });
+      const drawHeader = () => {
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(0, 0, 0);
+        doc.text("DREAM AGENT CAR VISION", pageWidth / 2, 20, {
+          align: "center",
+        });
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+          "57, Purana Palton Line, VIP Road, Dhaka-1000. Contact No : 01714211956",
+          pageWidth / 2,
+          26,
+          { align: "center" }
+        );
+
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        const stockListText = "STOCK LIST";
+        const stockListTextWidth = doc.getTextWidth(stockListText);
+        doc.text(stockListText, pageWidth / 2, 38, { align: "center" });
+        // Draw underline for STOCK LIST
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.5);
+        const underlineY = 38 + 2;
+        doc.line(
+          pageWidth / 2 - stockListTextWidth / 2,
+          underlineY,
+          pageWidth / 2 + stockListTextWidth / 2,
+          underlineY
+        );
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text(dateStr, tableRightEdge, 38, { align: "right" });
+      };
 
       const tableColumns = [
         "Sl.",
@@ -467,14 +452,8 @@ export const useStockManagement = () => {
               }`
             : "Price on request";
           const location = car.location || "N/A";
-          const status =
-            stock.status === "available" && stock.quantity > 0
-              ? "Available"
-              : stock.status?.charAt(0).toUpperCase() +
-                  stock.status?.slice(1) || "N/A";
-
           const viewLabel = "View Cars";
-          const viewText = `${viewLabel}\nLocation: ${location}\nStatus: ${status}`;
+          const viewText = `${viewLabel}\nLocation: ${location}`;
 
           const baseUrl =
             typeof window !== "undefined" && window.location?.origin
@@ -513,6 +492,7 @@ export const useStockManagement = () => {
           head: [tableColumns],
           body: tableData,
           startY: 44,
+          margin: { top: 44 },
           styles: {
             fontSize: 7,
             cellPadding: 2,
@@ -626,6 +606,7 @@ export const useStockManagement = () => {
             }
           },
           didDrawPage: function (data: any) {
+            drawHeader();
             const pageCount = doc.getNumberOfPages();
             const currentPageNumber = data.pageNumber;
             doc.setFontSize(8);
