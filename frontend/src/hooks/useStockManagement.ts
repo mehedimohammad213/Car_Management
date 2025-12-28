@@ -25,7 +25,9 @@ const PER_PAGE = 10;
 
 export const useStockManagement = () => {
   const [allStocks, setAllStocks] = useState<Stock[]>([]);
+  const [availableCars, setAvailableCars] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingAvailableCars, setIsLoadingAvailableCars] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [yearFilter, setYearFilter] = useState("");
   const [colorFilter, setColorFilter] = useState("");
@@ -71,6 +73,23 @@ export const useStockManagement = () => {
       setIsLoading(false);
     }
   }, [showMessage, sortBy, sortOrder]);
+
+  const fetchAvailableCars = useCallback(async () => {
+    try {
+      setIsLoadingAvailableCars(true);
+      const response = await stockApi.getAvailableCars();
+      if (response.success && response.data) {
+        setAvailableCars(response.data);
+      } else {
+        setAvailableCars([]);
+      }
+    } catch (error) {
+      console.error("Error fetching available cars:", error);
+      setAvailableCars([]);
+    } finally {
+      setIsLoadingAvailableCars(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchStocks();
@@ -677,10 +696,12 @@ export const useStockManagement = () => {
 
   return {
     stocks: derivedData.stocks,
+    availableCars,
     totalPages: derivedData.totalPages,
     totalItems: derivedData.totalItems,
     filterOptions: derivedData.filterOptions,
     isLoading,
+    isLoadingAvailableCars,
     searchTerm,
     setSearchTerm,
     yearFilter,
@@ -696,8 +717,11 @@ export const useStockManagement = () => {
     perPage: PER_PAGE,
     isGeneratingPDF,
     showDrawer,
+    setShowDrawer,
     drawerMode,
+    setDrawerMode,
     selectedStock,
+    setSelectedStock,
     showDeleteModal,
     isDeleting,
     setShowDeleteModal,
@@ -715,6 +739,7 @@ export const useStockManagement = () => {
     handleCreateInvoice,
     setShowInvoiceModal,
     fetchStocks,
+    fetchAvailableCars,
     showMessage,
   };
 };
