@@ -191,7 +191,7 @@ class CarController extends Controller
             'fob_value_usd' => 'nullable|numeric|min:0',
             'freight_usd' => 'nullable|numeric|min:0',
             'chassis_no_masked' => 'nullable|string|max:32',
-            'chassis_no_full' => 'nullable|string|max:64',
+            'chassis_no_full' => 'nullable|string|max:64|unique:cars,chassis_no_full',
             'location' => 'nullable|string|max:128',
             'country_origin' => 'nullable|string|max:64',
             'status' => 'nullable|string|max:32',
@@ -581,7 +581,12 @@ class CarController extends Controller
             'fob_value_usd' => 'nullable|numeric|min:0',
             'freight_usd' => 'nullable|numeric|min:0',
             'chassis_no_masked' => 'nullable|string|max:32',
-            'chassis_no_full' => 'nullable|string|max:64',
+            'chassis_no_full' => [
+                'nullable',
+                'string',
+                'max:64',
+                Rule::unique('cars')->ignore($car->id)
+            ],
             'location' => 'nullable|string|max:128',
             'country_origin' => 'nullable|string|max:64',
             'status' => 'nullable|string|max:32',

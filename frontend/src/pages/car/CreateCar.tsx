@@ -69,7 +69,41 @@ const CreateCar: React.FC = () => {
       });
     } catch (error: any) {
       console.error("Error creating car:", error);
-      setError(error.message || "Failed to create car. Please try again.");
+
+      // Extract error message from API response
+      let errorMessage = "Failed to create car. Please try again.";
+
+      if (error.response?.data) {
+        const responseData = error.response.data;
+
+        // Check for validation errors
+        if (responseData.errors) {
+          const errors = responseData.errors;
+
+          // Check for chassis_no_full duplicate error
+          if (errors.chassis_no_full) {
+            errorMessage = Array.isArray(errors.chassis_no_full)
+              ? errors.chassis_no_full[0]
+              : errors.chassis_no_full;
+          } else if (responseData.message) {
+            errorMessage = responseData.message;
+          } else {
+            // Get first error message from validation errors
+            const firstErrorKey = Object.keys(errors)[0];
+            if (firstErrorKey && errors[firstErrorKey]) {
+              errorMessage = Array.isArray(errors[firstErrorKey])
+                ? errors[firstErrorKey][0]
+                : errors[firstErrorKey];
+            }
+          }
+        } else if (responseData.message) {
+          errorMessage = responseData.message;
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

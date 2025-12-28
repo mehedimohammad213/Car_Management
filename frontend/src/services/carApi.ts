@@ -262,9 +262,8 @@ class CarApiService {
         window.location.href = "/login";
       }
 
-      throw new Error(
-        `HTTP error! status: ${error.response?.status}, body: ${error.response?.data}`
-      );
+      // Re-throw the original error to preserve response data
+      throw error;
     }
   }
 

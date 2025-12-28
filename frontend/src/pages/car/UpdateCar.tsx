@@ -14,12 +14,13 @@ const UpdateCar: React.FC = () => {
   const [car, setCar] = useState<Car | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [filterOptions, setFilterOptions] = useState<CarFilterOptions | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       if (!id) {
-        setError("Car ID is required");
+        setFetchError("Car ID is required");
         setIsLoading(false);
         return;
       }
@@ -49,7 +50,7 @@ const UpdateCar: React.FC = () => {
         setFilterOptions(filterOptionsData.data);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError("Failed to load car data");
+        setFetchError("Failed to load car data");
       } finally {
         setIsLoading(false);
       }
@@ -62,7 +63,7 @@ const UpdateCar: React.FC = () => {
     if (!car) return;
 
     setIsSaving(true);
-    setError(null);
+    setSubmitError(null);
     try {
       console.log("Updating car data:", formData);
 
@@ -80,7 +81,41 @@ const UpdateCar: React.FC = () => {
       });
     } catch (error: any) {
       console.error("Error updating car:", error);
-      setError(error.message || "Failed to update car. Please try again.");
+
+      // Extract error message from API response
+      let errorMessage = "Failed to update car. Please try again.";
+
+      if (error.response?.data) {
+        const responseData = error.response.data;
+
+        // Check for validation errors
+        if (responseData.errors) {
+          const errors = responseData.errors;
+
+          // Check for chassis_no_full duplicate error
+          if (errors.chassis_no_full) {
+            errorMessage = Array.isArray(errors.chassis_no_full)
+              ? errors.chassis_no_full[0]
+              : errors.chassis_no_full;
+          } else if (responseData.message) {
+            errorMessage = responseData.message;
+          } else {
+            // Get first error message from validation errors
+            const firstErrorKey = Object.keys(errors)[0];
+            if (firstErrorKey && errors[firstErrorKey]) {
+              errorMessage = Array.isArray(errors[firstErrorKey])
+                ? errors[firstErrorKey][0]
+                : errors[firstErrorKey];
+            }
+          }
+        } else if (responseData.message) {
+          errorMessage = responseData.message;
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      setSubmitError(errorMessage);
     } finally {
       setIsSaving(false);
     }
@@ -98,12 +133,12 @@ const UpdateCar: React.FC = () => {
     );
   }
 
-  if (error || !car) {
+  if (fetchError || !car) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            {error || "Car not found"}
+            {fetchError || "Car not found"}
           </h2>
           <button
             onClick={() => navigate(`/cars?${searchParams.toString()}`)}
@@ -146,7 +181,7 @@ const UpdateCar: React.FC = () => {
         </div>
 
         {/* Error Message */}
-        {error && (
+        {submitError && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -163,7 +198,7 @@ const UpdateCar: React.FC = () => {
                 </svg>
               </div>
               <div className="ml-3">
-                <p className="text-sm text-red-800">{error}</p>
+                <p className="text-sm text-red-800">{submitError}</p>
               </div>
             </div>
           </div>
