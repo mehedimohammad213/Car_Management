@@ -250,7 +250,7 @@ export const useStockManagement = () => {
   const handleDrawerSubmit = useCallback(
     async (data: CreateStockData | UpdateStockData) => {
       try {
-        if (selectedStock) {
+        if (selectedStock && selectedStock.id !== 0) {
           const response = await stockApi.updateStock(
             selectedStock.id,
             data as UpdateStockData
@@ -278,7 +278,7 @@ export const useStockManagement = () => {
         console.error("Error saving stock:", error);
         const errorMessage =
           error?.message ||
-          (selectedStock ? "Failed to update stock" : "Failed to create stock");
+          (selectedStock && selectedStock.id !== 0 ? "Failed to update stock" : "Failed to create stock");
         showMessage("error", errorMessage);
       }
     },
