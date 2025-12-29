@@ -368,7 +368,17 @@ export const useStockManagement = () => {
       const tableLeftMargin = 14;
       const tableWidth = 8 + 45 + 15 + 18 + 20 + 40 + 20 + 24;
       const tableRightEdge = tableLeftMargin + tableWidth;
-      const dateStr = "STOCK LIST DATE: 15 DECEMBER 2025";
+
+      // Format current date as "DD MONTH YYYY"
+      const now = new Date();
+      const months = [
+        "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+        "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+      ];
+      const day = now.getDate();
+      const month = months[now.getMonth()];
+      const year = now.getFullYear();
+      const dateStr = `STOCK LIST DATE: ${day} ${month} ${year}`;
 
       const drawHeader = () => {
         doc.setFontSize(18);
