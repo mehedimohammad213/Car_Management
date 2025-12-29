@@ -14,6 +14,7 @@ import {
 import { InvoiceCreationModal } from "../../components/stock/InvoiceCreationModal";
 import AvailableCarsTable from "../../components/stock/AvailableCarsTable";
 import { useStockManagement } from "../../hooks/useStockManagement";
+import { stockApi } from "../../services/stockApi";
 
 const StockManagement: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"current" | "before">("current");
@@ -73,18 +74,29 @@ const StockManagement: React.FC = () => {
     }
   }, [activeTab, fetchAvailableCars]);
 
-  const handleCreateStockFromCar = (car: any) => {
-    setSelectedStock({
-      id: 0,
-      car_id: car.id,
-      quantity: 0,
-      status: "available",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      car: car,
-    } as any);
-    setDrawerMode("create");
-    setShowDrawer(true);
+  const handleCreateStockFromCar = async (car: any) => {
+    try {
+      const stockData = {
+        car_id: car.id,
+        quantity: 1,
+        price: car.price_amount ? (typeof car.price_amount === "string" ? parseFloat(car.price_amount) : car.price_amount) : 0,
+        status: "available" as const,
+        notes: "",
+      };
+
+      const response = await stockApi.createStock(stockData);
+
+      if (response.success) {
+        showMessage("success", "Stock added successfully");
+        fetchStocks();
+        fetchAvailableCars();
+      } else {
+        showMessage("error", response.message || "Failed to add stock");
+      }
+    } catch (error: any) {
+      console.error("Error creating stock:", error);
+      showMessage("error", error?.message || "Failed to add stock");
+    }
   };
 
   return (
@@ -117,7 +129,7 @@ const StockManagement: React.FC = () => {
               }`}
             >
               <span className="hidden sm:inline">Available Cars</span>
-              <span className="sm:hidden">Before Stock</span>
+              <span className="sm:hidden">Available Cars</span>
             </button>
           </div>
         </div>
@@ -169,7 +181,8 @@ const StockManagement: React.FC = () => {
           />
         )}
 
-        <StockDrawer
+        {/* Add Stock Popup - Commented out */}
+        {/* <StockDrawer
           isOpen={showDrawer}
           onClose={handleDrawerClose}
           title={drawerMode === "create" ? "Create New Stock" : "Edit Stock"}
@@ -183,7 +196,7 @@ const StockManagement: React.FC = () => {
             isLoading={false}
             onError={(error) => showMessage("error", error)}
           />
-        </StockDrawer>
+        </StockDrawer> */}
 
         <DeleteConfirmationModal
           isOpen={showDeleteModal}
