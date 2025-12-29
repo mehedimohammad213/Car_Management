@@ -13,11 +13,12 @@ import {
 } from "../../components/stock";
 import { InvoiceCreationModal } from "../../components/stock/InvoiceCreationModal";
 import AvailableCarsTable from "../../components/stock/AvailableCarsTable";
+import TotalStockTable from "../../components/stock/TotalStockTable";
 import { useStockManagement } from "../../hooks/useStockManagement";
 import { stockApi } from "../../services/stockApi";
 
 const StockManagement: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"current" | "before">("current");
+  const [activeTab, setActiveTab] = useState<"current" | "before" | "total">("current");
 
   const {
     stocks,
@@ -131,6 +132,17 @@ const StockManagement: React.FC = () => {
               <span className="hidden sm:inline">Available Cars</span>
               <span className="sm:hidden">Available Cars</span>
             </button>
+            <button
+              onClick={() => setActiveTab("total")}
+              className={`flex-1 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-semibold transition-all duration-200 ${
+                activeTab === "total"
+                  ? "bg-purple-600 text-white border-b-2 border-purple-600"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+              }`}
+            >
+              <span className="hidden sm:inline">Total Stock</span>
+              <span className="sm:hidden">Total Stock</span>
+            </button>
           </div>
         </div>
 
@@ -172,13 +184,15 @@ const StockManagement: React.FC = () => {
               onPageChange={(page) => setCurrentPage(page)}
             />
           </>
-        ) : (
+        ) : activeTab === "before" ? (
           <AvailableCarsTable
             cars={availableCars}
             isLoading={isLoadingAvailableCars}
             onCreateStock={handleCreateStockFromCar}
             onRefresh={fetchAvailableCars}
           />
+        ) : (
+          <TotalStockTable />
         )}
 
         {/* Add Stock Popup - Commented out */}
