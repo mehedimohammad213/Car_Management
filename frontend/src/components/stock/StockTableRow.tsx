@@ -228,13 +228,14 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
             <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
           </button>
         )}
-        <button
+        {/* Edit Button - Commented out */}
+        {/* <button
           onClick={() => onEdit(stock)}
           className="p-2.5 text-amber-600 hover:text-amber-700 rounded-lg transition-all duration-200 group/btn"
           title="Edit Stock"
         >
           <Edit className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-        </button>
+        </button> */}
         <button
           onClick={() => onDelete(stock)}
           className="p-2.5 text-red-600 hover:text-red-700 rounded-lg transition-all duration-200 group/btn"

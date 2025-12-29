@@ -151,8 +151,8 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
           </button>
         )}
 
-        {/* Add Stock Button */}
-        {onCreateStock && (
+        {/* Add Stock Button - Commented out */}
+        {/* {onCreateStock && (
           <button
             onClick={onCreateStock}
             className="w-full lg:w-auto flex items-center justify-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
@@ -161,7 +161,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
             <Plus className="w-5 h-5" />
             <span>Add Stock</span>
           </button>
-        )}
+        )} */}
       </div>
     </div>
   );
