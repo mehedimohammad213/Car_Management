@@ -52,13 +52,13 @@ const CarImageGallery: React.FC<CarImageGalleryProps> = ({
           <>
             <button
               onClick={onPrevImage}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white p-2 rounded-full transition-colors"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
             <button
               onClick={onNextImage}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white p-2 rounded-full transition-colors"
             >
               <ChevronRight className="w-6 h-6" />
             </button>
