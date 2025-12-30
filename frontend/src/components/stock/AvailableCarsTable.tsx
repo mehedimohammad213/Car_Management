@@ -16,6 +16,7 @@ interface AvailableCar {
   ref_no?: string;
   chassis_no_full?: string;
   chassis_no_masked?: string;
+  status?: string;
   category?: {
     id: number;
     name: string;
@@ -44,6 +45,9 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
   onCreateStock,
   onRefresh,
 }) => {
+  // Filter out cars with status="sold"
+  const filteredCars = cars.filter((car) => car.status !== "sold");
+
   if (isLoading) {
     return (
       <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
@@ -57,7 +61,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
     );
   }
 
-  if (cars.length === 0) {
+  if (filteredCars.length === 0) {
     return (
       <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
         <div className="text-center py-16">
@@ -122,7 +126,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
 
           {/* Table Body with Enhanced Styling */}
           <div className="divide-y divide-gray-100 bg-gray-50/30">
-            {cars.map((car) => (
+            {filteredCars.map((car) => (
               <div
                 key={car.id}
                 className="grid grid-cols-12 gap-4 p-5 hover:bg-blue-50/50 transition-colors"
