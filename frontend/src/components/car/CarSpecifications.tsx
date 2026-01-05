@@ -32,7 +32,7 @@ const CarSpecifications: React.FC<CarSpecificationsProps> = ({
       value: car.year || "N/A",
     },
     {
-      label: "Engine",
+      label: "Engine(CC)",
       value: car.engine_cc
         ? `${car.engine_cc.toLocaleString()} cc`
         : "N/A",
