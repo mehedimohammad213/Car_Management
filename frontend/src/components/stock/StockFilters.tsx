@@ -1,5 +1,6 @@
 import React from "react";
 import { Search, X, Download, FileText, Plus } from "lucide-react";
+import { makeToModels } from "../../utils/carData";
 
 interface StockFiltersProps {
   searchTerm: string;
@@ -7,6 +8,10 @@ interface StockFiltersProps {
   onClearFilters: () => void;
   yearFilter: string;
   onYearFilterChange: (year: string) => void;
+  makeFilter?: string;
+  onMakeFilterChange?: (make: string) => void;
+  modelFilter?: string;
+  onModelFilterChange?: (model: string) => void;
   colorFilter: string;
   onColorFilterChange: (color: string) => void;
   fuelFilter: string;
@@ -28,6 +33,10 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
   onClearFilters,
   yearFilter,
   onYearFilterChange,
+  makeFilter,
+  onMakeFilterChange,
+  modelFilter,
+  onModelFilterChange,
   colorFilter,
   onColorFilterChange,
   fuelFilter,
@@ -40,7 +49,10 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
 }) => {
   const hasActiveFilters =
     searchTerm ||
+    searchTerm ||
     yearFilter ||
+    makeFilter ||
+    modelFilter ||
     colorFilter ||
     fuelFilter;
 
@@ -75,8 +87,46 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
           </select>
         </div>
 
-        {/* Color Filter */}
+        {/* Make Filter */}
         <div className="w-full lg:w-auto">
+          <select
+            value={makeFilter || ""}
+            onChange={(e) => {
+              if (onMakeFilterChange) {
+                onMakeFilterChange(e.target.value);
+                if (onModelFilterChange) onModelFilterChange("");
+              }
+            }}
+            className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">All Makes</option>
+            {Object.keys(makeToModels).sort().map((make) => (
+              <option key={make} value={make}>
+                {make}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Model Filter */}
+        <div className="w-full lg:w-auto">
+          <select
+            value={modelFilter || ""}
+            onChange={(e) => onModelFilterChange && onModelFilterChange(e.target.value)}
+            disabled={!makeFilter}
+            className={`w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${!makeFilter ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+          >
+            <option value="">All Models</option>
+            {makeFilter && makeToModels[makeFilter]?.sort().map((model) => (
+              <option key={model} value={model}>
+                {model}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Color Filter */}
+        {/* <div className="w-full lg:w-auto">
           <select
             value={colorFilter}
             onChange={(e) => onColorFilterChange(e.target.value)}
@@ -89,10 +139,10 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         {/* Fuel Type Filter */}
-        <div className="w-full lg:w-auto">
+        {/* <div className="w-full lg:w-auto">
           <select
             value={fuelFilter}
             onChange={(e) => onFuelFilterChange(e.target.value)}
@@ -105,7 +155,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         {/* Clear Filters Button */}
         {hasActiveFilters && (
@@ -124,8 +174,8 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
             onClick={onGeneratePDF}
             disabled={isGeneratingPDF}
             className={`flex items-center justify-center transition-colors font-medium shadow-sm ${isGeneratingPDF
-                ? "w-auto px-4 py-2 rounded-full bg-gray-300 text-gray-500 cursor-not-allowed gap-2"
-                : "w-10 h-10 rounded-full bg-green-600 text-white hover:bg-green-700"
+              ? "w-auto px-4 py-2 rounded-full bg-gray-300 text-gray-500 cursor-not-allowed gap-2"
+              : "w-10 h-10 rounded-full bg-green-600 text-white hover:bg-green-700"
               }`}
             title="Download PDF"
           >

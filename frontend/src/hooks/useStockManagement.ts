@@ -30,6 +30,8 @@ export const useStockManagement = () => {
   const [isLoadingAvailableCars, setIsLoadingAvailableCars] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [yearFilter, setYearFilter] = useState("");
+  const [makeFilter, setMakeFilter] = useState("");
+  const [modelFilter, setModelFilter] = useState("");
   const [colorFilter, setColorFilter] = useState("");
   const [fuelFilter, setFuelFilter] = useState("");
   const [sortBy, setSortBy] = useState("created_at");
@@ -97,7 +99,7 @@ export const useStockManagement = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, yearFilter, colorFilter, fuelFilter]);
+  }, [searchTerm, yearFilter, makeFilter, modelFilter, colorFilter, fuelFilter]);
 
   const derivedData = useMemo(() => {
     if (allStocks.length === 0) {
@@ -126,6 +128,24 @@ export const useStockManagement = () => {
           car.variant?.toLowerCase().includes(searchLower)
         );
       });
+    }
+
+    if (yearFilter) {
+      filtered = filtered.filter(
+        (stock) => stock.car?.year?.toString() === yearFilter
+      );
+    }
+
+    if (makeFilter) {
+      filtered = filtered.filter(
+        (stock) => stock.car?.make === makeFilter
+      );
+    }
+
+    if (modelFilter) {
+      filtered = filtered.filter(
+        (stock) => stock.car?.model === modelFilter
+      );
     }
 
     if (yearFilter) {
@@ -206,6 +226,8 @@ export const useStockManagement = () => {
     colorFilter,
     currentPage,
     fuelFilter,
+    makeFilter,
+    modelFilter,
     searchTerm,
     sortBy,
     sortOrder,
@@ -306,6 +328,8 @@ export const useStockManagement = () => {
   const handleClearFilters = useCallback(() => {
     setSearchTerm("");
     setYearFilter("");
+    setMakeFilter("");
+    setModelFilter("");
     setColorFilter("");
     setFuelFilter("");
     setCurrentPage(1);
@@ -454,11 +478,9 @@ export const useStockManagement = () => {
           //   ).padStart(2, "0")}`;
           const packageText = car.package ? `${car.package} ` : "";
           const fuelType = car.fuel ? `-${car.fuel.toUpperCase()}` : "";
-          const carName = `${car.year || "N/A"} ${
-            car.make || "N/A"
-          } ${car.model || "N/A"} ${packageText}${fuelType}\nChassis No: ${
-            car.chassis_no_full || car.chassis_no_masked || "N/A"
-          }`;
+          const carName = `${car.year || "N/A"} ${car.make || "N/A"
+            } ${car.model || "N/A"} ${packageText}${fuelType}\nChassis No: ${car.chassis_no_full || car.chassis_no_masked || "N/A"
+            }`;
 
           const grade = car.grade_overall || "N/A";
           const mileage = car.mileage_km
@@ -469,16 +491,15 @@ export const useStockManagement = () => {
           const colorCC = cc ? `${color}\n${cc}` : color;
           const keyFeatures = car.keys_feature
             ? car.keys_feature
-                .split(",")
-                .map((f: string) => f.trim())
-                .join(", ")
+              .split(",")
+              .map((f: string) => f.trim())
+              .join(", ")
             : "N/A";
           const price = car.price_amount
-            ? `৳ ${
-                typeof car.price_amount === "string"
-                  ? parseFloat(car.price_amount).toLocaleString("en-IN")
-                  : (car.price_amount as number).toLocaleString("en-IN")
-              }`
+            ? `৳ ${typeof car.price_amount === "string"
+              ? parseFloat(car.price_amount).toLocaleString("en-IN")
+              : (car.price_amount as number).toLocaleString("en-IN")
+            }`
             : "Price on request";
           const location = car.location || "N/A";
           const viewLabel = "View Cars";
@@ -716,6 +737,10 @@ export const useStockManagement = () => {
     setSearchTerm,
     yearFilter,
     setYearFilter,
+    makeFilter,
+    setMakeFilter,
+    modelFilter,
+    setModelFilter,
     colorFilter,
     setColorFilter,
     fuelFilter,

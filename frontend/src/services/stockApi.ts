@@ -108,6 +108,8 @@ export interface UpdateStockData {
 
 export interface StockFilters {
   status?: string;
+  make?: string;
+  model?: string;
   min_price?: number;
   max_price?: number;
   min_quantity?: number;
