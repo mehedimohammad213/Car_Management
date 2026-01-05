@@ -274,6 +274,7 @@ class CarApiService {
       category_id?: string;
       subcategory_id?: string;
       make?: string;
+      model?: string;
       year?: string;
       year_from?: string;
       year_to?: string;

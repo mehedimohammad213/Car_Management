@@ -1,11 +1,14 @@
 import React from "react";
 import { Search, Download, Plus, Filter, Car, X } from "lucide-react";
+import { makeToModels } from "../../utils/carData";
 
 interface SearchFiltersProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   makeFilter: string;
   setMakeFilter: (make: string) => void;
+  modelFilter: string;
+  setModelFilter: (model: string) => void;
   categoryFilter: string;
   setCategoryFilter: (category: string) => void;
   yearFilter: string;
@@ -35,6 +38,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
     setSearchTerm,
     makeFilter,
     setMakeFilter,
+    modelFilter,
+    setModelFilter,
     categoryFilter,
     setCategoryFilter,
     yearFilter,
@@ -65,6 +70,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
     colorFilter ||
     fuelFilter ||
     makeFilter ||
+    modelFilter ||
     statusFilter ||
     categoryFilter ||
     transmissionFilter;
@@ -102,6 +108,42 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             />
           </div>
 
+          {/* Make Filter */}
+          <div className="w-full lg:w-auto">
+            <select
+              value={makeFilter}
+              onChange={(e) => {
+                setMakeFilter(e.target.value);
+                setModelFilter(""); // Reset model when make changes
+              }}
+              className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">All Makes</option>
+              {Object.keys(makeToModels).sort().map((make) => (
+                <option key={make} value={make}>
+                  {make}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Model Filter */}
+          <div className="w-full lg:w-auto">
+            <select
+              value={modelFilter}
+              onChange={(e) => setModelFilter(e.target.value)}
+              disabled={!makeFilter}
+              className={`w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${!makeFilter ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+            >
+              <option value="">All Models</option>
+              {makeFilter && makeToModels[makeFilter]?.sort().map((model) => (
+                <option key={model} value={model}>
+                  {model}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Year Filter */}
           <div className="w-full lg:w-auto">
             <select
@@ -119,7 +161,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
           </div>
 
           {/* Color Filter */}
-          <div className="w-full lg:w-auto">
+          {/* <div className="w-full lg:w-auto">
             <select
               value={colorFilter}
               onChange={(e) => setColorFilter(e.target.value)}
@@ -132,10 +174,10 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
 
           {/* Fuel Type Filter */}
-          <div className="w-full lg:w-auto">
+          {/* <div className="w-full lg:w-auto">
             <select
               value={fuelFilter}
               onChange={(e) => setFuelFilter(e.target.value)}
@@ -148,7 +190,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
 
           {/* Clear Filters Button */}
           {hasActiveFilters && (
@@ -166,8 +208,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             onClick={onGeneratePDF}
             disabled={isGeneratingPDF}
             className={`flex items-center justify-center transition-colors font-medium shadow-sm ${isGeneratingPDF
-                ? "w-auto px-4 py-2 rounded-full bg-gray-300 text-gray-500 cursor-not-allowed gap-2"
-                : "w-10 h-10 rounded-full bg-green-600 text-white hover:bg-green-700"
+              ? "w-auto px-4 py-2 rounded-full bg-gray-300 text-gray-500 cursor-not-allowed gap-2"
+              : "w-10 h-10 rounded-full bg-green-600 text-white hover:bg-green-700"
               }`}
             title="Download PDF"
           >

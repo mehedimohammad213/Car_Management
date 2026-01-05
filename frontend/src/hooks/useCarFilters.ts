@@ -9,6 +9,7 @@ export const useCarFilters = () => {
   const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "");
   const [categoryFilter, setCategoryFilter] = useState(searchParams.get("category") || "");
   const [makeFilter, setMakeFilter] = useState(searchParams.get("make") || "");
+  const [modelFilter, setModelFilter] = useState(searchParams.get("model") || "");
   const [yearFilter, setYearFilter] = useState(searchParams.get("year") || "");
   const [transmissionFilter, setTransmissionFilter] = useState(searchParams.get("transmission") || "");
   const [fuelFilter, setFuelFilter] = useState(searchParams.get("fuel") || "");
@@ -30,6 +31,7 @@ export const useCarFilters = () => {
     if (statusFilter) params.status = statusFilter;
     if (categoryFilter) params.category = categoryFilter;
     if (makeFilter) params.make = makeFilter;
+    if (modelFilter) params.model = modelFilter;
     if (yearFilter) params.year = yearFilter;
     if (transmissionFilter) params.transmission = transmissionFilter;
     if (fuelFilter) params.fuel = fuelFilter;
@@ -46,6 +48,7 @@ export const useCarFilters = () => {
     statusFilter,
     categoryFilter,
     makeFilter,
+    modelFilter,
     yearFilter,
     transmissionFilter,
     fuelFilter,
@@ -62,6 +65,7 @@ export const useCarFilters = () => {
     setStatusFilter("");
     setCategoryFilter("");
     setMakeFilter("");
+    setModelFilter("");
     setYearFilter("");
     setTransmissionFilter("");
     setFuelFilter("");
@@ -83,6 +87,8 @@ export const useCarFilters = () => {
     setCategoryFilter,
     makeFilter,
     setMakeFilter,
+    modelFilter,
+    setModelFilter,
     yearFilter,
     setYearFilter,
     transmissionFilter,

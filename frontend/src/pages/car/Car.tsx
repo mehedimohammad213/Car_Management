@@ -36,6 +36,8 @@ const Car: React.FC = () => {
     setCategoryFilter,
     makeFilter,
     setMakeFilter,
+    modelFilter,
+    setModelFilter,
     yearFilter,
     setYearFilter,
     transmissionFilter,
@@ -89,6 +91,7 @@ const Car: React.FC = () => {
     statusFilter,
     categoryFilter,
     makeFilter,
+    modelFilter,
     yearFilter,
     transmissionFilter,
     fuelFilter,
@@ -106,6 +109,7 @@ const Car: React.FC = () => {
         status: statusFilter || undefined,
         category_id: categoryFilter || undefined,
         make: makeFilter || undefined,
+        model: modelFilter || undefined,
         year: yearFilter || undefined,
         transmission: transmissionFilter || undefined,
         fuel: fuelFilter || undefined,
@@ -123,6 +127,7 @@ const Car: React.FC = () => {
         status: statusFilter || undefined,
         category_id: categoryFilter || undefined,
         make: makeFilter || undefined,
+        model: modelFilter || undefined,
         year: yearFilter || undefined,
         transmission: transmissionFilter || undefined,
         fuel: fuelFilter || undefined,
@@ -276,6 +281,7 @@ const Car: React.FC = () => {
       statusFilter,
       categoryFilter,
       makeFilter,
+      modelFilter,
       yearFilter,
       transmissionFilter,
       fuelFilter,
@@ -295,6 +301,8 @@ const Car: React.FC = () => {
           setSearchTerm={setSearchTerm}
           makeFilter={makeFilter}
           setMakeFilter={setMakeFilter}
+          modelFilter={modelFilter}
+          setModelFilter={setModelFilter}
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
           categoryFilter={categoryFilter}

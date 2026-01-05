@@ -8,6 +8,7 @@ interface PdfGeneratorParams {
   statusFilter: string;
   categoryFilter: string;
   makeFilter: string;
+  modelFilter: string;
   yearFilter: string;
   transmissionFilter: string;
   fuelFilter: string;
@@ -33,6 +34,7 @@ export const usePdfGenerator = () => {
         status: "available", // Only available cars
         category_id: params.categoryFilter || undefined,
         make: params.makeFilter || undefined,
+        model: params.modelFilter || undefined,
         year: params.yearFilter || undefined,
         transmission: params.transmissionFilter || undefined,
         fuel: params.fuelFilter || undefined,
@@ -62,6 +64,7 @@ export const usePdfGenerator = () => {
                 status: "available",
                 category_id: params.categoryFilter || undefined,
                 make: params.makeFilter || undefined,
+                model: params.modelFilter || undefined,
                 year: params.yearFilter || undefined,
                 transmission: params.transmissionFilter || undefined,
                 fuel: params.fuelFilter || undefined,
