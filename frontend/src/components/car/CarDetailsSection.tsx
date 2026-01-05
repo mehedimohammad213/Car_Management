@@ -4,9 +4,10 @@ import { Car as CarType } from "../../services/carApi";
 
 interface CarDetailsSectionProps {
   details: CarType["details"];
+  onImageClick?: (imageUrl: string, alt: string) => void;
 }
 
-const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({ details }) => {
+const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({ details, onImageClick }) => {
   if (!details || details.length === 0) return null;
 
   return (
@@ -79,7 +80,14 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({ details }) => {
                     key={imgIndex}
                     src={image}
                     alt={`Detail ${index + 1} - Image ${imgIndex + 1}`}
-                    className="w-full h-24 sm:h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
+                    className={`w-full h-24 sm:h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-600 ${
+                      onImageClick ? "cursor-pointer hover:opacity-80 transition-opacity" : ""
+                    }`}
+                    onClick={() => {
+                      if (onImageClick) {
+                        onImageClick(image, `Detail ${index + 1} - Image ${imgIndex + 1}`);
+                      }
+                    }}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.style.display = "none";

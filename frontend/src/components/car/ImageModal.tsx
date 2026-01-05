@@ -1,5 +1,5 @@
-import React from "react";
-import { ChevronLeft, ChevronRight, EyeOff } from "lucide-react";
+import React, { useEffect } from "react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 interface ImageModalProps {
   imageUrl: string;
@@ -18,34 +18,86 @@ const ImageModal: React.FC<ImageModalProps> = ({
   onPrev,
   onNext,
 }) => {
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
+    };
+  }, [onClose]);
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-      <div className="relative max-w-4xl max-h-full">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+      onClick={handleBackdropClick}
+    >
+      <div className="relative w-full h-full flex items-center justify-center px-4 md:px-8">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+          className="absolute top-3 right-3 md:top-6 md:right-6 z-10 text-red-500 hover:text-red-400 p-3 md:p-4 transition-colors"
+          aria-label="Close image"
         >
-          <EyeOff className="w-6 h-6" />
+          <X className="w-6 h-6" />
         </button>
-        <img
-          src={imageUrl}
-          alt={alt}
-          className="max-w-full max-h-full object-contain rounded-lg"
-        />
+
+        <div className="flex-1 max-w-6xl w-full h-full md:h-[85vh] flex items-center justify-center">
+          <img
+            src={imageUrl}
+            alt={alt}
+            className="w-full h-full object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+
         {hasMultipleImages && (
           <>
+            {/* Desktop: side arrows */}
             <button
               onClick={onPrev}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-colors"
+              className="hidden md:flex absolute left-6 top-1/2 -translate-y-1/2 items-center justify-center text-red-500 hover:text-red-400 p-3 transition-colors"
+              aria-label="Previous image"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-7 h-7" />
             </button>
             <button
               onClick={onNext}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-colors"
+              className="hidden md:flex absolute right-6 top-1/2 -translate-y-1/2 items-center justify-center text-red-500 hover:text-red-400 p-3 transition-colors"
+              aria-label="Next image"
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="w-7 h-7" />
             </button>
+
+            {/* Mobile: bottom arrows */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-4 md:hidden">
+              <button
+                onClick={onPrev}
+                className="text-red-500 hover:text-red-400 p-3 transition-colors"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                onClick={onNext}
+                className="text-red-500 hover:text-red-400 p-3 transition-colors"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </div>
           </>
         )}
       </div>

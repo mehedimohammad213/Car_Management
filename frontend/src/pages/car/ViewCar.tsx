@@ -19,6 +19,8 @@ const ViewCar: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [modalImageUrl, setModalImageUrl] = useState<string | null>(null);
+  const [modalImageAlt, setModalImageAlt] = useState<string>("");
   const [stockData, setStockData] = useState<Stock | null>(null);
   const [pdfFiles, setPdfFiles] = useState<
     Array<{ name: string; url: string }>
@@ -165,6 +167,9 @@ const ViewCar: React.FC = () => {
 
   const handleThumbnailClick = (index: number) => {
     setCurrentImageIndex(index);
+    setModalImageUrl(null);
+    setModalImageAlt("");
+    setShowImageModal(true);
   };
 
   const handleViewFile = () => {
@@ -247,7 +252,11 @@ const ViewCar: React.FC = () => {
                 onPrevImage={handlePrevImage}
                 onNextImage={handleNextImage}
                 onThumbnailClick={handleThumbnailClick}
-                onImageClick={() => setShowImageModal(true)}
+                onImageClick={() => {
+                  setModalImageUrl(null);
+                  setModalImageAlt("");
+                  setShowImageModal(true);
+                }}
                 onDownloadPdf={handleDownloadPdf}
               />
 
@@ -256,7 +265,14 @@ const ViewCar: React.FC = () => {
           </div>
         </div>
 
-        <CarDetailsSection details={car.details} />
+        <CarDetailsSection
+          details={car.details}
+          onImageClick={(imageUrl, alt) => {
+            setModalImageUrl(imageUrl);
+            setModalImageAlt(alt);
+            setShowImageModal(true);
+          }}
+        />
 
         {/* Attached File - Admin Only */}
         {isAdmin && attachedFileInfo && (
@@ -270,14 +286,18 @@ const ViewCar: React.FC = () => {
       </div>
 
       {/* Image Modal */}
-      {showImageModal && car.photos && car.photos.length > 0 && (
+      {showImageModal && (
         <ImageModal
-          imageUrl={car.photos[currentImageIndex].url}
-          alt={`${car.make} ${car.model}`}
-          hasMultipleImages={car.photos.length > 1}
-          onClose={() => setShowImageModal(false)}
-          onPrev={handlePrevImage}
-          onNext={handleNextImage}
+          imageUrl={modalImageUrl || (car.photos && car.photos.length > 0 ? car.photos[currentImageIndex].url : "")}
+          alt={modalImageAlt || `${car.make} ${car.model}`}
+          hasMultipleImages={!modalImageUrl && car.photos ? car.photos.length > 1 : false}
+          onClose={() => {
+            setShowImageModal(false);
+            setModalImageUrl(null);
+            setModalImageAlt("");
+          }}
+          onPrev={modalImageUrl ? () => {} : handlePrevImage}
+          onNext={modalImageUrl ? () => {} : handleNextImage}
         />
       )}
     </div>
