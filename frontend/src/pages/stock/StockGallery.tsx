@@ -125,7 +125,7 @@ const StockGallery: React.FC = () => {
             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
           </button>
           <div className="flex-1 min-w-0">
-            <p className="text-xs sm:text-sm text-gray-500">Stock Gallery</p>
+            <p className="text-xs sm:text-sm text-gray-500">Dream Car</p>
             <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight truncate">
               {car.year} {car.make} {car.model}
             </h1>
@@ -192,11 +192,10 @@ const StockGallery: React.FC = () => {
                       <button
                         key={photo.id || index}
                         onClick={() => handleThumbClick(index)}
-                        className={`relative flex-shrink-0 w-16 h-12 sm:w-20 sm:h-16 rounded-lg overflow-hidden border transition-all ${
-                          currentImageIndex === index
+                        className={`relative flex-shrink-0 w-16 h-12 sm:w-20 sm:h-16 rounded-lg overflow-hidden border transition-all ${currentImageIndex === index
                             ? "border-blue-600 shadow-lg"
                             : "border-gray-200 hover:border-blue-300"
-                        }`}
+                          }`}
                       >
                         <img
                           src={photo.url}
