@@ -1,5 +1,5 @@
 import React from "react";
-import { Package, Car, Gauge, Settings, Palette, Award, Tag } from "lucide-react";
+import { Package, Car, Gauge, Settings, Palette, Award, Tag, Eye } from "lucide-react";
 import { CurrencyBDTIcon } from "../icons/CurrencyBDTIcon";
 
 interface AvailableCar {
@@ -37,6 +37,7 @@ interface AvailableCarsTableProps {
   isLoading: boolean;
   onCreateStock: (car: AvailableCar) => void;
   onRefresh: () => void;
+  onView?: (car: AvailableCar) => void;
 }
 
 const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
@@ -44,6 +45,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
   isLoading,
   onCreateStock,
   onRefresh,
+  onView,
 }) => {
   // Filter out cars with status="sold"
   const filteredCars = cars.filter((car) => car.status !== "sold");
@@ -201,16 +203,24 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                 {/* Price */}
                 <div className="col-span-1 flex items-center text-sm font-semibold text-gray-900">
                   {car.price_amount
-                    ? `৳ ${
-                        typeof car.price_amount === "string"
-                          ? parseFloat(car.price_amount).toLocaleString("en-IN")
-                          : car.price_amount.toLocaleString("en-IN")
-                      }`
+                    ? `৳ ${typeof car.price_amount === "string"
+                      ? parseFloat(car.price_amount).toLocaleString("en-IN")
+                      : car.price_amount.toLocaleString("en-IN")
+                    }`
                     : "Price on request"}
                 </div>
 
                 {/* Actions */}
                 <div className="col-span-1 flex items-center justify-center gap-2">
+                  {onView && (
+                    <button
+                      onClick={() => onView(car)}
+                      className="p-1.5 text-blue-600 hover:text-blue-700 rounded-lg transition-all duration-200 group/btn"
+                      title="View Car"
+                    >
+                      <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                    </button>
+                  )}
                   <button
                     onClick={() => onCreateStock(car)}
                     className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors"
