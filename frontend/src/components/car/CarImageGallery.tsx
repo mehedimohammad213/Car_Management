@@ -1,6 +1,6 @@
 import React from "react";
 import { Car, ChevronLeft, ChevronRight, Download } from "lucide-react";
-import { Car as CarType } from "../../services/carApi";
+import { Car as CarType, CarPhoto } from "../../services/carApi";
 
 interface CarImageGalleryProps {
   car: CarType;
@@ -50,19 +50,22 @@ const CarImageGallery: React.FC<CarImageGalleryProps> = ({
         {/* Photo Navigation Arrows */}
         {car.photos && car.photos.length > 1 && (
           <>
+            {/* Side arrows for web & mobile */}
             <button
               onClick={onPrevImage}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white p-2 rounded-full transition-colors"
+              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 text-red-500 hover:text-red-400 p-2 transition-colors"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
             </button>
             <button
               onClick={onNextImage}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white p-2 rounded-full transition-colors"
+              className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 text-red-500 hover:text-red-400 p-2 transition-colors"
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
             </button>
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+
+            {/* Image counter */}
+            <div className="absolute bottom-3 md:bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-xs md:text-sm shadow-md">
               {currentImageIndex + 1} / {car.photos.length}
             </div>
           </>
@@ -72,7 +75,7 @@ const CarImageGallery: React.FC<CarImageGalleryProps> = ({
       {/* Thumbnail Gallery */}
       {car.photos && car.photos.length > 0 && (
         <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
-          {car.photos.slice(0, 6).map((photo: any, index: number) => (
+          {car.photos.slice(0, 6).map((photo: CarPhoto, index: number) => (
             <img
               key={index}
               src={photo.url}
