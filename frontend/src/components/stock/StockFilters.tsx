@@ -71,21 +71,6 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
           />
         </div>
 
-        {/* Year Filter */}
-        <div className="w-full lg:w-auto">
-          <select
-            value={yearFilter}
-            onChange={(e) => onYearFilterChange(e.target.value)}
-            className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">All Years</option>
-            {filterOptions?.years?.map((year: number) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
 
         {/* Make Filter */}
         <div className="w-full lg:w-auto">
@@ -120,6 +105,22 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
             {makeFilter && makeToModels[makeFilter]?.sort().map((model) => (
               <option key={model} value={model}>
                 {model}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Year Filter */}
+        <div className="w-full lg:w-auto">
+          <select
+            value={yearFilter}
+            onChange={(e) => onYearFilterChange(e.target.value)}
+            className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">All Years</option>
+            {filterOptions?.years?.map((year: number) => (
+              <option key={year} value={year}>
+                {year}
               </option>
             ))}
           </select>
