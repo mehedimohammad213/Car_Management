@@ -24,7 +24,7 @@ const CarViewHeader: React.FC<CarViewHeaderProps> = ({
         className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-3 sm:mb-4 transition-colors"
       >
         <ArrowLeft className="w-5 h-5" />
-        <span className="font-medium">Back to Catalog</span>
+        <span className="font-medium">Back to Dream Agent Car Vision</span>
       </button>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

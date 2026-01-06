@@ -21,92 +21,92 @@ const CarSpecifications: React.FC<CarSpecificationsProps> = ({
     label: string;
     value: React.ReactNode;
   }> = [
-    {
-      label: "Mileage",
-      value: car.mileage_km
-        ? `${car.mileage_km.toLocaleString()} km`
-        : "N/A",
-    },
-    {
-      label: "Year",
-      value: car.year || "N/A",
-    },
-    {
-      label: "Engine(CC)",
-      value: car.engine_cc
-        ? `${car.engine_cc.toLocaleString()} cc`
-        : "N/A",
-    },
-    {
-      label: "Transmission",
-      value: car.transmission || "N/A",
-    },
-    {
-      label: "Drivetrain",
-      value:
-        (car as any).drive_type || (car as any).drivetrain || "N/A",
-    },
-    {
-      label: "Steering",
-      value: car.steering || "N/A",
-    },
-    {
-      label: "Fuel",
-      value: car.fuel || "N/A",
-    },
-    {
-      label: "Reference No.",
-      value: car.ref_no || `AA${car.id.toString().padStart(6, "0")}`,
-    },
-    {
-      label: "Registration Year",
-      value: car.year || "N/A",
-    },
-    {
-      label: "Exterior Color",
-      value: car.color || "N/A",
-    },
-    {
-      label: "Seating Capacity",
-      value: car.seats || "N/A",
-    },
-    {
-      label: "Overall Grade",
-      value:
-        car.grade_overall !== undefined && car.grade_overall !== null
-          ? car.grade_overall
+      {
+        label: "Mileage",
+        value: car.mileage_km
+          ? `${car.mileage_km.toLocaleString()} km`
           : "N/A",
-    },
-    {
-      label: "Engine No.",
-      value: car.engine_number || "N/A",
-    },
-    {
-      label: "Chassis No.",
-      value: car.chassis_no_full || car.chassis_no_masked || "N/A",
-    },
-    {
-      label: "No. of Keys",
-      value:
-        car.number_of_keys !== undefined && car.number_of_keys !== null
-          ? car.number_of_keys
+      },
+      {
+        label: "Year",
+        value: car.year || "N/A",
+      },
+      {
+        label: "Engine(CC)",
+        value: car.engine_cc
+          ? `${car.engine_cc.toLocaleString()} cc`
           : "N/A",
-    },
-    {
-      label: "Status",
-      value: (
-        <span
-          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-            car.status
-          )}`}
-        >
-          {car.status
-            ? car.status.charAt(0).toUpperCase() + car.status.slice(1)
-            : "N/A"}
-        </span>
-      ),
-    },
-  ];
+      },
+      {
+        label: "Transmission",
+        value: car.transmission || "N/A",
+      },
+      {
+        label: "Drivetrain",
+        value:
+          (car as any).drive_type || (car as any).drivetrain || "N/A",
+      },
+      {
+        label: "Steering",
+        value: car.steering || "N/A",
+      },
+      {
+        label: "Fuel",
+        value: car.fuel || "N/A",
+      },
+      {
+        label: "Reference No.",
+        value: car.ref_no || `AA${car.id.toString().padStart(6, "0")}`,
+      },
+      {
+        label: "Registration Year",
+        value: car.year || "N/A",
+      },
+      {
+        label: "Exterior Color",
+        value: car.color || "N/A",
+      },
+      {
+        label: "Seating Capacity",
+        value: car.seats || "N/A",
+      },
+      {
+        label: "Overall Grade",
+        value:
+          car.grade_overall !== undefined && car.grade_overall !== null
+            ? car.grade_overall
+            : "N/A",
+      },
+      {
+        label: "Engine No.",
+        value: car.engine_number || "N/A",
+      },
+      {
+        label: "Chassis No.",
+        value: car.chassis_no_full || car.chassis_no_masked || "N/A",
+      },
+      {
+        label: "No. of Keys",
+        value:
+          car.number_of_keys !== undefined && car.number_of_keys !== null
+            ? car.number_of_keys
+            : "N/A",
+      },
+      {
+        label: "Status",
+        value: (
+          <span
+            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+              car.status
+            )}`}
+          >
+            {car.status
+              ? car.status.charAt(0).toUpperCase() + car.status.slice(1)
+              : "N/A"}
+          </span>
+        ),
+      },
+    ];
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -159,7 +159,7 @@ const CarSpecifications: React.FC<CarSpecificationsProps> = ({
                 </span>
                 {stockData.price && (
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Stock Price: ${typeof stockData.price === "string" ? parseFloat(stockData.price).toLocaleString() : stockData.price.toLocaleString()}
+                    Stock Price: {typeof stockData.price === "string" ? parseFloat(stockData.price).toLocaleString() : stockData.price.toLocaleString()}
                   </span>
                 )}
                 {stockData.notes && (
