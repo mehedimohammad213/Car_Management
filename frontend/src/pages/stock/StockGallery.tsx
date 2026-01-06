@@ -1,33 +1,46 @@
+
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-  ArrowLeft,
-  Car,
-  Image as ImageIcon,
-  MapPin,
-  Gauge,
-  Calendar,
-  Palette,
-  Hash,
-  Tag,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { stockApi, Stock } from "../../services/stockApi";
-import { formatPrice, getStatusColor } from "../../utils/carUtils";
+import { carApi, Car as CarType } from "../../services/carApi";
+import { useAuth } from "../../contexts/AuthContext";
+import CarViewHeader from "../../components/car/CarViewHeader";
+import CarImageGallery from "../../components/car/CarImageGallery";
+import CarSpecifications from "../../components/car/CarSpecifications";
+import CarDetailsSection from "../../components/car/CarDetailsSection";
+import CarAttachedFile from "../../components/car/CarAttachedFile";
+import ImageModal from "../../components/car/ImageModal";
 
 const StockGallery: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const [stock, setStock] = useState<Stock | null>(null);
+  const [car, setCar] = useState<CarType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [modalImageUrl, setModalImageUrl] = useState<string | null>(null);
+  const [modalImageAlt, setModalImageAlt] = useState<string>("");
+  const [pdfFiles, setPdfFiles] = useState<
+    Array<{ name: string; url: string }>
+  >([]);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [attachedFileInfo, setAttachedFileInfo] = useState<{
+    url: string;
+    type: 'image' | 'pdf';
+    filename: string;
+  } | null>(null);
+  const [isLoadingFile, setIsLoadingFile] = useState(false);
+
+  const isAdmin = user?.role === "admin";
 
   useEffect(() => {
-    const fetchStock = async () => {
+    const fetchData = async () => {
       if (!id) {
         setError("Missing stock id");
         setIsLoading(false);
@@ -37,10 +50,57 @@ const StockGallery: React.FC = () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await stockApi.getStock(parseInt(id, 10));
-        if (response.success && response.data) {
-          setStock(response.data);
+
+        // 1. Fetch Stock
+        const stockResponse = await stockApi.getStock(parseInt(id, 10));
+
+        if (stockResponse.success && stockResponse.data) {
+          const stockData = stockResponse.data;
+          setStock(stockData);
           setCurrentImageIndex(0);
+
+          // 2. Fetch Full Car Details
+          // We prefer the full car API response because the nested stock.car object
+          // might be partial or have different types (e.g. category_id as string vs number)
+          // and might miss fields like 'details' or 'attached_file'.
+          const carId = typeof stockData.car_id === 'string' ? parseInt(stockData.car_id) : stockData.car_id;
+
+          if (carId) {
+            try {
+              const carResponse = await carApi.getCar(carId);
+              let carData: CarType | null = null;
+
+              if (carResponse.data.car) {
+                carData = carResponse.data.car;
+              } else if (Array.isArray(carResponse.data.data) && carResponse.data.data.length > 0) {
+                carData = carResponse.data.data[0];
+              } else if (carResponse.data && "id" in carResponse.data) {
+                carData = carResponse.data as unknown as CarType;
+              }
+
+              if (carData) {
+                setCar(carData);
+
+                // Fetch PDF files using the full car data
+                await fetchPdfFiles(carData);
+
+                // Fetch attached file info if admin and car has attached_file
+                if (isAdmin && carData.attached_file) {
+                  try {
+                    const fileInfo = await carApi.getAttachedFile(carData.id);
+                    if (fileInfo.success) {
+                      setAttachedFileInfo(fileInfo.data);
+                    }
+                  } catch (error) {
+                    console.error("Error fetching attached file info:", error);
+                  }
+                }
+              }
+            } catch (carErr) {
+              console.error("Failed to load full car details", carErr);
+            }
+          }
+
         } else {
           setError("Stock not found");
         }
@@ -51,41 +111,117 @@ const StockGallery: React.FC = () => {
       }
     };
 
-    fetchStock();
-  }, [id]);
+    fetchData();
+  }, [id, isAdmin]);
 
-  const photos = useMemo(() => {
-    if (!stock?.car?.photos) return [];
-    return stock.car.photos.filter((photo) => !photo.is_hidden && photo.url);
-  }, [stock]);
+  const fetchPdfFiles = async (car: any) => {
+    try {
+      setPdfLoading(true);
+      if (car.attached_file) {
+        try {
+          const fileInfo = await carApi.getAttachedFile(car.id);
+          if (fileInfo.success && fileInfo.data) {
+            setPdfFiles([
+              {
+                name: fileInfo.data.filename,
+                url: fileInfo.data.url,
+              },
+            ]);
+          }
+        } catch (apiError) {
+          console.log("API call failed, using direct file path:", apiError);
+          const fileName =
+            car.attached_file.split("/").pop() || "Vehicle Document.pdf";
+          const baseUrl = "http://localhost:8000";
+          const pdfUrl = car.attached_file.startsWith("http")
+            ? car.attached_file
+            : `${baseUrl}${car.attached_file} `;
 
-  const car = stock?.car;
-  const priceAmount =
-    car?.price_amount !== undefined && car?.price_amount !== null
-      ? typeof car.price_amount === "string"
-        ? parseFloat(car.price_amount)
-        : car.price_amount
-      : undefined;
-
-  const handleThumbClick = (index: number) => {
-    setCurrentImageIndex(index);
+          setPdfFiles([
+            {
+              name: fileName,
+              url: pdfUrl,
+            },
+          ]);
+        }
+      } else {
+        setPdfFiles([]);
+      }
+    } catch (error) {
+      console.error("Error processing PDF files:", error);
+      setPdfFiles([]);
+    } finally {
+      setPdfLoading(false);
+    }
   };
 
-  const handlePreviousImage = () => {
-    if (photos.length > 0) {
-      setCurrentImageIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
-    }
+  const handleDownloadPdf = (pdfUrl: string, fileName: string) => {
+    const link = document.createElement("a");
+    link.href = pdfUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleNextImage = () => {
-    if (photos.length > 0) {
-      setCurrentImageIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
+    if (!car?.photos) return;
+    setCurrentImageIndex((prev) =>
+      prev === car.photos!.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const handlePrevImage = () => {
+    if (!car?.photos) return;
+    setCurrentImageIndex((prev) =>
+      prev === 0 ? car.photos!.length - 1 : prev - 1
+    );
+  };
+
+  const handleThumbnailClick = (index: number) => {
+    setCurrentImageIndex(index);
+    setModalImageUrl(null);
+    setModalImageAlt("");
+    setShowImageModal(true);
+  };
+
+  const handleViewFile = () => {
+    if (attachedFileInfo) {
+      window.open(attachedFileInfo.url, '_blank');
     }
+  };
+
+  const handleDownloadFile = async () => {
+    if (!car || !attachedFileInfo) return;
+
+    try {
+      setIsLoadingFile(true);
+      const blob = await carApi.downloadAttachedFile(car.id);
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = attachedFileInfo.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      window.open(attachedFileInfo.url, '_blank');
+    } finally {
+      setIsLoadingFile(false);
+    }
+  };
+
+  const getBackRoute = () => {
+    // Default to stock management if no history
+    return -1 as any;
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
       </div>
     );
@@ -93,20 +229,15 @@ const StockGallery: React.FC = () => {
 
   if (error || !stock || !car) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center px-4">
-        <div className="bg-white shadow-2xl rounded-2xl p-8 max-w-lg text-center border border-gray-100">
-          <div className="mx-auto w-16 h-16 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center mb-4">
-            <ImageIcon className="w-8 h-8 text-rose-500" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Not Found</h2>
-          <p className="text-gray-600 mb-6">
-            {error || "The requested stock could not be located."}
-          </p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            {error || "Stock not found"}
+          </h2>
           <button
             onClick={() => navigate(-1)}
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold shadow-lg hover:bg-blue-700 transition-colors"
+            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
             Go Back
           </button>
         </div>
@@ -115,202 +246,74 @@ const StockGallery: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 px-2 sm:px-3 md:px-4 lg:px-6 py-3 sm:py-4 md:py-6">
-      <div className="w-full max-w-screen-2xl mx-auto space-y-3 sm:space-y-4 md:space-y-5">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            onClick={() => navigate(-1)}
-            className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white shadow-md border border-gray-100 hover:-translate-y-0.5 transition-transform"
-          >
-            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
-          </button>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs sm:text-sm text-gray-500">Dream Car</p>
-            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight truncate">
-              {car.year} {car.make} {car.model}
-            </h1>
-          </div>
-        </div>
+    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900">
+      <div className="w-full px-2 sm:px-4 lg:px-6 py-4 sm:py-6">
+        <CarViewHeader
+          car={car}
+          isAdmin={isAdmin}
+          getBackRoute={() => "/stock-management"}
+        />
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-5">
-          <div className="lg:col-span-3">
-            <div className="bg-white border border-gray-100 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden relative">
-              <div className="aspect-[4/3] bg-gray-100 relative">
-                {photos.length > 0 ? (
-                  <img
-                    src={photos[currentImageIndex].url}
-                    alt={`${car.make} ${car.model}`}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 gap-2">
-                    <ImageIcon className="w-8 h-8 sm:w-10 sm:h-10" />
-                    <span className="text-sm sm:text-base">No photos available</span>
-                  </div>
-                )}
-                {photos.length > 1 && (
-                  <>
-                    <button
-                      onClick={handlePreviousImage}
-                      className="absolute left-2 sm:left-3 md:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-lg z-10"
-                      aria-label="Previous image"
-                    >
-                      <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
-                    </button>
-                    <button
-                      onClick={handleNextImage}
-                      className="absolute right-2 sm:right-3 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-lg z-10"
-                      aria-label="Next image"
-                    >
-                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
-                    </button>
-                  </>
-                )}
-                <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-wrap gap-1.5 sm:gap-2 z-10">
-                  <span
-                    className={`px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold border ${getStatusColor(
-                      stock.status
-                    )}`}
-                  >
-                    {stock.status.toUpperCase()}
-                  </span>
-                  <span className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold bg-white/80 backdrop-blur border border-gray-200 text-gray-800">
-                    Qty: {stock.quantity}
-                  </span>
-                </div>
-                <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 bg-black/70 text-white text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full z-10">
-                  {photos.length > 0
-                    ? `${currentImageIndex + 1} / ${photos.length}`
-                    : "0 / 0"}
-                </div>
-              </div>
+        {/* Content */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-xl overflow-hidden">
+          <div className="p-2 sm:p-4 lg:p-6 xl:p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+              <CarImageGallery
+                car={car}
+                currentImageIndex={currentImageIndex}
+                pdfFiles={pdfFiles}
+                pdfLoading={pdfLoading}
+                onPrevImage={handlePrevImage}
+                onNextImage={handleNextImage}
+                onThumbnailClick={handleThumbnailClick}
+                onImageClick={() => {
+                  setModalImageUrl(null);
+                  setModalImageAlt("");
+                  setShowImageModal(true);
+                }}
+                onDownloadPdf={handleDownloadPdf}
+              />
 
-              {photos.length > 1 && (
-                <div className="px-2 sm:px-3 md:px-4 py-2 sm:py-3 bg-white border-t border-gray-100">
-                  <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                    {photos.map((photo, index) => (
-                      <button
-                        key={photo.id || index}
-                        onClick={() => handleThumbClick(index)}
-                        className={`relative flex-shrink-0 w-16 h-12 sm:w-20 sm:h-16 rounded-lg overflow-hidden border transition-all ${currentImageIndex === index
-                            ? "border-blue-600 shadow-lg"
-                            : "border-gray-200 hover:border-blue-300"
-                          }`}
-                      >
-                        <img
-                          src={photo.url}
-                          alt={`Thumbnail ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="lg:col-span-2 space-y-3 sm:space-y-4">
-            <div className="bg-white border border-gray-100 rounded-2xl sm:rounded-3xl shadow-2xl p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3">
-                <div className="flex-1">
-                  <p className="text-xs sm:text-sm text-gray-500">Reference</p>
-                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 break-all">
-                    {car.ref_no || `AA${car.id.toString().padStart(6, "0")}`}
-                  </h2>
-                </div>
-                <div className="text-left sm:text-right">
-                  <p className="text-xs sm:text-sm text-gray-500">Price</p>
-                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
-                    {priceAmount && !isNaN(priceAmount)
-                      ? formatPrice(priceAmount, car.price_currency)
-                      : "Price on request"}
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
-                <div className="flex items-center gap-1.5 sm:gap-2 text-gray-700">
-                  <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0" />
-                  <span className="font-semibold">Year:</span>
-                  <span className="truncate">{car.year || "N/A"}</span>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2 text-gray-700">
-                  <Gauge className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0" />
-                  <span className="font-semibold">Mileage:</span>
-                  <span className="truncate">
-                    {car.mileage_km
-                      ? `${car.mileage_km.toLocaleString()} km`
-                      : "N/A"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2 text-gray-700">
-                  <Palette className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0" />
-                  <span className="font-semibold">Color:</span>
-                  <span className="capitalize truncate">{car.color || "N/A"}</span>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2 text-gray-700">
-                  <Car className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0" />
-                  <span className="font-semibold">Engine:</span>
-                  <span className="truncate">
-                    {car.engine_cc
-                      ? `${car.engine_cc.toLocaleString()} cc`
-                      : "N/A"}
-                  </span>
-                </div>
-                <div className="flex items-start gap-1.5 sm:gap-2 text-gray-700 sm:col-span-2">
-                  <Hash className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1 min-w-0">
-                    <span className="font-semibold">Chassis:</span>
-                    <span className="break-all block">
-                      {car.chassis_no_full ||
-                        car.chassis_no_masked ||
-                        "N/A"}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2 text-gray-700">
-                  <Tag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0" />
-                  <span className="font-semibold">Package:</span>
-                  <span className="truncate">{car.package || "N/A"}</span>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2 text-gray-700">
-                  <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0" />
-                  <span className="font-semibold">Location:</span>
-                  <span className="truncate">{car.location || "N/A"}</span>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2 text-gray-700">
-                  <ImageIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0" />
-                  <span className="font-semibold">Photos:</span>
-                  <span>{photos.length}</span>
-                </div>
-              </div>
-
-              {car.keys_feature && (
-                <div className="bg-slate-50 rounded-xl p-2 sm:p-3 border border-slate-100">
-                  <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2">
-                    Key Features
-                  </p>
-                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                    {car.keys_feature
-                      .split(",")
-                      .map((feature) => feature.trim())
-                      .filter(Boolean)
-                      .map((feature) => (
-                        <span
-                          key={feature}
-                          className="px-2 py-0.5 sm:px-3 sm:py-1 bg-white border border-gray-200 text-gray-700 text-[10px] sm:text-xs font-medium rounded-full shadow-sm"
-                        >
-                          {feature}
-                        </span>
-                      ))}
-                  </div>
-                </div>
-              )}
+              <CarSpecifications car={car} stockData={stock} />
             </div>
           </div>
         </div>
+
+        <CarDetailsSection
+          details={car.details}
+          onImageClick={(imageUrl, alt) => {
+            setModalImageUrl(imageUrl);
+            setModalImageAlt(alt);
+            setShowImageModal(true);
+          }}
+        />
+
+        {/* Attached File - Admin Only */}
+        {isAdmin && attachedFileInfo && (
+          <CarAttachedFile
+            attachedFileInfo={attachedFileInfo}
+            isLoadingFile={isLoadingFile}
+            onViewFile={handleViewFile}
+            onDownloadFile={handleDownloadFile}
+          />
+        )}
       </div>
+
+      {/* Image Modal */}
+      {showImageModal && (
+        <ImageModal
+          imageUrl={modalImageUrl || (car.photos && car.photos.length > 0 ? car.photos[currentImageIndex].url : "")}
+          alt={modalImageAlt || `${car.make} ${car.model} `}
+          hasMultipleImages={!modalImageUrl && car.photos ? car.photos.length > 1 : false}
+          onClose={() => {
+            setShowImageModal(false);
+            setModalImageUrl(null);
+            setModalImageAlt("");
+          }}
+          onPrev={modalImageUrl ? () => { } : handlePrevImage}
+          onNext={modalImageUrl ? () => { } : handleNextImage}
+        />
+      )}
     </div>
   );
 };
