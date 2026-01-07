@@ -141,10 +141,10 @@ const StockManagement: React.FC = () => {
                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 }`}
             >
-              <span className="hidden sm:inline">Available Cars</span>
-              <span className="sm:hidden">Available Cars</span>
+              <span className="hidden sm:inline">Pending Stock</span>
+              <span className="sm:hidden">Pending Stock</span>
             </button>
-            <button
+            {/* <button
               onClick={() => setActiveTab("total")}
               className={`flex-1 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-semibold transition-all duration-200 ${activeTab === "total"
                 ? "bg-purple-600 text-white border-b-2 border-purple-600"
@@ -153,7 +153,7 @@ const StockManagement: React.FC = () => {
             >
               <span className="hidden sm:inline">Total Stock</span>
               <span className="sm:hidden">Total Stock</span>
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -210,7 +210,8 @@ const StockManagement: React.FC = () => {
             onRefresh={fetchAvailableCars}
           />
         ) : (
-          <TotalStockTable />
+          null
+          // <TotalStockTable />
         )}
 
         {/* Add Stock Popup - Commented out */}
