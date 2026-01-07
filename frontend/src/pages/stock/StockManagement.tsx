@@ -137,7 +137,7 @@ const StockManagement: React.FC = () => {
             <button
               onClick={() => setActiveTab("before")}
               className={`flex-1 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-semibold transition-all duration-200 ${activeTab === "before"
-                ? "bg-green-600 text-white border-b-2 border-green-600"
+                ? "bg-blue-600 text-white border-b-2 border-blue-600"
                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 }`}
             >
