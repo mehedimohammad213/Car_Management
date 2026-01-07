@@ -24,6 +24,7 @@ const StockManagement: React.FC = () => {
 
   const {
     stocks,
+    allStocks,
     availableCars,
     isLoading,
     isLoadingAvailableCars,
@@ -181,6 +182,7 @@ const StockManagement: React.FC = () => {
 
             <StockTable
               stocks={stocks}
+              allStocks={allStocks}
               isLoading={isLoading}
               sortBy={sortBy}
               sortOrder={sortOrder}

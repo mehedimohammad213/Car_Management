@@ -6,6 +6,7 @@ import { CurrencyBDTIcon } from "../icons/CurrencyBDTIcon";
 
 interface StockTableProps {
   stocks: Stock[];
+  allStocks: Stock[];
   isLoading: boolean;
   sortBy: string;
   sortOrder: string;
@@ -18,6 +19,7 @@ interface StockTableProps {
 
 const StockTable: React.FC<StockTableProps> = ({
   stocks,
+  allStocks,
   isLoading,
   sortBy,
   sortOrder,
@@ -27,6 +29,18 @@ const StockTable: React.FC<StockTableProps> = ({
   onView,
   onRefresh,
 }) => {
+
+  // Calculate current stock count for each make/model
+  const stockCountsMap = React.useMemo(() => {
+    const counts = new Map<string, number>();
+    allStocks.forEach((stock) => {
+      if (stock.car) {
+        const key = `${stock.car.make}_${stock.car.model}`;
+        counts.set(key, (counts.get(key) || 0) + 1);
+      }
+    });
+    return counts;
+  }, [allStocks]);
 
   if (isLoading) {
     return (
@@ -74,7 +88,7 @@ const StockTable: React.FC<StockTableProps> = ({
           {/* Professional Table Header with Gradient */}
           <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 shadow-lg">
             <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
-              <div className="col-span-3 flex items-center gap-2">
+              <div className="col-span-2 flex items-center gap-2">
                 <Car className="w-4 h-4" />
                 <span>Car Information</span>
               </div>
@@ -102,21 +116,32 @@ const StockTable: React.FC<StockTableProps> = ({
                 <CurrencyBDTIcon className="w-4 h-4" />
                 <span>Price</span>
               </div>
+              <div className="col-span-1 flex items-center gap-2 justify-center">
+                <Package className="w-4 h-4" />
+                <span>Current Stock</span>
+              </div>
               <div className="col-span-1 text-center">Actions</div>
             </div>
           </div>
 
           {/* Table Body with Enhanced Styling */}
           <div className="divide-y divide-gray-100 bg-gray-50/30">
-            {stocks.map((stock) => (
-              <StockTableRow
-                key={stock.id}
-                stock={stock}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                onView={onView}
-              />
-            ))}
+            {stocks.map((stock) => {
+              const currentStockCount = stock.car
+                ? stockCountsMap.get(`${stock.car.make}_${stock.car.model}`) || 0
+                : 0;
+
+              return (
+                <StockTableRow
+                  key={stock.id}
+                  stock={stock}
+                  currentStockCount={currentStockCount}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                  onView={onView}
+                />
+              );
+            })}
           </div>
         </div>
       </div>

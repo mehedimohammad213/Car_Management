@@ -5,6 +5,7 @@ import { getGradeColor, formatPrice as formatPriceUtil } from "../../utils/carUt
 
 interface StockTableRowProps {
   stock: Stock;
+  currentStockCount: number;
   onEdit: (stock: Stock) => void;
   onDelete: (stock: Stock) => void;
   onView?: (stock: Stock) => void;
@@ -12,6 +13,7 @@ interface StockTableRowProps {
 
 const StockTableRow: React.FC<StockTableRowProps> = ({
   stock,
+  currentStockCount,
   onEdit,
   onDelete,
   onView,
@@ -32,7 +34,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
       className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-blue-500"
     >
       {/* Car Information - Enhanced */}
-      <div className="col-span-3 flex items-center gap-3">
+      <div className="col-span-2 flex items-center gap-3">
         <div className="relative w-28 h-24 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 rounded-xl overflow-hidden flex-shrink-0 shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-gray-200 group-hover:border-blue-300">
           {car?.photos && car.photos.length > 0 ? (
             <img
@@ -85,13 +87,12 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
               </span>
             )}
             <span
-              className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold ${
-                stock.quantity === 0
-                  ? "bg-red-100 text-red-700 border border-red-200"
-                  : stock.quantity <= 2
+              className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold ${stock.quantity === 0
+                ? "bg-red-100 text-red-700 border border-red-200"
+                : stock.quantity <= 2
                   ? "bg-amber-100 text-amber-700 border border-amber-200"
                   : "bg-green-100 text-green-700 border border-green-200"
-              }`}
+                }`}
             >
               Stock: {stock.quantity}
             </span>
@@ -212,6 +213,13 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
               : "Price on request"}
           </span>
         </div>
+      </div>
+
+      {/* Current Stock Count */}
+      <div className="col-span-1 flex items-center justify-center">
+        <span className="inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-800 rounded-lg text-sm font-bold min-w-[60px]">
+          {currentStockCount}
+        </span>
       </div>
 
       {/* Actions - Enhanced */}

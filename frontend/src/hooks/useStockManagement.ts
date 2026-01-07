@@ -796,6 +796,7 @@ export const useStockManagement = () => {
 
   return {
     stocks: derivedData.stocks,
+    allStocks,
     availableCars,
     totalPages: derivedData.totalPages,
     totalItems: derivedData.totalItems,
