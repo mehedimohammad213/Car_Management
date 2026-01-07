@@ -575,6 +575,7 @@ export const useStockManagement = () => {
             7: { cellWidth: 24, halign: "left" },
           },
           didParseCell: function (data: any) {
+            // Handle View Link in Column 7
             if (data.column.index === 7 && data.row.index >= 0 && data.section !== 'head') {
               const rowIndex = data.row.index;
               const viewUrl = viewLinkMap.get(rowIndex);
@@ -585,6 +586,20 @@ export const useStockManagement = () => {
                 // Clear text to prevent default rendering
                 data.cell.text = [];
               }
+            }
+
+            // Handle Height Adjustment for Car Name in Column 1
+            if (data.column.index === 1 && data.section === 'body') {
+              // Ensure enough height is allocated for the custom spacing we add in didDrawCell
+              const currentPadding = data.cell.styles.cellPadding;
+              const basePadding = (typeof currentPadding === 'number') ? currentPadding : 2;
+
+              data.cell.styles.cellPadding = {
+                top: basePadding,
+                left: basePadding,
+                right: basePadding,
+                bottom: basePadding + 6 // Add extra buffer for custom spacing
+              };
             }
           },
           willDrawCell: function (data: any) {
@@ -616,15 +631,18 @@ export const useStockManagement = () => {
               let isChassisSection = false;
 
               lines.forEach((line: string) => {
-                if (typeof line === 'string' && line.includes("Chassis No")) {
+                const isChassisLine = typeof line === 'string' && line.includes("Chassis No");
+
+                if (isChassisLine) {
                   isChassisSection = true;
+                  // Add extra spacing before Chassis No
+                  currentY += 2;
                 }
 
                 if (isChassisSection) {
                   doc.setTextColor(0, 0, 0); // Black
                 } else {
                   // Empty lines or lines before Chassis No are Red (Car Name)
-                  // Check if empty line? " ". trimming?
                   if (line.trim() === "") {
                     // spacing, color doesn't matter
                   } else {
