@@ -203,8 +203,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             </button>
           )}
 
-          {/* Download PDF Button */}
-          <button
+          {/* Download PDF Button - Commented out */}
+          {/* <button
             onClick={onGeneratePDF}
             disabled={isGeneratingPDF}
             className={`flex items-center justify-center transition-colors font-medium shadow-sm ${isGeneratingPDF
@@ -221,7 +221,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             ) : (
               <Download className="w-5 h-5" />
             )}
-          </button>
+          </button> */}
 
           {/* Add New Car Button - Admin Only */}
           {isAdmin && onAddCar && (
