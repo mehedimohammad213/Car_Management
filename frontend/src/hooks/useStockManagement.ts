@@ -479,7 +479,7 @@ export const useStockManagement = () => {
           const packageText = car.package ? `${car.package} ` : "";
           const fuelType = car.fuel ? `-${car.fuel.toUpperCase()}` : "";
           const carName = `${car.year || "N/A"} ${car.make || "N/A"
-            } ${car.model || "N/A"} ${packageText}${fuelType}\n\nChassis No: ${car.chassis_no_full || car.chassis_no_masked || "N/A"
+            } ${car.model || "N/A"} ${packageText}${fuelType}\nChassis No: ${car.chassis_no_full || car.chassis_no_masked || "N/A"
             }`;
 
           const grade = car.grade_overall || "N/A";
@@ -587,7 +587,58 @@ export const useStockManagement = () => {
               }
             }
           },
+          willDrawCell: function (data: any) {
+            if (data.column.index === 1 && data.section === 'body') {
+              data.cell.customRender = true;
+              data.cell.originalText = data.cell.text;
+              data.cell.text = [];
+            }
+          },
           didDrawCell: function (data: any) {
+            if (data.column.index === 1 && data.section === 'body' && data.cell.customRender) {
+              const cellX = data.cell.x;
+              const cellY = data.cell.y;
+              // const cellWidth = data.cell.width;
+              const padding = data.cell.padding("left") || 2;
+              const lineHeight = doc.getFontSize() * 1.15; // approximate line height
+
+              const originalText = data.cell.originalText || [];
+              const lines = Array.isArray(originalText) ? originalText : [originalText];
+
+              const textX = cellX + padding;
+              let currentY = cellY + padding + 3; // +3 for baseline adjustment approx
+
+              const originalTextColor = doc.getTextColor();
+              const originalFontSize = doc.getFontSize();
+
+              doc.setFontSize(7);
+
+              let isChassisSection = false;
+
+              lines.forEach((line: string) => {
+                if (typeof line === 'string' && line.includes("Chassis No")) {
+                  isChassisSection = true;
+                }
+
+                if (isChassisSection) {
+                  doc.setTextColor(0, 0, 0); // Black
+                } else {
+                  // Empty lines or lines before Chassis No are Red (Car Name)
+                  // Check if empty line? " ". trimming?
+                  if (line.trim() === "") {
+                    // spacing, color doesn't matter
+                  } else {
+                    doc.setTextColor(255, 0, 0); // Red
+                  }
+                }
+                doc.text(line, textX, currentY);
+                currentY += 3.5; // Custom tight leading or use lineHeight
+              });
+
+              doc.setTextColor(originalTextColor);
+              doc.setFontSize(originalFontSize);
+            }
+
             if (data.column.index === 7 && data.cell.viewUrl && data.cell.originalText && data.section !== 'head') {
               const cellX = data.cell.x;
               const cellY = data.cell.y;
