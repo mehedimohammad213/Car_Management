@@ -479,7 +479,7 @@ export const useStockManagement = () => {
           const packageText = car.package ? `${car.package} ` : "";
           const fuelType = car.fuel ? `-${car.fuel.toUpperCase()}` : "";
           const carName = `${car.year || "N/A"} ${car.make || "N/A"
-            } ${car.model || "N/A"} ${packageText}${fuelType}\nChassis No: ${car.chassis_no_full || car.chassis_no_masked || "N/A"
+            } ${car.model || "N/A"} ${packageText}${fuelType}\n\nChassis No: ${car.chassis_no_full || car.chassis_no_masked || "N/A"
             }`;
 
           const grade = car.grade_overall || "N/A";
