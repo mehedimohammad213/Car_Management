@@ -156,6 +156,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
               return (
                 <div
                   key={car.id}
+                  onClick={() => onView?.(car)}
                   className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-blue-500"
                 >
                   {/* Car Information - Enhanced */}
@@ -309,7 +310,10 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                   </div>
 
                   {/* Actions - Enhanced */}
-                  <div className="col-span-1 flex items-center justify-center gap-2">
+                  <div
+                    className="col-span-1 flex items-center justify-center gap-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     {onView && (
                       <button
                         onClick={() => onView(car)}

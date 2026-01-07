@@ -240,11 +240,11 @@ const StockManagement: React.FC = () => {
           isLoading={isDeleting}
         />
 
-        <InvoiceCreationModal
+        {/* <InvoiceCreationModal
           isOpen={showInvoiceModal}
           onClose={() => setShowInvoiceModal(false)}
           onCreateInvoice={handleCreateInvoice}
-        />
+        /> */}
       </div>
     </div>
   );

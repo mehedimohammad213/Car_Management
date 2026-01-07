@@ -191,8 +191,8 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
           </button>
         )}
 
-        {/* Create Invoice Button */}
-        {onCreateInvoice && (
+        {/* Create Invoice Button - Commented out */}
+        {/* {onCreateInvoice && (
           <button
             onClick={onCreateInvoice}
             className="w-10 h-10 flex items-center justify-center bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors shadow-sm"
@@ -200,7 +200,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
           >
             <FileText className="w-5 h-5" />
           </button>
-        )}
+        )} */}
 
         {/* Add Stock Button - Commented out */}
         {/* {onCreateStock && (

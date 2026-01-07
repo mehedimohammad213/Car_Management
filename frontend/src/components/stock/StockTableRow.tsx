@@ -34,6 +34,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
   return (
     <div
       className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-blue-500"
+      onClick={() => onView?.(stock)}
     >
       {/* Car Information - Enhanced */}
       <div className="col-span-2 flex items-center gap-3">
