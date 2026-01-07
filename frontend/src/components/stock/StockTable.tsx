@@ -126,16 +126,23 @@ const StockTable: React.FC<StockTableProps> = ({
 
           {/* Table Body with Enhanced Styling */}
           <div className="divide-y divide-gray-100 bg-gray-50/30">
-            {stocks.map((stock) => {
+            {stocks.map((stock, index) => {
+              const makeModelKey = stock.car ? `${stock.car.make}_${stock.car.model}` : "";
               const currentStockCount = stock.car
-                ? stockCountsMap.get(`${stock.car.make}_${stock.car.model}`) || 0
+                ? stockCountsMap.get(makeModelKey) || 0
                 : 0;
+
+              // Only show count on first occurrence of each make/model in the current list
+              const isFirstOfMakeModel = stock.car && stocks.findIndex(
+                (s) => s.car && `${s.car.make}_${s.car.model}` === makeModelKey
+              ) === index;
 
               return (
                 <StockTableRow
                   key={stock.id}
                   stock={stock}
                   currentStockCount={currentStockCount}
+                  showCount={!!isFirstOfMakeModel}
                   onEdit={onEdit}
                   onDelete={onDelete}
                   onView={onView}
