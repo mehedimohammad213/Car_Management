@@ -1,5 +1,4 @@
-import axios from "axios";
-import { API_BASE_URL } from "../config/api";
+import { apiClient } from "./apiClient";
 
 export interface Stock {
   id: number;
@@ -128,16 +127,9 @@ export interface BulkUpdateStatusData {
 
 class StockApiService {
   private async request<T>(endpoint: string, options: any = {}): Promise<T> {
-    const url = `${API_BASE_URL}${endpoint}`;
-
     try {
-      const response = await axios({
-        url,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          ...options.headers,
-        },
+      const response = await apiClient({
+        url: endpoint,
         ...options,
       });
 

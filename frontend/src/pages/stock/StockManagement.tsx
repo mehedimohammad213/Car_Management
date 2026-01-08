@@ -84,6 +84,7 @@ const StockManagement: React.FC = () => {
 
   const handleCreateStockFromCar = async (car: any) => {
     try {
+      console.log("Creating stock from car:", car);
       const stockData = {
         car_id: car.id,
         quantity: 1,
@@ -92,7 +93,9 @@ const StockManagement: React.FC = () => {
         notes: "",
       };
 
+      console.log("Stock data to send:", stockData);
       const response = await stockApi.createStock(stockData);
+      console.log("Create stock response:", response);
 
       if (response.success) {
         showMessage("success", "Stock added successfully");

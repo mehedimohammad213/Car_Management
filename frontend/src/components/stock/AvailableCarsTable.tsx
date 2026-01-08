@@ -50,13 +50,18 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
   onView,
 }) => {
   // Filter out cars with status="sold"
-  const filteredCars = cars.filter((car) => car.status !== "sold");
+  const filteredCars = React.useMemo(() => {
+    console.log("AvailableCarsTable: Raw cars data:", cars);
+    const filtered = cars.filter((car) => car.status?.toLowerCase() !== "sold");
+    console.log("AvailableCarsTable: Filtered cars data:", filtered);
+    return filtered;
+  }, [cars]);
 
   // Calculate current available cars count for each make/model
   const availableCarsCountMap = React.useMemo(() => {
     const counts = new Map<string, number>();
     cars.forEach((car) => {
-      const key = `${car.make}_${car.model}`;
+      const key = `${car.make || 'Unknown'}_${car.model || 'Unknown'}`;
       counts.set(key, (counts.get(key) || 0) + 1);
     });
     return counts;
