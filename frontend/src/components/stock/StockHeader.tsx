@@ -75,8 +75,8 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
   return (
     <>
       <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <div>
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="flex-1">
             <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
               <Package className="w-8 h-8 text-blue-600" />
               Stock Management
@@ -85,34 +85,27 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
               View and manage your vehicle inventory stock levels
             </p>
           </div>
-        </div>
 
-        {/* Tabs */}
-        <div className="flex gap-4 border-b border-gray-100">
-          <button
-            onClick={() => onTabChange("current")}
-            className={`pb-4 px-2 text-sm font-semibold transition-all duration-200 relative ${activeTab === "current"
-                ? "text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-              }`}
-          >
-            Current Stock
-            {activeTab === "current" && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full" />
-            )}
-          </button>
-          <button
-            onClick={() => onTabChange("before")}
-            className={`pb-4 px-2 text-sm font-semibold transition-all duration-200 relative ${activeTab === "before"
-                ? "text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-              }`}
-          >
-            Pending Stock
-            {activeTab === "before" && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full" />
-            )}
-          </button>
+          <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-100 self-start lg:self-center">
+            <button
+              onClick={() => onTabChange("current")}
+              className={`px-4 py-2 text-sm font-semibold transition-all duration-200 rounded-lg whitespace-nowrap ${activeTab === "current"
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                }`}
+            >
+              Current Stock
+            </button>
+            <button
+              onClick={() => onTabChange("before")}
+              className={`px-4 py-2 text-sm font-semibold transition-all duration-200 rounded-lg whitespace-nowrap ${activeTab === "before"
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                }`}
+            >
+              Pending Stock
+            </button>
+          </div>
         </div>
       </div>
 
