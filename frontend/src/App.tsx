@@ -59,7 +59,8 @@ function App() {
                     {/* Public stock gallery (no header layout) */}
                     <Route path="/stock-gallery/:id" element={<StockGallery />} />
 
-                    <Route path="/" element={<Layout />}>
+                    <Route path="/" element={<HomeRedirect />} />
+                    <Route element={<Layout />}>
                       {/* Admin Routes */}
                       <Route
                         path="/admin"
@@ -172,7 +173,6 @@ function App() {
                       />
 
                       {/* User Routes */}
-                      <Route path="/" element={<HomeRedirect />} />
                       <Route path="/car-view/:id" element={<ViewCar />} />
                       <Route path="/cars" element={<Car />} />
                       <Route

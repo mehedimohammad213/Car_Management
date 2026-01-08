@@ -6,6 +6,7 @@ import Header from "./Header";
 const Layout: React.FC = () => {
   const { user } = useAuth();
 
+
   if (!user) {
     return null;
   }
