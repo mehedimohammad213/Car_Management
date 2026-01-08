@@ -92,13 +92,42 @@ export const StockReportService = {
         ];
 
         const viewLinkMap: Map<number, string> = new Map();
+        const groupHeaderRows: Set<number> = new Set();
+        let currentSl = 1;
+        let lastMake = "";
+        let lastModel = "";
 
-        const tableData = sortedStocks.map((stock, index) => {
+        const tableData: any[][] = [];
+
+        sortedStocks.forEach((stock) => {
+            const car = stock.car;
+            const make = (car?.make || "N/A").toUpperCase();
+            const model = (car?.model || "N/A").toUpperCase();
+
+            // Insert group header if make or model changes
+            if (make !== lastMake || model !== lastModel) {
+                groupHeaderRows.add(tableData.length);
+                tableData.push([
+                    {
+                        content: `${make} - ${model}`,
+                        colSpan: 8,
+                        styles: {
+                            fillColor: [240, 240, 240],
+                            fontStyle: 'bold',
+                            halign: 'center',
+                            textColor: [0, 0, 0],
+                            fontSize: 8
+                        }
+                    }
+                ]);
+                lastMake = make;
+                lastModel = model;
+            }
+
             try {
-                const car = stock.car;
                 if (!car) {
-                    return [
-                        (index + 1).toString(),
+                    tableData.push([
+                        (currentSl++).toString(),
                         "N/A",
                         "N/A",
                         "N/A",
@@ -106,7 +135,8 @@ export const StockReportService = {
                         "N/A",
                         "N/A",
                         `Location: N/A\nStatus: ${stock.status || "N/A"}`,
-                    ];
+                    ]);
+                    return;
                 }
 
                 const packageText = car.package ? `${car.package} ` : "";
@@ -140,10 +170,10 @@ export const StockReportService = {
                         ? window.location.origin
                         : "";
                 const viewUrl = `${baseUrl}/stock-gallery/${stock.id}`;
-                viewLinkMap.set(index, viewUrl);
+                viewLinkMap.set(tableData.length, viewUrl);
 
-                return [
-                    (index + 1).toString(),
+                tableData.push([
+                    (currentSl++).toString(),
                     carName,
                     grade,
                     mileage,
@@ -151,11 +181,11 @@ export const StockReportService = {
                     keyFeatures,
                     price,
                     viewText,
-                ];
+                ]);
             } catch (error) {
                 console.error("Error processing stock data:", error, stock);
-                return [
-                    (index + 1).toString(),
+                tableData.push([
+                    (currentSl++).toString(),
                     "Error",
                     "Error",
                     "Error",
@@ -163,7 +193,7 @@ export const StockReportService = {
                     "Error",
                     "Error",
                     "Error",
-                ];
+                ]);
             }
         });
 
@@ -205,8 +235,12 @@ export const StockReportService = {
                     7: { cellWidth: 24, halign: "left" },
                 },
                 didParseCell: function (data: any) {
+                    const rowIndex = data.row.index;
+                    const isGroupHeader = groupHeaderRows.has(rowIndex);
+
+                    if (isGroupHeader) return;
+
                     if (data.column.index === 7 && data.row.index >= 0 && data.section !== 'head') {
-                        const rowIndex = data.row.index;
                         const viewUrl = viewLinkMap.get(rowIndex);
                         if (viewUrl) {
                             data.cell.viewUrl = viewUrl;
@@ -228,7 +262,10 @@ export const StockReportService = {
                     }
                 },
                 willDrawCell: function (data: any) {
-                    if (data.column.index === 1 && data.section === 'body') {
+                    const rowIndex = data.row.index;
+                    const isGroupHeader = groupHeaderRows.has(rowIndex);
+
+                    if (data.column.index === 1 && data.section === 'body' && !isGroupHeader) {
                         data.cell.customRender = true;
                         data.cell.originalText = data.cell.text;
                         data.cell.text = [];
@@ -322,14 +359,8 @@ export const StockReportService = {
                 didDrawPage: function (data: any) {
                     const currentPageNumber = data.pageNumber;
 
-                    // Only draw the full header on the first page
-                    if (currentPageNumber === 1) {
-                        drawHeader();
-                    } else {
-                        // Draw a simple header on subsequent pages if needed, 
-                        // but autoTable already handles the table header (headers).
-                        // Let's just add a small line or space if required.
-                    }
+                    // Draw the full header on every page
+                    drawHeader();
 
                     const pageCount = doc.getNumberOfPages();
                     doc.setFontSize(8);
