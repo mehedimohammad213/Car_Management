@@ -78,7 +78,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
   return (
     <>
       {/* Header */}
-      <div className="mb-6">
+      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
@@ -89,7 +89,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
               Search and filter car inventory
             </p>
           </div>
-
+          {isAdmin && onAddCar && (
+            <button
+              onClick={onAddCar}
+              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium shadow-sm"
+            >
+              <Plus className="w-5 h-5" />
+              Add Car
+            </button>
+          )}
         </div>
       </div>
 
@@ -222,17 +230,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
               <Download className="w-5 h-5" />
             )}
           </button> */}
-
-          {/* Add New Car Button - Admin Only */}
-          {isAdmin && onAddCar && (
-            <button
-              onClick={onAddCar}
-              className="w-full lg:w-auto flex items-center justify-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
-            >
-              <Plus className="w-5 h-5" />
-              Add Car
-            </button>
-          )}
         </div>
       </div>
     </>
