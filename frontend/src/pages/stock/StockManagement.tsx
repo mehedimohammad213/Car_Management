@@ -120,45 +120,13 @@ const StockManagement: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 py-6">
       <div className="max-w-full mx-auto px-4">
-        <StockHeader onCreateInvoice={() => setShowInvoiceModal(true)} />
+        <StockHeader
+          onCreateInvoice={() => setShowInvoiceModal(true)}
+          activeTab={activeTab === "total" ? "current" : activeTab as "current" | "before"}
+          onTabChange={(tab) => setActiveTab(tab)}
+        />
 
         <MessageDisplay message={message} />
-
-        {/* Tabs */}
-        <div className="mb-6 bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-          <div className="flex border-b border-gray-200">
-            <button
-              onClick={() => setActiveTab("current")}
-              className={`flex-1 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-semibold transition-all duration-200 ${activeTab === "current"
-                ? "bg-blue-600 text-white border-b-2 border-blue-600"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                }`}
-            >
-              <span className="hidden sm:inline">Current Stock</span>
-              <span className="sm:hidden">Current Stock</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("before")}
-              className={`flex-1 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-semibold transition-all duration-200 ${activeTab === "before"
-                ? "bg-blue-600 text-white border-b-2 border-blue-600"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                }`}
-            >
-              <span className="hidden sm:inline">Pending Stock</span>
-              <span className="sm:hidden">Pending Stock</span>
-            </button>
-            {/* <button
-              onClick={() => setActiveTab("total")}
-              className={`flex-1 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-semibold transition-all duration-200 ${activeTab === "total"
-                ? "bg-purple-600 text-white border-b-2 border-purple-600"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                }`}
-            >
-              <span className="hidden sm:inline">Total Stock</span>
-              <span className="sm:hidden">Total Stock</span>
-            </button> */}
-          </div>
-        </div>
 
         {activeTab === "current" ? (
           <>
