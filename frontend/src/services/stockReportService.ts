@@ -11,6 +11,7 @@ export const StockReportService = {
 
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
         const tableLeftMargin = 14;
         const tableWidth = 8 + 45 + 15 + 18 + 20 + 40 + 20 + 24;
         const tableRightEdge = tableLeftMargin + tableWidth;
@@ -64,6 +65,21 @@ export const StockReportService = {
             doc.text(dateStr, tableRightEdge, 38, { align: "right" });
         };
 
+        // Sort stocks by Make, Model, then Year (descending)
+        const sortedStocks = [...stocks].sort((a, b) => {
+            const makeA = (a.car?.make || "").toLowerCase();
+            const makeB = (b.car?.make || "").toLowerCase();
+            if (makeA !== makeB) return makeA.localeCompare(makeB);
+
+            const modelA = (a.car?.model || "").toLowerCase();
+            const modelB = (b.car?.model || "").toLowerCase();
+            if (modelA !== modelB) return modelA.localeCompare(modelB);
+
+            const yearA = a.car?.year || 0;
+            const yearB = b.car?.year || 0;
+            return yearB - yearA;
+        });
+
         const tableColumns = [
             "Sl.",
             "Car Name",
@@ -77,7 +93,7 @@ export const StockReportService = {
 
         const viewLinkMap: Map<number, string> = new Map();
 
-        const tableData = stocks.map((stock, index) => {
+        const tableData = sortedStocks.map((stock, index) => {
             try {
                 const car = stock.car;
                 if (!car) {
@@ -304,14 +320,23 @@ export const StockReportService = {
                     }
                 },
                 didDrawPage: function (data: any) {
-                    drawHeader();
-                    const pageCount = doc.getNumberOfPages();
                     const currentPageNumber = data.pageNumber;
+
+                    // Only draw the full header on the first page
+                    if (currentPageNumber === 1) {
+                        drawHeader();
+                    } else {
+                        // Draw a simple header on subsequent pages if needed, 
+                        // but autoTable already handles the table header (headers).
+                        // Let's just add a small line or space if required.
+                    }
+
+                    const pageCount = doc.getNumberOfPages();
                     doc.setFontSize(8);
                     doc.text(
                         `Page ${currentPageNumber} of ${pageCount}`,
                         pageWidth / 2,
-                        doc.internal.pageSize.height - 10,
+                        pageHeight - 10,
                         { align: "center" }
                     );
                 },
