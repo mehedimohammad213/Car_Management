@@ -253,15 +253,6 @@ class CarApiService {
     } catch (error: any) {
       console.error("Response error:", error);
 
-      // Handle authentication errors
-      if (error.response?.status === 401) {
-        console.error("CarApi: Authentication failed, clearing token");
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        // Redirect to login
-        window.location.href = "/login";
-      }
-
       // Re-throw the original error to preserve response data
       throw error;
     }

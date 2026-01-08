@@ -93,8 +93,6 @@ class CategoryApiService {
         console.error("CategoryApi: Authentication failed, clearing token");
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-        // Redirect to login
-        window.location.href = "/login";
       }
 
       throw new Error(

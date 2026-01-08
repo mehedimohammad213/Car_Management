@@ -11,22 +11,25 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PurchaseHistory\PurchaseHistoryController;
 use App\Http\Controllers\Api\PaymentHistory\PaymentHistoryController;
 
-// Auth routes (no middleware)
+// Public routes (no middleware)
 Route::post('/auth/login', [AuthController::class, 'login']);
+
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/categories/{id}', [CategoryController::class, 'show']);
+Route::get('/categories/parent/list', [CategoryController::class, 'getParentCategories']);
+
+Route::get('/cars', [CarController::class, 'index']);
+Route::get('/cars/{car}', [CarController::class, 'show']);
+Route::get('/cars/filter/options', [CarController::class, 'getFilterOptions']);
+
+Route::get('/stocks', [StockController::class, 'index']);
+Route::get('/stocks/{stock}', [StockController::class, 'show']);
+Route::get('/stocks/stats/overview', [StockController::class, 'statistics']);
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::prefix('categories')->group(function () {
-    Route::get('/', [CategoryController::class, 'index']);
-    Route::post('/', [CategoryController::class, 'store']);
-    Route::get('/{id}', [CategoryController::class, 'show']);
-    Route::put('/{id}', [CategoryController::class, 'update']);
-    Route::delete('/{id}', [CategoryController::class, 'destroy']);
-    Route::get('/parent/list', [CategoryController::class, 'getParentCategories']);
-    Route::get('/stats/overview', [CategoryController::class, 'getStats']);
-});
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
@@ -34,14 +37,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/users', [AuthController::class, 'getAllUsers']);
 
     // Category API Routes
-
+    Route::prefix('categories')->group(function () {
+        Route::post('/', [CategoryController::class, 'store']);
+        Route::put('/{id}', [CategoryController::class, 'update']);
+        Route::delete('/{id}', [CategoryController::class, 'destroy']);
+        Route::get('/stats/overview', [CategoryController::class, 'getStats']);
+    });
 
     // Car API Routes
     Route::prefix('cars')->group(function () {
         // Main CRUD operations
-        Route::get('/', [CarController::class, 'index']);
         Route::post('/', [CarController::class, 'store']);
-        Route::get('/{car}', [CarController::class, 'show']);
         Route::post('/{car}/update', [CarController::class, 'update']);
         Route::delete('/{car}', [CarController::class, 'destroy']);
 
@@ -55,9 +61,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Bulk operations
         Route::put('/bulk/status', [CarController::class, 'bulkUpdateStatus']);
-
-        // Additional endpoints
-        Route::get('/filter/options', [CarController::class, 'getFilterOptions']);
 
         // File serving routes
         Route::get('/{car}/attached-file', [CarController::class, 'getAttachedFile']);
@@ -105,17 +108,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [PaymentHistoryController::class, 'update']);
         Route::delete('/{id}', [PaymentHistoryController::class, 'destroy']);
     });
+
+    // Stock API Routes (Protected)
+    Route::prefix('stocks')->group(function () {
+        Route::post('/', [StockController::class, 'store']);
+        Route::put('/{stock}', [StockController::class, 'update']);
+        Route::delete('/{stock}', [StockController::class, 'destroy']);
+        Route::put('/bulk/status', [StockController::class, 'bulkUpdateStatus']);
+        Route::get('/available/cars', [StockController::class, 'getAvailableCars']);
+    });
 });
 
-
-// Stock API Routes
-Route::prefix('stocks')->group(function () {
-    Route::get('/', [StockController::class, 'index']);
-    Route::post('/', [StockController::class, 'store']);
-    Route::get('/{stock}', [StockController::class, 'show']);
-    Route::put('/{stock}', [StockController::class, 'update']);
-    Route::delete('/{stock}', [StockController::class, 'destroy']);
-    Route::get('/stats/overview', [StockController::class, 'statistics']);
-    Route::put('/bulk/status', [StockController::class, 'bulkUpdateStatus']);
-    Route::get('/available/cars', [StockController::class, 'getAvailableCars']);
-});
