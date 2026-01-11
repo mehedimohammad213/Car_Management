@@ -60,7 +60,7 @@ const CarSpecifications: React.FC<CarSpecificationsProps> = ({
       },
       {
         label: "Registration Year",
-        value: car.year || "N/A",
+        value: car.reg_year_month || "N/A",
       },
       {
         label: "Exterior Color",
