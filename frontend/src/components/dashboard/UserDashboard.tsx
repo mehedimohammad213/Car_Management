@@ -39,7 +39,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                 {/* Enhanced Stats Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {/* Cart Items */}
-                    <div className="group relative overflow-hidden bg-gradient-to-br from-primary-50 to-blue-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-xl border border-blue-200 dark:border-primary-800 p-6 hover:shadow-lg transition-all duration-300">
+                    <div className="group relative overflow-hidden bg-gradient-to-br from-primary-50 to-blue-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-xl border border-primary-200 dark:border-primary-800 p-6 hover:shadow-lg transition-all duration-300">
                         <div className="absolute top-0 right-0 w-20 h-20 bg-primary-500/10 rounded-full -translate-y-10 translate-x-10"></div>
                         <div className="relative">
                             <div className="flex items-center justify-between mb-4">
@@ -154,7 +154,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                                         >
                                             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                                 <div className="flex items-start gap-4">
-                                                    <div className="p-3 bg-blue-100 dark:bg-primary-900/20 rounded-xl flex-shrink-0">
+                                                    <div className="p-3 bg-primary-100 dark:bg-primary-900/20 rounded-xl flex-shrink-0">
                                                         <CarIcon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                                                     </div>
                                                     <div>
@@ -183,7 +183,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                                                         className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium ${order.status === "delivered"
                                                                 ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
                                                                 : order.status === "shipped"
-                                                                    ? "bg-blue-100 text-primary-800 dark:bg-primary-900/20 dark:text-primary-400"
+                                                                    ? "bg-primary-100 text-primary-800 dark:bg-primary-900/20 dark:text-primary-400"
                                                                     : order.status === "approved"
                                                                         ? "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
                                                                         : order.status === "canceled"

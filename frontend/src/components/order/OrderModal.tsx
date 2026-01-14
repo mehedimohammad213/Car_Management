@@ -36,7 +36,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-3xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-hidden">
         {/* Modal Header */}
-        <div className="bg-gradient-to-r from-primary-600 to-indigo-700 text-white p-6">
+        <div className="bg-gradient-to-r from-primary-600 to-primary-800 text-white p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
@@ -44,7 +44,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
               </div>
               <div>
                 <h2 className="text-2xl font-bold">Order #{order.id}</h2>
-                <p className="text-blue-100 mt-1">
+                <p className="text-primary-100 mt-1">
                   {formatDate(order.created_at)} • {order.items.length} item
                   {order.items.length !== 1 ? "s" : ""}
                 </p>
@@ -65,7 +65,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
         <div className="overflow-y-auto max-h-[calc(95vh-120px)]">
           <div className="p-6 space-y-6">
             {/* Order Status & Quick Actions */}
-            <div className="bg-gradient-to-r from-gray-50 to-primary-50 rounded-2xl p-6">
+            <div className="bg-gradient-to-r from-gray-50 to-primary-100 rounded-2xl p-6">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-3">

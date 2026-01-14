@@ -286,7 +286,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
       <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-hidden my-8">
         {/* Header */}
-        <div className="bg-gradient-to-r from-primary-600 to-indigo-700 text-white p-6 sticky top-0 z-10">
+        <div className="bg-gradient-to-r from-primary-600 to-primary-800 text-white p-6 sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">
               {mode === "create"
@@ -383,7 +383,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
             </div>
 
             {/* Purchase Amount Calculation */}
-            <div className="bg-primary-50 rounded-xl p-6 border-2 border-blue-200">
+            <div className="bg-primary-50 rounded-xl p-6 border-2 border-primary-200">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Purchase Amount Calculation
               </h3>
@@ -643,7 +643,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
                       {/* Show existing file if available */}
                       {existingFile && (
-                        <div className="mb-3 bg-primary-50 rounded-lg border border-blue-200 p-4">
+                        <div className="mb-3 bg-primary-50 rounded-lg border border-primary-200 p-4">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-semibold text-primary-700 uppercase">Current File</span>

@@ -38,7 +38,7 @@ const CarTable: React.FC<CarTableProps> = ({
       <div className="overflow-x-auto">
         <div className="min-w-[1200px]">
           {/* Professional Table Header with Gradient */}
-          <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-indigo-700 shadow-lg">
+          <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 shadow-lg">
             <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
               <div className="col-span-3 flex items-center gap-2">
                 <Car className="w-4 h-4" />
@@ -80,7 +80,7 @@ const CarTable: React.FC<CarTableProps> = ({
                 <div
                   key={car.id}
                   onClick={() => onViewCar(car)}
-                  className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-primary-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-primary-500"
+                  className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-primary-50/50 hover:to-primary-100/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-primary-500"
                 >
                   {/* Car Information - Enhanced */}
                   <div className="col-span-3 flex items-center gap-3">
@@ -133,19 +133,18 @@ const CarTable: React.FC<CarTableProps> = ({
                           {car.status?.charAt(0).toUpperCase() + car.status?.slice(1)}
                         </span>
                         {car.package && (
-                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 border border-blue-200">
+                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 border border-primary-200">
                             {car.package}
                           </span>
                         )}
                         {stock && (
                           <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold ${
-                              stock.quantity === 0
+                            className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold ${stock.quantity === 0
                                 ? "bg-red-100 text-red-700 border border-red-200"
                                 : stock.quantity <= 2
-                                ? "bg-amber-100 text-amber-700 border border-amber-200"
-                                : "bg-green-100 text-green-700 border border-green-200"
-                            }`}
+                                  ? "bg-amber-100 text-amber-700 border border-amber-200"
+                                  : "bg-green-100 text-green-700 border border-green-200"
+                              }`}
                           >
                             Stock: {stock.quantity}
                           </span>
@@ -264,9 +263,9 @@ const CarTable: React.FC<CarTableProps> = ({
                       <span className="text-sm font-semibold text-gray-900">
                         {car.price_amount
                           ? new Intl.NumberFormat("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }).format(car.price_amount)
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }).format(car.price_amount)
                           : "Price on request"}
                       </span>
                     </div>

@@ -109,7 +109,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
       <div className="overflow-x-auto">
         <div className="min-w-[1200px] sm:min-w-full">
           {/* Professional Table Header with Gradient */}
-          <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-indigo-700 shadow-lg">
+          <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 shadow-lg">
             <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
               <div className="col-span-2 flex items-center gap-2">
                 <Car className="w-4 h-4" />
@@ -206,7 +206,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                           </span>
                         )}
                         {car.package && (
-                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 border border-blue-200">
+                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 border border-primary-200">
                             {car.package}
                           </span>
                         )}
@@ -306,7 +306,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                   {/* Available Cars Count */}
                   <div className="col-span-1 flex items-center justify-center">
                     {isFirstOfMakeModel ? (
-                      <span className="inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-primary-800 rounded-lg text-sm font-bold min-w-[60px]">
+                      <span className="inline-flex items-center justify-center px-4 py-2 bg-primary-100 text-primary-800 rounded-lg text-sm font-bold min-w-[60px]">
                         {availableCarsCount}
                       </span>
                     ) : (

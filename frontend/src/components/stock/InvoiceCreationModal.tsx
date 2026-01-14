@@ -189,7 +189,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
               <FileText className="w-8 h-8 mr-3" />
               <div>
                 <h2 className="text-2xl font-bold">Create Invoice</h2>
-                <p className="text-blue-100 mt-1">
+                <p className="text-primary-100 mt-1">
                   Select cars and quantities for your invoice
                 </p>
               </div>

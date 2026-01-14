@@ -66,7 +66,7 @@ const UserManagement: React.FC = () => {
       case "admin":
         return "bg-red-100 text-red-700 border border-red-200";
       case "user":
-        return "bg-blue-100 text-primary-700 border border-blue-200";
+        return "bg-primary-100 text-primary-700 border border-primary-200";
       default:
         return "bg-gray-100 text-gray-700 border border-gray-200";
     }
@@ -150,7 +150,7 @@ const UserManagement: React.FC = () => {
             <div className="overflow-x-auto">
               <div className="min-w-[1000px]">
                 {/* Professional Table Header with Gradient */}
-                <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-indigo-700 shadow-lg">
+                <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 shadow-lg">
                   <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
                     <div className="col-span-3 flex items-center gap-2">
                       <UserIcon className="w-4 h-4" />

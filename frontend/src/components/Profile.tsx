@@ -16,7 +16,7 @@ const Profile: React.FC = () => {
       case "admin":
         return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400 border-red-200 dark:border-red-800";
       case "user":
-        return "bg-blue-100 text-primary-800 dark:bg-primary-900/20 dark:text-primary-400 border-blue-200 dark:border-primary-800";
+        return "bg-primary-100 text-primary-800 dark:bg-primary-900/20 dark:text-primary-400 border-primary-200 dark:border-primary-800";
       default:
         return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400 border-gray-200 dark:border-gray-800";
     }
@@ -58,7 +58,7 @@ const Profile: React.FC = () => {
                 <h2 className="text-2xl sm:text-3xl font-bold mb-2">
                   {user?.name || "Unknown User"}
                 </h2>
-                <p className="text-blue-100 text-base sm:text-lg mb-3">
+                <p className="text-primary-100 text-base sm:text-lg mb-3">
                   {user?.email || "No email provided"}
                 </p>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-3 sm:space-y-0">
@@ -130,7 +130,7 @@ const Profile: React.FC = () => {
 
               {/* Role Information */}
               <div className="lg:col-span-1">
-                <div className="bg-gradient-to-br from-primary-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-6 border border-blue-200 dark:border-gray-600">
+                <div className="bg-gradient-to-br from-primary-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-6 border border-primary-200 dark:border-gray-600">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <ShieldIcon className="w-5 h-5 mr-2 text-primary-600" />
                     Account Role

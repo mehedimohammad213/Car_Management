@@ -369,7 +369,7 @@ const PaymentHistoryDetails: React.FC = () => {
                 {paymentHistory.installments.map((installment, index) => (
                   <div
                     key={installment.id}
-                    className="border-2 border-blue-200 bg-primary-50 rounded-xl p-5"
+                    className="border-2 border-primary-200 bg-primary-50 rounded-xl p-5"
                   >
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-semibold text-gray-900">
@@ -379,7 +379,7 @@ const PaymentHistoryDetails: React.FC = () => {
                         <span
                           className={`px-3 py-1 rounded-full text-sm font-medium ${
                             installment.payment_method === "Bank"
-                              ? "bg-blue-100 text-primary-700"
+                              ? "bg-primary-100 text-primary-700"
                               : "bg-green-100 text-green-700"
                           }`}
                         >
@@ -495,30 +495,30 @@ const PaymentHistoryDetails: React.FC = () => {
           </div>
 
           {/* Summary */}
-          <div className="bg-gradient-to-br from-primary-600 to-indigo-700 rounded-2xl shadow-lg p-6 text-white">
+          <div className="bg-gradient-to-br from-primary-600 to-primary-800 rounded-2xl shadow-lg p-6 text-white">
             <h3 className="text-lg font-bold mb-4">Summary</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-blue-100">Purchase Amount:</span>
+                <span className="text-primary-100">Purchase Amount:</span>
                 <span className="font-bold">
                   {formatCurrency(paymentHistory.purchase_amount)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-blue-100">1st Installment:</span>
+                <span className="text-primary-100">1st Installment:</span>
                 <span className="font-bold">
                   {formatCurrency(firstInstallmentAmount)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-blue-100">2nd Installment:</span>
+                <span className="text-primary-100">2nd Installment:</span>
                 <span className="font-bold">
                   {formatCurrency(secondInstallmentAmount)}
                 </span>
               </div>
               <div className="pt-3 border-t border-primary-400">
                 <div className="flex justify-between">
-                  <span className="text-blue-100">Remaining Balance:</span>
+                  <span className="text-primary-100">Remaining Balance:</span>
                   <span className="font-bold">
                     {formatCurrency(remainingBalance)}
                   </span>

@@ -174,7 +174,7 @@ const UpdateCar: React.FC = () => {
                 </p>
               </div>
             </div>
-            <div className="p-3 bg-blue-100 dark:bg-primary-900/30 rounded-xl">
+            <div className="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-xl">
               <CarIcon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
           </div>

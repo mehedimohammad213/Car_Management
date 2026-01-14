@@ -220,7 +220,7 @@ const AttachedFileSection: React.FC<AttachedFileSectionProps> = ({
 
         {/* Show existing file if available */}
         {existingFile && (
-          <div className="bg-primary-50 rounded-lg border border-blue-200 p-4">
+          <div className="bg-primary-50 rounded-lg border border-primary-200 p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold text-primary-700 uppercase">Current File</span>
@@ -252,7 +252,7 @@ const AttachedFileSection: React.FC<AttachedFileSectionProps> = ({
                 <button
                   type="button"
                   onClick={handleViewExistingFile}
-                  className="text-primary-600 hover:text-primary-700 p-2 rounded-lg hover:bg-blue-100 transition-colors"
+                  className="text-primary-600 hover:text-primary-700 p-2 rounded-lg hover:bg-primary-100 transition-colors"
                   title="View file"
                 >
                   <Eye className="w-4 h-4" />

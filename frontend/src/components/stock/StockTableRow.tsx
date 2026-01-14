@@ -85,7 +85,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
               </span>
             )}
             {car?.package && (
-              <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 border border-blue-200">
+              <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 border border-primary-200">
                 {car.package}
               </span>
             )}
@@ -221,7 +221,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
       {/* Current Stock Count */}
       <div className="col-span-1 flex items-center justify-center">
         {showCount ? (
-          <span className="inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-primary-800 rounded-lg text-sm font-bold min-w-[60px]">
+          <span className="inline-flex items-center justify-center px-4 py-2 bg-primary-100 text-primary-800 rounded-lg text-sm font-bold min-w-[60px]">
             {currentStockCount}
           </span>
         ) : (

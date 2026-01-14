@@ -29,9 +29,8 @@ type NavItem = {
 
 const BdtIcon: React.FC<{ className?: string }> = ({ className }) => (
   <span
-    className={`inline-flex items-center justify-center font-extrabold leading-none text-lg text-current ${
-      className ?? ""
-    }`}
+    className={`inline-flex items-center justify-center font-extrabold leading-none text-lg text-current ${className ?? ""
+      }`}
   >
     ৳
   </span>
@@ -150,11 +149,10 @@ const Header: React.FC = () => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      isActiveRoute
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActiveRoute
                         ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
                         : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                    }`}
+                      }`}
                   >
                     <Icon className="h-4 w-4" />
                     <span>{item.label}</span>
@@ -246,11 +244,10 @@ const Header: React.FC = () => {
                     key={item.path}
                     to={item.path}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                      isActiveRoute
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${isActiveRoute
                         ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
                         : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                    }`}
+                      }`}
                   >
                     <Icon className="h-5 w-5" />
                     <span>{item.label}</span>
@@ -270,21 +267,19 @@ const Header: React.FC = () => {
       {/* Professional Logout Confirmation Modal */}
       {showLogoutConfirm && (
         <div
-          className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4 py-6 sm:p-6 transition-opacity duration-300 ${
-            modalVisible ? "opacity-100" : "opacity-0"
-          }`}
+          className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4 py-6 sm:p-6 transition-opacity duration-300 ${modalVisible ? "opacity-100" : "opacity-0"
+            }`}
         >
           <div
-            className={`bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full transform transition-all duration-300 ${
-              modalVisible
+            className={`bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full transform transition-all duration-300 ${modalVisible
                 ? "scale-100 translate-y-0"
                 : "scale-95 translate-y-4"
-            }`}
+              }`}
           >
             {/* Header Section */}
             <div className="relative p-6 pb-4">
               <div className="flex items-center space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center shadow-lg">
                   <LogOutIcon className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1">

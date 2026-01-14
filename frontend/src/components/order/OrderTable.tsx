@@ -71,7 +71,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
       <div className="overflow-x-auto">
         <div className="min-w-[1200px]">
           {/* Professional Table Header with Gradient */}
-          <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-indigo-700 shadow-lg">
+          <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 shadow-lg">
             <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
               <div className="col-span-1 flex items-center gap-2">
                 <Tag className="w-4 h-4" />

@@ -5,7 +5,7 @@ const CarCatalogLoading: React.FC = () => {
   return (
     <div className="text-center py-20">
       <div className="relative">
-        <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-200 border-t-primary-600 mx-auto"></div>
+        <div className="animate-spin rounded-full h-20 w-20 border-4 border-primary-200 border-t-primary-600 mx-auto"></div>
         <div className="absolute inset-0 flex items-center justify-center">
           <Car className="w-8 h-8 text-primary-600 animate-pulse" />
         </div>

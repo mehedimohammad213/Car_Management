@@ -124,7 +124,7 @@ const UserOrders: React.FC = () => {
       case "approved":
         return "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800";
       case "shipped":
-        return "bg-primary-50 text-primary-700 border-blue-200 dark:bg-primary-900/20 dark:text-primary-400 dark:border-primary-800";
+        return "bg-primary-50 text-primary-700 border-primary-200 dark:bg-primary-900/20 dark:text-primary-400 dark:border-primary-800";
       case "delivered":
         return "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
       case "canceled":
@@ -214,7 +214,7 @@ const UserOrders: React.FC = () => {
         <div className="max-w-full mx-auto px-4 py-6">
           <div className="text-center py-20">
             <div className="relative">
-              <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-200 border-t-primary-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-20 w-20 border-4 border-primary-200 border-t-primary-600 mx-auto"></div>
               <div className="absolute inset-0 flex items-center justify-center">
                 <Package className="w-8 h-8 text-primary-600 animate-pulse" />
               </div>
@@ -249,7 +249,7 @@ const UserOrders: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/cars"
-                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-600 text-white rounded-xl hover:from-primary-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-600 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
               >
                 <ShoppingBag className="w-5 h-5 mr-2" />
                 Browse Cars
@@ -335,7 +335,7 @@ const UserOrders: React.FC = () => {
                   setSearchTerm("");
                   setStatusFilter("all");
                 }}
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-600 text-white rounded-xl hover:from-primary-700 hover:to-indigo-700 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-600 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 <X className="w-5 h-5" />
                 Clear All Filters
@@ -344,7 +344,7 @@ const UserOrders: React.FC = () => {
           ) : (
             <>
               {/* Table Header */}
-              <div className="hidden bg-gradient-to-r from-gray-50 to-primary-50 border-b-2 border-blue-200 lg:block">
+              <div className="hidden bg-gradient-to-r from-gray-50 to-primary-100 border-b-2 border-primary-200 lg:block">
                 <div className="grid grid-cols-12 gap-3 p-6 text-sm font-bold text-gray-800 uppercase tracking-wide">
                   <div className="col-span-2">Order Information</div>
                   <div className="col-span-3">Items</div>
@@ -595,7 +595,7 @@ const UserOrders: React.FC = () => {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="bg-gradient-to-r from-primary-600 to-indigo-700 text-white p-6">
+              <div className="bg-gradient-to-r from-primary-600 to-primary-800 text-white p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
@@ -605,7 +605,7 @@ const UserOrders: React.FC = () => {
                       <h2 className="text-2xl font-bold">
                         Order #{selectedOrder.id}
                       </h2>
-                      <p className="text-blue-100 mt-1">
+                      <p className="text-primary-100 mt-1">
                         {formatDate(selectedOrder.created_at)} •{" "}
                         {selectedOrder.items.length} item
                         {selectedOrder.items.length !== 1 ? "s" : ""}
@@ -627,7 +627,7 @@ const UserOrders: React.FC = () => {
               <div className="overflow-y-auto max-h-[calc(98vh-140px)]">
                 <div className="p-6 space-y-6">
                   {/* Order Status & Quick Actions */}
-                  <div className="bg-gradient-to-r from-gray-50 to-primary-50 dark:from-gray-700 dark:to-gray-600 rounded-2xl p-6">
+                  <div className="bg-gradient-to-r from-gray-50 to-primary-100 dark:from-gray-700 dark:to-gray-600 rounded-2xl p-6">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-3">
@@ -851,7 +851,7 @@ const UserOrders: React.FC = () => {
                   </p>
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-8 h-8 bg-blue-100 dark:bg-primary-900 rounded-lg flex items-center justify-center">
+                      <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center">
                         <Package className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                       </div>
                       <div>

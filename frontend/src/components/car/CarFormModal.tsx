@@ -562,7 +562,7 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
     >
       {/* Header */}
       {isModal && (
-        <div className="bg-gradient-to-r from-gray-800 to-gray-900 text-white p-8 rounded-t-3xl">
+        <div className="bg-gradient-to-r from-primary-600 to-primary-800 text-white p-8 rounded-t-3xl">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-3xl font-bold mb-2">
