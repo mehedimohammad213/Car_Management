@@ -128,7 +128,7 @@ const UpdateCar: React.FC = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>
     );
   }
@@ -142,7 +142,7 @@ const UpdateCar: React.FC = () => {
           </h2>
           <button
             onClick={() => navigate(`/cars?${searchParams.toString()}`)}
-            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+            className="px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
           >
             Back to Car Management
           </button>
@@ -174,8 +174,8 @@ const UpdateCar: React.FC = () => {
                 </p>
               </div>
             </div>
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-              <CarIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <div className="p-3 bg-blue-100 dark:bg-primary-900/30 rounded-xl">
+              <CarIcon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
           </div>
         </div>

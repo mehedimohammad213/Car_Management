@@ -136,8 +136,8 @@ const CreateCar: React.FC = () => {
                 </p>
               </div>
             </div>
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-              <CarIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <div className="p-3 bg-blue-100 dark:bg-primary-900/30 rounded-xl">
+              <CarIcon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
           </div>
         </div>
@@ -169,7 +169,7 @@ const CreateCar: React.FC = () => {
         {/* Form */}
         {isLoadingCategories ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
             <span className="ml-3 text-gray-600">Loading categories...</span>
           </div>
         ) : categories.length === 0 ? (

@@ -72,7 +72,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
       <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
         <div className="px-6 py-12 text-center">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
             <span className="ml-3 text-gray-600">Loading available cars...</span>
           </div>
         </div>
@@ -109,7 +109,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
       <div className="overflow-x-auto">
         <div className="min-w-[1200px] sm:min-w-full">
           {/* Professional Table Header with Gradient */}
-          <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 shadow-lg">
+          <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-indigo-700 shadow-lg">
             <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
               <div className="col-span-2 flex items-center gap-2">
                 <Car className="w-4 h-4" />
@@ -162,7 +162,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                 <div
                   key={car.id}
                   onClick={() => onView?.(car)}
-                  className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-blue-500"
+                  className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-primary-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-primary-500"
                 >
                   {/* Car Information - Enhanced */}
                   <div className="col-span-2 flex items-center gap-3">
@@ -183,12 +183,12 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-base font-bold text-gray-900 mb-1 group-hover:text-blue-700 transition-colors">
+                      <div className="text-base font-bold text-gray-900 mb-1 group-hover:text-primary-700 transition-colors">
                         {car.year} {car.make} {car.model}
                       </div>
                       <div className="text-xs font-semibold text-gray-600 mb-1">
                         <span className="text-gray-500">Ref:</span>{" "}
-                        <span className="text-blue-600 font-mono">
+                        <span className="text-primary-600 font-mono">
                           {car.ref_no || `AA${car.id?.toString().padStart(6, "0") || ""}`}
                         </span>
                       </div>
@@ -206,7 +206,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                           </span>
                         )}
                         {car.package && (
-                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 border border-blue-200">
                             {car.package}
                           </span>
                         )}
@@ -306,7 +306,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                   {/* Available Cars Count */}
                   <div className="col-span-1 flex items-center justify-center">
                     {isFirstOfMakeModel ? (
-                      <span className="inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-800 rounded-lg text-sm font-bold min-w-[60px]">
+                      <span className="inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-primary-800 rounded-lg text-sm font-bold min-w-[60px]">
                         {availableCarsCount}
                       </span>
                     ) : (
@@ -322,7 +322,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                     {onView && (
                       <button
                         onClick={() => onView(car)}
-                        className="p-1.5 text-blue-600 hover:text-blue-700 rounded-lg transition-all duration-200 group/btn"
+                        className="p-1.5 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
                         title="View Car"
                       >
                         <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
@@ -330,7 +330,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                     )}
                     <button
                       onClick={() => onCreateStock(car)}
-                      className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors shadow-sm hover:shadow-md"
+                      className="px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors shadow-sm hover:shadow-md"
                     >
                       Add Stock
                     </button>

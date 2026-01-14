@@ -267,7 +267,7 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
               value={selectedCarGroup}
               onChange={(e) => setSelectedCarGroup(e.target.value)}
               disabled={isLoadingCars}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
                 errors.car_id ? "border-red-300" : "border-gray-300"
               } ${isLoadingCars ? "bg-gray-100 cursor-not-allowed" : ""}`}
             >
@@ -298,7 +298,7 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
             onChange={(e) =>
               handleInputChange("quantity", parseInt(e.target.value))
             }
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
               errors.quantity ? "border-red-300" : "border-gray-300"
             }`}
           />
@@ -321,7 +321,7 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
           placeholder="Add any additional notes about this stock item..."
           value={formData.notes}
           onChange={(e) => handleInputChange("notes", e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
         />
       </div>
 
@@ -338,7 +338,7 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
         <button
           type="submit"
           disabled={isLoading}
-          className="flex-1 px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
+          className="flex-1 px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50"
         >
           {isLoading ? (
             <div className="flex items-center">

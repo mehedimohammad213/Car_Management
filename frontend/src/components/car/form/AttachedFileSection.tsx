@@ -163,7 +163,7 @@ const AttachedFileSection: React.FC<AttachedFileSectionProps> = ({
   return (
     <div className="bg-gray-50 rounded-xl p-4">
       <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-        <Upload className="w-5 h-5 text-blue-600" />
+        <Upload className="w-5 h-5 text-primary-600" />
         Attached File
       </h3>
 
@@ -172,7 +172,7 @@ const AttachedFileSection: React.FC<AttachedFileSectionProps> = ({
           <div
             className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
               dragActive
-                ? 'border-blue-500 bg-blue-50'
+                ? 'border-primary-500 bg-primary-50'
                 : 'border-gray-300 hover:border-gray-400'
             }`}
             onDragEnter={handleDrag}
@@ -196,7 +196,7 @@ const AttachedFileSection: React.FC<AttachedFileSectionProps> = ({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-blue-600 hover:text-blue-700 underline"
+                    className="text-primary-600 hover:text-primary-700 underline"
                   >
                     browse
                   </button></>
@@ -205,7 +205,7 @@ const AttachedFileSection: React.FC<AttachedFileSectionProps> = ({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-blue-600 hover:text-blue-700 underline"
+                    className="text-primary-600 hover:text-primary-700 underline"
                   >
                     browse
                   </button></>
@@ -220,10 +220,10 @@ const AttachedFileSection: React.FC<AttachedFileSectionProps> = ({
 
         {/* Show existing file if available */}
         {existingFile && (
-          <div className="bg-blue-50 rounded-lg border border-blue-200 p-4">
+          <div className="bg-primary-50 rounded-lg border border-blue-200 p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-blue-700 uppercase">Current File</span>
+                <span className="text-xs font-semibold text-primary-700 uppercase">Current File</span>
               </div>
               {!isViewMode && (
                 <button
@@ -252,7 +252,7 @@ const AttachedFileSection: React.FC<AttachedFileSectionProps> = ({
                 <button
                   type="button"
                   onClick={handleViewExistingFile}
-                  className="text-blue-600 hover:text-blue-700 p-2 rounded-lg hover:bg-blue-100 transition-colors"
+                  className="text-primary-600 hover:text-primary-700 p-2 rounded-lg hover:bg-blue-100 transition-colors"
                   title="View file"
                 >
                   <Eye className="w-4 h-4" />

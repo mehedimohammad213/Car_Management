@@ -28,7 +28,7 @@ const CarViewHeader: React.FC<CarViewHeaderProps> = ({
       </button>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Car className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
+          <Car className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600" />
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
             {car.year} {car.make} {car.model}
             {car.variant && ` - ${car.variant}`}

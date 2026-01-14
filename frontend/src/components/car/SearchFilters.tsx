@@ -82,7 +82,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-              <Car className="w-8 h-8 text-blue-600" />
+              <Car className="w-8 h-8 text-primary-600" />
               Car Information
             </h1>
             <p className="text-gray-600 mt-1">
@@ -92,7 +92,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
           {isAdmin && onAddCar && (
             <button
               onClick={onAddCar}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium shadow-sm"
+              className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-medium shadow-sm"
             >
               <Plus className="w-5 h-5" />
               Add Car
@@ -112,7 +112,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
               placeholder="Search cars by make, model, year, chassis number, or any keyword..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
           </div>
 
@@ -124,7 +124,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
                 setMakeFilter(e.target.value);
                 setModelFilter(""); // Reset model when make changes
               }}
-              className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
               <option value="">All Makes</option>
               {Object.keys(makeToModels).sort().map((make) => (
@@ -141,7 +141,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
               value={modelFilter}
               onChange={(e) => setModelFilter(e.target.value)}
               disabled={!makeFilter}
-              className={`w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${!makeFilter ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+              className={`w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent ${!makeFilter ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
             >
               <option value="">All Models</option>
               {makeFilter && makeToModels[makeFilter]?.sort().map((model) => (
@@ -157,7 +157,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             <select
               value={yearFilter}
               onChange={(e) => setYearFilter(e.target.value)}
-              className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
               <option value="">All Years</option>
               {filterOptions?.years?.map((year: number) => (
@@ -173,7 +173,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             <select
               value={colorFilter}
               onChange={(e) => setColorFilter(e.target.value)}
-              className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent capitalize"
+              className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent capitalize"
             >
               <option value="">All Colors</option>
               {filterOptions?.colors?.map((color: string) => (
@@ -189,7 +189,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             <select
               value={fuelFilter}
               onChange={(e) => setFuelFilter(e.target.value)}
-              className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent capitalize"
+              className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent capitalize"
             >
               <option value="">All Fuel Types</option>
               {filterOptions?.fuels?.map((fuel: string) => (

@@ -66,21 +66,21 @@ const UserManagement: React.FC = () => {
       case "admin":
         return "bg-red-100 text-red-700 border border-red-200";
       case "user":
-        return "bg-blue-100 text-blue-700 border border-blue-200";
+        return "bg-blue-100 text-primary-700 border border-blue-200";
       default:
         return "bg-gray-100 text-gray-700 border border-gray-200";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50 to-indigo-50 p-4 py-6">
       <div className="max-w-full mx-auto px-4">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-                <Users className="w-8 h-8 text-blue-600" />
+                <Users className="w-8 h-8 text-primary-600" />
                 User Management
               </h1>
               <p className="text-gray-600 mt-1">
@@ -103,7 +103,7 @@ const UserManagement: React.FC = () => {
                 placeholder="Search users by name, username, or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
             {searchTerm && (
@@ -121,7 +121,7 @@ const UserManagement: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
             </div>
           ) : error ? (
             <div className="flex items-center justify-center py-12">
@@ -129,7 +129,7 @@ const UserManagement: React.FC = () => {
                 <p className="text-red-600 mb-2">{error}</p>
                 <button
                   onClick={() => fetchUsers()}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
                 >
                   Retry
                 </button>
@@ -150,7 +150,7 @@ const UserManagement: React.FC = () => {
             <div className="overflow-x-auto">
               <div className="min-w-[1000px]">
                 {/* Professional Table Header with Gradient */}
-                <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 shadow-lg">
+                <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-indigo-700 shadow-lg">
                   <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
                     <div className="col-span-3 flex items-center gap-2">
                       <UserIcon className="w-4 h-4" />
@@ -180,17 +180,17 @@ const UserManagement: React.FC = () => {
                   {users.map((user) => (
                     <div
                       key={user.id}
-                      className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-blue-500"
+                      className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-primary-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-primary-500"
                     >
                       {/* User Information */}
                       <div className="col-span-3 flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-md group-hover:shadow-lg transition-shadow">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-md group-hover:shadow-lg transition-shadow">
                           <span className="text-white text-base font-bold">
                             {user.name.charAt(0).toUpperCase()}
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-semibold text-gray-900 truncate group-hover:text-blue-700 transition-colors">
+                          <div className="text-sm font-semibold text-gray-900 truncate group-hover:text-primary-700 transition-colors">
                             {user.name}
                           </div>
                           <div className="text-xs text-gray-500 font-mono">

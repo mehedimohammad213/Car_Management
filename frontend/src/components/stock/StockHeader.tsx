@@ -78,7 +78,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-              <Package className="w-8 h-8 text-blue-600" />
+              <Package className="w-8 h-8 text-primary-600" />
               Stock Management
             </h1>
             <p className="text-gray-600 mt-1">
@@ -90,7 +90,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
             <button
               onClick={() => onTabChange("current")}
               className={`px-4 py-2 text-sm font-semibold transition-all duration-200 rounded-lg whitespace-nowrap ${activeTab === "current"
-                  ? "bg-blue-600 text-white shadow-md"
+                  ? "bg-primary-600 text-white shadow-md"
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
                 }`}
             >
@@ -99,7 +99,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
             <button
               onClick={() => onTabChange("before")}
               className={`px-4 py-2 text-sm font-semibold transition-all duration-200 rounded-lg whitespace-nowrap ${activeTab === "before"
-                  ? "bg-blue-600 text-white shadow-md"
+                  ? "bg-primary-600 text-white shadow-md"
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
                 }`}
             >

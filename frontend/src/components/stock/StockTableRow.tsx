@@ -33,7 +33,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
 
   return (
     <div
-      className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-blue-500"
+      className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-primary-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-primary-500"
       onClick={() => onView?.(stock)}
     >
       {/* Car Information - Enhanced */}
@@ -60,7 +60,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-base font-bold text-gray-900 mb-1 group-hover:text-blue-700 transition-colors">
+          <div className="text-base font-bold text-gray-900 mb-1 group-hover:text-primary-700 transition-colors">
             {car?.year} {car?.make} {car?.model}
             {car?.variant && (
               <span className="text-sm font-normal text-gray-600">
@@ -70,7 +70,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
           </div>
           <div className="text-xs font-semibold text-gray-600 mb-1">
             <span className="text-gray-500">Ref:</span>{" "}
-            <span className="text-blue-600 font-mono">
+            <span className="text-primary-600 font-mono">
               {car?.ref_no || `AA${car?.id?.toString().padStart(6, "0") || ""}`}
             </span>
           </div>
@@ -85,7 +85,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
               </span>
             )}
             {car?.package && (
-              <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+              <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 border border-blue-200">
                 {car.package}
               </span>
             )}
@@ -221,7 +221,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
       {/* Current Stock Count */}
       <div className="col-span-1 flex items-center justify-center">
         {showCount ? (
-          <span className="inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-800 rounded-lg text-sm font-bold min-w-[60px]">
+          <span className="inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-primary-800 rounded-lg text-sm font-bold min-w-[60px]">
             {currentStockCount}
           </span>
         ) : (
@@ -237,7 +237,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
         {onView && (
           <button
             onClick={() => onView(stock)}
-            className="p-2.5 text-blue-600 hover:text-blue-700 rounded-lg transition-all duration-200 group/btn"
+            className="p-2.5 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
             title="View Stock"
           >
             <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />

@@ -117,7 +117,7 @@ const AdminOrders: React.FC = () => {
       case "approved":
         return <CheckCircle className="w-5 h-5 text-green-500" />;
       case "shipped":
-        return <Truck className="w-5 h-5 text-blue-500" />;
+        return <Truck className="w-5 h-5 text-primary-500" />;
       case "delivered":
         return <CheckCircle className="w-5 h-5 text-green-600" />;
       case "canceled":
@@ -134,7 +134,7 @@ const AdminOrders: React.FC = () => {
       case "approved":
         return "bg-green-100 text-green-800";
       case "shipped":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-100 text-primary-800";
       case "delivered":
         return "bg-green-100 text-green-800";
       case "canceled":
@@ -188,13 +188,13 @@ const AdminOrders: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50 to-indigo-50 p-4 py-6">
       <div className="max-w-full mx-auto px-4">
         <OrderManagementHeader />
 

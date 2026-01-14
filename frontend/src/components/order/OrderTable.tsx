@@ -33,7 +33,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
       <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
         <div className="px-6 py-12 text-center">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
             <span className="ml-3 text-gray-600">Loading orders...</span>
           </div>
         </div>
@@ -71,7 +71,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
       <div className="overflow-x-auto">
         <div className="min-w-[1200px]">
           {/* Professional Table Header with Gradient */}
-          <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 shadow-lg">
+          <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-indigo-700 shadow-lg">
             <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
               <div className="col-span-1 flex items-center gap-2">
                 <Tag className="w-4 h-4" />
@@ -107,7 +107,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
               <div
                 key={order.id}
                 onClick={() => handleRowClick(order)}
-                className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-blue-500"
+                className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-primary-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-primary-500"
               >
                 {/* Order ID */}
                 <div className="col-span-1 flex items-center">
@@ -119,10 +119,10 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                 {/* Customer */}
                 <div className="col-span-2 flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
-                    <User className="w-5 h-5 text-blue-600" />
+                    <User className="w-5 h-5 text-primary-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-gray-900 truncate group-hover:text-blue-700 transition-colors">
+                    <div className="text-sm font-semibold text-gray-900 truncate group-hover:text-primary-700 transition-colors">
                       {order.user?.name || "Unknown User"}
                     </div>
                     <div className="text-xs text-gray-500 font-mono">
@@ -209,7 +209,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                 >
                   <button
                     onClick={() => onView(order)}
-                    className="p-2.5 text-blue-600 hover:text-blue-700 rounded-lg transition-all duration-200 group/btn"
+                    className="p-2.5 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
                     title="View Details"
                   >
                     <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />

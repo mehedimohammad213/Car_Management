@@ -179,7 +179,7 @@ const CarSpecifications: React.FC<CarSpecificationsProps> = ({
                 <span className="font-semibold text-gray-900 dark:text-gray-100">
                   {(car as any).chassis_no}
                 </span>
-                <button className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-medium">
+                <button className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-blue-300 text-xs font-medium">
                   View
                 </button>
               </div>

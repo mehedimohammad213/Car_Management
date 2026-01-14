@@ -30,7 +30,7 @@ const CategoryTableRow: React.FC<CategoryTableRowProps> = ({
       </td>
       <td className="px-6 py-4">
         {category.parent_category ? (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-primary-800">
             {category.parent_category.name}
           </span>
         ) : (
@@ -55,7 +55,7 @@ const CategoryTableRow: React.FC<CategoryTableRowProps> = ({
           {onView && (
             <button
               onClick={() => onView(category)}
-              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
               title="View Category"
             >
               <Eye className="w-4 h-4" />
@@ -63,7 +63,7 @@ const CategoryTableRow: React.FC<CategoryTableRowProps> = ({
           )}
           <button
             onClick={() => onEdit(category)}
-            className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+            className="p-2 text-primary-600 hover:bg-indigo-50 rounded-lg transition-colors"
             title="Edit Category"
           >
             <Pencil className="w-4 h-4" />

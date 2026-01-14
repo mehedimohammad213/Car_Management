@@ -184,7 +184,7 @@ const PurchaseHistoryDetails: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>
     );
   }
@@ -196,7 +196,7 @@ const PurchaseHistoryDetails: React.FC = () => {
         <p className="text-gray-500 text-lg">Purchase history not found</p>
         <button
           onClick={() => navigate("/admin/purchase-history")}
-          className="mt-4 text-blue-600 hover:text-blue-700"
+          className="mt-4 text-primary-600 hover:text-primary-700"
         >
           Back to Purchase History
         </button>
@@ -270,7 +270,7 @@ const PurchaseHistoryDetails: React.FC = () => {
                   state: { editId: purchaseHistory.id },
                 })
               }
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
             >
               <Edit className="w-5 h-5" />
               Edit
@@ -292,7 +292,7 @@ const PurchaseHistoryDetails: React.FC = () => {
           {/* Car Information */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <CarIcon className="w-6 h-6 text-blue-600" />
+              <CarIcon className="w-6 h-6 text-primary-600" />
               Car Information
             </h2>
             {purchaseHistory.car ? (
@@ -340,7 +340,7 @@ const PurchaseHistoryDetails: React.FC = () => {
           {/* Purchase Information */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <Receipt className="w-6 h-6 text-blue-600" />
+              <Receipt className="w-6 h-6 text-primary-600" />
               Purchase Information
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -410,7 +410,7 @@ const PurchaseHistoryDetails: React.FC = () => {
           {/* LC Information */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <Building2 className="w-6 h-6 text-blue-600" />
+              <Building2 className="w-6 h-6 text-primary-600" />
               Letter of Credit (LC) Information
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -469,7 +469,7 @@ const PurchaseHistoryDetails: React.FC = () => {
           {/* PDF Documents */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <FileText className="w-6 h-6 text-blue-600" />
+              <FileText className="w-6 h-6 text-primary-600" />
               PDF Documents
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -484,7 +484,7 @@ const PurchaseHistoryDetails: React.FC = () => {
                     key={field.key}
                     className={`border-2 rounded-xl p-4 ${
                       hasFile
-                        ? "border-blue-200 bg-blue-50"
+                        ? "border-blue-200 bg-primary-50"
                         : "border-gray-200 bg-gray-50"
                     }`}
                   >
@@ -500,7 +500,7 @@ const PurchaseHistoryDetails: React.FC = () => {
                       <div className="flex items-center gap-2 mt-3">
                         <button
                           onClick={() => handleViewPdf(filePath, field.key)}
-                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm"
                         >
                           <FileText className="w-4 h-4" />
                           View
@@ -578,7 +578,7 @@ const PurchaseHistoryDetails: React.FC = () => {
           </div>
 
           {/* Statistics */}
-          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl shadow-lg p-6 text-white">
+          <div className="bg-gradient-to-br from-primary-600 to-indigo-700 rounded-2xl shadow-lg p-6 text-white">
             <h3 className="text-lg font-bold mb-4">Summary</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
@@ -605,7 +605,7 @@ const PurchaseHistoryDetails: React.FC = () => {
                   {formatCurrency(purchaseHistory.miscellaneous)}
                 </span>
               </div>
-              <div className="pt-3 border-t border-blue-400">
+              <div className="pt-3 border-t border-primary-400">
                 <div className="flex justify-between">
                   <span className="text-blue-100">Total:</span>
                   <span className="font-bold">

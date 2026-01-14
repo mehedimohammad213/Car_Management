@@ -67,7 +67,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
             placeholder="Search stocks by make, model, year, chassis number, or any keyword..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           />
         </div>
 
@@ -82,7 +82,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
                 if (onModelFilterChange) onModelFilterChange("");
               }
             }}
-            className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
             <option value="">All Makes</option>
             {Object.keys(makeToModels).sort().map((make) => (
@@ -99,7 +99,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
             value={modelFilter || ""}
             onChange={(e) => onModelFilterChange && onModelFilterChange(e.target.value)}
             disabled={!makeFilter}
-            className={`w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${!makeFilter ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+            className={`w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent ${!makeFilter ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
           >
             <option value="">All Models</option>
             {makeFilter && makeToModels[makeFilter]?.sort().map((model) => (
@@ -115,7 +115,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
           <select
             value={yearFilter}
             onChange={(e) => onYearFilterChange(e.target.value)}
-            className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
             <option value="">All Years</option>
             {filterOptions?.years?.map((year: number) => (
@@ -131,7 +131,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
           <select
             value={colorFilter}
             onChange={(e) => onColorFilterChange(e.target.value)}
-            className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent capitalize"
+            className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent capitalize"
           >
             <option value="">All Colors</option>
             {filterOptions?.colors?.map((color: string) => (
@@ -147,7 +147,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
           <select
             value={fuelFilter}
             onChange={(e) => onFuelFilterChange(e.target.value)}
-            className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent capitalize"
+            className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent capitalize"
           >
             <option value="">All Fuel Types</option>
             {filterOptions?.fuels?.map((fuel: string) => (
@@ -206,7 +206,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
         {/* {onCreateStock && (
           <button
             onClick={onCreateStock}
-            className="w-full lg:w-auto flex items-center justify-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+            className="w-full lg:w-auto flex items-center justify-center gap-2 px-6 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-medium"
             title="Add Stock"
           >
             <Plus className="w-5 h-5" />

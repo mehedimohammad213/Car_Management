@@ -207,22 +207,22 @@ const ViewCar: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>
     );
   }
 
   if (!car) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             Car not found
           </h2>
           <button
             onClick={() => navigate(getBackRoute())}
-            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+            className="px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors shadow-lg hover:shadow-primary-500/20"
           >
             Back to Catalog
           </button>
@@ -232,7 +232,7 @@ const ViewCar: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen w-full bg-neutral-50 dark:bg-neutral-900">
       <div className="w-full px-2 sm:px-4 lg:px-6 py-4 sm:py-6">
         <CarViewHeader
           car={car}
@@ -296,8 +296,8 @@ const ViewCar: React.FC = () => {
             setModalImageUrl(null);
             setModalImageAlt("");
           }}
-          onPrev={modalImageUrl ? () => {} : handlePrevImage}
-          onNext={modalImageUrl ? () => {} : handleNextImage}
+          onPrev={modalImageUrl ? () => { } : handlePrevImage}
+          onNext={modalImageUrl ? () => { } : handleNextImage}
         />
       )}
     </div>

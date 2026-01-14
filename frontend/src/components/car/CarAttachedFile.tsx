@@ -43,7 +43,7 @@ const CarAttachedFile: React.FC<CarAttachedFileProps> = ({
         <div className="flex gap-2">
           <button
             onClick={onViewFile}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
           >
             <Eye className="w-4 h-4" />
             View

@@ -133,7 +133,7 @@ const Header: React.FC = () => {
                 to={user.role === "admin" ? "/admin" : "/dashboard"}
                 className="flex items-center space-x-2"
               >
-                <CarIcon className="h-8 w-8 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                <CarIcon className="h-8 w-8 text-primary-600 dark:text-primary-400 flex-shrink-0" />
                 <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white whitespace-nowrap">
                   Dream Car
                 </span>
@@ -152,7 +152,7 @@ const Header: React.FC = () => {
                     to={item.path}
                     className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                       isActiveRoute
-                        ? "bg-blue-50 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
+                        ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
                         : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
                     }`}
                   >
@@ -176,7 +176,7 @@ const Header: React.FC = () => {
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className="flex items-center space-x-2 rounded-full px-2 py-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
-                  <div className="h-9 w-9 sm:h-8 sm:w-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                  <div className="h-9 w-9 sm:h-8 sm:w-8 rounded-full bg-primary-600 flex items-center justify-center flex-shrink-0">
                     <span className="text-white text-sm font-medium">
                       {user.name.charAt(0).toUpperCase()}
                     </span>
@@ -221,7 +221,7 @@ const Header: React.FC = () => {
               {/* Mobile menu button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden ml-2 inline-flex items-center justify-center rounded-md p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 transition"
+                className="md:hidden ml-2 inline-flex items-center justify-center rounded-md p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 transition"
               >
                 {mobileMenuOpen ? (
                   <XIcon className="h-6 w-6" />
@@ -248,7 +248,7 @@ const Header: React.FC = () => {
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${
                       isActiveRoute
-                        ? "bg-blue-50 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
+                        ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
                         : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
                     }`}
                   >

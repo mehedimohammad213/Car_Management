@@ -43,7 +43,7 @@ const PaymentHistoryTableRow: React.FC<PaymentHistoryTableRowProps> = ({
 
   return (
     <div
-      className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-blue-500"
+      className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-primary-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-primary-500"
       onClick={(e) => {
         // Only navigate if clicking on the row, not on buttons
         if ((e.target as HTMLElement).closest("button")) return;
@@ -53,7 +53,7 @@ const PaymentHistoryTableRow: React.FC<PaymentHistoryTableRowProps> = ({
       {/* Car Details */}
       <div className="col-span-3 flex items-start pt-1">
         <div className="min-w-0">
-          <div className="text-sm font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">
+          <div className="text-sm font-semibold text-gray-900 group-hover:text-primary-700 transition-colors">
             {carDisplay}
           </div>
           {paymentHistory.car && (paymentHistory.car.chassis_no_full || paymentHistory.car.chassis_no_masked) && (
@@ -142,7 +142,7 @@ const PaymentHistoryTableRow: React.FC<PaymentHistoryTableRowProps> = ({
         {onView && (
           <button
             onClick={() => onView(paymentHistory)}
-            className="p-2.5 text-blue-600 hover:text-blue-700 rounded-lg transition-all duration-200 group/btn"
+            className="p-2.5 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
             title="View Payment History"
           >
             <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />

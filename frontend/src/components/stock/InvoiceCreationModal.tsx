@@ -183,7 +183,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
       {/* Modal */}
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
+        <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <FileText className="w-8 h-8 mr-3" />
@@ -214,7 +214,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                   placeholder="Search cars by make, model, ref no, or code..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -222,7 +222,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
             <div className="flex-1 overflow-y-auto p-4">
               {isLoading ? (
                 <div className="flex items-center justify-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -237,7 +237,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                         </h3>
                         <button
                           onClick={() => addCarToInvoice(car)}
-                          className="mt-3 self-start px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                          className="mt-3 self-start px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center"
                         >
                           <Plus className="w-4 h-4 mr-1" />
                           Add
@@ -347,7 +347,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                                 parseFloat(e.target.value) || 0
                               )
                             }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           />
                         </div>
 
@@ -362,7 +362,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                               updateCode(item.car.id, e.target.value)
                             }
                             placeholder="Enter code"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           />
                         </div>
 
@@ -382,7 +382,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                               )
                             }
                             placeholder="0.00"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           />
                         </div>
 
@@ -402,7 +402,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                               )
                             }
                             placeholder="0.00"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           />
                         </div>
 
@@ -428,7 +428,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                   <span className="text-lg font-semibold text-gray-900">
                     Total Amount:
                   </span>
-                  <span className="text-2xl font-bold text-blue-600 break-words text-right">
+                  <span className="text-2xl font-bold text-primary-600 break-words text-right">
                     {calculateTotal().toLocaleString()}
                   </span>
                 </div>
@@ -442,7 +442,7 @@ export const InvoiceCreationModal: React.FC<InvoiceCreationModalProps> = ({
                   <button
                     onClick={handleSubmit}
                     disabled={isSubmitting}
-                    className="flex-1 h-12 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    className="flex-1 h-12 px-4 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   >
                     {isSubmitting ? "Creating Invoice..." : "Create Invoice"}
                   </button>

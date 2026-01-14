@@ -16,7 +16,7 @@ const Profile: React.FC = () => {
       case "admin":
         return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400 border-red-200 dark:border-red-800";
       case "user":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400 border-blue-200 dark:border-blue-800";
+        return "bg-blue-100 text-primary-800 dark:bg-primary-900/20 dark:text-primary-400 border-blue-200 dark:border-primary-800";
       default:
         return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400 border-gray-200 dark:border-gray-800";
     }
@@ -40,7 +40,7 @@ const Profile: React.FC = () => {
         {/* Profile Card */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
           {/* Profile Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 sm:px-8 py-8 sm:py-12 relative">
+          <div className="bg-gradient-to-r from-primary-600 to-purple-600 px-6 sm:px-8 py-8 sm:py-12 relative">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-6 sm:space-y-0 text-center sm:text-left">
               {/* Avatar */}
@@ -83,7 +83,7 @@ const Profile: React.FC = () => {
               {/* Personal Information */}
               <div className="lg:col-span-2">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                  <UserIcon className="w-5 h-5 mr-2 text-blue-600" />
+                  <UserIcon className="w-5 h-5 mr-2 text-primary-600" />
                   Personal Information
                 </h3>
 
@@ -95,13 +95,13 @@ const Profile: React.FC = () => {
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <UserIcon className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                        <UserIcon className="h-5 w-5 text-gray-400 group-hover:text-primary-500 transition-colors" />
                       </div>
                       <input
                         type="text"
                         value={user?.name || ""}
                         readOnly
-                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white cursor-not-allowed transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white cursor-not-allowed transition-all duration-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         placeholder="Enter your full name"
                       />
                     </div>
@@ -114,13 +114,13 @@ const Profile: React.FC = () => {
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <MailIcon className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                        <MailIcon className="h-5 w-5 text-gray-400 group-hover:text-primary-500 transition-colors" />
                       </div>
                       <input
                         type="email"
                         value={user?.email || ""}
                         readOnly
-                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white cursor-not-allowed transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white cursor-not-allowed transition-all duration-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         placeholder="Enter your email"
                       />
                     </div>
@@ -130,9 +130,9 @@ const Profile: React.FC = () => {
 
               {/* Role Information */}
               <div className="lg:col-span-1">
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-6 border border-blue-200 dark:border-gray-600">
+                <div className="bg-gradient-to-br from-primary-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-6 border border-blue-200 dark:border-gray-600">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <ShieldIcon className="w-5 h-5 mr-2 text-blue-600" />
+                    <ShieldIcon className="w-5 h-5 mr-2 text-primary-600" />
                     Account Role
                   </h3>
 

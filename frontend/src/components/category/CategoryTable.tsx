@@ -40,16 +40,16 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
       {/* Desktop Table */}
       <div className="hidden lg:block overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-blue-600 text-white">
+          <thead className="bg-primary-600 text-white">
             <tr>
               <th
-                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-primary-700 transition-colors"
                 onClick={() => onSort("id")}
               >
                 <div className="flex items-center">ID {getSortIcon("id")}</div>
               </th>
               <th
-                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-primary-700 transition-colors"
                 onClick={() => onSort("name")}
               >
                 <div className="flex items-center">
@@ -58,7 +58,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
               </th>
               <th className="px-6 py-4 text-left font-semibold">Category</th>
               <th
-                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
+                className="px-6 py-4 text-left font-semibold cursor-pointer hover:bg-primary-700 transition-colors"
                 onClick={() => onSort("status")}
               >
                 <div className="flex items-center">
@@ -73,7 +73,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
               <tr>
                 <td colSpan={5} className="px-6 py-12 text-center">
                   <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
                     <span className="ml-3 text-gray-600">
                       Loading categories...
                     </span>
@@ -121,7 +121,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
       <div className="lg:hidden p-4">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
             <span className="ml-3 text-gray-600">Loading categories...</span>
           </div>
         ) : categories.length === 0 ? (
@@ -168,7 +168,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => onEdit(category)}
-                    className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
+                    className="px-3 py-1 bg-primary-600 text-white rounded text-sm hover:bg-primary-700 transition-colors"
                   >
                     Edit
                   </button>

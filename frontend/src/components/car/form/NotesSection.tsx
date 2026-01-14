@@ -19,7 +19,7 @@ const NotesSection: React.FC<NotesSectionProps> = ({
   return (
     <div className="bg-gray-50 rounded-xl p-4">
       <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-        <FileText className="w-5 h-5 text-blue-600" />
+        <FileText className="w-5 h-5 text-primary-600" />
         Additional Information
       </h3>
       <div className="grid grid-cols-1 gap-4">

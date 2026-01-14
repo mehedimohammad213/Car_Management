@@ -107,7 +107,7 @@ const UserOrders: React.FC = () => {
       case "approved":
         return <CheckCircle className="w-5 h-5 text-green-500" />;
       case "shipped":
-        return <Truck className="w-5 h-5 text-blue-500" />;
+        return <Truck className="w-5 h-5 text-primary-500" />;
       case "delivered":
         return <CheckCircle className="w-5 h-5 text-green-600" />;
       case "canceled":
@@ -124,7 +124,7 @@ const UserOrders: React.FC = () => {
       case "approved":
         return "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800";
       case "shipped":
-        return "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800";
+        return "bg-primary-50 text-primary-700 border-blue-200 dark:bg-primary-900/20 dark:text-primary-400 dark:border-primary-800";
       case "delivered":
         return "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
       case "canceled":
@@ -210,13 +210,13 @@ const UserOrders: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50 to-indigo-50">
         <div className="max-w-full mx-auto px-4 py-6">
           <div className="text-center py-20">
             <div className="relative">
-              <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-200 border-t-primary-600 mx-auto"></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <Package className="w-8 h-8 text-blue-600 animate-pulse" />
+                <Package className="w-8 h-8 text-primary-600 animate-pulse" />
               </div>
             </div>
             <p className="text-gray-600 mt-6 text-xl font-semibold">
@@ -233,10 +233,10 @@ const UserOrders: React.FC = () => {
 
   if (orders.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
-            <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+            <div className="w-32 h-32 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
               <ShoppingBag className="w-16 h-16 text-white" />
             </div>
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
@@ -249,7 +249,7 @@ const UserOrders: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/cars"
-                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-600 text-white rounded-xl hover:from-primary-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
               >
                 <ShoppingBag className="w-5 h-5 mr-2" />
                 Browse Cars
@@ -269,7 +269,7 @@ const UserOrders: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50 to-indigo-50">
       <div className="max-w-full mx-auto px-4 py-6">
         {/* Search Filters */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-6">
@@ -282,7 +282,7 @@ const UserOrders: React.FC = () => {
                 placeholder="Search orders by ID, vehicle make, model, or any keyword..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
               />
             </div>
 
@@ -291,7 +291,7 @@ const UserOrders: React.FC = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="flex-1 md:flex-none px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200 min-w-[140px]"
+                className="flex-1 md:flex-none px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200 min-w-[140px]"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
@@ -307,7 +307,7 @@ const UserOrders: React.FC = () => {
                 setSearchTerm("");
                 setStatusFilter("all");
               }}
-              className="w-full md:w-auto px-4 py-3 text-blue-600 hover:text-blue-800 border border-blue-300 hover:bg-blue-50 rounded-xl font-semibold text-sm transition-all duration-200"
+              className="w-full md:w-auto px-4 py-3 text-primary-600 hover:text-primary-800 border border-blue-300 hover:bg-primary-50 rounded-xl font-semibold text-sm transition-all duration-200"
             >
               Reset
             </button>
@@ -320,7 +320,7 @@ const UserOrders: React.FC = () => {
           {sortedOrders.length === 0 ? (
             <div className="text-center py-20">
               <div className="w-40 h-40 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-                <Package className="w-20 h-20 text-blue-600" />
+                <Package className="w-20 h-20 text-primary-600" />
               </div>
               <h3 className="text-3xl font-bold text-gray-900 mb-4">
                 No orders found
@@ -335,7 +335,7 @@ const UserOrders: React.FC = () => {
                   setSearchTerm("");
                   setStatusFilter("all");
                 }}
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-600 text-white rounded-xl hover:from-primary-700 hover:to-indigo-700 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 <X className="w-5 h-5" />
                 Clear All Filters
@@ -344,7 +344,7 @@ const UserOrders: React.FC = () => {
           ) : (
             <>
               {/* Table Header */}
-              <div className="hidden bg-gradient-to-r from-gray-50 to-blue-50 border-b-2 border-blue-200 lg:block">
+              <div className="hidden bg-gradient-to-r from-gray-50 to-primary-50 border-b-2 border-blue-200 lg:block">
                 <div className="grid grid-cols-12 gap-3 p-6 text-sm font-bold text-gray-800 uppercase tracking-wide">
                   <div className="col-span-2">Order Information</div>
                   <div className="col-span-3">Items</div>
@@ -361,12 +361,12 @@ const UserOrders: React.FC = () => {
                   <div
                     key={order.id}
                     onClick={() => setSelectedOrder(order)}
-                    className="grid grid-cols-12 gap-3 p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 border-l-4 border-transparent hover:border-blue-500 cursor-pointer"
+                    className="grid grid-cols-12 gap-3 p-6 hover:bg-gradient-to-r hover:from-primary-50 hover:to-indigo-50 transition-all duration-200 border-l-4 border-transparent hover:border-primary-500 cursor-pointer"
                   >
                     {/* Order Information */}
                     <div className="col-span-2 flex items-center gap-4">
                       <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-xl overflow-hidden flex-shrink-0 shadow-md flex items-center justify-center">
-                        <Package className="w-8 h-8 text-blue-600" />
+                        <Package className="w-8 h-8 text-primary-600" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium text-gray-900">
@@ -595,7 +595,7 @@ const UserOrders: React.FC = () => {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6">
+              <div className="bg-gradient-to-r from-primary-600 to-indigo-700 text-white p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
@@ -627,7 +627,7 @@ const UserOrders: React.FC = () => {
               <div className="overflow-y-auto max-h-[calc(98vh-140px)]">
                 <div className="p-6 space-y-6">
                   {/* Order Status & Quick Actions */}
-                  <div className="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-600 rounded-2xl p-6">
+                  <div className="bg-gradient-to-r from-gray-50 to-primary-50 dark:from-gray-700 dark:to-gray-600 rounded-2xl p-6">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-3">
@@ -736,7 +736,7 @@ const UserOrders: React.FC = () => {
                             </div>
                             {selectedOrder.status === "approved" && (
                               <div className="flex items-center gap-3">
-                                <div className="w-4 h-4 bg-blue-500 rounded-full flex-shrink-0"></div>
+                                <div className="w-4 h-4 bg-primary-500 rounded-full flex-shrink-0"></div>
                                 <div>
                                   <p className="text-sm font-medium text-gray-900 dark:text-white">
                                     Order Approved
@@ -851,8 +851,8 @@ const UserOrders: React.FC = () => {
                   </p>
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
-                        <Package className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <div className="w-8 h-8 bg-blue-100 dark:bg-primary-900 rounded-lg flex items-center justify-center">
+                        <Package className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white">

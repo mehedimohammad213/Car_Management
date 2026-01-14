@@ -100,7 +100,7 @@ const TotalStockTable: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
         <div className="px-6 py-12 text-center">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
             <span className="ml-3 text-gray-600">Loading total stock...</span>
           </div>
         </div>
@@ -276,7 +276,7 @@ const TotalStockTable: React.FC = () => {
                         </span>
                       )}
                       {car?.category && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 border border-blue-200">
                           {car.category.name}
                           {car.subcategory && ` / ${car.subcategory.name}`}
                         </span>
@@ -431,7 +431,7 @@ const TotalStockTable: React.FC = () => {
                 {/* Current Stock Count */}
                 <div className="col-span-1 flex items-center justify-center">
                   {isFirstOfMakeModel ? (
-                    <span className="inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-800 rounded-lg text-sm font-bold min-w-[60px]">
+                    <span className="inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-primary-800 rounded-lg text-sm font-bold min-w-[60px]">
                       {currentStockCount}
                     </span>
                   ) : (

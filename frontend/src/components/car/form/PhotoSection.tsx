@@ -71,7 +71,7 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
     return (
       <div className="rounded-xl p-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-          <Image className="w-5 h-5 text-blue-600" />
+          <Image className="w-5 h-5 text-primary-600" />
           Photos
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -90,7 +90,7 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
                 }}
               />
               {photo.is_primary && (
-                <div className="absolute top-2 right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                <div className="absolute top-2 right-2 bg-primary-600 text-white text-xs px-2 py-1 rounded">
                   Primary
                 </div>
               )}
@@ -108,7 +108,7 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
   return (
     <div className="rounded-xl p-4">
       <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-        <Image className="w-5 h-5 text-blue-600" />
+        <Image className="w-5 h-5 text-primary-600" />
         Photos
       </h3>
       
@@ -156,13 +156,13 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
                   onUpdatePhoto(index, { ...photo, url: e.target.value });
                 }}
                 placeholder="Photo URL or click to select image"
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent cursor-pointer"
                 onClick={() => triggerFileInput(index)}
                 readOnly
               />
               {uploadingIndex === index && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                  <Loader2 className="w-4 h-4 animate-spin text-primary-600" />
                 </div>
               )}
             </div>
@@ -214,7 +214,7 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
         <button
           type="button"
           onClick={onAddPhoto}
-          className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-blue-500 hover:text-blue-600 transition-colors flex items-center justify-center gap-2"
+          className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-primary-500 hover:text-primary-600 transition-colors flex items-center justify-center gap-2"
         >
           <Plus className="w-5 h-5" />
           Add Photo

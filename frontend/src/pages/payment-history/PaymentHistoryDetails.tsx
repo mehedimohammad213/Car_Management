@@ -125,7 +125,7 @@ const PaymentHistoryDetails: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>
     );
   }
@@ -137,7 +137,7 @@ const PaymentHistoryDetails: React.FC = () => {
         <p className="text-gray-500 text-lg">Payment history not found</p>
         <button
           onClick={() => navigate("/admin/payment-history")}
-          className="mt-4 text-blue-600 hover:text-blue-700"
+          className="mt-4 text-primary-600 hover:text-primary-700"
         >
           Back to Payment History
         </button>
@@ -192,7 +192,7 @@ const PaymentHistoryDetails: React.FC = () => {
             </button>
             <button
               onClick={() => setShowEditModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
             >
               <Edit className="w-5 h-5" />
               Edit
@@ -221,7 +221,7 @@ const PaymentHistoryDetails: React.FC = () => {
           {paymentHistory.car && (
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <Car className="w-6 h-6 text-blue-600" />
+                <Car className="w-6 h-6 text-primary-600" />
                 Car Information
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -242,7 +242,7 @@ const PaymentHistoryDetails: React.FC = () => {
           {/* Wholesaler Information */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <Building2 className="w-6 h-6 text-blue-600" />
+              <Building2 className="w-6 h-6 text-primary-600" />
               Wholesaler Information
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -291,7 +291,7 @@ const PaymentHistoryDetails: React.FC = () => {
           {/* Customer Information */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <User className="w-6 h-6 text-blue-600" />
+              <User className="w-6 h-6 text-primary-600" />
               Customer Information
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -356,7 +356,7 @@ const PaymentHistoryDetails: React.FC = () => {
           {/* Installments */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <CreditCard className="w-6 h-6 text-blue-600" />
+              <CreditCard className="w-6 h-6 text-primary-600" />
               Installments ({paymentHistory.installments?.length || 0})
             </h2>
             {!paymentHistory.installments ||
@@ -369,7 +369,7 @@ const PaymentHistoryDetails: React.FC = () => {
                 {paymentHistory.installments.map((installment, index) => (
                   <div
                     key={installment.id}
-                    className="border-2 border-blue-200 bg-blue-50 rounded-xl p-5"
+                    className="border-2 border-blue-200 bg-primary-50 rounded-xl p-5"
                   >
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-semibold text-gray-900">
@@ -379,7 +379,7 @@ const PaymentHistoryDetails: React.FC = () => {
                         <span
                           className={`px-3 py-1 rounded-full text-sm font-medium ${
                             installment.payment_method === "Bank"
-                              ? "bg-blue-100 text-blue-700"
+                              ? "bg-blue-100 text-primary-700"
                               : "bg-green-100 text-green-700"
                           }`}
                         >
@@ -495,7 +495,7 @@ const PaymentHistoryDetails: React.FC = () => {
           </div>
 
           {/* Summary */}
-          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl shadow-lg p-6 text-white">
+          <div className="bg-gradient-to-br from-primary-600 to-indigo-700 rounded-2xl shadow-lg p-6 text-white">
             <h3 className="text-lg font-bold mb-4">Summary</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
@@ -516,7 +516,7 @@ const PaymentHistoryDetails: React.FC = () => {
                   {formatCurrency(secondInstallmentAmount)}
                 </span>
               </div>
-              <div className="pt-3 border-t border-blue-400">
+              <div className="pt-3 border-t border-primary-400">
                 <div className="flex justify-between">
                   <span className="text-blue-100">Remaining Balance:</span>
                   <span className="font-bold">

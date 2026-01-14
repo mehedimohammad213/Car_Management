@@ -47,7 +47,7 @@ const StockTable: React.FC<StockTableProps> = ({
       <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
         <div className="px-6 py-12 text-center">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
             <span className="ml-3 text-gray-600">Loading stocks...</span>
           </div>
         </div>
@@ -86,7 +86,7 @@ const StockTable: React.FC<StockTableProps> = ({
       <div className="overflow-x-auto">
         <div className="min-w-[1200px]">
           {/* Professional Table Header with Gradient */}
-          <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 shadow-lg">
+          <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-indigo-700 shadow-lg">
             <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
               <div className="col-span-2 flex items-center gap-2">
                 <Car className="w-4 h-4" />

@@ -118,7 +118,7 @@ const StockManagement: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50 to-indigo-50 p-4 py-6">
       <div className="max-w-full mx-auto px-4">
         <StockHeader
           onCreateInvoice={() => setShowInvoiceModal(true)}

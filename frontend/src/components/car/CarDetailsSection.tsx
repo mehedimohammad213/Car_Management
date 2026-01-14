@@ -13,12 +13,12 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({ details, onImageC
   return (
     <div className="mt-4 sm:mt-6 lg:mt-8 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8">
       <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 sm:mb-6 flex items-center gap-2">
-        <FileText className="w-5 h-5 text-blue-600" />
+        <FileText className="w-5 h-5 text-primary-600" />
         Detailed Information
       </h3>
       <div className="space-y-6 sm:space-y-8">
         {details.map((detail, index) => (
-          <div key={index} className="border-l-4 border-blue-500 pl-4 sm:pl-6">
+          <div key={index} className="border-l-4 border-primary-500 pl-4 sm:pl-6">
             <h4 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
               {detail.short_title || `Detail Section ${index + 1}`}
             </h4>

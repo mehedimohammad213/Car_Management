@@ -116,7 +116,7 @@ const CategoryDrawerForm: React.FC<CategoryDrawerFormProps> = ({
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             placeholder="Enter category name"
           />
         </div>
@@ -134,7 +134,7 @@ const CategoryDrawerForm: React.FC<CategoryDrawerFormProps> = ({
             name="type"
             value={formData.type}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             placeholder="Enter category type"
           />
         </div> */}
@@ -151,7 +151,7 @@ const CategoryDrawerForm: React.FC<CategoryDrawerFormProps> = ({
             name="status"
             value={formData.status}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -173,7 +173,7 @@ const CategoryDrawerForm: React.FC<CategoryDrawerFormProps> = ({
           name="description"
           value={formData.description}
           onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           placeholder="Enter category description"
         />
       </div>
@@ -191,7 +191,7 @@ const CategoryDrawerForm: React.FC<CategoryDrawerFormProps> = ({
         <button
           type="submit"
           disabled={isLoading}
-          className="flex-1 px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
+          className="flex-1 px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50"
         >
           {isLoading
             ? "Saving..."

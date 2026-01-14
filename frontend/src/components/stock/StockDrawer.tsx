@@ -74,7 +74,7 @@ const StockDrawer: React.FC<StockDrawerProps> = ({
                 </button>
                 <button
                   onClick={onSave}
-                  className="flex-1 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
+                  className="flex-1 px-4 py-2 text-white bg-primary-600 hover:bg-primary-700 rounded-lg font-medium transition-colors"
                 >
                   Save
                 </button>

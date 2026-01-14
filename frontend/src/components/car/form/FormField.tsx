@@ -52,7 +52,7 @@ const FormField: React.FC<FormFieldProps> = ({
         <select
           value={value || ""}
           onChange={(e) => onChange(e.target.value || null)}
-          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${error ? "border-red-300" : "border-gray-200"
+          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${error ? "border-red-300" : "border-gray-200"
             }`}
         >
           <option value="">Select {label}</option>
@@ -83,7 +83,7 @@ const FormField: React.FC<FormFieldProps> = ({
           )
         }
         maxLength={maxLength}
-        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${error ? "border-red-300" : "border-gray-200"
+        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${error ? "border-red-300" : "border-gray-200"
           }`}
         placeholder={placeholder}
       />

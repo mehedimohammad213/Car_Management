@@ -21,7 +21,7 @@ export const getStatusColor = (status: string) => {
     case "reserved":
       return "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800";
     case "in_transit":
-      return "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800";
+      return "bg-primary-50 text-primary-700 border-blue-200 dark:bg-primary-900/20 dark:text-primary-400 dark:border-primary-800";
     default:
       return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-800";
   }

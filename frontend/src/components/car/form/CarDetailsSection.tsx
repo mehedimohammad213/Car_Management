@@ -46,7 +46,7 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
     return (
       <div className="rounded-xl p-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-          <FileText className="w-5 h-5 text-blue-600" />
+          <FileText className="w-5 h-5 text-primary-600" />
           Car Details
         </h3>
         <div className="space-y-6">
@@ -163,13 +163,13 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
     <div className="rounded-xl p-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-          <FileText className="w-5 h-5 text-blue-600" />
+          <FileText className="w-5 h-5 text-primary-600" />
           Car Details
         </h3>
         <button
           type="button"
           onClick={onAddDetail}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+          className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
         </button>
@@ -208,7 +208,7 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
                   onChange={(e) =>
                     onDetailChange(detailIndex, "short_title", e.target.value)
                   }
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                   placeholder="Brief title for the car"
                 />
               </div>
@@ -220,7 +220,7 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
                   <button
                     type="button"
                     onClick={() => onAddSubDetail(detailIndex)}
-                    className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-1 text-sm"
+                    className="px-3 py-1 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-1 text-sm"
                   >
                     <Plus className="w-5 h-5" />
                   </button>
@@ -265,7 +265,7 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
                               )
                             }
                             placeholder="Sub detail title"
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                           />
                         </div>
                         <div>
@@ -284,7 +284,7 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
                             }
                             rows={2}
                             placeholder="Sub detail description"
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                           />
                         </div>
                       </div>

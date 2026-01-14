@@ -39,11 +39,11 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                 {/* Enhanced Stats Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {/* Cart Items */}
-                    <div className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl border border-blue-200 dark:border-blue-800 p-6 hover:shadow-lg transition-all duration-300">
-                        <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 rounded-full -translate-y-10 translate-x-10"></div>
+                    <div className="group relative overflow-hidden bg-gradient-to-br from-primary-50 to-blue-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-xl border border-blue-200 dark:border-primary-800 p-6 hover:shadow-lg transition-all duration-300">
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-primary-500/10 rounded-full -translate-y-10 translate-x-10"></div>
                         <div className="relative">
                             <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 bg-blue-500 rounded-xl shadow-lg">
+                                <div className="p-3 bg-primary-500 rounded-xl shadow-lg">
                                     <ShoppingCartIcon className="w-6 h-6 text-white" />
                                 </div>
                                 <div className="flex items-center text-green-600 dark:text-green-400">
@@ -52,7 +52,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                                 </div>
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-1">
+                                <p className="text-sm font-medium text-primary-600 dark:text-primary-400 mb-1">
                                     Cart Items
                                 </p>
                                 <p className="text-3xl font-bold text-slate-900 dark:text-white">
@@ -154,8 +154,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                                         >
                                             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                                 <div className="flex items-start gap-4">
-                                                    <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-xl flex-shrink-0">
-                                                        <CarIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                                                    <div className="p-3 bg-blue-100 dark:bg-primary-900/20 rounded-xl flex-shrink-0">
+                                                        <CarIcon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                                                     </div>
                                                     <div>
                                                         <p className="font-semibold text-slate-900 dark:text-white text-base sm:text-lg leading-snug">
@@ -183,7 +183,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                                                         className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium ${order.status === "delivered"
                                                                 ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
                                                                 : order.status === "shipped"
-                                                                    ? "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+                                                                    ? "bg-blue-100 text-primary-800 dark:bg-primary-900/20 dark:text-primary-400"
                                                                     : order.status === "approved"
                                                                         ? "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
                                                                         : order.status === "canceled"

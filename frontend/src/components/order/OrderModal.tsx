@@ -36,7 +36,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-3xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-hidden">
         {/* Modal Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6">
+        <div className="bg-gradient-to-r from-primary-600 to-indigo-700 text-white p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
@@ -65,7 +65,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
         <div className="overflow-y-auto max-h-[calc(95vh-120px)]">
           <div className="p-6 space-y-6">
             {/* Order Status & Quick Actions */}
-            <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-6">
+            <div className="bg-gradient-to-r from-gray-50 to-primary-50 rounded-2xl p-6">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-3">
@@ -163,7 +163,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                               alt={`${item.car.make} ${item.car.model}`}
                               className="w-16 h-16 object-cover rounded-lg"
                             />
-                            <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                            <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
                               {item.quantity}
                             </div>
                           </div>
@@ -221,7 +221,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                       </div>
                       {order.status === "approved" && (
                         <div className="flex items-center gap-3">
-                          <div className="w-4 h-4 bg-blue-500 rounded-full flex-shrink-0"></div>
+                          <div className="w-4 h-4 bg-primary-500 rounded-full flex-shrink-0"></div>
                           <div>
                             <p className="text-sm font-medium text-gray-900">
                               Order Approved
@@ -290,7 +290,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                             disabled={isUpdatingStatus}
                             className={`px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
                               order.status === status
-                                ? "bg-blue-600 text-white"
+                                ? "bg-primary-600 text-white"
                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                             }`}
                           >

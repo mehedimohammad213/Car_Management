@@ -46,7 +46,7 @@ export const DeleteOrderModal: React.FC<DeleteOrderModalProps> = ({
             <div className="bg-gray-50 rounded-xl p-4">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Package className="w-4 h-4 text-blue-600" />
+                  <Package className="w-4 h-4 text-primary-600" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">

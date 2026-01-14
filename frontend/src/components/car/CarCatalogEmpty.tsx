@@ -9,7 +9,7 @@ const CarCatalogEmpty: React.FC<CarCatalogEmptyProps> = ({ onClearFilters }) => 
   return (
     <div className="text-center py-20">
       <div className="w-40 h-40 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-        <Car className="w-20 h-20 text-blue-600" />
+        <Car className="w-20 h-20 text-primary-600" />
       </div>
       <h3 className="text-3xl font-bold text-gray-900 mb-4">
         No vehicles found
@@ -20,7 +20,7 @@ const CarCatalogEmpty: React.FC<CarCatalogEmptyProps> = ({ onClearFilters }) => 
       </p>
       <button
         onClick={onClearFilters}
-        className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+        className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-600 text-white rounded-xl hover:from-primary-700 hover:to-indigo-700 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
       >
         <X className="w-5 h-5" />
         Clear All Filters

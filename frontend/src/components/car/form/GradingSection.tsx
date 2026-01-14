@@ -28,7 +28,7 @@ const GradingSection: React.FC<GradingSectionProps> = ({
   return (
     <div className="rounded-xl p-4">
       <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-        <Star className="w-5 h-5 text-blue-600" />
+        <Star className="w-5 h-5 text-primary-600" />
         Grading
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

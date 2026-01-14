@@ -83,7 +83,7 @@ const CarImageGallery: React.FC<CarImageGalleryProps> = ({
               onClick={() => onThumbnailClick(index)}
               className={`w-24 h-20 sm:w-28 sm:h-24 object-cover rounded-md cursor-pointer transition-all flex-shrink-0 ${
                 currentImageIndex === index
-                  ? "ring-2 ring-blue-500 opacity-100"
+                  ? "ring-2 ring-primary-500 opacity-100"
                   : "hover:opacity-80 opacity-70"
               }`}
             />

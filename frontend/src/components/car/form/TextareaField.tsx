@@ -44,7 +44,7 @@ const TextareaField: React.FC<TextareaFieldProps> = ({
         onChange={(e) => onChange(e.target.value)}
         maxLength={maxLength}
         rows={4}
-        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
           error ? "border-red-300" : "border-gray-200"
         }`}
         placeholder={placeholder}
