@@ -118,7 +118,7 @@ const StockTable: React.FC<StockTableProps> = ({
               </div>
               <div className="col-span-1 flex items-center gap-2 justify-center">
                 <Package className="w-4 h-4" />
-                <span>Current Stock</span>
+                <span>Stock</span>
               </div>
               <div className="col-span-1 text-center">Actions</div>
             </div>
