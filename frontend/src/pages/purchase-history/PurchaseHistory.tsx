@@ -10,8 +10,10 @@ import {
 } from "../../services/purchaseHistoryApi";
 import PurchaseHistoryModal from "../../components/purchase-history/PurchaseHistoryModal";
 import PurchaseHistoryTable from "../../components/purchase-history/PurchaseHistoryTable";
+import PurchaseHistoryLCView from "../../components/purchase-history/PurchaseHistoryLCView";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 import Pagination from "../../components/common/Pagination";
+import { LayoutGrid, List } from "lucide-react";
 
 const PurchaseHistoryPage: React.FC = () => {
   const navigate = useNavigate();
@@ -28,6 +30,7 @@ const PurchaseHistoryPage: React.FC = () => {
   const [purchaseHistoryToDelete, setPurchaseHistoryToDelete] =
     useState<PurchaseHistory | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [activeTab, setActiveTab] = useState<"history" | "lc_wise">("history");
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
@@ -141,7 +144,7 @@ const PurchaseHistoryPage: React.FC = () => {
           setShowModal(false);
           setSelectedPurchaseHistory(null);
           fetchPurchaseHistories();
-        navigate("/admin/purchase-history");
+          navigate("/admin/purchase-history");
         } else {
           toast.error(response.message || "Failed to update purchase history");
         }
@@ -171,102 +174,134 @@ const PurchaseHistoryPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50 to-indigo-50 p-4 py-6">
       <div className="max-w-full mx-auto px-4">
-      {/* Header */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-              <FileText className="w-8 h-8 text-primary-600" />
-              Purchase History
-            </h1>
-            <p className="text-gray-600 mt-1">
-              Manage purchase history records
-            </p>
+        {/* Header */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <FileText className="w-8 h-8 text-primary-600" />
+                Purchase History
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Manage purchase history records
+              </p>
+            </div>
+            <button
+              onClick={handleCreate}
+              className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-medium shadow-md hover:shadow-lg active:scale-95 transition-all"
+            >
+              <Plus className="w-5 h-5" />
+              Add Purchase History
+            </button>
           </div>
+        </div>
+
+        {/* Tab Selection */}
+        <div className="flex p-1 bg-white/50 backdrop-blur-sm rounded-2xl w-fit mb-6 shadow-sm border border-gray-100">
           <button
-            onClick={handleCreate}
-            className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-medium"
+            onClick={() => setActiveTab("history")}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === "history"
+                ? "bg-white text-primary-600 shadow-md ring-1 ring-black/5"
+                : "text-gray-500 hover:text-gray-700 hover:bg-white/20"
+              }`}
           >
-            <Plus className="w-5 h-5" />
-            Add Purchase History
+            <List className="w-4 h-4" />
+            History Table
+          </button>
+          <button
+            onClick={() => setActiveTab("lc_wise")}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === "lc_wise"
+                ? "bg-white text-primary-600 shadow-md ring-1 ring-black/5"
+                : "text-gray-500 hover:text-gray-700 hover:bg-white/20"
+              }`}
+          >
+            <LayoutGrid className="w-4 h-4" />
+            LC Wise View
           </button>
         </div>
-      </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-        <div className="flex flex-col lg:flex-row gap-4 items-end">
-          {/* Search */}
-          <div className="flex-1 relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search by LC number, invoice number, bank name..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        {/* Filters */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+          <div className="flex flex-col lg:flex-row gap-4 items-end">
+            {/* Search */}
+            <div className="flex-1 relative w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search by LC number, invoice number, bank name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Clear Filters Button */}
+            {searchTerm && (
+              <button
+                onClick={handleClearFilters}
+                className="px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors whitespace-nowrap"
+              >
+                Clear Filters
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Content */}
+        {activeTab === "history" ? (
+          <PurchaseHistoryTable
+            purchaseHistories={purchaseHistories}
+            isLoading={loading}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onView={handleView}
+            onRefresh={fetchPurchaseHistories}
+          />
+        ) : (
+          <PurchaseHistoryLCView
+            purchaseHistories={purchaseHistories}
+            isLoading={loading}
+            onView={handleView}
+          />
+        )}
+
+        {/* Pagination */}
+        {totalItems > 0 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              perPage={perPage}
+              onPageChange={setCurrentPage}
             />
           </div>
+        )}
 
-          {/* Clear Filters Button */}
-          {searchTerm && (
-            <button
-              onClick={handleClearFilters}
-              className="px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors whitespace-nowrap"
-            >
-              Clear Filters
-            </button>
-          )}
-        </div>
-      </div>
+        {/* Modal */}
+        <PurchaseHistoryModal
+          isOpen={showModal}
+          mode={modalMode}
+          purchaseHistory={selectedPurchaseHistory}
+          onClose={() => {
+            setShowModal(false);
+            setSelectedPurchaseHistory(null);
+          }}
+          onSubmit={handleModalSubmit}
+        />
 
-      {/* Table */}
-      <PurchaseHistoryTable
-        purchaseHistories={purchaseHistories}
-        isLoading={loading}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onView={handleView}
-        onRefresh={fetchPurchaseHistories}
-      />
-
-      {/* Pagination */}
-      {totalItems > 0 && (
-        <div className="mt-6">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            perPage={perPage}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-      )}
-
-      {/* Modal */}
-      <PurchaseHistoryModal
-        isOpen={showModal}
-        mode={modalMode}
-        purchaseHistory={selectedPurchaseHistory}
-        onClose={() => {
-          setShowModal(false);
-          setSelectedPurchaseHistory(null);
-        }}
-        onSubmit={handleModalSubmit}
-      />
-
-      {/* Delete Confirmation Modal */}
-      <DeleteConfirmationModal
-        isOpen={showDeleteModal}
-        title="Delete Purchase History"
-        message={`Are you sure you want to delete purchase history #${purchaseHistoryToDelete?.id}? This action cannot be undone.`}
-        onClose={() => {
-          setShowDeleteModal(false);
-          setPurchaseHistoryToDelete(null);
-        }}
-        onConfirm={confirmDelete}
-        isLoading={isDeleting}
-      />
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmationModal
+          isOpen={showDeleteModal}
+          title="Delete Purchase History"
+          message={`Are you sure you want to delete purchase history #${purchaseHistoryToDelete?.id}? This action cannot be undone.`}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setPurchaseHistoryToDelete(null);
+          }}
+          onConfirm={confirmDelete}
+          isLoading={isDeleting}
+        />
       </div>
     </div>
   );
