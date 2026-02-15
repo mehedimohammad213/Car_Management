@@ -146,26 +146,11 @@ const UserManagement: React.FC = () => {
                 {/* Clean Professional Table Header */}
                 <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
                   <div className="grid grid-cols-12 gap-4 p-4 text-xs font-bold uppercase tracking-wider">
-                    <div className="col-span-3 flex items-center gap-2">
-                      <UserIcon className="w-4 h-4" />
-                      <span>User Information</span>
-                    </div>
-                    <div className="col-span-2 flex items-center gap-2">
-                      <UserIcon className="w-4 h-4" />
-                      <span>Username</span>
-                    </div>
-                    <div className="col-span-3 flex items-center gap-2">
-                      <Mail className="w-4 h-4" />
-                      <span>Email</span>
-                    </div>
-                    <div className="col-span-2 flex items-center gap-2">
-                      <Shield className="w-4 h-4" />
-                      <span>Role</span>
-                    </div>
-                    <div className="col-span-2 flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      <span>Joined Date</span>
-                    </div>
+                    <div className="col-span-3">User Information</div>
+                    <div className="col-span-2">Username</div>
+                    <div className="col-span-3">Email</div>
+                    <div className="col-span-2">Role</div>
+                    <div className="col-span-2">Joined Date</div>
                   </div>
                 </div>
 

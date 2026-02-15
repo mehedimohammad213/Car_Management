@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, FileText } from "lucide-react";
+import { Plus, Search, FileText, X } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   paymentHistoryApi,
@@ -149,104 +149,103 @@ const PaymentHistoryPage: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50 to-indigo-50 p-4 py-6">
-      <div className="max-w-full mx-auto px-4">
-      {/* Header */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-              <FileText className="w-8 h-8 text-primary-600" />
-              Payment History
-            </h1>
-            <p className="text-gray-600 mt-1">
-              Manage payment history records
-            </p>
+    <div className="min-h-screen">
+      <div className="max-w-full mx-auto px-4 pb-6">
+        {/* Header matching SearchFilters style */}
+        <div className="p-0 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-primary-600">
+                Payments / Payment History
+              </h1>
+            </div>
           </div>
-          <button
-            onClick={handleCreate}
-            className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-medium"
-          >
-            <Plus className="w-5 h-5" />
-            Add Payment History
-          </button>
         </div>
-      </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-        <div className="flex flex-col lg:flex-row gap-4 items-end">
-          {/* Search */}
-          <div className="flex-1 relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search by showroom name, NID, contact number, email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        {/* Filters matching SearchFilters style */}
+        <div className="mb-8">
+          <div className="flex flex-col lg:flex-row gap-4 items-center">
+            {/* Search */}
+            <div className="flex-1 relative w-full lg:w-auto">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search by showroom name, NID, contact number, email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Clear Filters Button */}
+            {searchTerm && (
+              <button
+                onClick={handleClearFilters}
+                className="w-10 h-10 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-sm"
+                title="Clear Filters"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+
+            {/* Add Button moved here */}
+            <button
+              onClick={handleCreate}
+              className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all font-medium shadow-sm hover:shadow-md whitespace-nowrap ml-auto"
+            >
+              <Plus className="w-4 h-4" />
+              Add Payment History
+            </button>
+          </div>
+        </div>
+
+        {/* Table matching CarTable style */}
+        <PaymentHistoryTable
+          paymentHistories={paymentHistories}
+          isLoading={loading}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onView={handleView}
+          onRefresh={fetchPaymentHistories}
+        />
+
+        {/* Pagination matching car page */}
+        {totalItems > 0 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              perPage={perPage}
+              onPageChange={setCurrentPage}
             />
           </div>
+        )}
 
-          {/* Clear Filters Button */}
-          {searchTerm && (
-            <button
-              onClick={handleClearFilters}
-              className="px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors whitespace-nowrap"
-            >
-              Clear Filters
-            </button>
-          )}
-        </div>
-      </div>
+        {/* Modal */}
+        <PaymentHistoryModal
+          isOpen={showModal}
+          mode={modalMode}
+          paymentHistory={selectedPaymentHistory}
+          onClose={() => {
+            setShowModal(false);
+            setSelectedPaymentHistory(null);
+          }}
+          onSubmit={handleModalSubmit}
+        />
 
-      {/* Table */}
-      <PaymentHistoryTable
-        paymentHistories={paymentHistories}
-        isLoading={loading}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onView={handleView}
-        onRefresh={fetchPaymentHistories}
-      />
-
-      {/* Pagination */}
-      {totalItems > 0 && (
-        <div className="mt-6">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            perPage={perPage}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-      )}
-
-      {/* Modal */}
-      <PaymentHistoryModal
-        isOpen={showModal}
-        mode={modalMode}
-        paymentHistory={selectedPaymentHistory}
-        onClose={() => {
-          setShowModal(false);
-          setSelectedPaymentHistory(null);
-        }}
-        onSubmit={handleModalSubmit}
-      />
-
-      {/* Delete Confirmation Modal */}
-      <DeleteConfirmationModal
-        isOpen={showDeleteModal}
-        title="Delete Payment History"
-        message={`Are you sure you want to delete payment history #${paymentHistoryToDelete?.id}? This action will also delete all associated installments and cannot be undone.`}
-        onClose={() => {
-          setShowDeleteModal(false);
-          setPaymentHistoryToDelete(null);
-        }}
-        onConfirm={confirmDelete}
-        isLoading={isDeleting}
-      />
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmationModal
+          isOpen={showDeleteModal}
+          title="Delete Payment History"
+          message={`Are you sure you want to delete payment history #${paymentHistoryToDelete?.id}? This action will also delete all associated installments and cannot be undone.`}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setPaymentHistoryToDelete(null);
+          }}
+          onConfirm={confirmDelete}
+          isLoading={isDeleting}
+        />
       </div>
     </div>
   );

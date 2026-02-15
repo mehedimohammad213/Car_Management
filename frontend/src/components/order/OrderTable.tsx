@@ -73,30 +73,12 @@ export const OrderTable: React.FC<OrderTableProps> = ({
           {/* Clean Professional Table Header */}
           <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
             <div className="grid grid-cols-12 gap-4 p-4 text-xs font-bold uppercase tracking-wider">
-              <div className="col-span-1 flex items-center gap-2">
-                <Tag className="w-4 h-4" />
-                <span>Order ID</span>
-              </div>
-              <div className="col-span-2 flex items-center gap-2">
-                <User className="w-4 h-4" />
-                <span>Customer</span>
-              </div>
-              <div className="col-span-4 flex items-center gap-2">
-                <ShoppingCart className="w-4 h-4" />
-                <span>Items</span>
-              </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <DollarSign className="w-4 h-4" />
-                <span>Amount</span>
-              </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <Package className="w-4 h-4" />
-                <span>Status</span>
-              </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                <span>Date</span>
-              </div>
+              <div className="col-span-1">Order ID</div>
+              <div className="col-span-2">Customer</div>
+              <div className="col-span-4">Items</div>
+              <div className="col-span-1">Amount</div>
+              <div className="col-span-1">Status</div>
+              <div className="col-span-1">Date</div>
               <div className="col-span-2 text-center">Actions</div>
             </div>
           </div>

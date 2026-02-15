@@ -23,7 +23,7 @@ const PaymentHistoryTable: React.FC<PaymentHistoryTableProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="px-6 py-12 text-center">
           <div className="flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
@@ -36,7 +36,7 @@ const PaymentHistoryTable: React.FC<PaymentHistoryTableProps> = ({
 
   if (paymentHistories.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="text-center py-16">
           <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
             <FileText className="w-12 h-12 text-gray-400" />
@@ -61,42 +61,24 @@ const PaymentHistoryTable: React.FC<PaymentHistoryTableProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <div className="min-w-[1400px]">
-          {/* Professional Table Header with Gradient */}
-          <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 shadow-lg">
-            <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
-              <div className="col-span-3 flex items-center gap-2">
-                <Car className="w-4 h-4" />
-                <span>Car Details</span>
-              </div>
-              <div className="col-span-2 flex items-center gap-2">
-                <Building2 className="w-4 h-4" />
-                <span>Showroom</span>
-              </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                <span>Selling Date</span>
-              </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <CurrencyBDTIcon className="w-4 h-4" />
-                <span>Amount</span>
-              </div>
-              <div className="col-span-2 flex items-center gap-2">
-                <User className="w-4 h-4" />
-                <span>Customer</span>
-              </div>
-              <div className="col-span-2 flex items-center gap-2">
-                <CreditCard className="w-4 h-4" />
-                <span>Installments</span>
-              </div>
+          {/* Clean Professional Table Header */}
+          <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
+            <div className="grid grid-cols-12 gap-4 p-4 text-xs font-bold uppercase tracking-wider">
+              <div className="col-span-3">Car Details</div>
+              <div className="col-span-2">Showroom</div>
+              <div className="col-span-1">Selling Date</div>
+              <div className="col-span-1">Amount</div>
+              <div className="col-span-2">Customer</div>
+              <div className="col-span-2">Installments</div>
               <div className="col-span-1 text-center">Actions</div>
             </div>
           </div>
 
-          {/* Table Body with Enhanced Styling */}
-          <div className="divide-y divide-gray-100 bg-gray-50/30">
+          {/* Table Body matching CarTable style */}
+          <div className="divide-y divide-gray-100">
             {paymentHistories.map((paymentHistory) => (
               <PaymentHistoryTableRow
                 key={paymentHistory.id}

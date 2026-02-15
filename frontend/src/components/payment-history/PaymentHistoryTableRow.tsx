@@ -43,21 +43,24 @@ const PaymentHistoryTableRow: React.FC<PaymentHistoryTableRowProps> = ({
 
   return (
     <div
-      className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-primary-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-primary-500"
+      className="grid grid-cols-12 gap-4 p-4 hover:bg-white hover:shadow-md hover:scale-[1.002] transition-all duration-200 cursor-pointer group relative z-0 hover:z-10"
       onClick={(e) => {
         // Only navigate if clicking on the row, not on buttons
         if ((e.target as HTMLElement).closest("button")) return;
         if (onView) onView(paymentHistory);
       }}
     >
+      {/* Left Side Highlight Stick */}
+      <div className="absolute left-0 top-2 bottom-2 w-1.5 bg-primary-600 rounded-r-md opacity-0 group-hover:opacity-100 transition-all duration-200 transform -translate-x-1 group-hover:translate-x-0" />
+
       {/* Car Details */}
       <div className="col-span-3 flex items-start pt-1">
         <div className="min-w-0">
-          <div className="text-sm font-semibold text-gray-900 group-hover:text-primary-700 transition-colors">
+          <div className="text-sm font-bold text-gray-900 group-hover:text-primary-700 transition-colors">
             {carDisplay}
           </div>
           {paymentHistory.car && (paymentHistory.car.chassis_no_full || paymentHistory.car.chassis_no_masked) && (
-            <div className="text-xs text-gray-500 mt-0.5">
+            <div className="text-xs text-gray-500 mt-0.5 font-mono">
               Chassis: {paymentHistory.car.chassis_no_full || paymentHistory.car.chassis_no_masked}
             </div>
           )}
@@ -66,21 +69,21 @@ const PaymentHistoryTableRow: React.FC<PaymentHistoryTableRowProps> = ({
 
       {/* Showroom Name */}
       <div className="col-span-2 flex items-start pt-1">
-        <span className="text-sm text-gray-700 truncate">
+        <span className="text-sm font-medium text-gray-700 truncate group-hover:text-gray-900 transition-colors">
           {paymentHistory.showroom_name || "N/A"}
         </span>
       </div>
 
       {/* Selling Date */}
       <div className="col-span-1 flex items-start pt-1">
-        <span className="text-sm text-gray-700">
+        <span className="text-xs font-semibold text-gray-600">
           {formatDate(paymentHistory.purchase_date)}
         </span>
       </div>
 
       {/* Selling Amount */}
       <div className="col-span-1 flex items-start pt-1">
-        <span className="text-sm text-gray-700">
+        <span className="text-sm font-bold text-gray-900 group-hover:text-primary-700 transition-colors">
           {formatCurrency(paymentHistory.purchase_amount)}
         </span>
       </div>
@@ -88,11 +91,11 @@ const PaymentHistoryTableRow: React.FC<PaymentHistoryTableRowProps> = ({
       {/* Customer */}
       <div className="col-span-2 flex items-start pt-1">
         <div className="min-w-0">
-          <div className="text-sm text-gray-700">
+          <div className="text-sm font-semibold text-gray-800">
             {customerDisplay}
           </div>
           {customerEmail && (
-            <div className="text-xs text-gray-500 mt-0.5 truncate">
+            <div className="text-[10px] text-gray-500 mt-0.5 truncate italic">
               {customerEmail}
             </div>
           )}
@@ -100,65 +103,54 @@ const PaymentHistoryTableRow: React.FC<PaymentHistoryTableRowProps> = ({
       </div>
 
       {/* Installments */}
-      <div className="col-span-2 flex items-start py-2">
+      <div className="col-span-2 flex items-start py-1">
         <div className="w-full">
           {installmentsCount > 0 ? (
-            <div className="max-h-40 overflow-y-auto pr-2 space-y-2">
+            <div className="max-h-32 overflow-y-auto pr-2 space-y-1.5 custom-scrollbar">
               {paymentHistory.installments?.map((ins) => (
-                <div key={ins.id} className="flex items-start justify-between gap-3 text-sm border-b border-gray-100 last:border-0 pb-1.5 last:pb-0">
+                <div key={ins.id} className="flex items-start justify-between gap-2 text-xs border-b border-gray-50 last:border-0 pb-1 last:pb-0">
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-gray-800">
+                    <div className="font-bold text-gray-700">
                       {formatDate(ins.installment_date)}
                     </div>
-                    {ins.payment_method && (
-                      <div className="text-xs text-gray-500 mt-0.5">
-                        {ins.payment_method}
-                        {ins.bank_name && ` - ${ins.bank_name}`}
-                      </div>
-                    )}
-                    {ins.cheque_number && (
-                      <div className="text-xs text-gray-500 mt-0.5">
-                        Cheque: {ins.cheque_number}
-                      </div>
-                    )}
                   </div>
-                  <div className="text-left min-w-[80px] text-gray-900 font-semibold">
+                  <div className="text-right min-w-[70px] text-primary-700 font-bold">
                     {formatCurrency(ins.amount)}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <span className="text-xs text-gray-400">No installments</span>
+            <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">No installments</span>
           )}
         </div>
       </div>
 
       {/* Actions */}
       <div
-        className="col-span-1 flex items-start justify-center gap-1.5 pt-1"
+        className="col-span-1 flex items-start justify-center gap-1 pt-1"
         onClick={(e) => e.stopPropagation()}
       >
         {onView && (
           <button
             onClick={() => onView(paymentHistory)}
-            className="p-2.5 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
-            title="View Payment History"
+            className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200 group/btn"
+            title="View Details"
           >
             <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
           </button>
         )}
         <button
           onClick={() => onEdit(paymentHistory)}
-          className="p-2.5 text-amber-600 hover:text-amber-700 rounded-lg transition-all duration-200 group/btn"
-          title="Edit Payment History"
+          className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200 group/btn"
+          title="Edit"
         >
           <Pencil className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
         </button>
         <button
           onClick={() => onDelete(paymentHistory)}
-          className="p-2.5 text-red-600 hover:text-red-700 rounded-lg transition-all duration-200 group/btn"
-          title="Delete Payment History"
+          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 group/btn"
+          title="Delete"
         >
           <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
         </button>
