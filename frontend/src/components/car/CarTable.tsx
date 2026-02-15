@@ -73,8 +73,10 @@ const CarTable: React.FC<CarTableProps> = ({
                 <div
                   key={car.id}
                   onClick={() => onViewCar(car)}
-                  className="grid grid-cols-12 gap-4 p-4 hover:bg-gray-50 transition-colors cursor-pointer group"
+                  className="grid grid-cols-12 gap-4 p-4 hover:bg-white hover:shadow-md hover:scale-[1.002] transition-all duration-200 cursor-pointer group relative z-0 hover:z-10"
                 >
+                  {/* Left Side Highlight Stick */}
+                  <div className="absolute left-0 top-2 bottom-2 w-1.5 bg-primary-600 rounded-r-md opacity-0 group-hover:opacity-100 transition-all duration-200 transform -translate-x-1 group-hover:translate-x-0" />
                   {/* Car Information */}
                   <div className="col-span-3 flex items-center gap-3">
                     <div className="relative w-28 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 group-hover:border-primary-300 transition-colors">
