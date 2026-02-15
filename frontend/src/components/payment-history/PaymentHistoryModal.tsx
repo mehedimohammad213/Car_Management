@@ -122,8 +122,10 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
     try {
       setLoadingCars(true);
       const response = await carApi.getCars({ per_page: 1000 });
-      if (response.success && response.data?.data) {
-        setCars(response.data.data);
+      if (response.success) {
+        // Handle different possible response structures
+        const carList = response.data?.data || response.data?.cars || [];
+        setCars(Array.isArray(carList) ? carList : []);
       } else {
         setCars([]);
       }
@@ -248,11 +250,22 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                       <span className={formData.car_id ? "text-gray-900" : "text-gray-400"}>
                         {formData.car_id
                           ? (() => {
-                            const selectedCar = cars.find(c => c.id === formData.car_id);
-                            if (selectedCar) {
-                              return `${selectedCar.make} ${selectedCar.model} (${selectedCar.chassis_no_full || selectedCar.chassis_no_masked})`;
+                            // Try to find the car in the fetched list first
+                            let selectedCar = cars.find(c => c.id === formData.car_id);
+
+                            // If not found in the list, fallback to the car info already present in the payment history object
+                            if (!selectedCar && paymentHistory?.car?.id === formData.car_id) {
+                              selectedCar = paymentHistory.car;
+                            } else if (!selectedCar && paymentHistory?.car_id === formData.car_id && paymentHistory.car) {
+                              // Extra check for nested car object
+                              selectedCar = paymentHistory.car;
                             }
-                            return "Select a car";
+
+                            if (selectedCar) {
+                              const chassisNo = selectedCar.chassis_no_full || selectedCar.chassis_no_masked;
+                              return `${selectedCar.make} ${selectedCar.model} ${chassisNo ? `(${chassisNo})` : ""}`;
+                            }
+                            return loadingCars ? "Loading car information..." : "Select a car";
                           })()
                           : "Select a car"}
                       </span>
