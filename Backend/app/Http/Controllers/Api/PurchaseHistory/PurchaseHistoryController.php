@@ -81,6 +81,24 @@ class PurchaseHistoryController extends Controller
                 $query->where('purchase_date', '<=', $request->purchase_date_to);
             }
 
+            // Month and Year filters
+            if ($request->filled('month')) {
+                $query->whereMonth('purchase_date', $request->month);
+            }
+
+            if ($request->filled('year')) {
+                $query->whereYear('purchase_date', $request->year);
+            }
+
+            // LC Month and Year filters
+            if ($request->filled('lc_month')) {
+                $query->whereMonth('lc_date', $request->lc_month);
+            }
+
+            if ($request->filled('lc_year')) {
+                $query->whereYear('lc_date', $request->lc_year);
+            }
+
             // Sorting
             $sortBy = $request->get('sort_by', 'created_at');
             $sortOrder = $request->get('sort_order', 'desc');

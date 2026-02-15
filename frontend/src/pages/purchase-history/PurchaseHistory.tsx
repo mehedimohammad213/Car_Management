@@ -34,6 +34,8 @@ const PurchaseHistoryPage: React.FC = () => {
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterMonth, setFilterMonth] = useState("");
+  const [filterYear, setFilterYear] = useState("");
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,7 +45,7 @@ const PurchaseHistoryPage: React.FC = () => {
 
   useEffect(() => {
     fetchPurchaseHistories();
-  }, [currentPage, searchTerm]);
+  }, [currentPage, searchTerm, filterMonth, filterYear]);
 
   // Open edit modal if navigated with state { editId }
   useEffect(() => {
@@ -71,6 +73,8 @@ const PurchaseHistoryPage: React.FC = () => {
       };
 
       if (searchTerm) params.search = searchTerm;
+      if (filterMonth) params.lc_month = filterMonth;
+      if (filterYear) params.lc_year = filterYear;
 
       const response = await purchaseHistoryApi.getPurchaseHistories(params);
 
@@ -168,8 +172,28 @@ const PurchaseHistoryPage: React.FC = () => {
 
   const handleClearFilters = () => {
     setSearchTerm("");
+    setFilterMonth("");
+    setFilterYear("");
     setCurrentPage(1);
   };
+
+  const months = [
+    { value: "01", label: "January" },
+    { value: "02", label: "February" },
+    { value: "03", label: "March" },
+    { value: "04", label: "April" },
+    { value: "05", label: "May" },
+    { value: "06", label: "June" },
+    { value: "07", label: "July" },
+    { value: "08", label: "August" },
+    { value: "09", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 10 }, (_, i) => (currentYear - i).toString());
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50 to-indigo-50 p-4 py-6">
@@ -201,8 +225,8 @@ const PurchaseHistoryPage: React.FC = () => {
           <button
             onClick={() => setActiveTab("history")}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === "history"
-                ? "bg-white text-primary-600 shadow-md ring-1 ring-black/5"
-                : "text-gray-500 hover:text-gray-700 hover:bg-white/20"
+              ? "bg-white text-primary-600 shadow-md ring-1 ring-black/5"
+              : "text-gray-500 hover:text-gray-700 hover:bg-white/20"
               }`}
           >
             <List className="w-4 h-4" />
@@ -211,8 +235,8 @@ const PurchaseHistoryPage: React.FC = () => {
           <button
             onClick={() => setActiveTab("lc_wise")}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === "lc_wise"
-                ? "bg-white text-primary-600 shadow-md ring-1 ring-black/5"
-                : "text-gray-500 hover:text-gray-700 hover:bg-white/20"
+              ? "bg-white text-primary-600 shadow-md ring-1 ring-black/5"
+              : "text-gray-500 hover:text-gray-700 hover:bg-white/20"
               }`}
           >
             <LayoutGrid className="w-4 h-4" />
@@ -231,17 +255,47 @@ const PurchaseHistoryPage: React.FC = () => {
                 placeholder="Search by LC number, invoice number, bank name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
               />
             </div>
 
+            {/* Month Filter */}
+            <div className="w-full lg:w-48">
+              <label className="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">LC Month</label>
+              <select
+                value={filterMonth}
+                onChange={(e) => setFilterMonth(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white transition-all appearance-none cursor-pointer"
+              >
+                <option value="">All Months</option>
+                {months.map((m) => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Year Filter */}
+            <div className="w-full lg:w-36">
+              <label className="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">LC Year</label>
+              <select
+                value={filterYear}
+                onChange={(e) => setFilterYear(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white transition-all appearance-none cursor-pointer"
+              >
+                <option value="">All Years</option>
+                {years.map((y) => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+            </div>
+
             {/* Clear Filters Button */}
-            {searchTerm && (
+            {(searchTerm || filterMonth || filterYear) && (
               <button
                 onClick={handleClearFilters}
-                className="px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors whitespace-nowrap"
+                className="px-6 py-2 bg-gray-100 text-gray-600 font-bold text-sm rounded-xl hover:bg-gray-200 transition-all whitespace-nowrap active:scale-95"
               >
-                Clear Filters
+                Clear
               </button>
             )}
           </div>

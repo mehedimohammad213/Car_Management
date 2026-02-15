@@ -75,8 +75,8 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                     <div
                         key={lcNumber}
                         className={`group bg-white rounded-2xl shadow-md border-2 transition-all duration-300 overflow-hidden ${isExpanded
-                                ? "border-primary-500 shadow-xl ring-4 ring-primary-50"
-                                : "border-transparent hover:border-primary-200 hover:shadow-lg"
+                            ? "border-primary-500 shadow-xl ring-4 ring-primary-50"
+                            : "border-transparent hover:border-primary-200 hover:shadow-lg"
                             }`}
                     >
                         {/* LC Header Card */}
@@ -98,6 +98,10 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                                         <span className="flex items-center gap-1.5 text-sm font-medium text-gray-600 bg-white px-2 py-1 rounded-md border border-gray-100 shadow-sm">
                                             <Building2 className="w-4 h-4 text-primary-500" />
                                             {histories[0].lc_bank_name || "N/A Bank"}
+                                        </span>
+                                        <span className="flex items-center gap-1.5 text-sm font-medium text-gray-600 bg-white px-2 py-1 rounded-md border border-gray-100 shadow-sm">
+                                            <Calendar className="w-4 h-4 text-primary-500" />
+                                            LC: {histories[0].lc_date ? new Date(histories[0].lc_date).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' }) : "N/A"}
                                         </span>
                                         <span className="flex items-center gap-1.5 text-sm font-medium text-gray-600 bg-white px-2 py-1 rounded-md border border-gray-100 shadow-sm">
                                             <Car className="w-4 h-4 text-primary-500" />
@@ -166,6 +170,16 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                                                             <span className="text-xs font-bold text-gray-400 uppercase">Chassis</span>
                                                             <span className="text-sm font-mono font-bold text-gray-800">
                                                                 {car.chassis_no_full || car.chassis_no_masked || "N/A"}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-xs font-bold text-gray-400 uppercase">LC Date</span>
+                                                            <span className="text-sm font-bold text-gray-700">
+                                                                {history.lc_date ? new Date(history.lc_date).toLocaleDateString("en-US", {
+                                                                    month: 'short',
+                                                                    day: 'numeric',
+                                                                    year: 'numeric'
+                                                                }) : "N/A"}
                                                             </span>
                                                         </div>
                                                         <div className="flex items-center justify-between">
