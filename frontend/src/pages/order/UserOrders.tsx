@@ -269,29 +269,40 @@ const UserOrders: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50 to-indigo-50">
-      <div className="max-w-full mx-auto px-4 py-6">
-        {/* Search Filters */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-6">
-          {/* Filter Row with Search, Status, and Buttons */}
-          <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center">
+    <div className="min-h-screen">
+      <div className="max-w-full mx-auto px-4 pb-6">
+        {/* Header matching SearchFilters style */}
+        <div className="p-0 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-primary-600">
+                My Orders / Order History
+              </h1>
+            </div>
+          </div>
+        </div>
+
+        {/* Search Filters matching SearchFilters style */}
+        <div className="mb-8">
+          <div className="flex flex-col lg:flex-row gap-4 items-center">
             {/* Search Input */}
-            <div className="w-full md:flex-1">
+            <div className="flex-1 relative w-full lg:w-auto">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search orders by ID, vehicle make, model, or any keyword..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
 
             {/* Status Filter */}
-            <div className="flex gap-3 w-full md:w-auto md:items-center">
+            <div className="w-full lg:w-auto">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="flex-1 md:flex-none px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200 min-w-[140px]"
+                className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
@@ -300,42 +311,45 @@ const UserOrders: React.FC = () => {
                 <option value="delivered">Delivered</option>
                 <option value="canceled">Canceled</option>
               </select>
-
-            {/* Reset Button */}
-            <button
-              onClick={() => {
-                setSearchTerm("");
-                setStatusFilter("all");
-              }}
-              className="w-full md:w-auto px-4 py-3 text-primary-600 hover:text-primary-800 border border-blue-300 hover:bg-primary-50 rounded-xl font-semibold text-sm transition-all duration-200"
-            >
-              Reset
-            </button>
             </div>
+
+            {/* Clear Filters Button */}
+            {(searchTerm || statusFilter !== "all") && (
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setStatusFilter("all");
+                }}
+                className="w-10 h-10 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-sm"
+                title="Clear Filters"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
 
         {/* Orders Table Display */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           {sortedOrders.length === 0 ? (
             <div className="text-center py-20">
-              <div className="w-40 h-40 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-                <Package className="w-20 h-20 text-primary-600" />
+              <div className="w-40 h-40 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
+                <Package className="w-20 h-20 text-gray-400" />
               </div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
                 No orders found
               </h3>
               <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
                 {statusFilter === "all"
-                  ? "We couldn't find any orders matching your criteria. Try adjusting your filters or search terms to discover more options."
-                  : `No orders with status "${statusFilter}" found. Try adjusting your filters.`}
+                  ? "We couldn't find any orders matching your criteria."
+                  : `No orders with status "${statusFilter}" found.`}
               </p>
               <button
                 onClick={() => {
                   setSearchTerm("");
                   setStatusFilter("all");
                 }}
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-600 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="inline-flex items-center gap-3 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all font-medium shadow-sm hover:shadow-md"
               >
                 <X className="w-5 h-5" />
                 Clear All Filters
@@ -343,66 +357,56 @@ const UserOrders: React.FC = () => {
             </div>
           ) : (
             <>
-              {/* Table Header */}
-              <div className="hidden bg-gradient-to-r from-gray-50 to-primary-100 border-b-2 border-primary-200 lg:block">
-                <div className="grid grid-cols-12 gap-3 p-6 text-sm font-bold text-gray-800 uppercase tracking-wide">
-                  <div className="col-span-2">Order Information</div>
+              {/* Table Header matching CarTable style */}
+              <div className="hidden bg-gray-200 border-b border-gray-300 text-gray-700 lg:block">
+                <div className="grid grid-cols-12 gap-3 p-4 text-xs font-bold uppercase tracking-wider">
+                  <div className="col-span-2">Order Info</div>
                   <div className="col-span-3">Items</div>
-                  <div className="col-span-1">Total</div>
+                  <div className="col-span-2">Total Amount</div>
                   <div className="col-span-1">Status</div>
                   <div className="col-span-2">Date</div>
-                  <div className="col-span-1">Shipping</div>
-                  <div className="col-span-2">Actions</div>
+                  <div className="col-span-2 text-center">Actions</div>
                 </div>
               </div>
-              {/* Table Body */}
+              {/* Table Body matching CarTable style */}
               <div className="hidden divide-y divide-gray-100 lg:block">
                 {sortedOrders.map((order) => (
                   <div
                     key={order.id}
                     onClick={() => setSelectedOrder(order)}
-                    className="grid grid-cols-12 gap-3 p-6 hover:bg-gradient-to-r hover:from-primary-50 hover:to-indigo-50 transition-all duration-200 border-l-4 border-transparent hover:border-primary-500 cursor-pointer"
+                    className="grid grid-cols-12 gap-3 p-4 hover:bg-white hover:shadow-md hover:scale-[1.002] transition-all duration-200 cursor-pointer group relative z-0 hover:z-10"
                   >
+                    {/* Left Side Highlight Stick */}
+                    <div className="absolute left-0 top-2 bottom-2 w-1.5 bg-primary-600 rounded-r-md opacity-0 group-hover:opacity-100 transition-all duration-200 transform -translate-x-1 group-hover:translate-x-0" />
+
                     {/* Order Information */}
                     <div className="col-span-2 flex items-center gap-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-xl overflow-hidden flex-shrink-0 shadow-md flex items-center justify-center">
-                        <Package className="w-8 h-8 text-primary-600" />
+                      <div className="w-12 h-12 bg-blue-50 rounded-lg overflow-hidden flex-shrink-0 border border-blue-100 flex items-center justify-center group-hover:border-primary-300 transition-colors">
+                        <Package className="w-6 h-6 text-primary-600" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-bold text-gray-900 group-hover:text-primary-700 transition-colors">
                           Order #{order.id}
                         </div>
-                        <div className="text-sm text-gray-600">
-                          {order.items.length} item
-                          {order.items.length !== 1 ? "s" : ""}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {formatDate(order.created_at)}
+                        <div className="text-xs text-gray-500 mt-0.5">
+                          {order.items.length} item{order.items.length !== 1 ? "s" : ""}
                         </div>
                       </div>
                     </div>
 
                     {/* Items */}
-                    <div className="col-span-3">
-                      <div className="space-y-2">
+                    <div className="col-span-3 flex items-center">
+                      <div className="space-y-1 w-full">
                         {order.items.slice(0, 2).map((item) => (
                           <div
                             key={item.id}
-                            className="flex items-center space-x-3"
+                            className="text-xs font-semibold text-gray-800 truncate"
                           >
-                            <div className="min-w-0">
-                              <div className="text-sm font-medium text-gray-900 truncate">
-                                {item.car.make} {item.car.model}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                Qty: {item.quantity} • BDT{" "}
-                                {item.price.toLocaleString()}
-                              </div>
-                            </div>
+                            • {item.car.make} {item.car.model}
                           </div>
                         ))}
                         {order.items.length > 2 && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-[10px] text-gray-500 italic pl-3">
                             +{order.items.length - 2} more items
                           </div>
                         )}
@@ -410,82 +414,71 @@ const UserOrders: React.FC = () => {
                     </div>
 
                     {/* Total */}
-                    <div className="col-span-1">
-                      <div className="text-right">
-                        <div className="font-semibold text-gray-900">
-                          BDT {order.total_amount.toLocaleString()}
-                        </div>
+                    <div className="col-span-2 flex items-center">
+                      <div className="text-sm font-bold text-gray-900 group-hover:text-primary-700 transition-colors">
+                        BDT {order.total_amount.toLocaleString()}
                       </div>
                     </div>
 
                     {/* Status */}
-                    <div className="col-span-1">
+                    <div className="col-span-1 flex items-center">
                       <span
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                        className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold border uppercase tracking-tight ${getStatusColor(
                           order.status
                         )}`}
                       >
                         <div className="flex items-center space-x-1">
                           {getStatusIcon(order.status)}
-                          <span className="capitalize">{order.status}</span>
+                          <span>{order.status}</span>
                         </div>
                       </span>
                     </div>
 
                     {/* Date */}
-                    <div className="col-span-2">
-                      <div className="text-sm text-gray-500">
+                    <div className="col-span-2 flex items-center">
+                      <div className="text-xs font-medium text-gray-600">
                         {formatDate(order.created_at)}
                       </div>
                     </div>
 
-                    {/* Shipping */}
-                    <div className="col-span-1">
-                      <div className="text-sm text-gray-500">
-                        {order.shipping_address ? "Yes" : "No"}
-                      </div>
-                    </div>
-
                     {/* Actions */}
-                    <div className="col-span-2">
-                      <div className="flex items-center gap-2">
+                    <div className="col-span-2 flex items-center justify-center gap-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedOrder(order);
+                        }}
+                        className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors group/btn"
+                        title="View Details"
+                      >
+                        <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                      </button>
+                      {order.status === "pending" && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            setSelectedOrder(order);
+                            openCancelPopup(order);
                           }}
-                          className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                          title="View Details"
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors group/btn"
+                          title="Cancel Order"
                         >
-                          <Eye className="w-5 h-5" />
+                          <XCircle className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
                         </button>
-                        {order.status === "pending" && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openCancelPopup(order);
-                            }}
-                            className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Cancel Order"
-                          >
-                            <XCircle className="w-5 h-5" />
-                          </button>
-                        )}
-                        {(order.status === "approved" ||
-                          order.status === "shipped" ||
-                          order.status === "delivered") && (
+                      )}
+                      {(order.status === "approved" ||
+                        order.status === "shipped" ||
+                        order.status === "delivered") && (
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDownloadInvoice(order);
                             }}
-                            className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors group/btn"
                             title="Download Invoice"
                           >
-                            <Download className="w-5 h-5" />
+                            <Download className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
                           </button>
                         )}
-                      </div>
                     </div>
                   </div>
                 ))}
@@ -567,14 +560,14 @@ const UserOrders: React.FC = () => {
                         {(order.status === "approved" ||
                           order.status === "shipped" ||
                           order.status === "delivered") && (
-                          <button
-                            onClick={() => handleDownloadInvoice(order)}
-                            className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
-                            title="Download Invoice"
-                          >
-                            <Download className="w-5 h-5" />
-                          </button>
-                        )}
+                            <button
+                              onClick={() => handleDownloadInvoice(order)}
+                              className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
+                              title="Download Invoice"
+                            >
+                              <Download className="w-5 h-5" />
+                            </button>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -652,8 +645,8 @@ const UserOrders: React.FC = () => {
                           <p className="text-sm text-gray-600 dark:text-gray-400">
                             Total Amount
                           </p>
-                        <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                          BDT {selectedOrder.total_amount.toLocaleString()}
+                          <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                            BDT {selectedOrder.total_amount.toLocaleString()}
                           </p>
                         </div>
                       </div>
@@ -789,16 +782,16 @@ const UserOrders: React.FC = () => {
                           {(selectedOrder.status === "approved" ||
                             selectedOrder.status === "shipped" ||
                             selectedOrder.status === "delivered") && (
-                            <button
-                              onClick={() =>
-                                handleDownloadInvoice(selectedOrder)
-                              }
-                              className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors font-medium"
-                            >
-                              <Download className="w-5 h-5" />
-                              Download Invoice
-                            </button>
-                          )}
+                              <button
+                                onClick={() =>
+                                  handleDownloadInvoice(selectedOrder)
+                                }
+                                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors font-medium"
+                              >
+                                <Download className="w-5 h-5" />
+                                Download Invoice
+                              </button>
+                            )}
                           {selectedOrder.status === "pending" && (
                             <button
                               onClick={() => openCancelPopup(selectedOrder)}

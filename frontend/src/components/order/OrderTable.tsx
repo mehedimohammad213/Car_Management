@@ -67,12 +67,12 @@ export const OrderTable: React.FC<OrderTableProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <div className="min-w-[1200px]">
-          {/* Professional Table Header with Gradient */}
-          <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 shadow-lg">
-            <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
+          {/* Clean Professional Table Header */}
+          <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
+            <div className="grid grid-cols-12 gap-4 p-4 text-xs font-bold uppercase tracking-wider">
               <div className="col-span-1 flex items-center gap-2">
                 <Tag className="w-4 h-4" />
                 <span>Order ID</span>
@@ -101,17 +101,20 @@ export const OrderTable: React.FC<OrderTableProps> = ({
             </div>
           </div>
 
-          {/* Table Body with Enhanced Styling */}
-          <div className="divide-y divide-gray-100 bg-gray-50/30">
+          {/* Table Body matching CarTable style */}
+          <div className="divide-y divide-gray-100">
             {orders.map((order) => (
               <div
                 key={order.id}
                 onClick={() => handleRowClick(order)}
-                className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-primary-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-primary-500"
+                className="grid grid-cols-12 gap-4 p-4 hover:bg-white hover:shadow-md hover:scale-[1.002] transition-all duration-200 cursor-pointer group relative z-0 hover:z-10"
               >
+                {/* Left Side Highlight Stick */}
+                <div className="absolute left-0 top-2 bottom-2 w-1.5 bg-primary-600 rounded-r-md opacity-0 group-hover:opacity-100 transition-all duration-200 transform -translate-x-1 group-hover:translate-x-0" />
+
                 {/* Order ID */}
                 <div className="col-span-1 flex items-center">
-                  <span className="text-sm font-semibold text-gray-900">
+                  <span className="text-sm font-semibold text-gray-900 group-hover:text-primary-700 transition-colors">
                     #{order.id}
                   </span>
                 </div>
@@ -161,7 +164,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                       </div>
                     ))}
                     {order.items.length > 3 && (
-                      <div className="flex items-center px-2 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium">
+                      <div className="flex items-center px-2 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium border border-gray-200">
                         +{order.items.length - 3} more
                       </div>
                     )}
@@ -171,13 +174,13 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                 {/* Total Amount */}
                 <div className="col-span-1 flex items-center">
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-gray-900">
+                    <span className="text-sm font-bold text-gray-900 group-hover:text-primary-700 transition-colors">
                       {new Intl.NumberFormat("en-US", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       }).format(order.total_amount)}
                     </span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-[10px] text-gray-500 mt-0.5">
                       {order.items.length} item{order.items.length !== 1 ? "s" : ""}
                     </span>
                   </div>
@@ -217,14 +220,14 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                   {(order.status === "approved" ||
                     order.status === "shipped" ||
                     order.status === "delivered") && (
-                    <button
-                      onClick={() => onDownloadInvoice(order)}
-                      className="p-2.5 text-green-600 hover:text-green-700 rounded-lg transition-all duration-200 group/btn"
-                      title="Download Invoice"
-                    >
-                      <Download className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-                    </button>
-                  )}
+                      <button
+                        onClick={() => onDownloadInvoice(order)}
+                        className="p-2.5 text-green-600 hover:text-green-700 rounded-lg transition-all duration-200 group/btn"
+                        title="Download Invoice"
+                      >
+                        <Download className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                      </button>
+                    )}
                   <button
                     onClick={() => onDelete(order)}
                     className="p-2.5 text-red-600 hover:text-red-700 rounded-lg transition-all duration-200 group/btn"

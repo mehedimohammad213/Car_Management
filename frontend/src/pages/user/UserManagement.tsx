@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { userApi, User, UsersParams } from "../../services/userApi";
-import { Search, Users, Mail, User as UserIcon, Calendar, Shield } from "lucide-react";
+import { Search, Users, Mail, User as UserIcon, Calendar, Shield, X } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
 
 const UserManagement: React.FC = () => {
@@ -73,29 +73,22 @@ const UserManagement: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50 to-indigo-50 p-4 py-6">
-      <div className="max-w-full mx-auto px-4">
-        {/* Header */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+    <div className="min-h-screen">
+      <div className="max-w-full mx-auto px-4 pb-6">
+        {/* Header matching SearchFilters style */}
+        <div className="p-0 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-                <Users className="w-8 h-8 text-primary-600" />
-                User Management
+              <h1 className="text-2xl font-bold text-primary-600">
+                Users / User List
               </h1>
-              <p className="text-gray-600 mt-1">
-                Manage and view all system users
-              </p>
-            </div>
-            <div className="text-sm text-gray-500">
-              Total: {totalItems} users
             </div>
           </div>
         </div>
 
-        {/* Search and Filters */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4 items-end">
+        {/* Search and Filters matching SearchFilters style */}
+        <div className="mb-8">
+          <div className="flex flex-col lg:flex-row gap-4 items-center">
             <div className="flex-1 relative w-full lg:w-auto">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
@@ -109,16 +102,17 @@ const UserManagement: React.FC = () => {
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm("")}
-                className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors whitespace-nowrap"
+                className="w-10 h-10 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-sm"
+                title="Clear Filters"
               >
-                Clear
+                <X className="w-5 h-5" />
               </button>
             )}
           </div>
         </div>
 
-        {/* Users Table */}
-        <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+        {/* Users Table matching CarTable style */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
@@ -149,9 +143,9 @@ const UserManagement: React.FC = () => {
           ) : (
             <div className="overflow-x-auto">
               <div className="min-w-[1000px]">
-                {/* Professional Table Header with Gradient */}
-                <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 shadow-lg">
-                  <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
+                {/* Clean Professional Table Header */}
+                <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
+                  <div className="grid grid-cols-12 gap-4 p-4 text-xs font-bold uppercase tracking-wider">
                     <div className="col-span-3 flex items-center gap-2">
                       <UserIcon className="w-4 h-4" />
                       <span>User Information</span>
@@ -175,17 +169,20 @@ const UserManagement: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Table Body with Enhanced Styling */}
-                <div className="divide-y divide-gray-100 bg-gray-50/30">
+                {/* Table Body matching CarTable style */}
+                <div className="divide-y divide-gray-100">
                   {users.map((user) => (
                     <div
                       key={user.id}
-                      className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-primary-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-primary-500"
+                      className="grid grid-cols-12 gap-4 p-4 hover:bg-white hover:shadow-md hover:scale-[1.002] transition-all duration-200 cursor-pointer group relative z-0 hover:z-10"
                     >
+                      {/* Left Side Highlight Stick */}
+                      <div className="absolute left-0 top-2 bottom-2 w-1.5 bg-primary-600 rounded-r-md opacity-0 group-hover:opacity-100 transition-all duration-200 transform -translate-x-1 group-hover:translate-x-0" />
+
                       {/* User Information */}
                       <div className="col-span-3 flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-md group-hover:shadow-lg transition-shadow">
-                          <span className="text-white text-base font-bold">
+                        <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
+                          <span className="text-white text-sm font-bold">
                             {user.name.charAt(0).toUpperCase()}
                           </span>
                         </div>
@@ -201,7 +198,7 @@ const UserManagement: React.FC = () => {
 
                       {/* Username */}
                       <div className="col-span-2 flex items-center">
-                        <span className="text-sm font-semibold text-gray-900">
+                        <span className="text-sm font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
                           @{user.username}
                         </span>
                       </div>

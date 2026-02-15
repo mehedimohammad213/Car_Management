@@ -9,21 +9,17 @@ export const OrderManagementHeader: React.FC<OrderManagementHeaderProps> = ({
   onCreateOrder,
 }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+    <div className="p-0 mb-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Package className="w-8 h-8 text-primary-600" />
-            Order Management
+          <h1 className="text-2xl font-bold text-primary-600">
+            Orders / Order List
           </h1>
-          <p className="text-gray-600 mt-1">
-            Monitor and manage all customer orders
-          </p>
         </div>
         {onCreateOrder && (
           <button
             onClick={onCreateOrder}
-            className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-medium"
+            className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all font-medium shadow-sm hover:shadow-md whitespace-nowrap"
           >
             <span>Add Order</span>
           </button>
