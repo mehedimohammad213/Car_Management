@@ -19,6 +19,7 @@ class PurchaseHistory extends Model
         'purchase_amount',
         'foreign_amount',
         'bdt_amount',
+        'currency_type',
         'govt_duty',
         'cnf_amount',
         'miscellaneous',
