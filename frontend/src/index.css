@@ -44,7 +44,8 @@ body {
   input,
   select,
   textarea {
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 16px;
+    /* Prevents zoom on iOS */
     border-radius: 8px;
   }
 
@@ -83,6 +84,7 @@ body {
 
 /* Mobile gesture improvements */
 @media (max-width: 768px) {
+
   /* Swipe gestures for carousel-like components */
   .swipe-container {
     touch-action: pan-x;
@@ -271,6 +273,7 @@ body {
   from {
     transform: translateY(100%);
   }
+
   to {
     transform: translateY(0);
   }
@@ -280,6 +283,7 @@ body {
   from {
     transform: translateY(-100%);
   }
+
   to {
     transform: translateY(0);
   }
@@ -290,6 +294,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -569,27 +574,21 @@ body {
 
 /* Professional gradient backgrounds */
 .bg-gradient-primary {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-600),
-    var(--color-primary-700)
-  );
+  background: linear-gradient(135deg,
+      var(--color-primary-600),
+      var(--color-primary-700));
 }
 
 .bg-gradient-secondary {
-  background: linear-gradient(
-    135deg,
-    var(--color-secondary-600),
-    var(--color-secondary-700)
-  );
+  background: linear-gradient(135deg,
+      var(--color-secondary-600),
+      var(--color-secondary-700));
 }
 
 .bg-gradient-brand {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-600),
-    var(--color-secondary-600)
-  );
+  background: linear-gradient(135deg,
+      var(--color-primary-600),
+      var(--color-secondary-600));
 }
 
 /* Professional button styles */
@@ -679,4 +678,30 @@ body {
 .status-info {
   background-color: var(--color-info);
   color: white;
+}
+
+/* Hide Number Input Spinners */
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.no-spinner {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Global Number Input Spinner Hide */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
