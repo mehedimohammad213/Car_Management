@@ -124,16 +124,16 @@ const Header: React.FC = () => {
   return (
     <>
       <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
-        <div className="mx-auto max-w-7xl px-3 sm:px-4 lg:px-6">
+        <div className="mx-auto max-w-full px-4 lg:pl-48 lg:pr-48">
           <div className="relative flex items-center justify-between h-16 gap-3">
             {/* Logo - Left side */}
             <div className="flex items-center flex-shrink-0">
               <Link
                 to={user.role === "admin" ? "/admin" : "/dashboard"}
-                className="flex items-center space-x-2"
+                className="flex flex-col items-center justify-center -space-y-1"
               >
-                <CarIcon className="h-8 w-8 text-primary-600 dark:text-primary-400 flex-shrink-0" />
-                <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white whitespace-nowrap">
+                <CarIcon className="h-7 w-7 text-primary-600 dark:text-primary-400 flex-shrink-0" />
+                <span className="text-[10px] font-medium tracking-wider text-gray-600 dark:text-gray-400 whitespace-nowrap">
                   DREAM AGENT CAR VISION
                 </span>
               </Link>
