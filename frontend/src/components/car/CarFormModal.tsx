@@ -221,6 +221,13 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
     }));
   };
 
+  const addPhotos = (newPhotos: any[]) => {
+    setFormData((prev) => ({
+      ...prev,
+      photos: [...(prev.photos || []), ...newPhotos],
+    }));
+  };
+
   const removePhoto = (index: number) => {
     setFormData((prev) => ({
       ...prev,
@@ -662,6 +669,7 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
               formData={formData}
               isViewMode={isViewMode}
               onAddPhoto={addPhoto}
+              onAddPhotos={addPhotos}
               onRemovePhoto={removePhoto}
               onUpdatePhoto={(index, photo) => {
                 const newPhotos = [...(formData.photos || [])];

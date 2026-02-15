@@ -7,6 +7,7 @@ interface PhotoSectionProps {
   formData: CreateCarData;
   isViewMode: boolean;
   onAddPhoto: () => void;
+  onAddPhotos: (photos: any[]) => void;
   onRemovePhoto: (index: number) => void;
   onUpdatePhoto: (index: number, photo: any) => void;
 }
@@ -15,12 +16,15 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
   formData,
   isViewMode,
   onAddPhoto,
+  onAddPhotos,
   onRemovePhoto,
   onUpdatePhoto,
 }) => {
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const [isBulkUploading, setIsBulkUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bulkFileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (file: File, index: number) => {
     // Validate file
@@ -58,6 +62,49 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
     }
     // Reset input
     event.target.value = '';
+  };
+
+  const handleBulkFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+
+    setIsBulkUploading(true);
+    setUploadError(null);
+
+    const uploadPromises = files.map(async (file, i) => {
+      const validation = imgbbApi.validateImageFile(file);
+      if (!validation.isValid) {
+        throw new Error(`${file.name}: ${validation.error}`);
+      }
+
+      const response = await imgbbApi.uploadImage(file, {
+        name: `car-photo-${Date.now()}-${i}`,
+      });
+
+      return {
+        url: response.data.url,
+        is_primary: formData.photos?.length === 0 && i === 0,
+        sort_order: (formData.photos?.length || 0) + i,
+        is_hidden: false,
+      };
+    });
+
+    try {
+      const newUploadedPhotos = await Promise.all(uploadPromises);
+      onAddPhotos(newUploadedPhotos);
+    } catch (error: any) {
+      console.error('Bulk upload error:', error);
+      setUploadError(error.message || 'Failed to upload some images. Please try again.');
+    } finally {
+      setIsBulkUploading(false);
+      event.target.value = '';
+    }
+  };
+
+  const triggerBulkFileInput = () => {
+    if (bulkFileInputRef.current) {
+      bulkFileInputRef.current.click();
+    }
   };
 
   const triggerFileInput = (index: number) => {
@@ -111,7 +158,7 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
         <Image className="w-5 h-5 text-primary-600" />
         Photos
       </h3>
-      
+
       {/* Upload Error */}
       {uploadError && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
@@ -209,16 +256,31 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
             </button>
           </div>
         ))}
-        
+
         {/* Add Photo Button */}
-        <button
-          type="button"
-          onClick={onAddPhoto}
-          className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-primary-500 hover:text-primary-600 transition-colors flex items-center justify-center gap-2"
-        >
-          <Plus className="w-5 h-5" />
-          Add Photo
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <button
+            type="button"
+            onClick={onAddPhoto}
+            className="flex-1 p-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-primary-500 hover:text-primary-600 transition-colors flex items-center justify-center gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            Add URL
+          </button>
+          <button
+            type="button"
+            onClick={triggerBulkFileInput}
+            disabled={isBulkUploading}
+            className="flex-1 p-4 border-2 border-dashed border-primary-300 bg-primary-50/30 rounded-xl text-primary-600 hover:border-primary-500 hover:bg-primary-50 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {isBulkUploading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Plus className="w-5 h-5" />
+            )}
+            {isBulkUploading ? "Uploading..." : "Upload Multiple Photos"}
+          </button>
+        </div>
       </div>
 
       {/* Hidden file input */}
@@ -230,6 +292,15 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
           const index = parseInt(e.target.getAttribute('data-index') || '0');
           handleFileSelect(e, index);
         }}
+        className="hidden"
+      />
+
+      <input
+        ref={bulkFileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleBulkFileSelect}
         className="hidden"
       />
     </div>
