@@ -9,9 +9,8 @@ import { Category } from "../../services/categoryApi";
 import {
   BasicInfoSection,
   TechnicalSpecsSection,
-  GradingSection,
+  GradingLocationSection,
   // PricingSection,
-  LocationStatusSection,
   NotesSection,
   PhotoSection,
   CarDetailsSection,
@@ -626,34 +625,10 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
           </div>
         </div>
 
-        {/* Grading Section */}
+        {/* Grading & Location Section combined */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-6">
-            <GradingSection
-              formData={formData}
-              errors={errors}
-              isViewMode={isViewMode}
-              onInputChange={handleInputChange}
-            />
-          </div>
-        </div>
-
-        {/* Pricing Section - Commented out */}
-        {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6">
-            <PricingSection
-              formData={formData}
-              errors={errors}
-              isViewMode={isViewMode}
-              onInputChange={handleInputChange}
-            />
-          </div>
-        </div> */}
-
-        {/* Location & Status Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6">
-            <LocationStatusSection
+            <GradingLocationSection
               formData={formData}
               errors={errors}
               isViewMode={isViewMode}
