@@ -49,6 +49,13 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
   const [installments, setInstallments] = useState<UpdateInstallmentData[]>([]);
   const [cars, setCars] = useState<Car[]>([]);
   const [loadingCars, setLoadingCars] = useState(false);
+  const [carSearchQuery, setCarSearchQuery] = useState("");
+  const [isCarDropdownOpen, setIsCarDropdownOpen] = useState(false);
+
+  const calculateBalance = (purchaseAmount: number | null | undefined, amount: number | null | undefined) => {
+    if (purchaseAmount === null || purchaseAmount === undefined || amount === null || amount === undefined) return null;
+    return purchaseAmount - amount;
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -132,10 +139,21 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
     field: keyof CreatePaymentHistoryData,
     value: any
   ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData((prev) => {
+      const newData = { ...prev, [field]: value };
+
+      // If purchase_amount changed, update all installment balances
+      if (field === "purchase_amount") {
+        setInstallments((prevInst) =>
+          prevInst.map((inst) => ({
+            ...inst,
+            balance: calculateBalance(value, inst.amount),
+          }))
+        );
+      }
+
+      return newData;
+    });
   };
 
   const addInstallment = () => {
@@ -159,10 +177,17 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
   };
 
   const updateInstallment = (index: number, field: keyof UpdateInstallmentData, value: any) => {
-    setInstallments(
-      installments.map((inst, i) =>
-        i === index ? { ...inst, [field]: value } : inst
-      )
+    setInstallments((prev) =>
+      prev.map((inst, i) => {
+        if (i === index) {
+          const updatedInst = { ...inst, [field]: value };
+          if (field === "amount") {
+            updatedInst.balance = calculateBalance(formData.purchase_amount, value);
+          }
+          return updatedInst;
+        }
+        return inst;
+      })
     );
   };
 
@@ -211,26 +236,94 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
             <div className="border-b border-gray-200 pb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Car Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
+                <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Car <span className="text-gray-400"></span>
+                    Car <span className="text-gray-400">(Searchable)</span>
                   </label>
-                  <select
-                    value={formData.car_id || ""}
-                    onChange={(e) => handleInputChange("car_id", e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    disabled={loadingCars}
-                  >
-                    <option value="">Select a car</option>
-                    {cars.map((car) => {
-                      const chassisNo = car.chassis_no_full || car.chassis_no_masked;
-                      return (
-                        <option key={car.id} value={car.id}>
-                          {car.make} {car.model} {chassisNo ? `(${chassisNo})` : ""}
-                        </option>
-                      );
-                    })}
-                  </select>
+                  <div className="relative">
+                    <div
+                      onClick={() => setIsCarDropdownOpen(!isCarDropdownOpen)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent cursor-pointer bg-white flex justify-between items-center"
+                    >
+                      <span className={formData.car_id ? "text-gray-900" : "text-gray-400"}>
+                        {formData.car_id
+                          ? (() => {
+                            const selectedCar = cars.find(c => c.id === formData.car_id);
+                            if (selectedCar) {
+                              return `${selectedCar.make} ${selectedCar.model} (${selectedCar.chassis_no_full || selectedCar.chassis_no_masked})`;
+                            }
+                            return "Select a car";
+                          })()
+                          : "Select a car"}
+                      </span>
+                      <svg
+                        className={`w-5 h-5 text-gray-400 transition-transform ${isCarDropdownOpen ? "rotate-180" : ""}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+
+                    {isCarDropdownOpen && (
+                      <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-hidden flex flex-col">
+                        <div className="p-2 border-b border-gray-100 bg-gray-50">
+                          <input
+                            type="text"
+                            placeholder="Search by make, model, or chassis..."
+                            value={carSearchQuery}
+                            onChange={(e) => setCarSearchQuery(e.target.value)}
+                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            onClick={(e) => e.stopPropagation()}
+                            autoFocus
+                          />
+                        </div>
+                        <div className="overflow-y-auto flex-1 h-full max-h-48">
+                          {loadingCars ? (
+                            <div className="p-4 text-center text-gray-500 text-sm">Loading cars...</div>
+                          ) : (
+                            <>
+                              {cars
+                                .filter(car => {
+                                  if (!carSearchQuery) return true;
+                                  const searchStr = `${car.make} ${car.model} ${car.chassis_no_full || ""} ${car.chassis_no_masked || ""}`.toLowerCase();
+                                  return searchStr.includes(carSearchQuery.toLowerCase());
+                                })
+                                .map(car => (
+                                  <div
+                                    key={car.id}
+                                    onClick={() => {
+                                      handleInputChange("car_id", car.id);
+                                      setIsCarDropdownOpen(false);
+                                      setCarSearchQuery("");
+                                    }}
+                                    className={`px-4 py-2 cursor-pointer hover:bg-primary-50 transition-colors ${formData.car_id === car.id ? 'bg-primary-50 text-primary-700 font-medium' : 'text-gray-700'}`}
+                                  >
+                                    <div className="flex flex-col">
+                                      <span className="text-sm">{car.make} {car.model}</span>
+                                      <span className="text-xs text-gray-500">{car.chassis_no_full || car.chassis_no_masked}</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              {cars.length > 0 && cars.filter(car => {
+                                const searchStr = `${car.make} ${car.model} ${car.chassis_no_full || ""} ${car.chassis_no_masked || ""}`.toLowerCase();
+                                return searchStr.includes(carSearchQuery.toLowerCase());
+                              }).length === 0 && (
+                                  <div className="p-4 text-center text-gray-500 text-sm">No cars found</div>
+                                )}
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  {isCarDropdownOpen && (
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setIsCarDropdownOpen(false)}
+                    ></div>
+                  )}
                 </div>
               </div>
             </div>
