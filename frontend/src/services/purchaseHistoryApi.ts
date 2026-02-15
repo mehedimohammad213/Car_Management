@@ -40,9 +40,11 @@ export interface PurchaseHistory {
 
   // Relationships
   car?: PurchaseHistoryCar | null;
+  cars?: PurchaseHistoryCar[];
 }
 
 export interface CreatePurchaseHistoryData {
+  car_ids?: number[] | null;
   car_id?: number | null;
   purchase_date?: string | null;
   purchase_amount?: number | null;
@@ -70,7 +72,7 @@ export interface CreatePurchaseHistoryData {
   custom_three?: File | null;
 }
 
-export interface UpdatePurchaseHistoryData extends CreatePurchaseHistoryData {}
+export interface UpdatePurchaseHistoryData extends CreatePurchaseHistoryData { }
 
 export interface PurchaseHistoryListResponse {
   data: PurchaseHistory[];
@@ -149,6 +151,9 @@ class PurchaseHistoryApi {
       formData.append("lc_bank_branch_name", data.lc_bank_branch_name);
     if (data.lc_bank_branch_address)
       formData.append("lc_bank_branch_address", data.lc_bank_branch_address);
+    if (data.car_ids !== undefined && data.car_ids !== null) {
+      formData.append("car_ids", JSON.stringify(data.car_ids));
+    }
     if (data.total_units_per_lc)
       formData.append("total_units_per_lc", data.total_units_per_lc);
 
@@ -229,6 +234,9 @@ class PurchaseHistoryApi {
           payload[field] = data[field] === undefined ? null : data[field];
         }
       });
+      if ("car_ids" in data) {
+        payload.car_ids = JSON.stringify(data.car_ids);
+      }
 
       const response = await apiClient.put(`/purchase-history/${id}`, payload);
       return response.data;
@@ -283,6 +291,9 @@ class PurchaseHistoryApi {
       );
     if (data.total_units_per_lc !== undefined)
       formData.append("total_units_per_lc", data.total_units_per_lc || "");
+    if (data.car_ids !== undefined) {
+      formData.append("car_ids", JSON.stringify(data.car_ids || []));
+    }
 
     // Add PDF files
     pdfFields.forEach((field) => {

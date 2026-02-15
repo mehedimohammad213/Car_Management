@@ -60,7 +60,7 @@ class PurchaseHistoryController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $query = PurchaseHistory::with('car');
+            $query = PurchaseHistory::with(['car', 'cars']);
 
             // Search functionality
             if ($request->filled('search')) {
@@ -116,6 +116,7 @@ class PurchaseHistoryController extends Controller
             ]);
 
             $validator = Validator::make($request->all(), [
+                'car_ids' => 'nullable|string', // Support JSON string from FormData
                 'car_id' => 'nullable|exists:cars,id',
                 'purchase_date' => 'nullable|date',
                 'purchase_amount' => 'nullable|numeric',
@@ -189,7 +190,17 @@ class PurchaseHistoryController extends Controller
                 }
             }
 
-            $purchaseHistory = PurchaseHistory::create($data)->load('car');
+            $purchaseHistory = PurchaseHistory::create($data);
+
+            // Sync multiple cars if car_ids is provided
+            if ($request->filled('car_ids')) {
+                $carIds = is_string($request->car_ids) ? json_decode($request->car_ids, true) : $request->car_ids;
+                if (is_array($carIds)) {
+                    $purchaseHistory->cars()->sync($carIds);
+                }
+            }
+
+            $purchaseHistory->load(['car', 'cars']);
 
             return response()->json([
                 'success' => true,
@@ -254,6 +265,7 @@ class PurchaseHistoryController extends Controller
             ]);
 
             $validator = Validator::make($request->all(), [
+                'car_ids' => 'nullable|string',
                 'car_id' => 'nullable|exists:cars,id',
                 'purchase_date' => 'nullable|date',
                 'purchase_amount' => 'nullable|numeric',
@@ -332,9 +344,15 @@ class PurchaseHistoryController extends Controller
 
             $purchaseHistory->update($data);
 
+            // Sync multiple cars if car_ids is provided
+            if ($request->has('car_ids')) {
+                $carIds = is_string($request->car_ids) ? json_decode($request->car_ids, true) : $request->car_ids;
+                $purchaseHistory->cars()->sync(is_array($carIds) ? $carIds : []);
+            }
+
             return response()->json([
                 'success' => true,
-                'data' => $purchaseHistory->fresh()->load('car'),
+                'data' => $purchaseHistory->fresh()->load(['car', 'cars']),
                 'message' => 'Purchase history updated successfully'
             ]);
         } catch (\Exception $e) {

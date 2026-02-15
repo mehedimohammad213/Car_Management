@@ -237,9 +237,9 @@ const PurchaseHistoryDetails: React.FC = () => {
 
   const calculatedPurchaseAmount = hasCostValues
     ? (purchaseAmountValue || 0) +
-      (govtDutyValue || 0) +
-      (cnfAmountValue || 0) +
-      (miscellaneousValue || 0)
+    (govtDutyValue || 0) +
+    (cnfAmountValue || 0) +
+    (miscellaneousValue || 0)
     : null;
 
   return (
@@ -295,7 +295,55 @@ const PurchaseHistoryDetails: React.FC = () => {
               <CarIcon className="w-6 h-6 text-primary-600" />
               Car Information
             </h2>
-            {purchaseHistory.car ? (
+
+            {(purchaseHistory.cars && purchaseHistory.cars.length > 0) ? (
+              <div className="space-y-8">
+                {purchaseHistory.cars.map((car, index) => (
+                  <div key={car.id} className={`${index > 0 ? 'pt-6 border-t border-gray-100' : ''}`}>
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-6 h-6 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-xs font-bold">
+                        {index + 1}
+                      </div>
+                      <h3 className="font-semibold text-gray-900">{car.make} {car.model}</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pl-8">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-500 mb-1">
+                          Chassis Number
+                        </label>
+                        <p className="text-gray-900 font-medium">
+                          {car.chassis_no_full || car.chassis_no_masked || "N/A"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-500 mb-1">
+                          Year
+                        </label>
+                        <p className="text-gray-900 font-medium">
+                          {car.year || "N/A"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-500 mb-1">
+                          Color
+                        </label>
+                        <p className="text-gray-900 font-medium">
+                          {car.color || "N/A"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-500 mb-1">
+                          Reference Number
+                        </label>
+                        <p className="text-gray-900 font-medium">
+                          {car.ref_no || "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : purchaseHistory.car ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-500 mb-1">
@@ -482,11 +530,10 @@ const PurchaseHistoryDetails: React.FC = () => {
                 return (
                   <div
                     key={field.key}
-                    className={`border-2 rounded-xl p-4 ${
-                      hasFile
+                    className={`border-2 rounded-xl p-4 ${hasFile
                         ? "border-primary-200 bg-primary-50"
                         : "border-gray-200 bg-gray-50"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-medium text-gray-900">
@@ -544,9 +591,9 @@ const PurchaseHistoryDetails: React.FC = () => {
                 <p className="text-gray-900 font-semibold">
                   {purchaseHistory.car
                     ? (() => {
-                        const chassisNo = purchaseHistory.car.chassis_no_full || purchaseHistory.car.chassis_no_masked;
-                        return `${purchaseHistory.car.make} ${purchaseHistory.car.model}${chassisNo ? ` (${chassisNo})` : ""}`;
-                      })()
+                      const chassisNo = purchaseHistory.car.chassis_no_full || purchaseHistory.car.chassis_no_masked;
+                      return `${purchaseHistory.car.make} ${purchaseHistory.car.model}${chassisNo ? ` (${chassisNo})` : ""}`;
+                    })()
                     : "N/A"}
                 </p>
               </div>

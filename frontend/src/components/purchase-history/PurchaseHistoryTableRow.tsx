@@ -32,9 +32,29 @@ const PurchaseHistoryTableRow: React.FC<PurchaseHistoryTableRowProps> = ({
     }).format(amount);
   };
 
-  const carDisplay = purchaseHistory.car
-    ? `${purchaseHistory.car.make} ${purchaseHistory.car.model}`
-    : "N/A";
+  const getCarDisplay = () => {
+    if (purchaseHistory.cars && purchaseHistory.cars.length > 0) {
+      if (purchaseHistory.cars.length === 1) {
+        return `${purchaseHistory.cars[0].make} ${purchaseHistory.cars[0].model}`;
+      }
+      return `${purchaseHistory.cars.length} Cars Selected`;
+    }
+    return purchaseHistory.car
+      ? `${purchaseHistory.car.make} ${purchaseHistory.car.model}`
+      : "N/A";
+  };
+
+  const getChassisDisplay = () => {
+    if (purchaseHistory.cars && purchaseHistory.cars.length > 0) {
+      if (purchaseHistory.cars.length === 1) {
+        return purchaseHistory.cars[0].chassis_no_full || purchaseHistory.cars[0].chassis_no_masked;
+      }
+      return purchaseHistory.cars.map(c => c.chassis_no_full || c.chassis_no_masked).filter(Boolean).join(", ");
+    }
+    return purchaseHistory.car
+      ? (purchaseHistory.car.chassis_no_full || purchaseHistory.car.chassis_no_masked)
+      : null;
+  };
 
   return (
     <div
@@ -48,12 +68,12 @@ const PurchaseHistoryTableRow: React.FC<PurchaseHistoryTableRowProps> = ({
       {/* Car Details */}
       <div className="col-span-3 flex items-center">
         <div className="min-w-0">
-          <div className="text-sm font-semibold text-gray-900 group-hover:text-primary-700 transition-colors">
-            {carDisplay}
+          <div className="text-sm font-semibold text-gray-900 group-hover:text-primary-700 transition-colors truncate">
+            {getCarDisplay()}
           </div>
-          {purchaseHistory.car && (purchaseHistory.car.chassis_no_full || purchaseHistory.car.chassis_no_masked) && (
-            <div className="text-xs text-gray-500 mt-0.5">
-              Chassis: {purchaseHistory.car.chassis_no_full || purchaseHistory.car.chassis_no_masked}
+          {getChassisDisplay() && (
+            <div className="text-xs text-gray-500 mt-0.5 truncate">
+              Chassis: {getChassisDisplay()}
             </div>
           )}
         </div>

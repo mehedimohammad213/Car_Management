@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Upload, File as FileIcon } from "lucide-react";
+import { X, Upload, File as FileIcon, Search } from "lucide-react";
 import {
   PurchaseHistory,
   CreatePurchaseHistoryData,
@@ -79,6 +79,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   );
   const [cars, setCars] = useState<Car[]>([]);
   const [loadingCars, setLoadingCars] = useState(false);
+  const [carSearchQuery, setCarSearchQuery] = useState("");
+  const [isCarDropdownOpen, setIsCarDropdownOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -93,8 +95,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       const carList = Array.isArray(response?.data?.data)
         ? response.data.data
         : Array.isArray(response?.data?.cars)
-        ? response.data.cars
-        : [];
+          ? response.data.cars
+          : [];
       setCars(carList);
     } catch (error) {
       console.error("Error fetching cars:", error);
@@ -120,6 +122,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       );
 
       setFormData({
+        car_ids: purchaseHistory.cars?.map(c => c.id) || (purchaseHistory.car_id ? [purchaseHistory.car_id] : []),
         car_id: purchaseHistory.car_id ?? null,
         purchase_date: toInputDate(purchaseHistory.purchase_date),
         purchase_amount: purchaseHistory.purchase_amount,
@@ -177,6 +180,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     } else {
       // Reset form for create mode
       setFormData({
+        car_ids: [],
         car_id: null,
         purchase_date: null,
         purchase_amount: null,
@@ -314,34 +318,111 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 Car Selection
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
+                <div className="md:col-span-2 relative">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Car <span className="text-gray-400">(Optional)</span>
+                    Select Cars <span className="text-gray-400">(Searchable Multi-select)</span>
                   </label>
-                  <select
-                    value={formData.car_id || ""}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "car_id",
-                        e.target.value ? parseInt(e.target.value, 10) : null
-                      )
-                    }
-                    disabled={loadingCars}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  >
-                    <option value="">
-                      {loadingCars ? "Loading cars..." : "Select a car"}
-                    </option>
-                    {cars.map((car) => {
-                      const chassisNo = car.chassis_no_full || car.chassis_no_masked;
+
+                  {/* Selected Cars Tags */}
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {(formData.car_ids || []).map(id => {
+                      const car = cars.find(c => c.id === id);
+                      if (!car) return null;
                       return (
-                        <option key={car.id} value={car.id}>
-                          {car.make} {car.model}
-                          {chassisNo ? ` (${chassisNo})` : ""}
-                        </option>
+                        <div key={id} className="bg-primary-100 text-primary-800 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2 border border-primary-200 shadow-sm">
+                          <span>{car.make} {car.model} ({car.chassis_no_full || car.chassis_no_masked})</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newIds = (formData.car_ids || []).filter(cid => cid !== id);
+                              handleInputChange("car_ids", newIds);
+                              if (newIds.length === 0) handleInputChange("car_id", null);
+                              else if (id === formData.car_id) handleInputChange("car_id", newIds[0]);
+                            }}
+                            className="hover:text-primary-900 focus:outline-none"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
                       );
                     })}
-                  </select>
+                  </div>
+
+                  <div className="relative">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <input
+                        type="text"
+                        placeholder="Search cars by make, model, chassis..."
+                        value={carSearchQuery}
+                        onChange={(e) => {
+                          setCarSearchQuery(e.target.value);
+                          setIsCarDropdownOpen(true);
+                        }}
+                        onFocus={() => setIsCarDropdownOpen(true)}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+
+                    {isCarDropdownOpen && (
+                      <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                        {loadingCars ? (
+                          <div className="p-4 text-center text-gray-500 text-sm">Loading cars...</div>
+                        ) : (
+                          <>
+                            {cars
+                              .filter(car => {
+                                const searchStr = `${car.make} ${car.model} ${car.chassis_no_full || ""} ${car.chassis_no_masked || ""}`.toLowerCase();
+                                return searchStr.includes(carSearchQuery.toLowerCase());
+                              })
+                              .map(car => {
+                                const isSelected = (formData.car_ids || []).includes(car.id);
+                                return (
+                                  <div
+                                    key={car.id}
+                                    onClick={() => {
+                                      const currentIds = formData.car_ids || [];
+                                      const newIds = isSelected
+                                        ? currentIds.filter(id => id !== car.id)
+                                        : [...currentIds, car.id];
+
+                                      handleInputChange("car_ids", newIds);
+                                      // Also update legacy car_id to the first selected car for backward compatibility
+                                      handleInputChange("car_id", newIds.length > 0 ? newIds[0] : null);
+
+                                      if (!isSelected) {
+                                        // Optional: setCarSearchQuery("");
+                                      }
+                                    }}
+                                    className={`px-4 py-2 cursor-pointer flex items-center justify-between hover:bg-gray-50 ${isSelected ? 'bg-primary-50' : ''}`}
+                                  >
+                                    <div className="flex flex-col">
+                                      <span className="text-sm font-medium text-gray-900">{car.make} {car.model}</span>
+                                      <span className="text-xs text-gray-500">{car.chassis_no_full || car.chassis_no_masked}</span>
+                                    </div>
+                                    {isSelected && (
+                                      <div className="w-2 h-2 bg-primary-600 rounded-full"></div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            {cars.filter(car => {
+                              const searchStr = `${car.make} ${car.model} ${car.chassis_no_full || ""} ${car.chassis_no_masked || ""}`.toLowerCase();
+                              return searchStr.includes(carSearchQuery.toLowerCase());
+                            }).length === 0 && (
+                                <div className="p-4 text-center text-gray-500 text-sm">No cars found</div>
+                              )}
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  {isCarDropdownOpen && (
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setIsCarDropdownOpen(false)}
+                    ></div>
+                  )}
                 </div>
               </div>
             </div>
