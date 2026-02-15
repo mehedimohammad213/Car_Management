@@ -92,12 +92,13 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     try {
       setLoadingCars(true);
       const response = await carApi.getCars({ per_page: 1000 });
-      const carList = Array.isArray(response?.data?.data)
-        ? response.data.data
-        : Array.isArray(response?.data?.cars)
-          ? response.data.cars
-          : [];
-      setCars(carList);
+      if (response.success) {
+        // Handle different possible response structures
+        const carList = response.data?.data || response.data?.cars || [];
+        setCars(Array.isArray(carList) ? carList : []);
+      } else {
+        setCars([]);
+      }
     } catch (error) {
       console.error("Error fetching cars:", error);
       setCars([]);
@@ -329,8 +330,16 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                   {/* Selected Cars Tags */}
                   <div className="flex flex-wrap gap-2 mb-2">
                     {(formData.car_ids || []).map(id => {
-                      const car = cars.find(c => c.id === id);
+                      // Try to find in global cars list first
+                      let car: any = cars.find(c => c.id === id);
+
+                      // Fallback to purchaseHistory.cars if available
+                      if (!car && purchaseHistory?.cars) {
+                        car = purchaseHistory.cars.find(c => c.id === id);
+                      }
+
                       if (!car) return null;
+
                       return (
                         <div key={id} className="bg-primary-100 text-primary-800 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2 border border-primary-200 shadow-sm">
                           <span>{car.make} {car.model} ({car.chassis_no_full || car.chassis_no_masked})</span>
@@ -349,6 +358,10 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                         </div>
                       );
                     })}
+                    {loadingCars && (formData.car_ids || []).length > 0 &&
+                      !(formData.car_ids || []).some(id => cars.find(c => c.id === id) || purchaseHistory?.cars?.find(c => c.id === id)) && (
+                        <span className="text-xs text-gray-400 animate-pulse">Loading car details...</span>
+                      )}
                   </div>
 
                   <div className="relative">

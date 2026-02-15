@@ -251,7 +251,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                         {formData.car_id
                           ? (() => {
                             // Try to find the car in the fetched list first
-                            let selectedCar = cars.find(c => c.id === formData.car_id);
+                            let selectedCar: any = cars.find(c => c.id === formData.car_id);
 
                             // If not found in the list, fallback to the car info already present in the payment history object
                             if (!selectedCar && paymentHistory?.car?.id === formData.car_id) {
