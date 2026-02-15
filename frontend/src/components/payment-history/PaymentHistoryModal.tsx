@@ -93,6 +93,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
             cheque_number: inst.cheque_number,
             balance: inst.balance,
             remarks: inst.remarks,
+            status: inst.status,
           }))
         );
       } else {
@@ -170,6 +171,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
         cheque_number: null,
         balance: null,
         remarks: null,
+        status: null,
       },
     ]);
   };
@@ -587,7 +589,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                           </div>
                         )}
                         {/* Third row: Description and Remarks */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Description
@@ -598,6 +600,23 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                               onChange={(e) => updateInstallment(index, "description", e.target.value || null)}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                             />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Status
+                            </label>
+                            <select
+                              value={installment.status || ""}
+                              onChange={(e) => updateInstallment(index, "status", e.target.value || null)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                            >
+                              <option value="">Select status</option>
+                              <option value="Paid">Paid</option>
+                              <option value="Pending">Pending</option>
+                              <option value="Bank Check">Bank Check</option>
+                              <option value="Withdraw">Withdraw</option>
+                              <option value="Due">Due</option>
+                            </select>
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">

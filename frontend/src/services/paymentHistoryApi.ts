@@ -11,6 +11,7 @@ export interface Installment {
   cheque_number: string | null;
   balance: number | null;
   remarks: string | null;
+  status: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -63,6 +64,7 @@ export interface CreateInstallmentData {
   cheque_number?: string | null;
   balance?: number | null;
   remarks?: string | null;
+  status?: string | null;
 }
 
 export interface UpdateInstallmentData extends CreateInstallmentData {

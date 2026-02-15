@@ -360,7 +360,7 @@ const PaymentHistoryDetails: React.FC = () => {
               Installments ({paymentHistory.installments?.length || 0})
             </h2>
             {!paymentHistory.installments ||
-            paymentHistory.installments.length === 0 ? (
+              paymentHistory.installments.length === 0 ? (
               <p className="text-gray-500 text-center py-8">
                 No installments recorded
               </p>
@@ -377,14 +377,23 @@ const PaymentHistoryDetails: React.FC = () => {
                       </h3>
                       <div className="flex items-center gap-2">
                         <span
-                          className={`px-3 py-1 rounded-full text-sm font-medium ${
-                            installment.payment_method === "Bank"
-                              ? "bg-primary-100 text-primary-700"
-                              : "bg-green-100 text-green-700"
-                          }`}
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${installment.payment_method === "Bank"
+                            ? "bg-primary-100 text-primary-700"
+                            : "bg-green-100 text-green-700"
+                            }`}
                         >
                           {installment.payment_method || "N/A"}
                         </span>
+                        {installment.status && (
+                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${installment.status === 'Paid' ? 'bg-green-100 text-green-700' :
+                              installment.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
+                                installment.status === 'Bank Check' ? 'bg-blue-100 text-blue-700' :
+                                  installment.status === 'Withdraw' ? 'bg-purple-100 text-purple-700' :
+                                    'bg-red-100 text-red-700'
+                            }`}>
+                            {installment.status}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
