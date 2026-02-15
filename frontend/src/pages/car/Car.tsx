@@ -145,19 +145,35 @@ const Car: React.FC = () => {
       if (response.success && response.data.data) {
         console.log("Setting cars:", response.data.data);
         const processedCars = [...response.data.data];
+
+        // Manual sorting as fallback or secondary sort
         if (sortBy === "price_amount") {
           processedCars.sort((a, b) => {
             const priceA = Number((a as any).price_amount) || 0;
             const priceB = Number((b as any).price_amount) || 0;
             return sortDirection === "asc" ? priceA - priceB : priceB - priceA;
           });
+        } else if (sortBy === "created_at") {
+          processedCars.sort((a, b) => {
+            const dateA = new Date(a.created_at || 0).getTime();
+            const dateB = new Date(b.created_at || 0).getTime();
+            return sortDirection === "asc" ? dateA - dateB : dateB - dateA;
+          });
+        } else if (sortBy === "id") {
+          processedCars.sort((a, b) => {
+            const valA = a.id;
+            const valB = b.id;
+            return sortDirection === "asc" ? valA - valB : valB - valA;
+          });
+        } else if (sortBy === "model") {
+          processedCars.sort((a, b) => {
+            const modelA = (a.model || "").toLowerCase();
+            const modelB = (b.model || "").toLowerCase();
+            const cmp = modelA.localeCompare(modelB);
+            return sortDirection === "asc" ? cmp : -cmp;
+          });
         }
-        // Sort by model alphabetically
-        processedCars.sort((a, b) => {
-          const modelA = (a.model || "").toLowerCase();
-          const modelB = (b.model || "").toLowerCase();
-          return modelA.localeCompare(modelB);
-        });
+
         setCars(processedCars);
         setTotalPages(response.data.last_page || 1);
         setTotalItems(response.data.total || 0);

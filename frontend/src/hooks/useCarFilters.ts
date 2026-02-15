@@ -18,7 +18,7 @@ export const useCarFilters = () => {
     min: searchParams.get("priceMin") || "",
     max: searchParams.get("priceMax") || ""
   });
-  const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "price_amount");
+  const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "created_at");
   const [sortDirection, setSortDirection] = useState(searchParams.get("sortDirection") || "desc");
   const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get("page") || "1"));
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -38,7 +38,7 @@ export const useCarFilters = () => {
     if (colorFilter) params.color = colorFilter;
     if (priceRange.min) params.priceMin = priceRange.min;
     if (priceRange.max) params.priceMax = priceRange.max;
-    if (sortBy !== "price_amount") params.sortBy = sortBy;
+    if (sortBy !== "created_at") params.sortBy = sortBy;
     if (sortDirection !== "desc") params.sortDirection = sortDirection;
     if (currentPage !== 1) params.page = currentPage.toString();
 
@@ -71,7 +71,7 @@ export const useCarFilters = () => {
     setFuelFilter("");
     setColorFilter("");
     setPriceRange({ min: "", max: "" });
-    setSortBy("price_amount");
+    setSortBy("created_at");
     setSortDirection("desc");
     setCurrentPage(1);
     setShowAdvancedFilters(false);
