@@ -34,57 +34,50 @@ const CarTable: React.FC<CarTableProps> = ({
   isAdmin = false,
 }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <div className="min-w-[1200px]">
-          {/* Professional Table Header with Gradient */}
-          <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 shadow-lg">
-            <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
-              <div className="col-span-3 flex items-center gap-2">
-                <Car className="w-4 h-4" />
+          {/* Clean Professional Table Header */}
+          <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
+            <div className="grid grid-cols-12 gap-4 p-4 text-xs font-bold uppercase tracking-wider">
+              <div className="col-span-3">
                 <span>Car Information</span>
               </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <Gauge className="w-4 h-4" />
+              <div className="col-span-1">
                 <span>Mileage</span>
               </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <Settings className="w-4 h-4" />
+              <div className="col-span-1">
                 <span>Engine</span>
               </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <Palette className="w-4 h-4" />
+              <div className="col-span-1">
                 <span>Color</span>
               </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <Award className="w-4 h-4" />
+              <div className="col-span-1">
                 <span>Grade</span>
               </div>
-              <div className="col-span-3 flex items-center gap-2">
-                <Tag className="w-4 h-4" />
+              <div className="col-span-3">
                 <span>Key Features</span>
               </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <CurrencyBDTIcon className="w-4 h-4" />
+              <div className="col-span-1">
                 <span>Price</span>
               </div>
               <div className="col-span-1 text-center">Actions</div>
             </div>
           </div>
 
-          {/* Table Body with Enhanced Styling */}
-          <div className="divide-y divide-gray-100 bg-gray-50/30">
+          {/* Table Body */}
+          <div className="divide-y divide-gray-100">
             {cars.map((car, index) => {
               const stock = stockData.get(car.id);
               return (
                 <div
                   key={car.id}
                   onClick={() => onViewCar(car)}
-                  className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-primary-50/50 hover:to-primary-100/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-primary-500"
+                  className="grid grid-cols-12 gap-4 p-4 hover:bg-gray-50 transition-colors cursor-pointer group"
                 >
-                  {/* Car Information - Enhanced */}
+                  {/* Car Information */}
                   <div className="col-span-3 flex items-center gap-3">
-                    <div className="relative w-28 h-24 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 rounded-xl overflow-hidden flex-shrink-0 shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-gray-200 group-hover:border-blue-300">
+                    <div className="relative w-28 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 group-hover:border-primary-300 transition-colors">
                       {car.photos && car.photos.length > 0 ? (
                         <img
                           src={
@@ -92,15 +85,15 @@ const CarTable: React.FC<CarTableProps> = ({
                             car.photos[0].url
                           }
                           alt={`${car.make} ${car.model}`}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                          <Car className="w-10 h-10 text-gray-400" />
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Car className="w-8 h-8 text-gray-300" />
                         </div>
                       )}
                       {stock && stock.quantity > 0 && (
-                        <div className="absolute top-1 right-1 bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-md">
+                        <div className="absolute top-1 right-1 bg-primary-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">
                           {stock.quantity}
                         </div>
                       )}
@@ -137,18 +130,18 @@ const CarTable: React.FC<CarTableProps> = ({
                             {car.package}
                           </span>
                         )}
-                        {stock && (
+                        {/* {stock && (
                           <span
                             className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold ${stock.quantity === 0
-                                ? "bg-red-100 text-red-700 border border-red-200"
-                                : stock.quantity <= 2
-                                  ? "bg-amber-100 text-amber-700 border border-amber-200"
-                                  : "bg-green-100 text-green-700 border border-green-200"
+                              ? "bg-red-100 text-red-700 border border-red-200"
+                              : stock.quantity <= 2
+                                ? "bg-amber-100 text-amber-700 border border-amber-200"
+                                : "bg-green-100 text-green-700 border border-green-200"
                               }`}
                           >
                             Stock: {stock.quantity}
                           </span>
-                        )}
+                        )} */}
                       </div>
                     </div>
                   </div>
@@ -198,75 +191,62 @@ const CarTable: React.FC<CarTableProps> = ({
                     </div>
                   </div>
 
-                  {/* Grade - Enhanced */}
+                  {/* Grade */}
                   <div className="col-span-1 flex items-center">
                     <div className="flex flex-col items-start gap-1">
                       {car.grade_overall && (
                         <span
-                          className={`inline-flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold shadow-md ${getGradeColor(
+                          className={`inline-flex items-center justify-center px-2 py-1 rounded-full text-xs font-bold ${getGradeColor(
                             car.grade_overall
                           )}`}
                         >
-                          {car.grade_overall}
+                          Grade: {car.grade_overall}
                         </span>
                       )}
-                      <div className="flex gap-1 text-xs">
+                      <div className="flex gap-2 text-[10px] text-gray-500 font-medium">
                         {car.grade_exterior && (
-                          <span className="text-gray-600 font-medium">
-                            E:{car.grade_exterior}
-                          </span>
+                          <span>Ext: {car.grade_exterior}</span>
                         )}
                         {car.grade_interior && (
-                          <span className="text-gray-600 font-medium">
-                            I:{car.grade_interior}
-                          </span>
+                          <span>Int: {car.grade_interior}</span>
                         )}
                       </div>
                       {!car.grade_overall &&
                         !car.grade_exterior &&
                         !car.grade_interior && (
-                          <span className="text-xs text-gray-400">N/A</span>
+                          <span className="text-xs text-gray-400 italic">N/A</span>
                         )}
                     </div>
                   </div>
 
-                  {/* Key Features - Enhanced */}
+                  {/* Key Features */}
                   <div className="col-span-3 flex items-center">
-                    <div className="flex flex-wrap gap-1.5 max-w-full">
+                    <div className="flex flex-wrap gap-1 max-w-full">
                       {(car.keys_feature
                         ?.split(",")
                         .map((feature) => feature.trim())
-                        .filter(Boolean)
-                        .slice(0, 8) || []
+                        .filter(Boolean) || []
                       ).map((feature) => (
                         <span
                           key={feature}
-                          className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200"
+                          className="inline-flex items-center px-2 py-0.5 rounded bg-gray-100 text-gray-600 text-[10px] font-medium border border-gray-200"
                         >
                           {feature}
                         </span>
                       ))}
-                      {car.keys_feature && car.keys_feature.split(",").filter(Boolean).length > 8 && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium text-gray-500">
-                          +{car.keys_feature.split(",").filter(Boolean).length - 8} more
-                        </span>
-                      )}
                       {!car.keys_feature && (
-                        <span className="text-xs text-gray-400 italic">No features listed</span>
+                        <span className="text-[10px] text-gray-400 italic">No features</span>
                       )}
                     </div>
                   </div>
 
-                  {/* Price - Enhanced */}
+                  {/* Price */}
                   <div className="col-span-1 flex items-center">
                     <div className="flex flex-col">
-                      <span className="text-sm font-semibold text-gray-900">
+                      <span className="text-sm font-bold text-gray-900">
                         {car.price_amount
-                          ? new Intl.NumberFormat("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          }).format(car.price_amount)
-                          : "Price on request"}
+                          ? formatPrice(car.price_amount, car.price_currency)
+                          : "On Request"}
                       </span>
                     </div>
                   </div>

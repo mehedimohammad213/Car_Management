@@ -134,7 +134,7 @@ const Header: React.FC = () => {
               >
                 <CarIcon className="h-8 w-8 text-primary-600 dark:text-primary-400 flex-shrink-0" />
                 <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white whitespace-nowrap">
-                  Dream Car
+                  DREAM AGENT CAR VISION
                 </span>
               </Link>
             </div>
@@ -150,8 +150,8 @@ const Header: React.FC = () => {
                     key={item.path}
                     to={item.path}
                     className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActiveRoute
-                        ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
-                        : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                      ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
+                      : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
                       }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -245,8 +245,8 @@ const Header: React.FC = () => {
                     to={item.path}
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${isActiveRoute
-                        ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
-                        : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                      ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
+                      : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
                       }`}
                   >
                     <Icon className="h-5 w-5" />
@@ -272,8 +272,8 @@ const Header: React.FC = () => {
         >
           <div
             className={`bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full transform transition-all duration-300 ${modalVisible
-                ? "scale-100 translate-y-0"
-                : "scale-95 translate-y-4"
+              ? "scale-100 translate-y-0"
+              : "scale-95 translate-y-4"
               }`}
           >
             {/* Header Section */}

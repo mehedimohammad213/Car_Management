@@ -78,31 +78,21 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
   return (
     <>
       {/* Header */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+      <div className="p-0 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-              <Car className="w-8 h-8 text-primary-600" />
-              Car Information
+            <h1 className="text-2xl font-bold text-primary-600">
+              Cars / Car List
             </h1>
-            <p className="text-gray-600 mt-1">
-              Search and filter car inventory
-            </p>
+            {/* <p className="text-sm text-gray-500 mt-1">
+              Manage and explore your vehicle fleet
+            </p> */}
           </div>
-          {isAdmin && onAddCar && (
-            <button
-              onClick={onAddCar}
-              className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-medium shadow-sm"
-            >
-              <Plus className="w-5 h-5" />
-              Add Car
-            </button>
-          )}
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+      <div className="mb-8">
         <div className="flex flex-col lg:flex-row gap-4 items-center">
           {/* Search */}
           <div className="flex-1 relative w-full lg:w-auto">
@@ -211,25 +201,16 @@ const SearchFilters: React.FC<SearchFiltersProps> = (props) => {
             </button>
           )}
 
-          {/* Download PDF Button - Commented out */}
-          {/* <button
-            onClick={onGeneratePDF}
-            disabled={isGeneratingPDF}
-            className={`flex items-center justify-center transition-colors font-medium shadow-sm ${isGeneratingPDF
-              ? "w-auto px-4 py-2 rounded-full bg-gray-300 text-gray-500 cursor-not-allowed gap-2"
-              : "w-10 h-10 rounded-full bg-green-600 text-white hover:bg-green-700"
-              }`}
-            title="Download PDF"
-          >
-            {isGeneratingPDF ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-500 border-t-transparent"></div>
-                <span>Generating...</span>
-              </>
-            ) : (
-              <Download className="w-5 h-5" />
-            )}
-          </button> */}
+          {/* Add Car Button - Moved here */}
+          {isAdmin && onAddCar && (
+            <button
+              onClick={onAddCar}
+              className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all font-medium shadow-sm hover:shadow-md whitespace-nowrap"
+            >
+              <Plus className="w-4 h-4" />
+              Add New Car
+            </button>
+          )}
         </div>
       </div>
     </>
