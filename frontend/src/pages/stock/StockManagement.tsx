@@ -117,6 +117,12 @@ const StockManagement: React.FC = () => {
     navigate(`/car-view/${carId}`);
   };
 
+  const handleEditCar = (stock: Stock) => {
+    if (stock.car?.id) {
+      navigate(`/update-car/${stock.car.id}`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50 to-indigo-50 p-4 py-6">
       <div className="max-w-full mx-auto px-4">
@@ -158,7 +164,7 @@ const StockManagement: React.FC = () => {
               sortBy={sortBy}
               sortOrder={sortOrder}
               onSort={handleSort}
-              onEdit={handleEditStock}
+              onEdit={handleEditCar}
               onDelete={handleDeleteStock}
               onView={handleViewCar}
               onRefresh={fetchStocks}
