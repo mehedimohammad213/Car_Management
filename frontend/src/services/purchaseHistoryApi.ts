@@ -15,6 +15,7 @@ export interface PurchaseHistory {
   purchase_amount: number | null;
   foreign_amount?: number | null;
   bdt_amount?: number | null;
+  currency_type?: string | null;
   govt_duty: string | null;
   cnf_amount: number | null;
   miscellaneous: string | null;
@@ -50,6 +51,7 @@ export interface CreatePurchaseHistoryData {
   purchase_amount?: number | null;
   foreign_amount?: number | null;
   bdt_amount?: number | null;
+  currency_type?: string | null;
   govt_duty?: string | null;
   cnf_amount?: number | null;
   miscellaneous?: string | null;
@@ -138,6 +140,9 @@ class PurchaseHistoryApi {
     if (data.bdt_amount !== undefined && data.bdt_amount !== null) {
       formData.append("bdt_amount", data.bdt_amount.toString());
     }
+    if (data.currency_type) {
+      formData.append("currency_type", data.currency_type);
+    }
     if (data.govt_duty) formData.append("govt_duty", data.govt_duty);
     if (data.cnf_amount !== undefined && data.cnf_amount !== null) {
       formData.append("cnf_amount", data.cnf_amount.toString());
@@ -218,6 +223,7 @@ class PurchaseHistoryApi {
         "purchase_amount",
         "foreign_amount",
         "bdt_amount",
+        "currency_type",
         "govt_duty",
         "cnf_amount",
         "miscellaneous",
@@ -268,6 +274,9 @@ class PurchaseHistoryApi {
         "bdt_amount",
         data.bdt_amount !== null ? data.bdt_amount.toString() : ""
       );
+    }
+    if (data.currency_type !== undefined) {
+      formData.append("currency_type", data.currency_type || "");
     }
     if (data.govt_duty !== undefined)
       formData.append("govt_duty", data.govt_duty || "");

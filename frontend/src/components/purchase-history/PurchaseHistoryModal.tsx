@@ -120,6 +120,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
           ? String(purchaseHistory.bdt_amount)
           : ""
       );
+      setCurrencyType((purchaseHistory.currency_type as "dollar" | "yen") || "dollar");
 
       setFormData({
         car_ids: purchaseHistory.cars?.map(c => c.id) || (purchaseHistory.car_id ? [purchaseHistory.car_id] : []),
@@ -209,6 +210,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       });
       setForeignAmount("");
       setBdtAmount("");
+      setCurrencyType("dollar");
       setExistingFiles({});
     }
   }, [purchaseHistory, mode, isOpen]);
@@ -224,8 +226,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       foreign_amount:
         !Number.isNaN(foreign) && foreignAmount !== "" ? foreign : null,
       bdt_amount: !Number.isNaN(bdt) && bdtAmount !== "" ? bdt : null,
+      currency_type: currencyType,
     }));
-  }, [foreignAmount, bdtAmount]);
+  }, [foreignAmount, bdtAmount, currencyType]);
 
   const handleInputChange = (
     field: keyof CreatePurchaseHistoryData,
