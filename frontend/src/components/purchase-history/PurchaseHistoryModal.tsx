@@ -72,7 +72,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
   // Separate fields for foreign currency and BDT amounts
   const [foreignAmount, setForeignAmount] = useState<string>("");
-  const [bdtAmount, setBdtAmount] = useState<string>("");
+  const [yenToDollarRate, setYenToDollarRate] = useState<string>("");
+  const [dollarToBdtRate, setDollarToBdtRate] = useState<string>("");
   const [currencyType, setCurrencyType] = useState<"dollar" | "yen">("dollar");
   const [existingFiles, setExistingFiles] = useState<Record<string, string>>(
     {}
@@ -117,7 +118,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
           ? String(purchaseHistory.foreign_amount)
           : ""
       );
-      setBdtAmount(
+      setDollarToBdtRate(
         purchaseHistory.bdt_amount != null
           ? String(purchaseHistory.bdt_amount)
           : ""
@@ -211,27 +212,42 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         custom_three: null,
       });
       setForeignAmount("");
-      setBdtAmount("");
+      setYenToDollarRate("");
+      setDollarToBdtRate("");
       setCurrencyType("dollar");
       setExistingFiles({});
       setCarEntries([]);
     }
   }, [purchaseHistory, mode, isOpen]);
 
-  // Calculate purchase_amount when dollar or BDT changes
+  // Calculate purchase_amount with two-step conversion for Yen
   useEffect(() => {
     const foreign = parseFloat(foreignAmount) || 0;
-    const bdt = parseFloat(bdtAmount) || 0;
-    const calculated = foreign * bdt;
+    let finalAmount = 0;
+    let dollarEquivalent = foreign;
+
+    if (currencyType === "yen") {
+      // Step 1: Convert Yen to Dollar
+      const yenToDollar = parseFloat(yenToDollarRate) || 0;
+      dollarEquivalent = foreign * yenToDollar;
+
+      // Step 2: Convert Dollar to BDT
+      const dollarToBdt = parseFloat(dollarToBdtRate) || 0;
+      finalAmount = dollarEquivalent * dollarToBdt;
+    } else {
+      // For Dollar: direct conversion to BDT
+      const dollarToBdt = parseFloat(dollarToBdtRate) || 0;
+      finalAmount = foreign * dollarToBdt;
+    }
+
     setFormData((prev) => ({
       ...prev,
-      purchase_amount: calculated > 0 ? calculated : null,
-      foreign_amount:
-        !Number.isNaN(foreign) && foreignAmount !== "" ? foreign : null,
-      bdt_amount: !Number.isNaN(bdt) && bdtAmount !== "" ? bdt : null,
+      purchase_amount: finalAmount > 0 ? finalAmount : null,
+      foreign_amount: !Number.isNaN(foreign) && foreignAmount !== "" ? foreign : null,
+      bdt_amount: !Number.isNaN(parseFloat(dollarToBdtRate)) && dollarToBdtRate !== "" ? parseFloat(dollarToBdtRate) : null,
       currency_type: currencyType,
     }));
-  }, [foreignAmount, bdtAmount, currencyType]);
+  }, [foreignAmount, yenToDollarRate, dollarToBdtRate, currencyType]);
 
   const handleInputChange = (
     field: keyof CreatePurchaseHistoryData,
@@ -313,7 +329,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       custom_three: null,
     }));
     setForeignAmount("");
-    setBdtAmount("");
+    setYenToDollarRate("");
+    setDollarToBdtRate("");
     setExistingFiles({});
   };
 
@@ -730,29 +747,40 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                     />
                   </div>
+
+                  {currencyType === "yen" && (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                        Yen to Dollar Rate
+                      </label>
+                      <input
+                        type="number"
+                        step="0.000001"
+                        value={yenToDollarRate}
+                        onChange={(e) => setYenToDollarRate(e.target.value)}
+                        placeholder="0.0000"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                      />
+                    </div>
+                  )}
+
                   <div>
                     <label className="block text-xs font-medium text-gray-500 mb-1">
-                      BDT Rate/Amount (৳)
+                      Dollar to BDT Rate (৳)
                     </label>
                     <input
                       type="number"
                       step="0.01"
-                      value={bdtAmount}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setBdtAmount(val);
-                        setFormData((prev) => ({
-                          ...prev,
-                          bdt_amount: val === "" ? null : parseFloat(val) || 0,
-                        }));
-                      }}
+                      value={dollarToBdtRate}
+                      onChange={(e) => setDollarToBdtRate(e.target.value)}
                       placeholder="0.00"
                       className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                     />
                   </div>
+
                   <div>
                     <label className="block text-xs font-medium text-gray-500 mb-1">
-                      Calculated Total
+                      Calculated Total (BDT)
                     </label>
                     <input
                       type="number"
