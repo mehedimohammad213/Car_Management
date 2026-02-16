@@ -52,11 +52,6 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
   const [carSearchQuery, setCarSearchQuery] = useState("");
   const [isCarDropdownOpen, setIsCarDropdownOpen] = useState(false);
 
-  const calculateBalance = (purchaseAmount: number | null | undefined, amount: number | null | undefined) => {
-    if (purchaseAmount === null || purchaseAmount === undefined || amount === null || amount === undefined) return null;
-    return purchaseAmount - amount;
-  };
-
   useEffect(() => {
     if (isOpen) {
       fetchCars();
@@ -82,8 +77,15 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
 
       // Load installments with their IDs for update
       if (paymentHistory.installments) {
-        setInstallments(
-          paymentHistory.installments.map((inst) => ({
+        // We need to calculate running balance to ensure data consistency
+        // or trust the backend. For now, let's recalculate to be safe and consistent with UI logic
+        let runningBalance = paymentHistory.purchase_amount || 0;
+
+        const loadedInstallments = paymentHistory.installments.map((inst) => {
+          const amount = inst.amount || 0;
+          runningBalance -= amount;
+
+          return {
             id: inst.id,
             installment_date: formatDateForInput(inst.installment_date),
             description: inst.description,
@@ -91,11 +93,13 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
             payment_method: inst.payment_method,
             bank_name: inst.bank_name,
             cheque_number: inst.cheque_number,
-            balance: inst.balance,
+            balance: runningBalance, // Use calculated running balance
             remarks: inst.remarks,
             status: inst.status,
-          }))
-        );
+          };
+        });
+
+        setInstallments(loadedInstallments);
       } else {
         setInstallments([]);
       }
@@ -138,6 +142,22 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
     }
   };
 
+  const recalculateBalances = (
+    currentInstallments: UpdateInstallmentData[],
+    purchaseAmount: number | null | undefined
+  ): UpdateInstallmentData[] => {
+    let runningBalance = purchaseAmount || 0;
+
+    return currentInstallments.map((inst) => {
+      const amount = inst.amount || 0;
+      runningBalance -= amount;
+      return {
+        ...inst,
+        balance: runningBalance,
+      };
+    });
+  };
+
   const handleInputChange = (
     field: keyof CreatePaymentHistoryData,
     value: any
@@ -147,12 +167,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
 
       // If purchase_amount changed, update all installment balances
       if (field === "purchase_amount") {
-        setInstallments((prevInst) =>
-          prevInst.map((inst) => ({
-            ...inst,
-            balance: calculateBalance(value, inst.amount),
-          }))
-        );
+        setInstallments((prevInst) => recalculateBalances(prevInst, value));
       }
 
       return newData;
@@ -160,39 +175,52 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
   };
 
   const addInstallment = () => {
-    setInstallments([
-      ...installments,
-      {
-        installment_date: null,
-        description: null,
-        amount: null,
-        payment_method: null,
-        bank_name: null,
-        cheque_number: null,
-        balance: null,
-        remarks: null,
-        status: null,
-      },
-    ]);
+    setInstallments((prev) => {
+      const newInstallments = [
+        ...prev,
+        {
+          installment_date: null,
+          description: null,
+          amount: null,
+          payment_method: null,
+          bank_name: null,
+          cheque_number: null,
+          balance: null, // Will be calculated
+          remarks: null,
+          status: null,
+        },
+      ];
+      return recalculateBalances(newInstallments, formData.purchase_amount);
+    });
   };
 
   const removeInstallment = (index: number) => {
-    setInstallments(installments.filter((_, i) => i !== index));
+    setInstallments((prev) => {
+      const newInstallments = prev.filter((_, i) => i !== index);
+      return recalculateBalances(newInstallments, formData.purchase_amount);
+    });
   };
 
-  const updateInstallment = (index: number, field: keyof UpdateInstallmentData, value: any) => {
-    setInstallments((prev) =>
-      prev.map((inst, i) => {
+  const updateInstallment = (
+    index: number,
+    field: keyof UpdateInstallmentData,
+    value: any
+  ) => {
+    setInstallments((prev) => {
+      const newInstallments = prev.map((inst, i) => {
         if (i === index) {
-          const updatedInst = { ...inst, [field]: value };
-          if (field === "amount") {
-            updatedInst.balance = calculateBalance(formData.purchase_amount, value);
-          }
-          return updatedInst;
+          return { ...inst, [field]: value };
         }
         return inst;
-      })
-    );
+      });
+
+      // If amount changed, recalculate all balances
+      if (field === "amount") {
+        return recalculateBalances(newInstallments, formData.purchase_amount);
+      }
+
+      return newInstallments;
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
