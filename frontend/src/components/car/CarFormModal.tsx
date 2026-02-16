@@ -10,7 +10,7 @@ import {
   BasicInfoSection,
   TechnicalSpecsSection,
   GradingLocationSection,
-  // PricingSection,
+  PricingSection,
   NotesSection,
   PhotoSection,
   CarDetailsSection,
@@ -629,6 +629,18 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-6">
             <GradingLocationSection
+              formData={formData}
+              errors={errors}
+              isViewMode={isViewMode}
+              onInputChange={handleInputChange}
+            />
+          </div>
+        </div>
+
+        {/* Pricing Section */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6">
+            <PricingSection
               formData={formData}
               errors={errors}
               isViewMode={isViewMode}

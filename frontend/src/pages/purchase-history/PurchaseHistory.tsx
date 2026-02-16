@@ -135,9 +135,37 @@ const PurchaseHistoryPage: React.FC = () => {
   };
 
   const handleModalSubmit = async (
-    data: CreatePurchaseHistoryData | UpdatePurchaseHistoryData
+    data: CreatePurchaseHistoryData | UpdatePurchaseHistoryData | CreatePurchaseHistoryData[]
   ) => {
     try {
+      if (Array.isArray(data)) {
+        // Handle bulk creation
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const item of data) {
+          const response = await purchaseHistoryApi.createPurchaseHistory(item);
+          if (response.success) {
+            successCount++;
+          } else {
+            failCount++;
+            console.error("Failed to create purchase history for car:", item.car_id, response.message);
+          }
+        }
+
+        if (successCount > 0) {
+          toast.success(`${successCount} purchase histories created successfully`);
+          setShowModal(false);
+          fetchPurchaseHistories();
+        }
+
+        if (failCount > 0) {
+          toast.error(`${failCount} purchase histories failed to create`);
+        }
+
+        return;
+      }
+
       if (modalMode === "update" && selectedPurchaseHistory) {
         const response = await purchaseHistoryApi.updatePurchaseHistory(
           selectedPurchaseHistory.id,

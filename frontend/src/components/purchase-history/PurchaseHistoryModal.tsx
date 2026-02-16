@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Upload, File as FileIcon, Search } from "lucide-react";
+import { X, Upload, File as FileIcon, Search, Plus, Trash2 } from "lucide-react";
 import {
   PurchaseHistory,
   CreatePurchaseHistoryData,
@@ -13,7 +13,7 @@ interface PurchaseHistoryModalProps {
   purchaseHistory?: PurchaseHistory | null;
   onClose: () => void;
   onSubmit: (
-    data: CreatePurchaseHistoryData | UpdatePurchaseHistoryData
+    data: CreatePurchaseHistoryData | UpdatePurchaseHistoryData | CreatePurchaseHistoryData[]
   ) => void;
 }
 
@@ -81,6 +81,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   const [loadingCars, setLoadingCars] = useState(false);
   const [carSearchQuery, setCarSearchQuery] = useState("");
   const [isCarDropdownOpen, setIsCarDropdownOpen] = useState(false);
+  const [carEntries, setCarEntries] = useState<CreatePurchaseHistoryData[]>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -213,6 +214,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       setBdtAmount("");
       setCurrencyType("dollar");
       setExistingFiles({});
+      setCarEntries([]);
     }
   }, [purchaseHistory, mode, isOpen]);
 
@@ -248,9 +250,112 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     }));
   };
 
+  const handleAddEntry = () => {
+    if (!formData.car_id) {
+      // alert("Please select a car first");
+      return;
+    }
+
+    // Check if car already added
+    if (carEntries.some(e => e.car_id === formData.car_id)) {
+      // alert("Car already added to list");
+      return;
+    }
+
+    const newEntry: CreatePurchaseHistoryData = {
+      car_id: formData.car_id,
+      purchase_amount: formData.purchase_amount,
+      foreign_amount: formData.foreign_amount,
+      bdt_amount: formData.bdt_amount,
+      currency_type: currencyType,
+      govt_duty: formData.govt_duty,
+      cnf_amount: formData.cnf_amount,
+      miscellaneous: formData.miscellaneous,
+      purchase_date: formData.purchase_date,
+
+      // Add PDF fields
+      bill_of_lading: formData.bill_of_lading,
+      invoice_number: formData.invoice_number,
+      export_certificate: formData.export_certificate,
+      export_certificate_translated: formData.export_certificate_translated,
+      bill_of_exchange_amount: formData.bill_of_exchange_amount,
+      custom_duty_copy_3pages: formData.custom_duty_copy_3pages,
+      cheque_copy: formData.cheque_copy,
+      certificate: formData.certificate,
+      custom_one: formData.custom_one,
+      custom_two: formData.custom_two,
+      custom_three: formData.custom_three,
+    };
+
+    setCarEntries([...carEntries, newEntry]);
+
+    // Clear specific fields
+    setFormData(prev => ({
+      ...prev,
+      car_id: null,
+      purchase_amount: null,
+      foreign_amount: null,
+      bdt_amount: null,
+      govt_duty: null,
+      cnf_amount: null,
+      miscellaneous: null,
+      // Clear PDF fields
+      bill_of_lading: null,
+      invoice_number: null,
+      export_certificate: null,
+      export_certificate_translated: null,
+      bill_of_exchange_amount: null,
+      custom_duty_copy_3pages: null,
+      cheque_copy: null,
+      certificate: null,
+      custom_one: null,
+      custom_two: null,
+      custom_three: null,
+    }));
+    setForeignAmount("");
+    setBdtAmount("");
+    setExistingFiles({});
+  };
+
+  const handleRemoveEntry = (index: number) => {
+    setCarEntries(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+
+    if (mode === 'create' && carEntries.length > 0) {
+      // Helper to merge shared data
+      const sharedData = {
+        lc_date: formData.lc_date,
+        lc_number: formData.lc_number,
+        lc_bank_name: formData.lc_bank_name,
+        lc_bank_branch_name: formData.lc_bank_branch_name,
+        lc_bank_branch_address: formData.lc_bank_branch_address,
+        total_units_per_lc: formData.total_units_per_lc,
+        bill_of_lading: formData.bill_of_lading,
+        invoice_number: formData.invoice_number,
+        export_certificate: formData.export_certificate,
+        export_certificate_translated: formData.export_certificate_translated,
+        bill_of_exchange_amount: formData.bill_of_exchange_amount,
+        custom_duty_copy_3pages: formData.custom_duty_copy_3pages,
+        cheque_copy: formData.cheque_copy,
+        certificate: formData.certificate,
+        custom_one: formData.custom_one,
+        custom_two: formData.custom_two,
+        custom_three: formData.custom_three,
+      };
+
+      const bulkData: CreatePurchaseHistoryData[] = carEntries.map(entry => ({
+        ...sharedData,
+        ...entry
+      }));
+
+      // @ts-ignore
+      onSubmit(bulkData);
+    } else {
+      onSubmit(formData);
+    }
   };
 
   const getPdfUrl = (path: string) => {
@@ -316,325 +421,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
           className="overflow-y-auto max-h-[calc(95vh-120px)]"
         >
           <div className="p-6 space-y-6">
-            {/* Car Selection */}
-            <div className="border-b border-gray-200 pb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Car Selection
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2 relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Select Cars <span className="text-gray-400">(Searchable Multi-select)</span>
-                  </label>
 
-                  {/* Selected Cars Tags */}
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {(formData.car_ids || []).map(id => {
-                      // Try to find in global cars list first
-                      let car: any = cars.find(c => c.id === id);
-
-                      // Fallback to purchaseHistory.cars if available
-                      if (!car && purchaseHistory?.cars) {
-                        car = purchaseHistory.cars.find(c => c.id === id);
-                      }
-
-                      if (!car) return null;
-
-                      return (
-                        <div key={id} className="bg-primary-100 text-primary-800 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2 border border-primary-200 shadow-sm">
-                          <span>{car.make} {car.model} ({car.chassis_no_full || car.chassis_no_masked})</span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newIds = (formData.car_ids || []).filter(cid => cid !== id);
-                              handleInputChange("car_ids", newIds);
-                              if (newIds.length === 0) handleInputChange("car_id", null);
-                              else if (id === formData.car_id) handleInputChange("car_id", newIds[0]);
-                            }}
-                            className="hover:text-primary-900 focus:outline-none"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      );
-                    })}
-                    {loadingCars && (formData.car_ids || []).length > 0 &&
-                      !(formData.car_ids || []).some(id => cars.find(c => c.id === id) || purchaseHistory?.cars?.find(c => c.id === id)) && (
-                        <span className="text-xs text-gray-400 animate-pulse">Loading car details...</span>
-                      )}
-                  </div>
-
-                  <div className="relative">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <input
-                        type="text"
-                        placeholder="Search cars by make, model, chassis..."
-                        value={carSearchQuery}
-                        onChange={(e) => {
-                          setCarSearchQuery(e.target.value);
-                          setIsCarDropdownOpen(true);
-                        }}
-                        onFocus={() => setIsCarDropdownOpen(true)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    {isCarDropdownOpen && (
-                      <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
-                        {loadingCars ? (
-                          <div className="p-4 text-center text-gray-500 text-sm">Loading cars...</div>
-                        ) : (
-                          <>
-                            {cars
-                              .filter(car => {
-                                const searchStr = `${car.make} ${car.model} ${car.chassis_no_full || ""} ${car.chassis_no_masked || ""}`.toLowerCase();
-                                return searchStr.includes(carSearchQuery.toLowerCase());
-                              })
-                              .map(car => {
-                                const isSelected = (formData.car_ids || []).includes(car.id);
-                                return (
-                                  <div
-                                    key={car.id}
-                                    onClick={() => {
-                                      const currentIds = formData.car_ids || [];
-                                      const newIds = isSelected
-                                        ? currentIds.filter(id => id !== car.id)
-                                        : [...currentIds, car.id];
-
-                                      handleInputChange("car_ids", newIds);
-                                      // Also update legacy car_id to the first selected car for backward compatibility
-                                      handleInputChange("car_id", newIds.length > 0 ? newIds[0] : null);
-
-                                      if (!isSelected) {
-                                        // Optional: setCarSearchQuery("");
-                                      }
-                                    }}
-                                    className={`px-4 py-2 cursor-pointer flex items-center justify-between hover:bg-gray-50 ${isSelected ? 'bg-primary-50' : ''}`}
-                                  >
-                                    <div className="flex flex-col">
-                                      <span className="text-sm font-medium text-gray-900">{car.make} {car.model}</span>
-                                      <span className="text-xs text-gray-500">{car.chassis_no_full || car.chassis_no_masked}</span>
-                                    </div>
-                                    {isSelected && (
-                                      <div className="w-2 h-2 bg-primary-600 rounded-full"></div>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            {cars.filter(car => {
-                              const searchStr = `${car.make} ${car.model} ${car.chassis_no_full || ""} ${car.chassis_no_masked || ""}`.toLowerCase();
-                              return searchStr.includes(carSearchQuery.toLowerCase());
-                            }).length === 0 && (
-                                <div className="p-4 text-center text-gray-500 text-sm">No cars found</div>
-                              )}
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  {isCarDropdownOpen && (
-                    <div
-                      className="fixed inset-0 z-10"
-                      onClick={() => setIsCarDropdownOpen(false)}
-                    ></div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Basic Information */}
-            <div className="border-b border-gray-200 pb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Basic Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Purchase Date
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.purchase_date || ""}
-                    onChange={(e) =>
-                      handleInputChange("purchase_date", e.target.value || null)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    LC Date
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.lc_date || ""}
-                    onChange={(e) =>
-                      handleInputChange("lc_date", e.target.value || null)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Purchase Amount Calculation */}
-            <div className="bg-primary-50 rounded-xl p-6 border-2 border-primary-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Purchase Amount Calculation
-              </h3>
-              <div className="flex flex-wrap items-center gap-4 mb-4">
-                <span className="text-sm font-medium text-gray-700">
-                  Select Currency:
-                </span>
-                <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
-                  <input
-                    type="checkbox"
-                    checked={currencyType === "dollar"}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setCurrencyType("dollar");
-                      }
-                    }}
-                    className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  Dollar
-                </label>
-                <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
-                  <input
-                    type="checkbox"
-                    checked={currencyType === "yen"}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setCurrencyType("yen");
-                      }
-                    }}
-                    className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  Yen
-                </label>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {currencyType === "dollar"
-                      ? "Dollar Amount (USD)"
-                      : "Yen Amount (JPY)"}
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={foreignAmount}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setForeignAmount(val);
-                      setFormData((prev) => ({
-                        ...prev,
-                        foreign_amount:
-                          val === "" ? null : parseFloat(val) || 0,
-                      }));
-                    }}
-                    placeholder="0.00"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    BDT Amount (৳)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={bdtAmount}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setBdtAmount(val);
-                      setFormData((prev) => ({
-                        ...prev,
-                        bdt_amount: val === "" ? null : parseFloat(val) || 0,
-                      }));
-                    }}
-                    placeholder="0.00"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Calculated Purchase Amount
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.purchase_amount || ""}
-                    readOnly
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-700 font-semibold"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Auto-calculated:{" "}
-                    {currencyType === "dollar" ? "Dollar" : "Yen"} × BDT
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Financial Information */}
-            <div className="border-b border-gray-200 pb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Financial Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Govt Duty
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.govt_duty || ""}
-                    onChange={(e) =>
-                      handleInputChange("govt_duty", e.target.value || null)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    CNF Amount
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.cnf_amount || ""}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "cnf_amount",
-                        e.target.value ? parseFloat(e.target.value) : null
-                      )
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Miscellaneous
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.miscellaneous || ""}
-                    onChange={(e) =>
-                      handleInputChange("miscellaneous", e.target.value || null)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* LC Information */}
-            <div className="border-t border-gray-200 pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                LC Information
+            {/* 1. LC Information (Common) - Moved to Top */}
+            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                LC Information <span className="text-xs font-normal text-gray-500 bg-white px-2 py-0.5 rounded-full border border-gray-200">Shared across all cars</span>
               </h3>
               <div className="space-y-6">
                 {/* First row: 4 fields in same row */}
@@ -652,7 +443,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                           e.target.value || null
                         )
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                     />
                   </div>
                   <div>
@@ -665,7 +456,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       onChange={(e) =>
                         handleInputChange("lc_number", e.target.value || null)
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                     />
                   </div>
 
@@ -679,7 +470,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       onChange={(e) =>
                         handleInputChange("lc_bank_name", e.target.value || null)
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                     />
                   </div>
 
@@ -696,7 +487,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                           e.target.value || null
                         )
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                     />
                   </div>
                 </div>
@@ -714,122 +505,439 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       )
                     }
                     rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    LC Date
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.lc_date || ""}
+                    onChange={(e) =>
+                      handleInputChange("lc_date", e.target.value || null)
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                   />
                 </div>
               </div>
             </div>
+            <div className="border-t border-gray-200 my-6"></div>
 
-            {/* PDF Uploads */}
-            <div className="border-t border-gray-200 pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                PDF Documents
+            {/* 3. Added Cars List (Create Mode Only) */}
+            {mode === 'create' && carEntries.length > 0 && (
+              <div className="bg-primary-50 p-6 rounded-2xl border border-primary-100">
+                <h3 className="text-lg font-semibold text-primary-900 mb-4 flex items-center gap-2">
+                  Added Cars ({carEntries.length}) <span className="text-xs font-normal text-primary-600 px-2 py-0.5 bg-white rounded-full border border-primary-100">Ready to submit</span>
+                </h3>
+                <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Car</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Purchase Amount</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Duty</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">CNF</th>
+                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {carEntries.map((entry, idx) => {
+                        const car = cars.find(c => c.id === entry.car_id);
+                        return (
+                          <tr key={idx} className="hover:bg-gray-50">
+                            <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                              {car ? `${car.make} ${car.model} (${car.chassis_no_full || car.chassis_no_masked})` : `Car ID: ${entry.car_id}`}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-700 text-right">
+                              {entry.purchase_amount?.toLocaleString()}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-700 text-right">
+                              {entry.govt_duty || '-'}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-700 text-right">
+                              {entry.cnf_amount?.toLocaleString() || '-'}
+                            </td>
+                            <td className="px-4 py-3 text-center">
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveEntry(idx)}
+                                className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* 4. Car Entry Form */}
+            <div className={`p-6 rounded-2xl border ${mode === 'create' ? 'bg-white border-blue-200 shadow-md ring-1 ring-blue-100' : 'bg-white border-gray-200'}`}>
+              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                {mode === 'create' ? <><Plus className="w-5 h-5 text-blue-600" /> Add Car to Purchase</> : "Car & Financial Details"}
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {pdfFields.map((field) => {
-                  const existingFile = existingFiles[field.key];
-                  const newFile = formData[field.key as keyof CreatePurchaseHistoryData] instanceof File
-                    ? formData[field.key as keyof CreatePurchaseHistoryData] as File
-                    : null;
 
-                  return (
-                    <div key={field.key}>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {field.label}
-                      </label>
+              {/* Car Selection */}
+              <div className="border-b border-gray-200 pb-6">
+                <div className="relative">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {mode === 'create' ? "Select Car to Add" : "Selected Cars"}
+                  </label>
 
-                      {/* Show existing file if available */}
-                      {existingFile && (
-                        <div className="mb-3 bg-primary-50 rounded-lg border border-primary-200 p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-semibold text-primary-700 uppercase">Current File</span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newExistingFiles = { ...existingFiles };
-                                delete newExistingFiles[field.key];
-                                setExistingFiles(newExistingFiles);
-                              }}
-                              className="text-red-600 hover:text-red-700 p-1"
-                              title="Remove existing file"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <FileIcon className="w-5 h-5 text-red-600" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900 truncate">
-                                {getFileName(existingFile)}
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                Existing file
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
+                  {/* Selected Car Display */}
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {(formData.car_id ? [formData.car_id] : (formData.car_ids || [])).map(id => {
+                      let car: any = cars.find(c => c.id === id);
+                      if (!car && purchaseHistory?.cars) {
+                        car = purchaseHistory.cars.find(c => c.id === id);
+                      }
+                      if (!car) return null;
 
-                      {/* Show new file if selected */}
-                      {newFile && (
-                        <div className="mb-3 bg-green-50 rounded-lg border border-green-200 p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-semibold text-green-700 uppercase">New File (will replace current)</span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                handleFileChange(field.key, null);
-                              }}
-                              className="text-red-600 hover:text-red-700 p-1"
-                              title="Remove new file"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <FileIcon className="w-5 h-5 text-red-600" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900 truncate">
-                                {getFileName(newFile)}
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                {(newFile.size / 1024).toFixed(2)} KB
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Upload area - show if no existing file or if we want to allow replacement */}
-                      {!newFile && (
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <Upload className="w-8 h-8 mb-2 text-gray-400" />
-                            <p className="text-sm text-gray-500">
-                              {existingFile
-                                ? "Drag and drop a new file to replace the current one, or click to browse"
-                                : "Click to upload PDF"}
-                            </p>
-                          </div>
-                          <input
-                            type="file"
-                            accept=".pdf"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0] || null;
-                              handleFileChange(field.key, file);
+                      return (
+                        <div key={id} className="bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-between w-full border border-blue-200">
+                          <span>{car.make} {car.model} — <span className="text-gray-500 font-normal">{car.chassis_no_full || car.chassis_no_masked}</span></span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleInputChange("car_id", null);
+                              handleInputChange("car_ids", []);
                             }}
-                            className="hidden"
-                          />
-                        </label>
+                            className="text-blue-400 hover:text-blue-700"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Search Input (Show only if no car selected in create mode, or always in update mode if allowing adding) */}
+                  {((mode === 'create' && !formData.car_id) || (mode === 'update')) && (
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <input
+                        type="text"
+                        placeholder="Search cars by make, model, chassis..."
+                        value={carSearchQuery}
+                        onChange={(e) => {
+                          setCarSearchQuery(e.target.value);
+                          setIsCarDropdownOpen(true);
+                        }}
+                        onFocus={() => setIsCarDropdownOpen(true)}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+
+                      {isCarDropdownOpen && (
+                        <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                          {loadingCars ? (
+                            <div className="p-4 text-center text-gray-500 text-sm">Loading cars...</div>
+                          ) : (
+                            <>
+                              {cars
+                                .filter(car => {
+                                  const searchStr = `${car.make} ${car.model} ${car.chassis_no_full || ""} ${car.chassis_no_masked || ""}`.toLowerCase();
+                                  return searchStr.includes(carSearchQuery.toLowerCase());
+                                })
+                                .map(car => {
+                                  // Check if already in list
+                                  const isAlreadyAdded = carEntries.some(e => e.car_id === car.id);
+                                  const isSelected = formData.car_id === car.id || (formData.car_ids || []).includes(car.id);
+
+                                  if (isAlreadyAdded) return null; // Hide already added cars in list
+
+                                  return (
+                                    <div
+                                      key={car.id}
+                                      onClick={() => {
+                                        handleInputChange("car_id", car.id);
+                                        handleInputChange("car_ids", [car.id]); // Keep both for compatibility
+                                        setIsCarDropdownOpen(false);
+                                        setCarSearchQuery("");
+                                      }}
+                                      className={`px-4 py-2 cursor-pointer flex items-center justify-between hover:bg-gray-50 ${isSelected ? 'bg-primary-50' : ''}`}
+                                    >
+                                      <div className="flex flex-col">
+                                        <span className="text-sm font-medium text-gray-900">{car.make} {car.model}</span>
+                                        <span className="text-xs text-gray-500">{car.chassis_no_full || car.chassis_no_masked}</span>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              {cars.length === 0 && <div className="p-4 text-center">No cars found</div>}
+                            </>
+                          )}
+                        </div>
+                      )}
+                      {isCarDropdownOpen && (
+                        <div className="fixed inset-0 z-10" onClick={() => setIsCarDropdownOpen(false)}></div>
                       )}
                     </div>
-                  );
-                })}
+                  )}
+                </div>
               </div>
+
+              {/* Purchase Amount Calculation */}
+              <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mb-6">
+                <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">
+                  Purchase Price
+                </h3>
+                <div className="flex flex-wrap items-center gap-4 mb-4">
+                  <span className="text-sm font-medium text-gray-700">Currency:</span>
+                  <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={currencyType === "dollar"}
+                      onChange={(e) => e.target.checked && setCurrencyType("dollar")}
+                      className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    />
+                    Dollar
+                  </label>
+                  <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={currencyType === "yen"}
+                      onChange={(e) => e.target.checked && setCurrencyType("yen")}
+                      className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    />
+                    Yen
+                  </label>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                      {currencyType === "dollar" ? "Amount (USD)" : "Amount (JPY)"}
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={foreignAmount}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setForeignAmount(val);
+                        setFormData((prev) => ({
+                          ...prev,
+                          foreign_amount: val === "" ? null : parseFloat(val) || 0,
+                        }));
+                      }}
+                      placeholder="0.00"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                      BDT Rate/Amount (৳)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={bdtAmount}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setBdtAmount(val);
+                        setFormData((prev) => ({
+                          ...prev,
+                          bdt_amount: val === "" ? null : parseFloat(val) || 0,
+                        }));
+                      }}
+                      placeholder="0.00"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                      Calculated Total
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.purchase_amount || ""}
+                      readOnly
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-200 text-gray-700 font-bold"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Basic & Financial Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Purchase Date
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.purchase_date || ""}
+                    onChange={(e) => handleInputChange("purchase_date", e.target.value || null)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Govt Duty
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.govt_duty || ""}
+                    onChange={(e) => handleInputChange("govt_duty", e.target.value || null)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    CNF Amount
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.cnf_amount || ""}
+                    onChange={(e) => handleInputChange("cnf_amount", e.target.value ? parseFloat(e.target.value) : null)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Miscellaneous
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.miscellaneous || ""}
+                    onChange={(e) => handleInputChange("miscellaneous", e.target.value || null)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* PDF Documents */}
+              <div className="mt-6 border-t border-gray-200 pt-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Document Attachments
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {pdfFields.map((field) => {
+                    const existingFile = existingFiles[field.key];
+                    const newFile = formData[field.key as keyof CreatePurchaseHistoryData] instanceof File
+                      ? formData[field.key as keyof CreatePurchaseHistoryData] as File
+                      : null;
+
+                    return (
+                      <div key={field.key}>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          {field.label}
+                        </label>
+
+                        {/* Show existing file if available */}
+                        {existingFile && (
+                          <div className="mb-3 bg-white rounded-lg border border-gray-200 p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-semibold text-primary-700 uppercase">Current File</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newExistingFiles = { ...existingFiles };
+                                  delete newExistingFiles[field.key];
+                                  setExistingFiles(newExistingFiles);
+                                }}
+                                className="text-red-600 hover:text-red-700 p-1"
+                                title="Remove existing file"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <FileIcon className="w-5 h-5 text-red-600" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                  {getFileName(existingFile)}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  Existing file
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Show new file if selected */}
+                        {newFile && (
+                          <div className="mb-3 bg-green-50 rounded-lg border border-green-200 p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-semibold text-green-700 uppercase">New File</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  handleFileChange(field.key, null);
+                                }}
+                                className="text-red-600 hover:text-red-700 p-1"
+                                title="Remove new file"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <FileIcon className="w-5 h-5 text-red-600" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                  {getFileName(newFile)}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  {(newFile.size / 1024).toFixed(2)} KB
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Upload area */}
+                        {!newFile && (
+                          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer hover:bg-white transition-colors bg-white">
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                              <Upload className="w-8 h-8 mb-2 text-gray-400" />
+                              <p className="text-sm text-gray-500">
+                                {existingFile
+                                  ? "Replace file"
+                                  : "Upload PDF"}
+                              </p>
+                            </div>
+                            <input
+                              type="file"
+                              accept=".pdf"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0] || null;
+                                handleFileChange(field.key, file);
+                              }}
+                              className="hidden"
+                            />
+                          </label>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Add Button (Create Mode) */}
+              {mode === 'create' && (
+                <div className="mt-6 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleAddEntry}
+                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg transform active:scale-95"
+                  >
+                    <Plus className="w-5 h-5" />
+                    Add Car to List
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Actions */}
@@ -845,7 +953,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 type="submit"
                 className="px-6 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-medium"
               >
-                {mode === "create" ? "Create" : "Update"}
+                {mode === "create" ? (carEntries.length > 0 ? `Submit All (${carEntries.length} Cars)` : "Create") : "Update"}
               </button>
             </div>
           </div>
