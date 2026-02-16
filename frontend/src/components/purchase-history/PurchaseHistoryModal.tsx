@@ -725,10 +725,36 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 </div>
               </div>
 
+              {/* Purchase Date and H.S Code Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Purchase Date
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.purchase_date || ""}
+                    onChange={(e) => handleInputChange("purchase_date", e.target.value || null)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    H.S Code
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.hs_code || ""}
+                    onChange={(e) => handleInputChange("hs_code", e.target.value || null)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
               {/* Purchase Amount Calculation */}
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mb-6">
                 <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">
-                  Purchase Price
+                  Purchase Price & Financial Details
                 </h3>
                 <div className="flex flex-wrap items-center gap-4 mb-4">
                   <span className="text-sm font-medium text-gray-700">Currency:</span>
@@ -815,116 +841,93 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                     />
                   </div>
                 </div>
-              </div>
 
-              {/* Basic & Financial Info */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Purchase Date
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.purchase_date || ""}
-                    onChange={(e) => handleInputChange("purchase_date", e.target.value || null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Govt Duty
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.govt_duty || ""}
-                    onChange={(e) => handleInputChange("govt_duty", e.target.value || null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    CNF Amount
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.cnf_amount || ""}
-                    onChange={(e) => handleInputChange("cnf_amount", e.target.value ? parseFloat(e.target.value) : null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Miscellaneous
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.miscellaneous || ""}
-                    onChange={(e) => handleInputChange("miscellaneous", e.target.value || null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
+                {/* Divider */}
+                <div className="border-t border-gray-300 my-4"></div>
 
-              {/* Additional Fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    H.S Code
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.hs_code || ""}
-                    onChange={(e) => handleInputChange("hs_code", e.target.value || null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Price Amount
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.price_amount || ""}
-                    onChange={(e) => handleInputChange("price_amount", e.target.value ? parseFloat(e.target.value) : null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Price Basis
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.price_basis || ""}
-                    onChange={(e) => handleInputChange("price_basis", e.target.value || null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    FOB Value (USD)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.fob_value_usd || ""}
-                    onChange={(e) => handleInputChange("fob_value_usd", e.target.value ? parseFloat(e.target.value) : null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Freight (USD)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.freight_usd || ""}
-                    onChange={(e) => handleInputChange("freight_usd", e.target.value ? parseFloat(e.target.value) : null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
+                {/* Other Financial Fields */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Govt Duty
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.govt_duty || ""}
+                      onChange={(e) => handleInputChange("govt_duty", e.target.value || null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      CNF Amount
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={formData.cnf_amount || ""}
+                      onChange={(e) => handleInputChange("cnf_amount", e.target.value ? parseFloat(e.target.value) : null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Miscellaneous
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.miscellaneous || ""}
+                      onChange={(e) => handleInputChange("miscellaneous", e.target.value || null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Price Amount
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={formData.price_amount || ""}
+                      onChange={(e) => handleInputChange("price_amount", e.target.value ? parseFloat(e.target.value) : null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Price Basis
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.price_basis || ""}
+                      onChange={(e) => handleInputChange("price_basis", e.target.value || null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      FOB Value (USD)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={formData.fob_value_usd || ""}
+                      onChange={(e) => handleInputChange("fob_value_usd", e.target.value ? parseFloat(e.target.value) : null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Freight (USD)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={formData.freight_usd || ""}
+                      onChange={(e) => handleInputChange("freight_usd", e.target.value ? parseFloat(e.target.value) : null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                    />
+                  </div>
                 </div>
               </div>
 
