@@ -36,6 +36,11 @@ export interface PurchaseHistory {
   custom_one: string | null;
   custom_two: string | null;
   custom_three: string | null;
+  hs_code: string | null;
+  price_amount: number | null;
+  price_basis: string | null;
+  fob_value_usd: number | null;
+  freight_usd: number | null;
   created_at: string;
   updated_at: string;
 
@@ -72,6 +77,11 @@ export interface CreatePurchaseHistoryData {
   custom_one?: File | null;
   custom_two?: File | null;
   custom_three?: File | null;
+  hs_code?: string | null;
+  price_amount?: number | null;
+  price_basis?: string | null;
+  fob_value_usd?: number | null;
+  freight_usd?: number | null;
 }
 
 export interface UpdatePurchaseHistoryData extends CreatePurchaseHistoryData { }

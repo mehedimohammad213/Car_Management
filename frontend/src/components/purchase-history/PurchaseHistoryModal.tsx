@@ -68,6 +68,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     custom_one: null,
     custom_two: null,
     custom_three: null,
+    hs_code: null,
+    price_amount: null,
+    price_basis: null,
+    fob_value_usd: null,
+    freight_usd: null,
   });
 
   // Separate fields for foreign currency and BDT amounts
@@ -156,6 +161,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         custom_one: null,
         custom_two: null,
         custom_three: null,
+        hs_code: purchaseHistory.hs_code || null,
+        price_amount: purchaseHistory.price_amount || null,
+        price_basis: purchaseHistory.price_basis || null,
+        fob_value_usd: purchaseHistory.fob_value_usd || null,
+        freight_usd: purchaseHistory.freight_usd || null,
       });
 
       // Store existing file paths
@@ -210,6 +220,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         custom_one: null,
         custom_two: null,
         custom_three: null,
+        hs_code: null,
+        price_amount: null,
+        price_basis: null,
+        fob_value_usd: null,
+        freight_usd: null,
       });
       setForeignAmount("");
       setYenToDollarRate("");
@@ -301,6 +316,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       custom_one: formData.custom_one,
       custom_two: formData.custom_two,
       custom_three: formData.custom_three,
+      hs_code: formData.hs_code,
+      price_amount: formData.price_amount,
+      price_basis: formData.price_basis,
+      fob_value_usd: formData.fob_value_usd,
+      freight_usd: formData.freight_usd,
     };
 
     setCarEntries([...carEntries, newEntry]);
@@ -327,6 +347,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       custom_one: null,
       custom_two: null,
       custom_three: null,
+      hs_code: null,
+      price_amount: null,
+      price_basis: null,
+      fob_value_usd: null,
+      freight_usd: null,
     }));
     setForeignAmount("");
     setYenToDollarRate("");
@@ -836,6 +861,68 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                     type="text"
                     value={formData.miscellaneous || ""}
                     onChange={(e) => handleInputChange("miscellaneous", e.target.value || null)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Additional Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    H.S Code
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.hs_code || ""}
+                    onChange={(e) => handleInputChange("hs_code", e.target.value || null)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Price Amount
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.price_amount || ""}
+                    onChange={(e) => handleInputChange("price_amount", e.target.value ? parseFloat(e.target.value) : null)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Price Basis
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.price_basis || ""}
+                    onChange={(e) => handleInputChange("price_basis", e.target.value || null)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    FOB Value (USD)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.fob_value_usd || ""}
+                    onChange={(e) => handleInputChange("fob_value_usd", e.target.value ? parseFloat(e.target.value) : null)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Freight (USD)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.freight_usd || ""}
+                    onChange={(e) => handleInputChange("freight_usd", e.target.value ? parseFloat(e.target.value) : null)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                 </div>
