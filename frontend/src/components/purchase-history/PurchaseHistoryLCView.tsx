@@ -141,7 +141,7 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                                         {histories.map((history) => {
-                                            const cars = history.cars || (history.car ? [history.car] : []);
+                                            const cars = (history.cars && history.cars.length > 0) ? history.cars : (history.car ? [history.car] : []);
                                             return cars.map((car, idx) => (
                                                 <div
                                                     key={`${history.id}-${idx}`}
