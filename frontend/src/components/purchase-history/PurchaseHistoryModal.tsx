@@ -75,10 +75,10 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     freight_usd: null,
   });
 
-  // Separate fields for foreign currency and BDT amounts
   const [foreignAmount, setForeignAmount] = useState<string>("");
   const [yenToDollarRate, setYenToDollarRate] = useState<string>("");
   const [dollarToBdtRate, setDollarToBdtRate] = useState<string>("");
+  const [intermediateDollar, setIntermediateDollar] = useState<string>("");
   const [currencyType, setCurrencyType] = useState<"dollar" | "yen">("dollar");
   const [existingFiles, setExistingFiles] = useState<Record<string, string>>(
     {}
@@ -128,6 +128,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
           ? String(purchaseHistory.bdt_amount)
           : ""
       );
+      // If updating logic for Yen is needed here to prefill rates, it might be complex as we only store purchase_amount? 
+      // Actually we have foreign_amount (Yen), bdt_amount (Rate?), currency_type. 
+      // But we lack Yen->Dollar rate storage in the backend model based on what I see in state.
+      // Assuming user re-enters or we just use what we have. 
+      // For now, let's just initialize what we can.
       setCurrencyType((purchaseHistory.currency_type as "dollar" | "yen") || "dollar");
 
       setFormData({
@@ -229,6 +234,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       setForeignAmount("");
       setYenToDollarRate("");
       setDollarToBdtRate("");
+      setIntermediateDollar("");
       setCurrencyType("dollar");
       setExistingFiles({});
       setCarEntries([]);
@@ -246,14 +252,14 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       const yenToDollar = parseFloat(yenToDollarRate) || 0;
       dollarEquivalent = foreign * yenToDollar;
 
-      // Step 2: Convert Dollar to BDT
-      const dollarToBdt = parseFloat(dollarToBdtRate) || 0;
-      finalAmount = dollarEquivalent * dollarToBdt;
+      setIntermediateDollar(dollarEquivalent > 0 ? dollarEquivalent.toFixed(2) : "");
     } else {
-      // For Dollar: direct conversion to BDT
-      const dollarToBdt = parseFloat(dollarToBdtRate) || 0;
-      finalAmount = foreign * dollarToBdt;
+      setIntermediateDollar("");
     }
+
+    // Step 2: Convert Dollar to BDT
+    const dollarToBdt = parseFloat(dollarToBdtRate) || 0;
+    finalAmount = dollarEquivalent * dollarToBdt;
 
     setFormData((prev) => ({
       ...prev,
@@ -780,70 +786,149 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                     Yen
                   </label>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">
-                      {currencyType === "dollar" ? "Amount (USD)" : "Amount (JPY)"}
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={foreignAmount}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setForeignAmount(val);
-                        setFormData((prev) => ({
-                          ...prev,
-                          foreign_amount: val === "" ? null : parseFloat(val) || 0,
-                        }));
-                      }}
-                      placeholder="0.00"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                    />
-                  </div>
+                {currencyType === "yen" ? (
+                  // Yen Layout: 2 Rows of 3 Columns
+                  <div className="space-y-4">
+                    {/* Row 1: Yen -> Dollar */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          1. Amount (JPY)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={foreignAmount}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setForeignAmount(val);
+                            setFormData((prev) => ({
+                              ...prev,
+                              foreign_amount: val === "" ? null : parseFloat(val) || 0,
+                            }));
+                          }}
+                          placeholder="0.00"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          2. Yen to Dollar Rate
+                        </label>
+                        <input
+                          type="number"
+                          step="0.000001"
+                          value={yenToDollarRate}
+                          onChange={(e) => setYenToDollarRate(e.target.value)}
+                          placeholder="0.0000"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          3. Calculated Amount (USD)
+                        </label>
+                        <input
+                          type="text"
+                          value={intermediateDollar}
+                          readOnly
+                          placeholder="Calculated USD"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-700 font-medium"
+                        />
+                      </div>
+                    </div>
 
-                  {currencyType === "yen" && (
+                    {/* Row 2: Dollar -> BDT */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          4. Amount (USD)
+                        </label>
+                        <input
+                          type="text"
+                          value={intermediateDollar}
+                          readOnly
+                          placeholder="USD Amount"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-700 font-medium"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          5. Dollar to BDT Rate (৳)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={dollarToBdtRate}
+                          onChange={(e) => setDollarToBdtRate(e.target.value)}
+                          placeholder="0.00"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          6. Calculated Total (BDT)
+                        </label>
+                        <input
+                          type="number"
+                          value={formData.purchase_amount || ""}
+                          readOnly
+                          className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-200 text-gray-700 font-bold"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  // Dollar Layout: 1 Row
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-xs font-medium text-gray-500 mb-1">
-                        Yen to Dollar Rate
+                        Amount (USD)
                       </label>
                       <input
                         type="number"
-                        step="0.000001"
-                        value={yenToDollarRate}
-                        onChange={(e) => setYenToDollarRate(e.target.value)}
-                        placeholder="0.0000"
+                        step="0.01"
+                        value={foreignAmount}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setForeignAmount(val);
+                          setFormData((prev) => ({
+                            ...prev,
+                            foreign_amount: val === "" ? null : parseFloat(val) || 0,
+                          }));
+                        }}
+                        placeholder="0.00"
                         className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                       />
                     </div>
-                  )}
 
-                  <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">
-                      Dollar to BDT Rate (৳)
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={dollarToBdtRate}
-                      onChange={(e) => setDollarToBdtRate(e.target.value)}
-                      placeholder="0.00"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                    />
-                  </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                        Dollar to BDT Rate (৳)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={dollarToBdtRate}
+                        onChange={(e) => setDollarToBdtRate(e.target.value)}
+                        placeholder="0.00"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                      />
+                    </div>
 
-                  <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">
-                      Calculated Total (BDT)
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.purchase_amount || ""}
-                      readOnly
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-200 text-gray-700 font-bold"
-                    />
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                        Calculated Total (BDT)
+                      </label>
+                      <input
+                        type="number"
+                        value={formData.purchase_amount || ""}
+                        readOnly
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-200 text-gray-700 font-bold"
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Divider */}
                 <div className="border-t border-gray-300 my-4"></div>
