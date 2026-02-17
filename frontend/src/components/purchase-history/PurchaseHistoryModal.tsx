@@ -135,6 +135,25 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       // For now, let's just initialize what we can.
       setCurrencyType((purchaseHistory.currency_type as "dollar" | "yen") || "dollar");
 
+      // Reverse calculate rates and intermediate values for Yen
+      if (purchaseHistory.currency_type === 'yen' && purchaseHistory.foreign_amount && purchaseHistory.purchase_amount) {
+        const yenAmount = purchaseHistory.foreign_amount;
+        const finalBdt = purchaseHistory.purchase_amount;
+        // We assume bdt_amount stores the Dollar->BDT rate based on our previous mapping
+        const dollarToBdt = purchaseHistory.bdt_amount || 0;
+
+        if (yenAmount > 0 && dollarToBdt > 0) {
+          // finalBdt = (yenAmount * yenToDollarRate) * dollarToBdt
+          // So: yenToDollarRate = finalBdt / (yenAmount * dollarToBdt)
+
+          const calculatedDollar = finalBdt / dollarToBdt;
+          const calculatedYenRate = calculatedDollar / yenAmount;
+
+          setYenToDollarRate(calculatedYenRate.toFixed(6));
+          setIntermediateDollar(calculatedDollar.toFixed(2));
+        }
+      }
+
       setFormData({
         car_ids: purchaseHistory.cars?.map(c => c.id) || (purchaseHistory.car_id ? [purchaseHistory.car_id] : []),
         car_id: purchaseHistory.car_id ?? null,
