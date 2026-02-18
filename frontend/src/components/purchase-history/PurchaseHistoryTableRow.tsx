@@ -28,7 +28,7 @@ const PurchaseHistoryTableRow: React.FC<PurchaseHistoryTableRowProps> = ({
     if (amount === null) return "N/A";
     return new Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      maximumFractionDigits: 8,
     }).format(amount);
   };
 

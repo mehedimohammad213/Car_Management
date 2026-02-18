@@ -185,8 +185,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         if (yenAmount > 0 && dollarToBdt > 0) {
           const calculatedDollar = finalBdt / dollarToBdt;
           const calculatedYenRate = calculatedDollar / yenAmount;
-          setYenToDollarRate(calculatedYenRate.toFixed(6));
-          setIntermediateDollar(calculatedDollar.toFixed(2));
+          setYenToDollarRate(calculatedYenRate.toString());
+          setIntermediateDollar(calculatedDollar.toString());
         }
       }
 
@@ -306,7 +306,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       const yenToDollar = parseFloat(yenToDollarRate) || 0;
       dollarEquivalent = foreign * yenToDollar;
 
-      setIntermediateDollar(dollarEquivalent > 0 ? dollarEquivalent.toFixed(2) : "");
+      setIntermediateDollar(dollarEquivalent > 0 ? dollarEquivalent.toString() : "");
     } else {
       setIntermediateDollar("");
     }
@@ -568,12 +568,13 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       Total Units per LC
                     </label>
                     <input
-                      type="text"
+                      type="number"
+                      step="any"
                       value={formData.total_units_per_lc || ""}
                       onChange={(e) =>
                         handleInputChange(
                           "total_units_per_lc",
-                          e.target.value || null
+                          e.target.value ? parseFloat(e.target.value) : null
                         )
                       }
                       className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
@@ -914,7 +915,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                           </label>
                           <input
                             type="number"
-                            step="0.01"
+                            step="any"
                             value={foreignAmount}
                             onChange={(e) => {
                               const val = e.target.value;
@@ -934,7 +935,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                           </label>
                           <input
                             type="number"
-                            step="0.000001"
+                            step="any"
                             value={yenToDollarRate}
                             onChange={(e) => setYenToDollarRate(e.target.value)}
                             placeholder="0.0000"
@@ -946,7 +947,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                             3. Calculated Amount (USD)
                           </label>
                           <input
-                            type="text"
+                            type="number"
+                            step="any"
                             value={intermediateDollar}
                             readOnly
                             placeholder="Calculated USD"
@@ -962,7 +964,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                             4. Amount (USD)
                           </label>
                           <input
-                            type="text"
+                            type="number"
+                            step="any"
                             value={intermediateDollar}
                             readOnly
                             placeholder="USD Amount"
@@ -975,7 +978,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                           </label>
                           <input
                             type="number"
-                            step="0.01"
+                            step="any"
                             value={dollarToBdtRate}
                             onChange={(e) => setDollarToBdtRate(e.target.value)}
                             placeholder="0.00"
@@ -988,6 +991,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                           </label>
                           <input
                             type="number"
+                            step="any"
                             value={formData.purchase_amount || ""}
                             readOnly
                             className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-200 text-gray-700 font-bold"
@@ -1004,7 +1008,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                         </label>
                         <input
                           type="number"
-                          step="0.01"
+                          step="any"
                           value={foreignAmount}
                           onChange={(e) => {
                             const val = e.target.value;
@@ -1025,7 +1029,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                         </label>
                         <input
                           type="number"
-                          step="0.01"
+                          step="any"
                           value={dollarToBdtRate}
                           onChange={(e) => setDollarToBdtRate(e.target.value)}
                           placeholder="0.00"
@@ -1039,6 +1043,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                         </label>
                         <input
                           type="number"
+                          step="any"
                           value={formData.purchase_amount || ""}
                           readOnly
                           className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-200 text-gray-700 font-bold"
@@ -1069,7 +1074,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       </label>
                       <input
                         type="number"
-                        step="0.01"
+                        step="any"
                         value={formData.cnf_amount || ""}
                         onChange={(e) => handleInputChange("cnf_amount", e.target.value ? parseFloat(e.target.value) : null)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
@@ -1092,7 +1097,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       </label>
                       <input
                         type="number"
-                        step="0.01"
+                        step="any"
                         value={formData.price_amount || ""}
                         onChange={(e) => handleInputChange("price_amount", e.target.value ? parseFloat(e.target.value) : null)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
@@ -1115,7 +1120,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       </label>
                       <input
                         type="number"
-                        step="0.01"
+                        step="any"
                         value={formData.fob_value_usd || ""}
                         onChange={(e) => handleInputChange("fob_value_usd", e.target.value ? parseFloat(e.target.value) : null)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
@@ -1127,7 +1132,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       </label>
                       <input
                         type="number"
-                        step="0.01"
+                        step="any"
                         value={formData.freight_usd || ""}
                         onChange={(e) => handleInputChange("freight_usd", e.target.value ? parseFloat(e.target.value) : null)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
