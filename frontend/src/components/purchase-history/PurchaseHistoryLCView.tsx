@@ -5,23 +5,30 @@ import {
     Car,
     ChevronRight,
     ChevronDown,
+    ChevronUp,
     Calendar,
     Database,
     Building2,
     ArrowRight,
-    Info
+    Info,
+    Edit2,
+    Trash2
 } from "lucide-react";
 
 interface PurchaseHistoryLCViewProps {
     purchaseHistories: PurchaseHistory[];
     isLoading: boolean;
     onView?: (purchaseHistory: PurchaseHistory) => void;
+    onEdit?: (purchaseHistory: PurchaseHistory | PurchaseHistory[]) => void;
+    onDelete?: (purchaseHistory: PurchaseHistory) => void;
 }
 
 const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
     purchaseHistories,
     isLoading,
     onView,
+    onEdit,
+    onDelete,
 }) => {
     const [expandedLC, setExpandedLC] = useState<string | null>(null);
 
@@ -111,16 +118,32 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-4 ml-auto md:ml-0">
-                                <div className="hidden sm:flex flex-col items-end mr-4">
-                                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Entries</span>
-                                    <span className="text-lg font-black text-primary-600">{histories.length}</span>
-                                </div>
+                            <div className="flex items-center gap-2">
                                 <button
-                                    className={`p-3 rounded-xl transition-all duration-500 ${isExpanded ? "bg-primary-600 text-white rotate-180" : "bg-gray-100 text-gray-400 group-hover:bg-primary-100 group-hover:text-primary-500"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (onEdit) onEdit(histories);
+                                    }}
+                                    className="p-2.5 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-100 transition-all border border-amber-100 shadow-sm"
+                                    title="Edit LC Information"
+                                >
+                                    <Edit2 className="w-5 h-5" />
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (onDelete) onDelete(histories[0]);
+                                    }}
+                                    className="p-2.5 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-all border border-red-100 shadow-sm"
+                                    title="Delete LC"
+                                >
+                                    <Trash2 className="w-5 h-5" />
+                                </button>
+                                <button
+                                    className={`p-2.5 rounded-xl transition-all duration-500 ${isExpanded ? "bg-primary-600 text-white" : "bg-gray-100 text-gray-400 group-hover:bg-primary-100 group-hover:text-primary-500"
                                         }`}
                                 >
-                                    <ChevronDown className="w-6 h-6" />
+                                    {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                                 </button>
                             </div>
                         </div>
@@ -160,7 +183,29 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                                                                 REF: {car.ref_no || "N/A"}
                                                             </div>
                                                         </div>
-                                                        <div className="bg-primary-50 p-2.5 rounded-xl text-primary-500 ml-4">
+                                                        <div className="flex gap-1.5 opacity-0 group-hover/car:opacity-100 transition-opacity">
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    if (onEdit) onEdit(history);
+                                                                }}
+                                                                className="p-2 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 border border-amber-100"
+                                                                title="Edit"
+                                                            >
+                                                                <Edit2 className="w-4 h-4" />
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    if (onDelete) onDelete(history);
+                                                                }}
+                                                                className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 border border-red-100"
+                                                                title="Delete"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                            </button>
+                                                        </div>
+                                                        <div className="bg-primary-50 p-2.5 rounded-xl text-primary-500 ml-4 hidden sm:block">
                                                             <Car className="w-5 h-5 shadow-sm" />
                                                         </div>
                                                     </div>
@@ -208,11 +253,12 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                                     </div>
                                 </div>
                             </div>
-                        )}
+                        )
+                        }
                     </div>
                 );
             })}
-        </div>
+        </div >
     );
 };
 

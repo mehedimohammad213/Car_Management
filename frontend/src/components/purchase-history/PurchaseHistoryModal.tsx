@@ -6,11 +6,13 @@ import {
   UpdatePurchaseHistoryData,
 } from "../../services/purchaseHistoryApi";
 import { carApi, Car } from "../../services/carApi";
+import { cartApi, CartItem } from "../../services/cartApi";
+import { ShoppingCart } from "lucide-react";
 
 interface PurchaseHistoryModalProps {
   isOpen: boolean;
   mode: "create" | "update";
-  purchaseHistory?: PurchaseHistory | null;
+  purchaseHistory?: PurchaseHistory | PurchaseHistory[] | null;
   onClose: () => void;
   onSubmit: (
     data: CreatePurchaseHistoryData | UpdatePurchaseHistoryData | CreatePurchaseHistoryData[]
@@ -24,6 +26,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   onClose,
   onSubmit,
 }) => {
+  const mainHistory = Array.isArray(purchaseHistory) ? purchaseHistory[0] : purchaseHistory;
+
   const toInputDate = (value: string | null | undefined): string | null => {
     if (!value) return null;
     // Try to parse and normalize to YYYY-MM-DD for <input type="date">
@@ -88,12 +92,29 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   const [carSearchQuery, setCarSearchQuery] = useState("");
   const [isCarDropdownOpen, setIsCarDropdownOpen] = useState(false);
   const [carEntries, setCarEntries] = useState<CreatePurchaseHistoryData[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [loadingCart, setLoadingCart] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       fetchCars();
+      fetchCartItems();
     }
   }, [isOpen]);
+
+  const fetchCartItems = async () => {
+    try {
+      setLoadingCart(true);
+      const response = await cartApi.getCartItems();
+      if (response.success) {
+        setCartItems(response.data.items || []);
+      }
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
+    } finally {
+      setLoadingCart(false);
+    }
+  };
 
   const fetchCars = async () => {
     try {
@@ -116,64 +137,76 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
   useEffect(() => {
     if (purchaseHistory && mode === "update") {
-      // Calculate dollar and BDT from purchase_amount if available
-      // Prefill from backend fields if present
+      const historyArray = Array.isArray(purchaseHistory) ? purchaseHistory : [purchaseHistory];
+      const mainHistory = historyArray[0];
+
+      // Prefill carEntries for bulk edit view
+      if (historyArray.length > 1) {
+        const entries: (CreatePurchaseHistoryData & { id?: number })[] = historyArray.map(ph => ({
+          id: ph.id,
+          car_id: ph.car_id,
+          purchase_amount: ph.purchase_amount,
+          foreign_amount: ph.foreign_amount ?? null,
+          bdt_amount: ph.bdt_amount ?? null,
+          currency_type: ph.currency_type || "dollar",
+          govt_duty: ph.govt_duty,
+          cnf_amount: ph.cnf_amount,
+          miscellaneous: ph.miscellaneous,
+          purchase_date: ph.purchase_date ? toInputDate(ph.purchase_date) : null,
+          hs_code: ph.hs_code,
+          price_amount: ph.price_amount,
+          price_basis: ph.price_basis,
+          fob_value_usd: ph.fob_value_usd,
+          freight_usd: ph.freight_usd,
+        }));
+        setCarEntries(entries);
+      } else {
+        setCarEntries([]);
+      }
+
       setForeignAmount(
-        purchaseHistory.foreign_amount != null
-          ? String(purchaseHistory.foreign_amount)
+        mainHistory.foreign_amount != null
+          ? String(mainHistory.foreign_amount)
           : ""
       );
       setDollarToBdtRate(
-        purchaseHistory.bdt_amount != null
-          ? String(purchaseHistory.bdt_amount)
+        mainHistory.bdt_amount != null
+          ? String(mainHistory.bdt_amount)
           : ""
       );
-      // If updating logic for Yen is needed here to prefill rates, it might be complex as we only store purchase_amount? 
-      // Actually we have foreign_amount (Yen), bdt_amount (Rate?), currency_type. 
-      // But we lack Yen->Dollar rate storage in the backend model based on what I see in state.
-      // Assuming user re-enters or we just use what we have. 
-      // For now, let's just initialize what we can.
-      setCurrencyType((purchaseHistory.currency_type as "dollar" | "yen") || "dollar");
 
-      // Reverse calculate rates and intermediate values for Yen
-      if (purchaseHistory.currency_type === 'yen' && purchaseHistory.foreign_amount && purchaseHistory.purchase_amount) {
-        const yenAmount = purchaseHistory.foreign_amount;
-        const finalBdt = purchaseHistory.purchase_amount;
-        // We assume bdt_amount stores the Dollar->BDT rate based on our previous mapping
-        const dollarToBdt = purchaseHistory.bdt_amount || 0;
+      setCurrencyType((mainHistory.currency_type as "dollar" | "yen") || "dollar");
+
+      if (mainHistory.currency_type === 'yen' && mainHistory.foreign_amount && mainHistory.purchase_amount) {
+        const yenAmount = mainHistory.foreign_amount;
+        const finalBdt = mainHistory.purchase_amount;
+        const dollarToBdt = mainHistory.bdt_amount || 0;
 
         if (yenAmount > 0 && dollarToBdt > 0) {
-          // finalBdt = (yenAmount * yenToDollarRate) * dollarToBdt
-          // So: yenToDollarRate = finalBdt / (yenAmount * dollarToBdt)
-
           const calculatedDollar = finalBdt / dollarToBdt;
           const calculatedYenRate = calculatedDollar / yenAmount;
-
           setYenToDollarRate(calculatedYenRate.toFixed(6));
           setIntermediateDollar(calculatedDollar.toFixed(2));
         }
       }
 
-      setFormData({
-        car_ids: purchaseHistory.cars?.map(c => c.id) || (purchaseHistory.car_id ? [purchaseHistory.car_id] : []),
-        car_id: purchaseHistory.car_id ?? null,
-        purchase_date: toInputDate(purchaseHistory.purchase_date),
-        purchase_amount: purchaseHistory.purchase_amount,
-        foreign_amount:
-          purchaseHistory.foreign_amount != null
-            ? purchaseHistory.foreign_amount
-            : null,
-        bdt_amount:
-          purchaseHistory.bdt_amount != null ? purchaseHistory.bdt_amount : null,
-        govt_duty: purchaseHistory.govt_duty || null,
-        cnf_amount: purchaseHistory.cnf_amount || null,
-        miscellaneous: purchaseHistory.miscellaneous || null,
-        lc_date: toInputDate(purchaseHistory.lc_date),
-        lc_number: purchaseHistory.lc_number || null,
-        lc_bank_name: purchaseHistory.lc_bank_name || null,
-        lc_bank_branch_name: purchaseHistory.lc_bank_branch_name || null,
-        lc_bank_branch_address: purchaseHistory.lc_bank_branch_address || null,
-        total_units_per_lc: purchaseHistory.total_units_per_lc || null,
+      const initialFormData: CreatePurchaseHistoryData = {
+        car_ids: mainHistory.cars?.map(c => c.id) || (mainHistory.car_id ? [mainHistory.car_id] : []),
+        car_id: mainHistory.car_id ?? null,
+        purchase_date: toInputDate(mainHistory.purchase_date),
+        purchase_amount: mainHistory.purchase_amount,
+        foreign_amount: mainHistory.foreign_amount ?? null,
+        bdt_amount: mainHistory.bdt_amount ?? null,
+        currency_type: mainHistory.currency_type || "dollar",
+        govt_duty: mainHistory.govt_duty || null,
+        cnf_amount: mainHistory.cnf_amount || null,
+        miscellaneous: mainHistory.miscellaneous || null,
+        lc_date: toInputDate(mainHistory.lc_date),
+        lc_number: mainHistory.lc_number || null,
+        lc_bank_name: mainHistory.lc_bank_name || null,
+        lc_bank_branch_name: mainHistory.lc_bank_branch_name || null,
+        lc_bank_branch_address: mainHistory.lc_bank_branch_address || null,
+        total_units_per_lc: mainHistory.total_units_per_lc || null,
         bill_of_lading: null,
         invoice_number: null,
         export_certificate: null,
@@ -185,12 +218,14 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         custom_one: null,
         custom_two: null,
         custom_three: null,
-        hs_code: purchaseHistory.hs_code || null,
-        price_amount: purchaseHistory.price_amount || null,
-        price_basis: purchaseHistory.price_basis || null,
-        fob_value_usd: purchaseHistory.fob_value_usd || null,
-        freight_usd: purchaseHistory.freight_usd || null,
-      });
+        hs_code: mainHistory.hs_code || null,
+        price_amount: mainHistory.price_amount || null,
+        price_basis: mainHistory.price_basis || null,
+        fob_value_usd: mainHistory.fob_value_usd || null,
+        freight_usd: mainHistory.freight_usd || null,
+      };
+
+      setFormData(initialFormData);
 
       // Store existing file paths
       const pdfFields = [
@@ -209,13 +244,13 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
       const files: Record<string, string> = {};
       pdfFields.forEach((field) => {
-        const value = purchaseHistory[field as keyof PurchaseHistory] as
+        const value = mainHistory[field as keyof PurchaseHistory] as
           | string
           | null;
         if (value) files[field] = value;
       });
       setExistingFiles(files);
-    } else {
+    } else if (!purchaseHistory && mode === "create") {
       // Reset form for create mode
       setFormData({
         car_ids: [],
@@ -280,14 +315,22 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     const dollarToBdt = parseFloat(dollarToBdtRate) || 0;
     finalAmount = dollarEquivalent * dollarToBdt;
 
-    setFormData((prev) => ({
-      ...prev,
-      purchase_amount: finalAmount > 0 ? finalAmount : null,
-      foreign_amount: !Number.isNaN(foreign) && foreignAmount !== "" ? foreign : null,
-      bdt_amount: !Number.isNaN(parseFloat(dollarToBdtRate)) && dollarToBdtRate !== "" ? parseFloat(dollarToBdtRate) : null,
-      currency_type: currencyType,
-    }));
-  }, [foreignAmount, yenToDollarRate, dollarToBdtRate, currencyType]);
+    setFormData((prev) => {
+      // PROMPT FIX: Don't let the calculator overwrite existing purchase_amount with null/0 
+      // if inputs are empty during update prefill.
+      if (mode === "update" && !foreignAmount && !dollarToBdtRate) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        purchase_amount: finalAmount > 0 ? finalAmount : prev.purchase_amount,
+        foreign_amount: !Number.isNaN(foreign) && foreignAmount !== "" ? foreign : prev.foreign_amount,
+        bdt_amount: !Number.isNaN(parseFloat(dollarToBdtRate)) && dollarToBdtRate !== "" ? parseFloat(dollarToBdtRate) : prev.bdt_amount,
+        currency_type: currencyType,
+      };
+    });
+  }, [foreignAmount, yenToDollarRate, dollarToBdtRate, currencyType, mode]);
 
   const handleInputChange = (
     field: keyof CreatePurchaseHistoryData,
@@ -391,29 +434,31 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (mode === 'create' && carEntries.length > 0) {
-      // Helper to merge shared data
-      const sharedData = {
-        lc_date: formData.lc_date,
-        lc_number: formData.lc_number,
-        lc_bank_name: formData.lc_bank_name,
-        lc_bank_branch_name: formData.lc_bank_branch_name,
-        lc_bank_branch_address: formData.lc_bank_branch_address,
-        total_units_per_lc: formData.total_units_per_lc,
-        bill_of_lading: formData.bill_of_lading,
-        invoice_number: formData.invoice_number,
-        export_certificate: formData.export_certificate,
-        export_certificate_translated: formData.export_certificate_translated,
-        bill_of_exchange_amount: formData.bill_of_exchange_amount,
-        custom_duty_copy_3pages: formData.custom_duty_copy_3pages,
-        cheque_copy: formData.cheque_copy,
-        certificate: formData.certificate,
-        custom_one: formData.custom_one,
-        custom_two: formData.custom_two,
-        custom_three: formData.custom_three,
-      };
+    // Common data from the top section (LC Info)
+    const sharedData = {
+      lc_date: formData.lc_date,
+      lc_number: formData.lc_number,
+      lc_bank_name: formData.lc_bank_name,
+      lc_bank_branch_name: formData.lc_bank_branch_name,
+      lc_bank_branch_address: formData.lc_bank_branch_address,
+      total_units_per_lc: formData.total_units_per_lc,
+      // Shared Files
+      bill_of_lading: formData.bill_of_lading,
+      invoice_number: formData.invoice_number,
+      export_certificate: formData.export_certificate,
+      export_certificate_translated: formData.export_certificate_translated,
+      bill_of_exchange_amount: formData.bill_of_exchange_amount,
+      custom_duty_copy_3pages: formData.custom_duty_copy_3pages,
+      cheque_copy: formData.cheque_copy,
+      certificate: formData.certificate,
+      custom_one: formData.custom_one,
+      custom_two: formData.custom_two,
+      custom_three: formData.custom_three,
+    };
 
-      const bulkData: CreatePurchaseHistoryData[] = carEntries.map(entry => ({
+    if (carEntries.length > 0) {
+      // If we have carEntries, we process them as a list
+      const bulkData = carEntries.map(entry => ({
         ...sharedData,
         ...entry
       }));
@@ -421,7 +466,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       // @ts-ignore
       onSubmit(bulkData);
     } else {
-      onSubmit(formData);
+      // Single item update/create
+      onSubmit({
+        ...formData,
+        ...sharedData
+      });
     }
   };
 
@@ -596,8 +645,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
             </div>
             <div className="border-t border-gray-200 my-6"></div>
 
-            {/* 3. Added Cars List (Create Mode Only) */}
-            {mode === 'create' && carEntries.length > 0 && (
+            {/* 3. Added Cars List (Shows in Create and can be enabled for Update if we want) */}
+            {(mode === 'create') && carEntries.length > 0 && (
               <div className="bg-primary-50 p-6 rounded-2xl border border-primary-100">
                 <h3 className="text-lg font-semibold text-primary-900 mb-4 flex items-center gap-2">
                   Added Cars ({carEntries.length}) <span className="text-xs font-normal text-primary-600 px-2 py-0.5 bg-white rounded-full border border-primary-100">Ready to submit</span>
@@ -648,171 +697,310 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
               </div>
             )}
 
-            {/* 4. Car Entry Form */}
-            <div className={`p-6 rounded-2xl border ${mode === 'create' ? 'bg-white border-blue-200 shadow-md ring-1 ring-blue-100' : 'bg-white border-gray-200'}`}>
-              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                {mode === 'create' ? <><Plus className="w-5 h-5 text-blue-600" /> Add Car to Purchase</> : "Car & Financial Details"}
-              </h3>
-
-              {/* Car Selection */}
-              <div className="border-b border-gray-200 pb-6">
-                <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {mode === 'create' ? "Select Car to Add" : "Selected Cars"}
-                  </label>
-
-                  {/* Selected Car Display */}
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {(formData.car_id ? [formData.car_id] : (formData.car_ids || [])).map(id => {
-                      let car: any = cars.find(c => c.id === id);
-                      if (!car && purchaseHistory?.cars) {
-                        car = purchaseHistory.cars.find(c => c.id === id);
-                      }
-                      if (!car) return null;
-
-                      return (
-                        <div key={id} className="bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-between w-full border border-blue-200">
-                          <span>{car.make} {car.model} — <span className="text-gray-500 font-normal">{car.chassis_no_full || car.chassis_no_masked}</span></span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              handleInputChange("car_id", null);
-                              handleInputChange("car_ids", []);
-                            }}
-                            className="text-blue-400 hover:text-blue-700"
-                          >
-                            <X className="w-5 h-5" />
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Search Input (Show only if no car selected in create mode, or always in update mode if allowing adding) */}
-                  {((mode === 'create' && !formData.car_id) || (mode === 'update')) && (
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <input
-                        type="text"
-                        placeholder="Search cars by make, model, chassis..."
-                        value={carSearchQuery}
-                        onChange={(e) => {
-                          setCarSearchQuery(e.target.value);
-                          setIsCarDropdownOpen(true);
-                        }}
-                        onFocus={() => setIsCarDropdownOpen(true)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      />
-
-                      {isCarDropdownOpen && (
-                        <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
-                          {loadingCars ? (
-                            <div className="p-4 text-center text-gray-500 text-sm">Loading cars...</div>
-                          ) : (
-                            <>
-                              {cars
-                                .filter(car => {
-                                  const searchStr = `${car.make} ${car.model} ${car.chassis_no_full || ""} ${car.chassis_no_masked || ""}`.toLowerCase();
-                                  return searchStr.includes(carSearchQuery.toLowerCase());
-                                })
-                                .map(car => {
-                                  // Check if already in list
-                                  const isAlreadyAdded = carEntries.some(e => e.car_id === car.id);
-                                  const isSelected = formData.car_id === car.id || (formData.car_ids || []).includes(car.id);
-
-                                  if (isAlreadyAdded) return null; // Hide already added cars in list
-
-                                  return (
-                                    <div
-                                      key={car.id}
-                                      onClick={() => {
-                                        handleInputChange("car_id", car.id);
-                                        handleInputChange("car_ids", [car.id]); // Keep both for compatibility
-                                        setIsCarDropdownOpen(false);
-                                        setCarSearchQuery("");
-                                      }}
-                                      className={`px-4 py-2 cursor-pointer flex items-center justify-between hover:bg-gray-50 ${isSelected ? 'bg-primary-50' : ''}`}
-                                    >
-                                      <div className="flex flex-col">
-                                        <span className="text-sm font-medium text-gray-900">{car.make} {car.model}</span>
-                                        <span className="text-xs text-gray-500">{car.chassis_no_full || car.chassis_no_masked}</span>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              {cars.length === 0 && <div className="p-4 text-center">No cars found</div>}
-                            </>
-                          )}
-                        </div>
-                      )}
-                      {isCarDropdownOpen && (
-                        <div className="fixed inset-0 z-10" onClick={() => setIsCarDropdownOpen(false)}></div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Purchase Date and H.S Code Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Purchase Date
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.purchase_date || ""}
-                    onChange={(e) => handleInputChange("purchase_date", e.target.value || null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    H.S Code
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.hs_code || ""}
-                    onChange={(e) => handleInputChange("hs_code", e.target.value || null)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              {/* Purchase Amount Calculation */}
-              <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mb-6">
-                <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">
-                  Purchase Price & Financial Details
+            {/* 4. Cart List - NEW */}
+            {(mode === 'create') && cartItems.length > 0 && (
+              <div className="bg-amber-50 p-6 rounded-2xl border border-amber-100 mb-6">
+                <h3 className="text-lg font-semibold text-amber-900 mb-4 flex items-center gap-2">
+                  <ShoppingCart className="w-5 h-5" /> From Cart List ({cartItems.length})
                 </h3>
-                <div className="flex flex-wrap items-center gap-4 mb-4">
-                  <span className="text-sm font-medium text-gray-700">Currency:</span>
-                  <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
-                    <input
-                      type="checkbox"
-                      checked={currencyType === "dollar"}
-                      onChange={(e) => e.target.checked && setCurrencyType("dollar")}
-                      className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                    />
-                    Dollar
-                  </label>
-                  <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
-                    <input
-                      type="checkbox"
-                      checked={currencyType === "yen"}
-                      onChange={(e) => e.target.checked && setCurrencyType("yen")}
-                      className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                    />
-                    Yen
-                  </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {cartItems.map((item) => {
+                    const isSelected = formData.car_id === item.car_id || (formData.car_ids || []).includes(item.car_id);
+                    const isAlreadyAdded = carEntries.some(e => e.car_id === item.car_id);
+
+                    if (isAlreadyAdded) return null;
+
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={() => {
+                          handleInputChange("car_id", item.car_id);
+                          handleInputChange("car_ids", [item.car_id]);
+                          // Optionally pre-fill other fields from car if needed
+                        }}
+                        className={`p-4 rounded-xl border bg-white cursor-pointer transition-all hover:shadow-md ${isSelected ? 'border-amber-500 ring-2 ring-amber-200' : 'border-gray-200'}`}
+                      >
+                        <div className="font-bold text-gray-900">{item.car.make} {item.car.model}</div>
+                        <div className="text-xs text-gray-500 mt-1">Ref: {(item.car as any).ref_no || 'N/A'}</div>
+                        <div className="text-xs text-gray-500 font-mono mt-1">{(item.car as any).chassis_no_full || (item.car as any).chassis_no_masked || 'No Chassis'}</div>
+                      </div>
+                    );
+                  })}
                 </div>
-                {currencyType === "yen" ? (
-                  // Yen Layout: 2 Rows of 3 Columns
-                  <div className="space-y-4">
-                    {/* Row 1: Yen -> Dollar */}
+              </div>
+            )}
+
+            {/* 4. Car Entry Form */}
+            {mode === 'create' && (
+              <div className={`p-6 rounded-2xl border bg-white border-blue-200 shadow-md ring-1 ring-blue-100 mb-6`}>
+                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <Plus className="w-5 h-5 text-blue-600" /> Add Car to Purchase
+                </h3>
+
+                {/* Car Selection */}
+                <div className="border-b border-gray-200 pb-6">
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Select Car to Add
+                    </label>
+
+                    {/* Selected Car Display */}
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {(formData.car_id ? [formData.car_id] : (formData.car_ids || [])).map(id => {
+                        let car: any = cars.find(c => c.id === id);
+                        if (!car && mainHistory?.cars) {
+                          car = mainHistory.cars.find((c: any) => c.id === id);
+                        }
+                        if (!car) return null;
+
+                        return (
+                          <div key={id} className="bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-between w-full border border-blue-200">
+                            <span>{car.make} {car.model} — <span className="text-gray-500 font-normal">{car.chassis_no_full || car.chassis_no_masked}</span></span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleInputChange("car_id", null);
+                                handleInputChange("car_ids", []);
+                              }}
+                              className="text-blue-400 hover:text-blue-700"
+                            >
+                              <X className="w-5 h-5" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Search Input */}
+                    {!formData.car_id && (
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <input
+                          type="text"
+                          placeholder="Search cars by make, model, chassis..."
+                          value={carSearchQuery}
+                          onChange={(e) => {
+                            setCarSearchQuery(e.target.value);
+                            setIsCarDropdownOpen(true);
+                          }}
+                          onFocus={() => setIsCarDropdownOpen(true)}
+                          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        />
+
+                        {isCarDropdownOpen && (
+                          <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                            {loadingCars ? (
+                              <div className="p-4 text-center text-gray-500 text-sm">Loading cars...</div>
+                            ) : (
+                              <>
+                                {cars
+                                  .filter(car => {
+                                    const searchStr = `${car.make} ${car.model} ${car.chassis_no_full || ""} ${car.chassis_no_masked || ""}`.toLowerCase();
+                                    return searchStr.includes(carSearchQuery.toLowerCase());
+                                  })
+                                  .map(car => {
+                                    const isAlreadyAdded = carEntries.some(e => e.car_id === car.id);
+                                    if (isAlreadyAdded) return null;
+                                    return (
+                                      <div
+                                        key={car.id}
+                                        onClick={() => {
+                                          handleInputChange("car_id", car.id);
+                                          handleInputChange("car_ids", [car.id]);
+                                          setIsCarDropdownOpen(false);
+                                          setCarSearchQuery("");
+                                        }}
+                                        className="px-4 py-2 cursor-pointer flex items-center justify-between hover:bg-gray-50"
+                                      >
+                                        <div className="flex flex-col">
+                                          <span className="text-sm font-medium text-gray-900">{car.make} {car.model}</span>
+                                          <span className="text-xs text-gray-500">{car.chassis_no_full || car.chassis_no_masked}</span>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Add Button */}
+                <div className="mt-6 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleAddEntry}
+                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg transform active:scale-95"
+                  >
+                    <Plus className="w-5 h-5" />
+                    Add Car to List
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Individual Details Section - Show only for Single Edit or Create */}
+            {(!Array.isArray(purchaseHistory) || mode === "create") && (
+              <div className="bg-white p-6 rounded-2xl border border-gray-200">
+                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  {mode === 'create' ? "Current Entry Details" : "Car & Financial Details"}
+                </h3>
+
+                {/* Purchase Date and H.S Code */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Purchase Date
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.purchase_date || ""}
+                      onChange={(e) => handleInputChange("purchase_date", e.target.value || null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      H.S Code
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.hs_code || ""}
+                      onChange={(e) => handleInputChange("hs_code", e.target.value || null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* Calculator section from line 1040 original... */}
+
+                {/* Purchase Amount Calculation */}
+                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mb-6">
+                  <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">
+                    Purchase Price & Financial Details
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-4 mb-4">
+                    <span className="text-sm font-medium text-gray-700">Currency:</span>
+                    <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <input
+                        type="checkbox"
+                        checked={currencyType === "dollar"}
+                        onChange={(e) => e.target.checked && setCurrencyType("dollar")}
+                        className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      />
+                      Dollar
+                    </label>
+                    <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <input
+                        type="checkbox"
+                        checked={currencyType === "yen"}
+                        onChange={(e) => e.target.checked && setCurrencyType("yen")}
+                        className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      />
+                      Yen
+                    </label>
+                  </div>
+                  {currencyType === "yen" ? (
+                    // Yen Layout: 2 Rows of 3 Columns
+                    <div className="space-y-4">
+                      {/* Row 1: Yen -> Dollar */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            1. Amount (JPY)
+                          </label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={foreignAmount}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setForeignAmount(val);
+                              setFormData((prev) => ({
+                                ...prev,
+                                foreign_amount: val === "" ? null : parseFloat(val) || 0,
+                              }));
+                            }}
+                            placeholder="0.00"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            2. Yen to Dollar Rate
+                          </label>
+                          <input
+                            type="number"
+                            step="0.000001"
+                            value={yenToDollarRate}
+                            onChange={(e) => setYenToDollarRate(e.target.value)}
+                            placeholder="0.0000"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            3. Calculated Amount (USD)
+                          </label>
+                          <input
+                            type="text"
+                            value={intermediateDollar}
+                            readOnly
+                            placeholder="Calculated USD"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-700 font-medium"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Row 2: Dollar -> BDT */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            4. Amount (USD)
+                          </label>
+                          <input
+                            type="text"
+                            value={intermediateDollar}
+                            readOnly
+                            placeholder="USD Amount"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-700 font-medium"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            5. Dollar to BDT Rate (৳)
+                          </label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={dollarToBdtRate}
+                            onChange={(e) => setDollarToBdtRate(e.target.value)}
+                            placeholder="0.00"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            6. Calculated Total (BDT)
+                          </label>
+                          <input
+                            type="number"
+                            value={formData.purchase_amount || ""}
+                            readOnly
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-200 text-gray-700 font-bold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    // Dollar Layout: 1 Row
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <label className="block text-xs font-medium text-gray-500 mb-1">
-                          1. Amount (JPY)
+                          Amount (USD)
                         </label>
                         <input
                           type="number"
@@ -830,50 +1018,10 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                           className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                         />
                       </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">
-                          2. Yen to Dollar Rate
-                        </label>
-                        <input
-                          type="number"
-                          step="0.000001"
-                          value={yenToDollarRate}
-                          onChange={(e) => setYenToDollarRate(e.target.value)}
-                          placeholder="0.0000"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">
-                          3. Calculated Amount (USD)
-                        </label>
-                        <input
-                          type="text"
-                          value={intermediateDollar}
-                          readOnly
-                          placeholder="Calculated USD"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-700 font-medium"
-                        />
-                      </div>
-                    </div>
 
-                    {/* Row 2: Dollar -> BDT */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <label className="block text-xs font-medium text-gray-500 mb-1">
-                          4. Amount (USD)
-                        </label>
-                        <input
-                          type="text"
-                          value={intermediateDollar}
-                          readOnly
-                          placeholder="USD Amount"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-700 font-medium"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">
-                          5. Dollar to BDT Rate (৳)
+                          Dollar to BDT Rate (৳)
                         </label>
                         <input
                           type="number"
@@ -884,9 +1032,10 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                           className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                         />
                       </div>
+
                       <div>
                         <label className="block text-xs font-medium text-gray-500 mb-1">
-                          6. Calculated Total (BDT)
+                          Calculated Total (BDT)
                         </label>
                         <input
                           type="number"
@@ -896,149 +1045,102 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                         />
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  // Dollar Layout: 1 Row
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  )}
+
+                  {/* Divider */}
+                  <div className="border-t border-gray-300 my-4"></div>
+
+                  {/* Other Financial Fields */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">
-                        Amount (USD)
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Govt Duty
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.govt_duty || ""}
+                        onChange={(e) => handleInputChange("govt_duty", e.target.value || null)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        CNF Amount
                       </label>
                       <input
                         type="number"
                         step="0.01"
-                        value={foreignAmount}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setForeignAmount(val);
-                          setFormData((prev) => ({
-                            ...prev,
-                            foreign_amount: val === "" ? null : parseFloat(val) || 0,
-                          }));
-                        }}
-                        placeholder="0.00"
+                        value={formData.cnf_amount || ""}
+                        onChange={(e) => handleInputChange("cnf_amount", e.target.value ? parseFloat(e.target.value) : null)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                       />
                     </div>
-
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">
-                        Dollar to BDT Rate (৳)
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Miscellaneous
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.miscellaneous || ""}
+                        onChange={(e) => handleInputChange("miscellaneous", e.target.value || null)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Price Amount
                       </label>
                       <input
                         type="number"
                         step="0.01"
-                        value={dollarToBdtRate}
-                        onChange={(e) => setDollarToBdtRate(e.target.value)}
-                        placeholder="0.00"
+                        value={formData.price_amount || ""}
+                        onChange={(e) => handleInputChange("price_amount", e.target.value ? parseFloat(e.target.value) : null)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                       />
                     </div>
-
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">
-                        Calculated Total (BDT)
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Price Basis
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.price_basis || ""}
+                        onChange={(e) => handleInputChange("price_basis", e.target.value || null)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        FOB Value (USD)
                       </label>
                       <input
                         type="number"
-                        value={formData.purchase_amount || ""}
-                        readOnly
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-200 text-gray-700 font-bold"
+                        step="0.01"
+                        value={formData.fob_value_usd || ""}
+                        onChange={(e) => handleInputChange("fob_value_usd", e.target.value ? parseFloat(e.target.value) : null)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                       />
                     </div>
-                  </div>
-                )}
-
-                {/* Divider */}
-                <div className="border-t border-gray-300 my-4"></div>
-
-                {/* Other Financial Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Govt Duty
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.govt_duty || ""}
-                      onChange={(e) => handleInputChange("govt_duty", e.target.value || null)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      CNF Amount
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.cnf_amount || ""}
-                      onChange={(e) => handleInputChange("cnf_amount", e.target.value ? parseFloat(e.target.value) : null)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Miscellaneous
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.miscellaneous || ""}
-                      onChange={(e) => handleInputChange("miscellaneous", e.target.value || null)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Price Amount
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.price_amount || ""}
-                      onChange={(e) => handleInputChange("price_amount", e.target.value ? parseFloat(e.target.value) : null)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Price Basis
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.price_basis || ""}
-                      onChange={(e) => handleInputChange("price_basis", e.target.value || null)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      FOB Value (USD)
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.fob_value_usd || ""}
-                      onChange={(e) => handleInputChange("fob_value_usd", e.target.value ? parseFloat(e.target.value) : null)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Freight (USD)
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.freight_usd || ""}
-                      onChange={(e) => handleInputChange("freight_usd", e.target.value ? parseFloat(e.target.value) : null)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                    />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Freight (USD)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.freight_usd || ""}
+                        onChange={(e) => handleInputChange("freight_usd", e.target.value ? parseFloat(e.target.value) : null)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* PDF Documents */}
+              </div>
+            )}
+
+            {/* PDF Documents Section - Single Edit or Create */}
+            {(!Array.isArray(purchaseHistory) || mode === "create") && (
               <div className="mt-6 border-t border-gray-200 pt-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   Document Attachments
@@ -1149,21 +1251,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                   })}
                 </div>
               </div>
-
-              {/* Add Button (Create Mode) */}
-              {mode === 'create' && (
-                <div className="mt-6 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={handleAddEntry}
-                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg transform active:scale-95"
-                  >
-                    <Plus className="w-5 h-5" />
-                    Add Car to List
-                  </button>
-                </div>
-              )}
-            </div>
+            )}
 
             {/* Actions */}
             <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">

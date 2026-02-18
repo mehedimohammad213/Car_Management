@@ -25,7 +25,7 @@ const PurchaseHistoryPage: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "update">("create");
   const [selectedPurchaseHistory, setSelectedPurchaseHistory] =
-    useState<PurchaseHistory | null>(null);
+    useState<PurchaseHistory | PurchaseHistory[] | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [purchaseHistoryToDelete, setPurchaseHistoryToDelete] =
     useState<PurchaseHistory | null>(null);
@@ -99,7 +99,7 @@ const PurchaseHistoryPage: React.FC = () => {
     navigate(`/admin/purchase-history/view/${purchaseHistory.id}`);
   };
 
-  const handleEdit = (purchaseHistory: PurchaseHistory) => {
+  const handleEdit = (purchaseHistory: PurchaseHistory | PurchaseHistory[]) => {
     setSelectedPurchaseHistory(purchaseHistory);
     setModalMode("update");
     setShowModal(true);
@@ -139,36 +139,44 @@ const PurchaseHistoryPage: React.FC = () => {
   ) => {
     try {
       if (Array.isArray(data)) {
-        // Handle bulk creation
         let successCount = 0;
         let failCount = 0;
 
         for (const item of data) {
-          const response = await purchaseHistoryApi.createPurchaseHistory(item);
+          const itemWithId = item as (CreatePurchaseHistoryData & { id?: number });
+          let response;
+
+          if (modalMode === "update" && itemWithId.id) {
+            // Update existing record
+            response = await purchaseHistoryApi.updatePurchaseHistory(itemWithId.id, item);
+          } else {
+            // Create new record
+            response = await purchaseHistoryApi.createPurchaseHistory(item);
+          }
+
           if (response.success) {
             successCount++;
           } else {
             failCount++;
-            console.error("Failed to create purchase history for car:", item.car_id, response.message);
+            console.error(`Failed to ${itemWithId.id ? 'update' : 'create'} purchase history:`, response.message);
           }
         }
 
         if (successCount > 0) {
-          toast.success(`${successCount} purchase histories created successfully`);
+          toast.success(`${successCount} records processed successfully`);
           setShowModal(false);
           fetchPurchaseHistories();
         }
-
         if (failCount > 0) {
-          toast.error(`${failCount} purchase histories failed to create`);
+          toast.error(`${failCount} records failed`);
         }
-
         return;
       }
 
       if (modalMode === "update" && selectedPurchaseHistory) {
+        const historyToUpdate = Array.isArray(selectedPurchaseHistory) ? selectedPurchaseHistory[0] : selectedPurchaseHistory;
         const response = await purchaseHistoryApi.updatePurchaseHistory(
-          selectedPurchaseHistory.id,
+          historyToUpdate.id,
           data as UpdatePurchaseHistoryData
         );
         if (response.success) {
@@ -344,6 +352,8 @@ const PurchaseHistoryPage: React.FC = () => {
             purchaseHistories={purchaseHistories}
             isLoading={loading}
             onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
         )}
 
