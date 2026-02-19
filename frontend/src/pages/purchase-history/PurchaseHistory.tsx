@@ -241,29 +241,27 @@ const PurchaseHistoryPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-primary-600">
-                Purchase History
+                Purchases / Purchase History
               </h1>
             </div>
             {/* Tab Selection - right side of header */}
             <div className="flex gap-1">
               <button
                 onClick={() => setActiveTab("history")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "history"
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "history"
                   ? "bg-primary-600 text-white"
                   : "text-gray-600 hover:bg-gray-100"
                   }`}
               >
-                <List className="w-4 h-4" />
                 History Table
               </button>
               <button
                 onClick={() => setActiveTab("lc_wise")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "lc_wise"
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "lc_wise"
                   ? "bg-primary-600 text-white"
                   : "text-gray-600 hover:bg-gray-100"
                   }`}
               >
-                <LayoutGrid className="w-4 h-4" />
                 LC Wise View
               </button>
             </div>
