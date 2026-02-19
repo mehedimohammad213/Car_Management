@@ -69,48 +69,49 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-        <div className="px-6 py-12 text-center">
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-            <span className="ml-3 text-gray-600">Loading available cars...</span>
-          </div>
+      <div className="text-center py-20">
+        <div className="relative">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-100 border-t-primary-600 mx-auto"></div>
         </div>
+        <p className="text-gray-900 mt-4 font-medium">
+          Loading available cars...
+        </p>
+        <p className="text-gray-500 text-sm mt-1">
+          Fetching the latest vehicle details
+        </p>
       </div>
     );
   }
 
   if (filteredCars.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-        <div className="text-center py-16">
-          <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-            <Car className="w-12 h-12 text-gray-400" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No available cars found
-          </h3>
-          <p className="text-gray-500 max-w-sm mx-auto mb-4">
-            All cars have stock entries. Try refreshing the page or check your connection.
-          </p>
-          <button
-            onClick={onRefresh}
-            className="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-colors font-medium text-sm"
-          >
-            Refresh Data
-          </button>
+      <div className="text-center py-20">
+        <div className="w-40 h-40 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+          <Car className="w-20 h-20 text-primary-600" />
         </div>
+        <h3 className="text-3xl font-bold text-gray-900 mb-4">
+          No available cars found
+        </h3>
+        <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
+          All cars have stock entries. Try refreshing the page or check your connection.
+        </p>
+        <button
+          onClick={onRefresh}
+          className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-800 text-white rounded-xl hover:from-primary-700 hover:to-primary-900 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+        >
+          Refresh Data
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <div className="min-w-[1200px] sm:min-w-full">
-          {/* Professional Table Header with Gradient */}
-          <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 shadow-lg">
-            <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
+          {/* Table Header - same style as CarTable */}
+          <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
+            <div className="grid grid-cols-12 gap-4 p-4 text-xs font-bold uppercase tracking-wider">
               <div className="col-span-2 flex items-center gap-2">
                 <Car className="w-4 h-4" />
                 <span>Car Information</span>
@@ -148,7 +149,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
           </div>
 
           {/* Table Body with Enhanced Styling */}
-          <div className="divide-y divide-gray-100 bg-gray-50/30">
+          <div className="divide-y divide-gray-100">
             {filteredCars.map((car, index) => {
               const makeModelKey = `${car.make}_${car.model}`;
               const availableCarsCount = availableCarsCountMap.get(makeModelKey) || 0;
@@ -162,8 +163,10 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                 <div
                   key={car.id}
                   onClick={() => onView?.(car)}
-                  className="grid grid-cols-12 gap-4 p-4 hover:bg-gradient-to-r hover:from-primary-50/50 hover:to-indigo-50/30 transition-all duration-300 cursor-pointer group border-l-4 border-transparent hover:border-primary-500"
+                  className="grid grid-cols-12 gap-4 p-4 hover:bg-white hover:shadow-md hover:scale-[1.002] transition-all duration-200 cursor-pointer group relative z-0 hover:z-10"
                 >
+                  {/* Left accent bar on hover - same as CarTable */}
+                  <div className="absolute left-0 top-2 bottom-2 w-1.5 bg-primary-600 rounded-r-md opacity-0 group-hover:opacity-100 transition-all duration-200 transform -translate-x-1 group-hover:translate-x-0" />
                   {/* Car Information - Enhanced */}
                   <div className="col-span-2 flex items-center gap-3">
                     <div className="relative w-28 h-24 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 rounded-xl overflow-hidden flex-shrink-0 shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-gray-200 group-hover:border-blue-300">

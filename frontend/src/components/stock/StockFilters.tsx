@@ -57,7 +57,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
     fuelFilter;
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+    <div className="mb-8">
       <div className="flex flex-col lg:flex-row gap-4 items-center">
         {/* Search */}
         <div className="flex-1 relative w-full lg:w-auto">

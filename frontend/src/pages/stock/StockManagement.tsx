@@ -6,11 +6,11 @@ import {
   StockHeader,
   StockFilters,
   StockTable,
-  StockPagination,
   MessageDisplay,
   StockDrawer,
   StockDrawerForm,
 } from "../../components/stock";
+import Pagination from "../../components/car/Pagination";
 import { InvoiceCreationModal } from "../../components/stock/InvoiceCreationModal";
 import AvailableCarsTable from "../../components/stock/AvailableCarsTable";
 import TotalStockTable from "../../components/stock/TotalStockTable";
@@ -124,8 +124,8 @@ const StockManagement: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50 to-indigo-50 p-4 py-6">
-      <div className="max-w-full mx-auto px-4">
+    <div className="min-h-screen">
+      <div className="max-w-full mx-auto px-4 pb-6">
         <StockHeader
           onCreateInvoice={() => setShowInvoiceModal(true)}
           activeTab={activeTab === "total" ? "current" : activeTab as "current" | "before"}
@@ -170,7 +170,7 @@ const StockManagement: React.FC = () => {
               onRefresh={fetchStocks}
             />
 
-            <StockPagination
+            <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
               totalItems={totalItems}

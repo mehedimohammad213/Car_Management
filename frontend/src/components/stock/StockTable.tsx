@@ -44,50 +44,50 @@ const StockTable: React.FC<StockTableProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-        <div className="px-6 py-12 text-center">
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-            <span className="ml-3 text-gray-600">Loading stocks...</span>
-          </div>
+      <div className="text-center py-20">
+        <div className="relative">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-100 border-t-primary-600 mx-auto"></div>
         </div>
+        <p className="text-gray-900 mt-4 font-medium">
+          Loading stocks...
+        </p>
+        <p className="text-gray-500 text-sm mt-1">
+          Fetching the latest inventory details
+        </p>
       </div>
     );
   }
 
   if (stocks.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-        <div className="text-center py-16">
-          <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-            <Package className="w-12 h-12 text-gray-400" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No stocks found
-          </h3>
-          <p className="text-gray-500 max-w-sm mx-auto mb-4">
-            {isLoading
-              ? "Loading..."
-              : "Try refreshing the page or check your connection"}
-          </p>
-          <button
-            onClick={onRefresh}
-            className="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-colors font-medium text-sm"
-          >
-            Refresh Data
-          </button>
+      <div className="text-center py-20">
+        <div className="w-40 h-40 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+          <Package className="w-20 h-20 text-primary-600" />
         </div>
+        <h3 className="text-3xl font-bold text-gray-900 mb-4">
+          No stocks found
+        </h3>
+        <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
+          We couldn&apos;t find any stocks matching your criteria. Try
+          adjusting your filters or search terms to discover more options.
+        </p>
+        <button
+          onClick={onRefresh}
+          className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-800 text-white rounded-xl hover:from-primary-700 hover:to-primary-900 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+        >
+          Refresh Data
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <div className="min-w-[1200px]">
-          {/* Professional Table Header with Gradient */}
-          <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 shadow-lg">
-            <div className="grid grid-cols-12 gap-4 p-5 text-sm font-bold text-white uppercase tracking-wider">
+          {/* Table Header - same style as CarTable */}
+          <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
+            <div className="grid grid-cols-12 gap-4 p-4 text-xs font-bold uppercase tracking-wider">
               <div className="col-span-2 flex items-center gap-2">
                 <Car className="w-4 h-4" />
                 <span>Car Information</span>
@@ -124,8 +124,8 @@ const StockTable: React.FC<StockTableProps> = ({
             </div>
           </div>
 
-          {/* Table Body with Enhanced Styling */}
-          <div className="divide-y divide-gray-100 bg-gray-50/30">
+          {/* Table Body */}
+          <div className="divide-y divide-gray-100">
             {stocks.map((stock, index) => {
               const makeModelKey = stock.car ? `${stock.car.make}_${stock.car.model}` : "";
               const currentStockCount = stock.car
