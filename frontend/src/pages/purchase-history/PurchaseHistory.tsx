@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Plus, Search, FileText } from "lucide-react";
+import { Plus, Search, X } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   purchaseHistoryApi,
@@ -12,7 +12,7 @@ import PurchaseHistoryModal from "../../components/purchase-history/PurchaseHist
 import PurchaseHistoryTable from "../../components/purchase-history/PurchaseHistoryTable";
 import PurchaseHistoryLCView from "../../components/purchase-history/PurchaseHistoryLCView";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
-import Pagination from "../../components/common/Pagination";
+import Pagination from "../../components/car/Pagination";
 import { LayoutGrid, List } from "lucide-react";
 
 const PurchaseHistoryPage: React.FC = () => {
@@ -231,77 +231,64 @@ const PurchaseHistoryPage: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 10 }, (_, i) => (currentYear - i).toString());
 
+  const hasActiveFilters = searchTerm || filterMonth || filterYear;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50 to-indigo-50 p-4 py-6">
-      <div className="max-w-full mx-auto px-4">
-        {/* Header */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+    <div className="min-h-screen">
+      <div className="max-w-full mx-auto px-4 pb-6">
+        {/* Header - same style as Car page */}
+        <div className="p-0 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-                <FileText className="w-8 h-8 text-primary-600" />
+              <h1 className="text-2xl font-bold text-primary-600">
                 Purchase History
               </h1>
-              <p className="text-gray-600 mt-1">
-                Manage purchase history records
-              </p>
             </div>
-            <button
-              onClick={handleCreate}
-              className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-medium shadow-md hover:shadow-lg active:scale-95 transition-all"
-            >
-              <Plus className="w-5 h-5" />
-              Add Purchase History
-            </button>
+            {/* Tab Selection - right side of header */}
+            <div className="flex gap-1">
+              <button
+                onClick={() => setActiveTab("history")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "history"
+                  ? "bg-primary-600 text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+                  }`}
+              >
+                <List className="w-4 h-4" />
+                History Table
+              </button>
+              <button
+                onClick={() => setActiveTab("lc_wise")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "lc_wise"
+                  ? "bg-primary-600 text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+                  }`}
+              >
+                <LayoutGrid className="w-4 h-4" />
+                LC Wise View
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Tab Selection */}
-        <div className="flex p-1 bg-white/50 backdrop-blur-sm rounded-2xl w-fit mb-6 shadow-sm border border-gray-100">
-          <button
-            onClick={() => setActiveTab("history")}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === "history"
-              ? "bg-white text-primary-600 shadow-md ring-1 ring-black/5"
-              : "text-gray-500 hover:text-gray-700 hover:bg-white/20"
-              }`}
-          >
-            <List className="w-4 h-4" />
-            History Table
-          </button>
-          <button
-            onClick={() => setActiveTab("lc_wise")}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === "lc_wise"
-              ? "bg-white text-primary-600 shadow-md ring-1 ring-black/5"
-              : "text-gray-500 hover:text-gray-700 hover:bg-white/20"
-              }`}
-          >
-            <LayoutGrid className="w-4 h-4" />
-            LC Wise View
-          </button>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4 items-end">
-            {/* Search */}
-            <div className="flex-1 relative w-full">
+        {/* Filters - same layout as Car SearchFilters */}
+        <div className="mb-8">
+          <div className="flex flex-col lg:flex-row gap-4 items-center">
+            <div className="flex-1 relative w-full lg:w-auto">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search by LC number, invoice number, bank name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
 
-            {/* Month Filter */}
-            <div className="w-full lg:w-48">
-              <label className="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">LC Month</label>
+            <div className="w-full lg:w-auto min-w-[150px]">
               <select
                 value={filterMonth}
                 onChange={(e) => setFilterMonth(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white transition-all appearance-none cursor-pointer"
+                className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
                 <option value="">All Months</option>
                 {months.map((m) => (
@@ -310,13 +297,11 @@ const PurchaseHistoryPage: React.FC = () => {
               </select>
             </div>
 
-            {/* Year Filter */}
-            <div className="w-full lg:w-36">
-              <label className="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">LC Year</label>
+            <div className="w-full lg:w-auto min-w-[120px]">
               <select
                 value={filterYear}
                 onChange={(e) => setFilterYear(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white transition-all appearance-none cursor-pointer"
+                className="w-full lg:w-auto min-w-[120px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
                 <option value="">All Years</option>
                 {years.map((y) => (
@@ -325,15 +310,23 @@ const PurchaseHistoryPage: React.FC = () => {
               </select>
             </div>
 
-            {/* Clear Filters Button */}
-            {(searchTerm || filterMonth || filterYear) && (
+            {hasActiveFilters && (
               <button
                 onClick={handleClearFilters}
-                className="px-6 py-2 bg-gray-100 text-gray-600 font-bold text-sm rounded-xl hover:bg-gray-200 transition-all whitespace-nowrap active:scale-95"
+                className="w-10 h-10 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-sm"
+                title="Clear Filters"
               >
-                Clear
+                <X className="w-5 h-5" />
               </button>
             )}
+
+            <button
+              onClick={handleCreate}
+              className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all font-medium shadow-sm hover:shadow-md whitespace-nowrap"
+            >
+              <Plus className="w-4 h-4" />
+              Add Purchase History
+            </button>
           </div>
         </div>
 
@@ -357,18 +350,14 @@ const PurchaseHistoryPage: React.FC = () => {
           />
         )}
 
-        {/* Pagination */}
-        {totalItems > 0 && (
-          <div className="mt-6">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalItems}
-              perPage={perPage}
-              onPageChange={setCurrentPage}
-            />
-          </div>
-        )}
+        {/* Pagination - same as Car page */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          perPage={perPage}
+          onPageChange={setCurrentPage}
+        />
 
         {/* Modal */}
         <PurchaseHistoryModal
