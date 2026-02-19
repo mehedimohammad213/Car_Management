@@ -78,7 +78,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-primary-600">
-              Stock Management
+              Stocks / Stock List
             </h1>
           </div>
           {/* Tab Selection - right side of header */}

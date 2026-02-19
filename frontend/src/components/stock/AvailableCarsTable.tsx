@@ -1,6 +1,5 @@
 import React from "react";
-import { Package, Car, Gauge, Settings, Palette, Award, Tag, Eye } from "lucide-react";
-import { CurrencyBDTIcon } from "../icons/CurrencyBDTIcon";
+import { Package, Car, Eye } from "lucide-react";
 import { getGradeColor } from "../../utils/carUtils";
 
 interface AvailableCar {
@@ -112,36 +111,28 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
           {/* Table Header - same style as CarTable */}
           <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
             <div className="grid grid-cols-12 gap-4 p-4 text-xs font-bold uppercase tracking-wider">
-              <div className="col-span-2 flex items-center gap-2">
-                <Car className="w-4 h-4" />
+              <div className="col-span-2">
                 <span>Car Information</span>
               </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <Gauge className="w-4 h-4" />
+              <div className="col-span-1">
                 <span>Mileage</span>
               </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <Settings className="w-4 h-4" />
+              <div className="col-span-1">
                 <span>Engine</span>
               </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <Palette className="w-4 h-4" />
+              <div className="col-span-1">
                 <span>Color</span>
               </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <Award className="w-4 h-4" />
+              <div className="col-span-1">
                 <span>Grade</span>
               </div>
-              <div className="col-span-3 flex items-center gap-2">
-                <Tag className="w-4 h-4" />
+              <div className="col-span-3">
                 <span>Key Features</span>
               </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <CurrencyBDTIcon className="w-4 h-4" />
+              <div className="col-span-1">
                 <span>Price</span>
               </div>
-              <div className="col-span-1 flex items-center gap-2 justify-center">
-                <Package className="w-4 h-4" />
+              <div className="col-span-1 text-center">
                 <span>Available Cars</span>
               </div>
               <div className="col-span-1 text-center">Actions</div>

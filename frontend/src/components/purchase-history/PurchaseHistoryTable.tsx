@@ -1,5 +1,5 @@
 import React from "react";
-import { Calendar, Car, FileText, Building2 } from "lucide-react";
+import { FileText } from "lucide-react";
 import { PurchaseHistory } from "../../services/purchaseHistoryApi";
 import { CurrencyBDTIcon } from "../icons/CurrencyBDTIcon";
 import PurchaseHistoryTableRow from "./PurchaseHistoryTableRow";
@@ -67,24 +67,19 @@ const PurchaseHistoryTable: React.FC<PurchaseHistoryTableProps> = ({
           {/* Table Header - same style as CarTable */}
           <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
             <div className="grid grid-cols-12 gap-4 p-4 text-xs font-bold uppercase tracking-wider">
-              <div className="col-span-3 flex items-center gap-2">
-                <Car className="w-4 h-4" />
+              <div className="col-span-3">
                 <span>Car Details</span>
               </div>
-              <div className="col-span-2 flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
+              <div className="col-span-2">
                 <span>Purchase Date</span>
               </div>
-              <div className="col-span-2 flex items-center gap-2">
-                <CurrencyBDTIcon className="w-4 h-4" />
+              <div className="col-span-2">
                 <span>Amount</span>
               </div>
-              <div className="col-span-2 flex items-center gap-2">
-                <FileText className="w-4 h-4" />
+              <div className="col-span-2">
                 <span>LC Number</span>
               </div>
-              <div className="col-span-1 flex items-center gap-2">
-                <Building2 className="w-4 h-4" />
+              <div className="col-span-1">
                 <span>LC Bank</span>
               </div>
               <div className="col-span-2 text-center">Actions</div>
