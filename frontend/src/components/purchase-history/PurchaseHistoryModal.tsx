@@ -184,8 +184,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
         if (yenAmount > 0 && dollarToBdt > 0) {
           const calculatedDollar = finalBdt / dollarToBdt;
-          const calculatedYenRate = calculatedDollar / yenAmount;
-          setYenToDollarRate(calculatedYenRate.toString());
+          // Yen to Dollar Rate = yen per 1 USD, so rate = amount_yen / amount_usd
+          const yenPerDollar = yenAmount / calculatedDollar;
+          setYenToDollarRate(yenPerDollar.toString());
           setIntermediateDollar(calculatedDollar.toString());
         }
       }
@@ -302,9 +303,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     let dollarEquivalent = foreign;
 
     if (currencyType === "yen") {
-      // Step 1: Convert Yen to Dollar
+      // Step 1: Convert Yen to Dollar: Amount (JPY) / Yen-to-Dollar Rate = USD
       const yenToDollar = parseFloat(yenToDollarRate) || 0;
-      dollarEquivalent = foreign * yenToDollar;
+      dollarEquivalent = yenToDollar > 0 ? foreign / yenToDollar : 0;
 
       setIntermediateDollar(dollarEquivalent > 0 ? dollarEquivalent.toString() : "");
     } else {
@@ -316,7 +317,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     finalAmount = dollarEquivalent * dollarToBdt;
 
     setFormData((prev) => {
-      // PROMPT FIX: Don't let the calculator overwrite existing purchase_amount with null/0 
+      // PROMPT FIX: Don't let the calculator overwrite existing purchase_amount with null/0
       // if inputs are empty during update prefill.
       if (mode === "update" && !foreignAmount && !dollarToBdtRate) {
         return prev;
@@ -931,7 +932,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                         </div>
                         <div>
                           <label className="block text-xs font-medium text-gray-500 mb-1">
-                            2. Yen to Dollar Rate
+                            2. Dolar to yen Rate (JPY per 1 USD)
                           </label>
                           <input
                             type="number"
