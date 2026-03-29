@@ -10,7 +10,11 @@ import {
   UpdatePurchaseHistoryData,
 } from "../../services/purchaseHistoryApi";
 
-type LocationState = { records?: PurchaseHistory[] };
+type LocationState = {
+  records?: PurchaseHistory[];
+  /** First row of an LC group — used to prefill LC fields on create */
+  lcTemplate?: PurchaseHistory;
+};
 
 const PurchaseHistoryEditorPage: React.FC = () => {
   const navigate = useNavigate();
@@ -21,6 +25,11 @@ const PurchaseHistoryEditorPage: React.FC = () => {
   const isBulkEdit = id === "bulk";
 
   const mode: "create" | "update" = isCreate ? "create" : "update";
+
+  const lcTemplateForCreate =
+    isCreate
+      ? (location.state as LocationState | null)?.lcTemplate ?? null
+      : null;
 
   const [purchaseHistory, setPurchaseHistory] = useState<
     PurchaseHistory | PurchaseHistory[] | null
@@ -162,10 +171,14 @@ const PurchaseHistoryEditorPage: React.FC = () => {
 
   const { pageTitle, pageSubtitle } = useMemo(() => {
     if (isCreate) {
+      const lcLabel = lcTemplateForCreate?.lc_number?.trim();
       return {
-        pageTitle: "Add Purchase History",
-        pageSubtitle:
-          "Record LC details, costs, and documents for new inventory",
+        pageTitle: lcLabel
+          ? `Add purchase under LC ${lcLabel}`
+          : "Add Purchase History",
+        pageSubtitle: lcLabel
+          ? "LC bank and date are prefilled; add the car and costs below"
+          : "Record LC details, costs, and documents for new inventory",
       };
     }
     if (isBulkEdit && Array.isArray(purchaseHistory)) {
@@ -185,7 +198,7 @@ const PurchaseHistoryEditorPage: React.FC = () => {
       pageTitle: "Edit Purchase History",
       pageSubtitle: "Update purchase records",
     };
-  }, [isCreate, isBulkEdit, purchaseHistory]);
+  }, [isCreate, isBulkEdit, purchaseHistory, lcTemplateForCreate?.lc_number]);
 
   if (loading) {
     return (
@@ -226,6 +239,7 @@ const PurchaseHistoryEditorPage: React.FC = () => {
           isOpen
           mode={mode}
           purchaseHistory={purchaseHistory}
+          lcPrefillForCreate={lcTemplateForCreate}
           onClose={goBack}
           onSubmit={handleSubmit}
         />

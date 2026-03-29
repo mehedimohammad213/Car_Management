@@ -40,6 +40,8 @@ interface PurchaseHistoryModalProps {
   ) => void;
   /** Full-page layout (no overlay); use with dedicated routes */
   variant?: "modal" | "page";
+  /** When creating from LC view: copy LC fields from an existing row in that group */
+  lcPrefillForCreate?: PurchaseHistory | null;
 }
 
 const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
@@ -49,6 +51,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   onClose,
   onSubmit,
   variant = "modal",
+  lcPrefillForCreate = null,
 }) => {
   const effectiveOpen = variant === "page" || isOpen;
   const mainHistory = Array.isArray(purchaseHistory) ? purchaseHistory[0] : purchaseHistory;
@@ -293,7 +296,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       });
       setExistingFiles(files);
     } else if (!purchaseHistory && mode === "create") {
-      // Reset form for create mode
+      // Reset form for create mode; optionally prefill LC from an existing group row
+      const p = lcPrefillForCreate;
       setFormData({
         car_ids: [],
         car_id: null,
@@ -304,11 +308,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         govt_duty: null,
         cnf_amount: null,
         miscellaneous: null,
-        lc_date: null,
-        lc_number: null,
-        lc_bank_name: null,
-        lc_bank_branch_name: null,
-        lc_bank_branch_address: null,
+        lc_date: p ? toInputDate(p.lc_date) : null,
+        lc_number: p?.lc_number ?? null,
+        lc_bank_name: p?.lc_bank_name ?? null,
+        lc_bank_branch_name: p?.lc_bank_branch_name ?? null,
+        lc_bank_branch_address: p?.lc_bank_branch_address ?? null,
         total_units_per_lc: null,
         bill_of_lading: null,
         invoice_number: null,
@@ -326,18 +330,20 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         price_basis: null,
         fob_value_usd: null,
         freight_usd: null,
-        currency_type: "yen",
+        currency_type: p?.currency_type || "yen",
       });
       setForeignAmount("");
       setYenToDollarRate("");
       setDollarToBdtRate("");
       setIntermediateDollar("");
-      setCurrencyType("yen");
+      setCurrencyType(
+        p?.currency_type === "dollar" ? "dollar" : "yen"
+      );
       setExistingFiles({});
       setCarEntries([]);
       hadCarEntriesInCreateRef.current = false;
     }
-  }, [purchaseHistory, mode, effectiveOpen]);
+  }, [purchaseHistory, mode, effectiveOpen, lcPrefillForCreate]);
 
   // Calculate purchase_amount with two-step conversion for Yen
   useEffect(() => {

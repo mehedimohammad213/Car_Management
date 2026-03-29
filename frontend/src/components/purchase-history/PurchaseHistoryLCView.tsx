@@ -3,7 +3,6 @@ import { PurchaseHistory } from "../../services/purchaseHistoryApi";
 import {
     FileText,
     Car,
-    ChevronRight,
     ChevronDown,
     ChevronUp,
     Calendar,
@@ -12,7 +11,8 @@ import {
     ArrowRight,
     Info,
     Edit2,
-    Trash2
+    Trash2,
+    Plus,
 } from "lucide-react";
 
 interface PurchaseHistoryLCViewProps {
@@ -21,6 +21,8 @@ interface PurchaseHistoryLCViewProps {
     onView?: (purchaseHistory: PurchaseHistory) => void;
     onEdit?: (purchaseHistory: PurchaseHistory | PurchaseHistory[]) => void;
     onDelete?: (purchaseHistory: PurchaseHistory) => void;
+    /** Navigate to create purchase history with LC fields copied from this group */
+    onAddUnderLc?: (template: PurchaseHistory) => void;
 }
 
 /** Aligns with PurchaseHistoryDetails summary “Total” (purchase + duty + CNF + misc). */
@@ -72,6 +74,7 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
     onView,
     onEdit,
     onDelete,
+    onAddUnderLc,
 }) => {
     const [expandedLC, setExpandedLC] = useState<string | null>(null);
 
@@ -195,14 +198,29 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                         {isExpanded && (
                             <div className="bg-slate-50 border-t border-primary-100 animate-in slide-in-from-top-4 duration-500">
                                 <div className="p-6 md:p-8">
-                                    <div className="flex items-center justify-between mb-6">
+                                    <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                                         <h4 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                                             <Car className="w-5 h-5 text-primary-500" />
                                             Vehicles under LC: {lcNumber}
                                         </h4>
-                                        <span className="text-sm font-medium text-primary-600 bg-primary-50 px-3 py-1 rounded-full border border-primary-100">
-                                            Found {totalCars} cars
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-medium text-primary-600 bg-primary-50 px-3 py-1 rounded-full border border-primary-100">
+                                                Found {totalCars} cars
+                                            </span>
+                                            {onAddUnderLc && histories[0] && (
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        onAddUnderLc(histories[0]);
+                                                    }}
+                                                    className="flex items-center justify-center p-2.5 rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition-all border border-primary-500 shadow-sm"
+                                                    title="Add purchase history under this LC"
+                                                >
+                                                    <Plus className="w-5 h-5" />
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

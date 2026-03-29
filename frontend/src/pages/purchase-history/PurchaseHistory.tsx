@@ -69,6 +69,10 @@ const PurchaseHistoryPage: React.FC = () => {
     navigate("/admin/purchase-history/create");
   };
 
+  const handleAddUnderLc = (template: PurchaseHistory) => {
+    navigate("/admin/purchase-history/create", { state: { lcTemplate: template } });
+  };
+
   const handleView = (purchaseHistory: PurchaseHistory) => {
     navigate(`/admin/purchase-history/view/${purchaseHistory.id}`);
   };
@@ -251,6 +255,7 @@ const PurchaseHistoryPage: React.FC = () => {
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onAddUnderLc={handleAddUnderLc}
           />
         )}
 
