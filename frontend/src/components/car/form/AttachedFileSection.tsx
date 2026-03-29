@@ -170,11 +170,12 @@ const AttachedFileSection: React.FC<AttachedFileSectionProps> = ({
       <div className="space-y-4">
         {!isViewMode && (
           <div
-            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
               dragActive
                 ? 'border-primary-500 bg-primary-50'
                 : 'border-gray-300 hover:border-gray-400'
             }`}
+            onClick={() => fileInputRef.current?.click()}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
@@ -195,7 +196,10 @@ const AttachedFileSection: React.FC<AttachedFileSectionProps> = ({
                   <>Drag and drop a new file to replace the current one, or{' '}
                   <button
                     type="button"
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      fileInputRef.current?.click();
+                    }}
                     className="text-primary-600 hover:text-primary-700 underline"
                   >
                     browse
@@ -204,7 +208,10 @@ const AttachedFileSection: React.FC<AttachedFileSectionProps> = ({
                   <>Drag and drop a file here, or{' '}
                   <button
                     type="button"
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      fileInputRef.current?.click();
+                    }}
                     className="text-primary-600 hover:text-primary-700 underline"
                   >
                     browse
