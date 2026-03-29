@@ -1,5 +1,5 @@
 import React from "react";
-import { Package, Car, Eye } from "lucide-react";
+import { Package, Car, Eye, Edit, Trash2, PackagePlus } from "lucide-react";
 import { getGradeColor } from "../../utils/carUtils";
 
 interface AvailableCar {
@@ -34,37 +34,42 @@ interface AvailableCar {
 }
 
 interface AvailableCarsTableProps {
+  /** Current page of rows (after search/filters/pagination). */
   cars: AvailableCar[];
+  /** Full filtered list (all pages) for counts and empty states. */
+  filteredAllCars: AvailableCar[];
+  /** True once load finished and API returned at least one car (before client filters). */
+  apiHasCars: boolean;
+  /** Non-sold cars from API (pending pool size before search/filters). */
+  sourceCount: number;
   isLoading: boolean;
   onCreateStock: (car: AvailableCar) => void;
   onRefresh: () => void;
   onView?: (car: AvailableCar) => void;
+  onEdit?: (car: AvailableCar) => void;
+  onDelete?: (car: AvailableCar) => void;
 }
 
 const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
   cars,
+  filteredAllCars,
+  apiHasCars,
+  sourceCount,
   isLoading,
   onCreateStock,
   onRefresh,
   onView,
+  onEdit,
+  onDelete,
 }) => {
-  // Filter out cars with status="sold"
-  const filteredCars = React.useMemo(() => {
-    console.log("AvailableCarsTable: Raw cars data:", cars);
-    const filtered = cars.filter((car) => car.status?.toLowerCase() !== "sold");
-    console.log("AvailableCarsTable: Filtered cars data:", filtered);
-    return filtered;
-  }, [cars]);
-
-  // Calculate current available cars count for each make/model
   const availableCarsCountMap = React.useMemo(() => {
     const counts = new Map<string, number>();
-    cars.forEach((car) => {
-      const key = `${car.make || 'Unknown'}_${car.model || 'Unknown'}`;
+    filteredAllCars.forEach((car) => {
+      const key = `${car.make || "Unknown"}_${car.model || "Unknown"}`;
       counts.set(key, (counts.get(key) || 0) + 1);
     });
     return counts;
-  }, [cars]);
+  }, [filteredAllCars]);
 
   if (isLoading) {
     return (
@@ -82,17 +87,61 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
     );
   }
 
-  if (filteredCars.length === 0) {
+  if (!apiHasCars) {
     return (
       <div className="text-center py-20">
         <div className="w-40 h-40 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
           <Car className="w-20 h-20 text-primary-600" />
         </div>
         <h3 className="text-3xl font-bold text-gray-900 mb-4">
-          No available cars found
+          No pending cars
         </h3>
         <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
           All cars have stock entries. Try refreshing the page or check your connection.
+        </p>
+        <button
+          onClick={onRefresh}
+          className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-800 text-white rounded-xl hover:from-primary-700 hover:to-primary-900 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+        >
+          Refresh Data
+        </button>
+      </div>
+    );
+  }
+
+  if (sourceCount === 0) {
+    return (
+      <div className="text-center py-20">
+        <div className="w-40 h-40 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+          <Car className="w-20 h-20 text-primary-600" />
+        </div>
+        <h3 className="text-3xl font-bold text-gray-900 mb-4">
+          No pending cars
+        </h3>
+        <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
+          There are no cars waiting to be added to stock, or all listed cars are marked sold.
+        </p>
+        <button
+          onClick={onRefresh}
+          className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-800 text-white rounded-xl hover:from-primary-700 hover:to-primary-900 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+        >
+          Refresh Data
+        </button>
+      </div>
+    );
+  }
+
+  if (filteredAllCars.length === 0) {
+    return (
+      <div className="text-center py-20">
+        <div className="w-40 h-40 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+          <Car className="w-20 h-20 text-primary-600" />
+        </div>
+        <h3 className="text-3xl font-bold text-gray-900 mb-4">
+          No matches
+        </h3>
+        <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
+          No pending cars match your search or filters. Try clearing filters or using different keywords.
         </p>
         <button
           onClick={onRefresh}
@@ -126,7 +175,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
               <div className="col-span-1">
                 <span>Grade</span>
               </div>
-              <div className="col-span-3">
+              <div className="col-span-2">
                 <span>Key Features</span>
               </div>
               <div className="col-span-1">
@@ -135,20 +184,20 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
               <div className="col-span-1 text-center">
                 <span>Available Cars</span>
               </div>
-              <div className="col-span-1 text-center">Actions</div>
+              <div className="col-span-2 text-center">Actions</div>
             </div>
           </div>
 
           {/* Table Body with Enhanced Styling */}
           <div className="divide-y divide-gray-100">
-            {filteredCars.map((car, index) => {
+            {cars.map((car, index) => {
               const makeModelKey = `${car.make}_${car.model}`;
               const availableCarsCount = availableCarsCountMap.get(makeModelKey) || 0;
 
-              // Only show count on first occurrence of each make/model in the current filtered list
-              const isFirstOfMakeModel = filteredCars.findIndex(
-                (c) => `${c.make}_${c.model}` === makeModelKey
-              ) === index;
+              const isFirstOfMakeModel =
+                cars.findIndex(
+                  (c) => `${c.make}_${c.model}` === makeModelKey
+                ) === index;
 
               return (
                 <div
@@ -264,7 +313,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                   </div>
 
                   {/* Key Features - Enhanced */}
-                  <div className="col-span-3 flex items-center">
+                  <div className="col-span-2 flex items-center">
                     <div className="flex flex-wrap gap-1.5 max-w-full">
                       {(car.keys_feature
                         ?.split(",")
@@ -308,25 +357,49 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                     )}
                   </div>
 
-                  {/* Actions - Enhanced */}
+                  {/* Actions - Enhanced: single row, no wrap */}
                   <div
-                    className="col-span-1 flex items-center justify-center gap-2"
+                    className="col-span-2 flex flex-nowrap items-center justify-center gap-1"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {onView && (
                       <button
+                        type="button"
                         onClick={() => onView(car)}
-                        className="p-1.5 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
+                        className="shrink-0 p-2 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
                         title="View Car"
                       >
                         <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
                       </button>
                     )}
+                    {onEdit && (
+                      <button
+                        type="button"
+                        onClick={() => onEdit(car)}
+                        className="shrink-0 p-2 text-amber-600 hover:text-amber-700 rounded-lg transition-all duration-200 group/btn"
+                        title="Edit Car"
+                      >
+                        <Edit className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                      </button>
+                    )}
+                    {onDelete && (
+                      <button
+                        type="button"
+                        onClick={() => onDelete(car)}
+                        className="shrink-0 p-2 text-red-600 hover:text-red-700 rounded-lg transition-all duration-200 group/btn"
+                        title="Delete Car"
+                      >
+                        <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                      </button>
+                    )}
                     <button
+                      type="button"
                       onClick={() => onCreateStock(car)}
-                      className="px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors shadow-sm hover:shadow-md"
+                      className="shrink-0 p-2 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
+                      title="Add Stock"
+                      aria-label="Add Stock"
                     >
-                      Add Stock
+                      <PackagePlus className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
                     </button>
                   </div>
                 </div>

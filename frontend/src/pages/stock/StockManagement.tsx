@@ -14,13 +14,23 @@ import Pagination from "../../components/car/Pagination";
 import { InvoiceCreationModal } from "../../components/stock/InvoiceCreationModal";
 import AvailableCarsTable from "../../components/stock/AvailableCarsTable";
 import { useStockManagement } from "../../hooks/useStockManagement";
+import { usePendingCarsFilters } from "../../hooks/usePendingCarsFilters";
 import type { StockPageTab } from "../../components/stock/StockHeader";
 import { useNavigate } from "react-router-dom";
 import { stockApi, Stock } from "../../services/stockApi";
+import { carApi } from "../../services/carApi";
 
 const StockManagement: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<StockPageTab>("current");
+  const [showPendingCarDeleteModal, setShowPendingCarDeleteModal] =
+    useState(false);
+  const [pendingCarToDelete, setPendingCarToDelete] = useState<{
+    id: number;
+    make?: string;
+    model?: string;
+  } | null>(null);
+  const [isDeletingPendingCar, setIsDeletingPendingCar] = useState(false);
 
   const stockScope = activeTab === "soldout" ? "sold" : "all";
 
@@ -80,6 +90,8 @@ const StockManagement: React.FC = () => {
     statusTotals,
   } = useStockManagement(stockScope);
 
+  const pendingFilters = usePendingCarsFilters(availableCars);
+
   useEffect(() => {
     if (activeTab === "before") {
       fetchAvailableCars();
@@ -124,6 +136,38 @@ const StockManagement: React.FC = () => {
   const handleEditCar = (stock: Stock) => {
     if (stock.car?.id) {
       navigate(`/update-car/${stock.car.id}`);
+    }
+  };
+
+  const handleEditPendingCar = (car: { id: number }) => {
+    navigate(`/update-car/${car.id}`);
+  };
+
+  const handleDeletePendingCar = (car: {
+    id: number;
+    make?: string;
+    model?: string;
+  }) => {
+    setPendingCarToDelete(car);
+    setShowPendingCarDeleteModal(true);
+  };
+
+  const confirmDeletePendingCar = async () => {
+    if (!pendingCarToDelete) return;
+    setIsDeletingPendingCar(true);
+    try {
+      await carApi.deleteCar(pendingCarToDelete.id);
+      setShowPendingCarDeleteModal(false);
+      setPendingCarToDelete(null);
+      showMessage("success", "Car deleted successfully");
+      await fetchAvailableCars();
+      await fetchStocks();
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error ? error.message : "Failed to delete car";
+      showMessage("error", msg);
+    } finally {
+      setIsDeletingPendingCar(false);
     }
   };
 
@@ -186,13 +230,48 @@ const StockManagement: React.FC = () => {
             />
           </>
         ) : activeTab === "before" ? (
-          <AvailableCarsTable
-            cars={availableCars}
-            isLoading={isLoadingAvailableCars}
-            onCreateStock={handleCreateStockFromCar}
-            onView={handleViewCar}
-            onRefresh={fetchAvailableCars}
-          />
+          <>
+            <StockFilters
+              searchTerm={pendingFilters.searchTerm}
+              onSearchChange={pendingFilters.setSearchTerm}
+              onClearFilters={pendingFilters.handleClearFilters}
+              yearFilter={pendingFilters.yearFilter}
+              onYearFilterChange={pendingFilters.setYearFilter}
+              makeFilter={pendingFilters.makeFilter}
+              onMakeFilterChange={pendingFilters.setMakeFilter}
+              modelFilter={pendingFilters.modelFilter}
+              onModelFilterChange={pendingFilters.setModelFilter}
+              colorFilter={pendingFilters.colorFilter}
+              onColorFilterChange={pendingFilters.setColorFilter}
+              fuelFilter={pendingFilters.fuelFilter}
+              onFuelFilterChange={pendingFilters.setFuelFilter}
+              isGeneratingPDF={false}
+              filterOptions={pendingFilters.filterOptions}
+              searchPlaceholder="Search pending cars by make, model, year, ref no, chassis…"
+              onAddCar={() => navigate("/create-car")}
+            />
+            <AvailableCarsTable
+              cars={pendingFilters.paginatedCars as any[]}
+              filteredAllCars={pendingFilters.filteredAllCars as any[]}
+              apiHasCars={
+                !isLoadingAvailableCars && availableCars.length > 0
+              }
+              sourceCount={pendingFilters.sourceCount}
+              isLoading={isLoadingAvailableCars}
+              onCreateStock={handleCreateStockFromCar}
+              onView={handleViewCar}
+              onEdit={handleEditPendingCar}
+              onDelete={handleDeletePendingCar}
+              onRefresh={fetchAvailableCars}
+            />
+            <Pagination
+              currentPage={pendingFilters.currentPage}
+              totalPages={pendingFilters.totalPages}
+              totalItems={pendingFilters.totalItems}
+              perPage={pendingFilters.perPage}
+              onPageChange={(page) => pendingFilters.setCurrentPage(page)}
+            />
+          </>
         ) : null}
 
         {/* Add Stock Popup - Commented out */}
@@ -219,6 +298,27 @@ const StockManagement: React.FC = () => {
           title="Delete Stock"
           message={`Are you sure you want to delete this stock item? This action cannot be undone.`}
           isLoading={isDeleting}
+        />
+
+        <DeleteConfirmationModal
+          isOpen={showPendingCarDeleteModal}
+          onClose={() => {
+            setShowPendingCarDeleteModal(false);
+            setPendingCarToDelete(null);
+          }}
+          onConfirm={confirmDeletePendingCar}
+          title="Delete Car"
+          message={
+            pendingCarToDelete
+              ? `Are you sure you want to delete ${[
+                  pendingCarToDelete.make,
+                  pendingCarToDelete.model,
+                ]
+                  .filter(Boolean)
+                  .join(" ") || `car #${pendingCarToDelete.id}`}? This action cannot be undone.`
+              : "Are you sure you want to delete this car? This action cannot be undone."
+          }
+          isLoading={isDeletingPendingCar}
         />
 
         {/* <InvoiceCreationModal

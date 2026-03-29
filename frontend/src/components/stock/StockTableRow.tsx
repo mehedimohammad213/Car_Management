@@ -257,13 +257,13 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
 
       {/* Actions - Enhanced */}
       <div
-        className="col-span-1 flex items-center justify-center gap-1.5"
+        className="col-span-1 flex flex-nowrap items-center justify-center gap-1"
         onClick={(e) => e.stopPropagation()}
       >
         {onView && (
           <button
             onClick={() => onView(stock)}
-            className="p-2.5 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
+            className="shrink-0 p-2 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
             title="View Stock"
           >
             <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
@@ -271,14 +271,14 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
         )}
         <button
           onClick={() => onEdit(stock)}
-          className="p-2.5 text-amber-600 hover:text-amber-700 rounded-lg transition-all duration-200 group/btn"
+          className="shrink-0 p-2 text-amber-600 hover:text-amber-700 rounded-lg transition-all duration-200 group/btn"
           title="Edit Car"
         >
           <Edit className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
         </button>
         <button
           onClick={() => onDelete(stock)}
-          className="p-2.5 text-red-600 hover:text-red-700 rounded-lg transition-all duration-200 group/btn"
+          className="shrink-0 p-2 text-red-600 hover:text-red-700 rounded-lg transition-all duration-200 group/btn"
           title="Delete Stock"
         >
           <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />

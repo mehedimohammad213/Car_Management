@@ -20,11 +20,14 @@ interface StockFiltersProps {
   onGeneratePDF?: () => void;
   onCreateInvoice?: () => void;
   onCreateStock?: () => void;
+  /** Pending tab: quick action to create a new car */
+  onAddCar?: () => void;
   filterOptions?: {
     years?: number[];
     colors?: string[];
     fuels?: string[];
   };
+  searchPlaceholder?: string;
 }
 
 export const StockFilters: React.FC<StockFiltersProps> = ({
@@ -45,7 +48,9 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
   onGeneratePDF,
   onCreateInvoice,
   onCreateStock,
+  onAddCar,
   filterOptions,
+  searchPlaceholder = "Search stocks by make, model, year, chassis number, or any keyword...",
 }) => {
   const hasActiveFilters =
     searchTerm ||
@@ -64,7 +69,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
-            placeholder="Search stocks by make, model, year, chassis number, or any keyword..."
+            placeholder={searchPlaceholder}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -166,6 +171,18 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
             title="Clear Filters"
           >
             <X className="w-5 h-5" />
+          </button>
+        )}
+
+        {onAddCar && (
+          <button
+            type="button"
+            onClick={onAddCar}
+            className="w-10 h-10 flex items-center justify-center bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors shadow-sm"
+            title="Add car"
+            aria-label="Add car"
+          >
+            <Plus className="w-5 h-5" />
           </button>
         )}
 
