@@ -55,9 +55,53 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
               key={detailIndex}
               className="border border-gray-200 rounded-xl p-4 bg-white"
             >
-              <h4 className="text-md font-semibold text-gray-700 mb-4">
-                {detail.short_title || `Detail Section ${detailIndex + 1}`}
-              </h4>
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-6 mb-4">
+                <div className="w-full lg:w-[30%] lg:flex-shrink-0">
+                  <h4 className="text-md font-semibold text-gray-700">
+                    {detail.short_title || `Detail Section ${detailIndex + 1}`}
+                  </h4>
+                </div>
+                <div className="w-full lg:flex-1 lg:min-w-0">
+                  {detail.sub_details && detail.sub_details.length > 0 ? (
+                    <>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Sub Details
+                      </label>
+                      <div className="space-y-3">
+                        {detail.sub_details.map((subDetail, subDetailIndex) => (
+                          <div
+                            key={subDetailIndex}
+                            className="border border-gray-200 rounded-lg p-3"
+                          >
+                            {(subDetail.title || subDetail.description) && (
+                              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
+                                <div className="sm:w-[32%] sm:min-w-0 sm:flex-shrink-0">
+                                  <span className="text-sm font-medium text-gray-600">
+                                    Title:{" "}
+                                  </span>
+                                  <span className="text-sm text-gray-900 break-words">
+                                    {subDetail.title || "—"}
+                                  </span>
+                                </div>
+                                <div className="sm:flex-1 sm:min-w-0 border-t border-gray-100 pt-2 sm:border-t-0 sm:pt-0 sm:border-l sm:border-gray-200 sm:pl-4">
+                                  <span className="text-sm font-medium text-gray-600">
+                                    Description:{" "}
+                                  </span>
+                                  <span className="text-sm text-gray-900 break-words">
+                                    {subDetail.description || "—"}
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-sm text-gray-500 lg:pt-1">No sub details</p>
+                  )}
+                </div>
+              </div>
 
               <div className="space-y-4">
                 {/* Full Title */}
@@ -80,44 +124,6 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
                     </label>
                     <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 min-h-[100px]">
                       {detail.description}
-                    </div>
-                  </div>
-                )}
-
-                {/* Sub Details */}
-                {detail.sub_details && detail.sub_details.length > 0 && (
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Sub Details
-                    </label>
-                    <div className="space-y-3">
-                      {detail.sub_details.map((subDetail, subDetailIndex) => (
-                        <div
-                          key={subDetailIndex}
-                          className="border border-gray-200 rounded-lg p-3"
-                        >
-                          {(subDetail.title || subDetail.description) && (
-                            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
-                              <div className="sm:w-[32%] sm:min-w-0 sm:flex-shrink-0">
-                                <span className="text-sm font-medium text-gray-600">
-                                  Title:{" "}
-                                </span>
-                                <span className="text-sm text-gray-900 break-words">
-                                  {subDetail.title || "—"}
-                                </span>
-                              </div>
-                              <div className="sm:flex-1 sm:min-w-0 border-t border-gray-100 pt-2 sm:border-t-0 sm:pt-0 sm:border-l sm:border-gray-200 sm:pl-4">
-                                <span className="text-sm font-medium text-gray-600">
-                                  Description:{" "}
-                                </span>
-                                <span className="text-sm text-gray-900 break-words">
-                                  {subDetail.description || "—"}
-                                </span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
                     </div>
                   </div>
                 )}
@@ -194,9 +200,9 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
               )}
             </div>
 
-            <div className="space-y-4">
-              {/* Short Title */}
-              <div>
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-6">
+              {/* Main title */}
+              <div className="w-full lg:w-[30%] lg:flex-shrink-0">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Title
                 </label>
@@ -212,13 +218,15 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
               </div>
 
               {/* Sub Details */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-semibold text-gray-700"></label>
+              <div className="w-full lg:flex-1 lg:min-w-0">
+                <div className="flex items-center justify-between mb-2 gap-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-0">
+                    Sub Details
+                  </label>
                   <button
                     type="button"
                     onClick={() => onAddSubDetail(detailIndex)}
-                    className="px-3 py-1 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-1 text-sm"
+                    className="px-3 py-1 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-1 text-sm shrink-0"
                   >
                     <Plus className="w-5 h-5" />
                   </button>
