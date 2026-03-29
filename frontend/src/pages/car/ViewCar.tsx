@@ -202,7 +202,9 @@ const ViewCar: React.FC = () => {
   };
 
   const getBackRoute = () => {
-    return isAdmin ? `/admin/cars?${searchParams.toString()}` : `/cars?${searchParams.toString()}`;
+    return isAdmin
+      ? "/admin/stock"
+      : `/cars?${searchParams.toString()}`;
   };
 
   if (isLoading) {
