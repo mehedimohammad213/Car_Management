@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeftIcon, CarIcon } from "lucide-react";
+import { ArrowLeftIcon } from "lucide-react";
 import CarFormModal from "../../components/car/CarFormModal";
 import { carApi, Car, CreateCarData, CarFilterOptions } from "../../services/carApi";
 import { categoryApi, Category } from "../../services/categoryApi";
@@ -154,35 +154,33 @@ const UpdateCar: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+        {/* Header card — same style as form sections; title lives with back */}
+        <div className="mb-8 px-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="p-6 flex flex-col gap-4 sm:flex-row sm:items-center">
               <button
+                type="button"
                 onClick={() => navigate(`/cars?${searchParams.toString()}`)}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors border border-gray-200 dark:border-gray-700 shadow-sm"
+                className="flex items-center gap-2 shrink-0 px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/80 rounded-xl transition-colors border border-gray-200 dark:border-gray-600"
               >
                 <ArrowLeftIcon className="w-4 h-4" />
                 <span className="font-medium">Back</span>
               </button>
-              <div>
+              <div className="min-w-0 sm:border-l sm:border-gray-200 sm:dark:border-gray-600 sm:pl-6">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                   Edit {car.make} {car.model}
                 </h1>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-400 mt-1">
                   Update car information and specifications
                 </p>
               </div>
-            </div>
-            <div className="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-xl">
-              <CarIcon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
           </div>
         </div>
 
         {/* Error Message */}
         {submitError && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+          <div className="mb-6 mx-8 p-4 bg-red-50 border border-red-200 rounded-xl">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <svg

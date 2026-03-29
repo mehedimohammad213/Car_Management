@@ -18,7 +18,7 @@ const CarViewHeader: React.FC<CarViewHeaderProps> = ({
   const navigate = useNavigate();
 
   return (
-    <div className="mb-4 sm:mb-6">
+    <div className="mb-4 sm:mb-6 pl-2 sm:pl-4 lg:pl-6 xl:pl-8">
       <button
         onClick={() => navigate(getBackRoute())}
         className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-3 sm:mb-4 transition-colors"
