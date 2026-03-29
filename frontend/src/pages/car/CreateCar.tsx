@@ -64,7 +64,7 @@ const CreateCar: React.FC = () => {
       console.log("Submitting car data:", formData);
       const response = await carApi.createCar(formData);
       console.log("Car creation response:", response);
-      navigate("/admin/cars", {
+      navigate("/admin/stock", {
         state: { message: "Car created successfully!" },
       });
     } catch (error: any) {
@@ -110,7 +110,7 @@ const CreateCar: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate("/admin/cars");
+    navigate("/admin/stock");
   };
 
   return (

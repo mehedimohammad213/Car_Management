@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftIcon } from "lucide-react";
 import CarFormModal from "../../components/car/CarFormModal";
 import { carApi, Car, CreateCarData, CarFilterOptions } from "../../services/carApi";
@@ -8,7 +8,6 @@ import { categoryApi, Category } from "../../services/categoryApi";
 const UpdateCar: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [car, setCar] = useState<Car | null>(null);
@@ -76,7 +75,7 @@ const UpdateCar: React.FC = () => {
         response = await carApi.updateCar({ id: car.id, ...formData });
       }
       console.log("Car update response:", response);
-      navigate(`/cars?${searchParams.toString()}`, {
+      navigate("/admin/stock", {
         state: { message: "Car updated successfully!" },
       });
     } catch (error: any) {
@@ -122,7 +121,7 @@ const UpdateCar: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate(`/cars?${searchParams.toString()}`);
+    navigate("/admin/stock");
   };
 
   if (isLoading) {
@@ -141,10 +140,10 @@ const UpdateCar: React.FC = () => {
             {fetchError || "Car not found"}
           </h2>
           <button
-            onClick={() => navigate(`/cars?${searchParams.toString()}`)}
+            onClick={() => navigate("/admin/stock")}
             className="px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
           >
-            Back to Car Management
+            Back to Stock
           </button>
         </div>
       </div>
@@ -160,7 +159,7 @@ const UpdateCar: React.FC = () => {
             <div className="p-6 flex flex-col gap-4 sm:flex-row sm:items-center">
               <button
                 type="button"
-                onClick={() => navigate(`/cars?${searchParams.toString()}`)}
+                onClick={() => navigate("/admin/stock")}
                 className="flex items-center gap-2 shrink-0 px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/80 rounded-xl transition-colors border border-gray-200 dark:border-gray-600"
               >
                 <ArrowLeftIcon className="w-4 h-4" />

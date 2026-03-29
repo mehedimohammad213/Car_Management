@@ -23,7 +23,7 @@ import { isStockRowSold } from "../../utils/stockStatus";
 
 const StockManagement: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<StockPageTab>("current");
+  const [activeTab, setActiveTab] = useState<StockPageTab>("before");
   const [showPendingCarDeleteModal, setShowPendingCarDeleteModal] =
     useState(false);
   const [pendingCarToDelete, setPendingCarToDelete] = useState<{
