@@ -19,6 +19,8 @@ export interface PurchaseHistory {
   govt_duty: string | null;
   cnf_amount: number | null;
   miscellaneous: string | null;
+  bid_price?: number | null;
+  ser_com?: number | null;
   lc_date: string | null;
   lc_number: string | null;
   lc_bank_name: string | null;
@@ -60,6 +62,8 @@ export interface CreatePurchaseHistoryData {
   govt_duty?: string | null;
   cnf_amount?: number | null;
   miscellaneous?: string | null;
+  bid_price?: number | null;
+  ser_com?: number | null;
   lc_date?: string | null;
   lc_number?: string | null;
   lc_bank_name?: string | null;
@@ -159,6 +163,12 @@ class PurchaseHistoryApi {
     }
     if (data.miscellaneous)
       formData.append("miscellaneous", data.miscellaneous);
+    if (data.bid_price !== undefined && data.bid_price !== null) {
+      formData.append("bid_price", data.bid_price.toString());
+    }
+    if (data.ser_com !== undefined && data.ser_com !== null) {
+      formData.append("ser_com", data.ser_com.toString());
+    }
     if (data.lc_date) formData.append("lc_date", data.lc_date);
     if (data.lc_number) formData.append("lc_number", data.lc_number);
     if (data.lc_bank_name) formData.append("lc_bank_name", data.lc_bank_name);
@@ -237,6 +247,8 @@ class PurchaseHistoryApi {
         "govt_duty",
         "cnf_amount",
         "miscellaneous",
+        "bid_price",
+        "ser_com",
         "lc_date",
         "lc_number",
         "lc_bank_name",
@@ -295,6 +307,18 @@ class PurchaseHistoryApi {
     }
     if (data.miscellaneous !== undefined)
       formData.append("miscellaneous", data.miscellaneous || "");
+    if (data.bid_price !== undefined) {
+      formData.append(
+        "bid_price",
+        data.bid_price !== null ? data.bid_price.toString() : ""
+      );
+    }
+    if (data.ser_com !== undefined) {
+      formData.append(
+        "ser_com",
+        data.ser_com !== null ? data.ser_com.toString() : ""
+      );
+    }
     if (data.lc_date !== undefined)
       formData.append("lc_date", data.lc_date || "");
     if (data.lc_number !== undefined)

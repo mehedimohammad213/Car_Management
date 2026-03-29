@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { X, Upload, File as FileIcon, Search, Plus, Trash2 } from "lucide-react";
 import {
   PurchaseHistory,
@@ -28,6 +28,36 @@ function PurchaseFormSection({
       {children}
     </div>
   );
+}
+
+/** Older rows only had foreign_amount — map it to BID so Amount = BID + SER+COM still works. */
+function resolveBidSerFromPh(ph: PurchaseHistory): {
+  bid_price: number | null;
+  ser_com: number | null;
+} {
+  let bid_price = ph.bid_price ?? null;
+  let ser_com = ph.ser_com ?? null;
+  if (
+    bid_price == null &&
+    ser_com == null &&
+    ph.foreign_amount != null &&
+    ph.foreign_amount !== ""
+  ) {
+    const n =
+      typeof ph.foreign_amount === "number"
+        ? ph.foreign_amount
+        : parseFloat(String(ph.foreign_amount));
+    if (!Number.isNaN(n)) bid_price = n;
+  }
+  return { bid_price, ser_com };
+}
+
+function sumBidSer(
+  bid: number | null | undefined,
+  ser: number | null | undefined
+): number | null {
+  if (bid == null && ser == null) return null;
+  return (Number(bid) || 0) + (Number(ser) || 0);
 }
 
 interface PurchaseHistoryModalProps {
@@ -83,6 +113,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     govt_duty: null,
     cnf_amount: null,
     miscellaneous: null,
+    bid_price: null,
+    ser_com: null,
     lc_date: null,
     lc_number: null,
     lc_bank_name: null,
@@ -186,33 +218,33 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
       // Prefill carEntries for bulk edit view
       if (historyArray.length > 1) {
-        const entries: (CreatePurchaseHistoryData & { id?: number })[] = historyArray.map(ph => ({
+        const entries: (CreatePurchaseHistoryData & { id?: number })[] = historyArray.map((ph) => {
+          const { bid_price, ser_com } = resolveBidSerFromPh(ph);
+          return {
           id: ph.id,
           car_id: ph.car_id,
           purchase_amount: ph.purchase_amount,
-          foreign_amount: ph.foreign_amount ?? null,
+          foreign_amount: sumBidSer(bid_price, ser_com),
           bdt_amount: ph.bdt_amount ?? null,
           currency_type: ph.currency_type || "yen",
           govt_duty: ph.govt_duty,
           cnf_amount: ph.cnf_amount,
           miscellaneous: ph.miscellaneous,
+          bid_price,
+          ser_com,
           purchase_date: ph.purchase_date ? toInputDate(ph.purchase_date) : null,
           hs_code: ph.hs_code,
           price_amount: ph.price_amount,
           price_basis: ph.price_basis,
           fob_value_usd: ph.fob_value_usd,
           freight_usd: ph.freight_usd,
-        }));
+        };
+        });
         setCarEntries(entries);
       } else {
         setCarEntries([]);
       }
 
-      setForeignAmount(
-        mainHistory.foreign_amount != null
-          ? String(mainHistory.foreign_amount)
-          : ""
-      );
       setDollarToBdtRate(
         mainHistory.bdt_amount != null
           ? String(mainHistory.bdt_amount)
@@ -221,8 +253,20 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
       setCurrencyType("yen");
 
-      if (mainHistory.currency_type === "yen" && mainHistory.foreign_amount && mainHistory.purchase_amount) {
-        const yenAmount = mainHistory.foreign_amount;
+      const { bid_price: rateBid, ser_com: rateSer } = resolveBidSerFromPh(mainHistory);
+      const yenBasis =
+        sumBidSer(rateBid, rateSer) ??
+        (mainHistory.foreign_amount != null && mainHistory.foreign_amount !== ""
+          ? Number(mainHistory.foreign_amount)
+          : null);
+
+      if (
+        mainHistory.currency_type === "yen" &&
+        yenBasis &&
+        yenBasis > 0 &&
+        mainHistory.purchase_amount
+      ) {
+        const yenAmount = yenBasis;
         const finalBdt = mainHistory.purchase_amount;
         const dollarToBdt = mainHistory.bdt_amount || 0;
 
@@ -235,17 +279,21 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         }
       }
 
+      const { bid_price: preBid, ser_com: preSer } = resolveBidSerFromPh(mainHistory);
+
       const initialFormData: CreatePurchaseHistoryData = {
         car_ids: mainHistory.cars?.map(c => c.id) || (mainHistory.car_id ? [mainHistory.car_id] : []),
         car_id: mainHistory.car_id ?? null,
         purchase_date: toInputDate(mainHistory.purchase_date),
         purchase_amount: mainHistory.purchase_amount,
-        foreign_amount: mainHistory.foreign_amount ?? null,
+        foreign_amount: sumBidSer(preBid, preSer),
         bdt_amount: mainHistory.bdt_amount ?? null,
         currency_type: "yen",
         govt_duty: mainHistory.govt_duty || null,
         cnf_amount: mainHistory.cnf_amount || null,
         miscellaneous: mainHistory.miscellaneous || null,
+        bid_price: preBid,
+        ser_com: preSer,
         lc_date: toInputDate(mainHistory.lc_date),
         lc_number: mainHistory.lc_number || null,
         lc_bank_name: mainHistory.lc_bank_name || null,
@@ -308,6 +356,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         govt_duty: null,
         cnf_amount: null,
         miscellaneous: null,
+        bid_price: p?.bid_price ?? null,
+        ser_com: p?.ser_com ?? null,
         lc_date: p ? toInputDate(p.lc_date) : null,
         lc_number: p?.lc_number ?? null,
         lc_bank_name: p?.lc_bank_name ?? null,
@@ -344,6 +394,17 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       hadCarEntriesInCreateRef.current = false;
     }
   }, [purchaseHistory, mode, effectiveOpen, lcPrefillForCreate]);
+
+  // foreign_amount / calculator input = bid_price + ser_com
+  useEffect(() => {
+    const b = formData.bid_price;
+    const s = formData.ser_com;
+    if (b != null || s != null) {
+      setForeignAmount(String((Number(b) || 0) + (Number(s) || 0)));
+    } else {
+      setForeignAmount("");
+    }
+  }, [formData.bid_price, formData.ser_com]);
 
   // Calculate purchase_amount with two-step conversion for Yen
   useEffect(() => {
@@ -414,12 +475,14 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     const newEntry: CreatePurchaseHistoryData = {
       car_id: formData.car_id,
       purchase_amount: formData.purchase_amount,
-      foreign_amount: formData.foreign_amount,
+      foreign_amount: sumBidSer(formData.bid_price, formData.ser_com),
       bdt_amount: formData.bdt_amount,
       currency_type: currencyType,
       govt_duty: formData.govt_duty,
       cnf_amount: formData.cnf_amount,
       miscellaneous: formData.miscellaneous,
+      bid_price: formData.bid_price ?? null,
+      ser_com: formData.ser_com ?? null,
       purchase_date: formData.purchase_date,
 
       // Add PDF fields
@@ -453,6 +516,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       govt_duty: null,
       cnf_amount: null,
       miscellaneous: null,
+      bid_price: null,
+      ser_com: null,
       // Clear PDF fields
       bill_of_lading: null,
       invoice_number: null,
@@ -964,33 +1029,70 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                     </label>
                   </div>
                   {currencyType === "yen" ? (
-                    // Yen Layout: 2 Rows of 3 Columns
                     <div className="space-y-4">
-                      {/* Row 1: Yen -> Dollar */}
+                      {/* Row 1: 1. BID, 2. SER+COM, 3. Amount (JPY) */}
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                           <label className="block text-xs font-medium text-gray-500 mb-1">
-                            1. Amount (JPY)
+                            1. BID
                           </label>
                           <input
                             type="number"
                             step="any"
-                            value={foreignAmount}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setForeignAmount(val);
-                              setFormData((prev) => ({
-                                ...prev,
-                                foreign_amount: val === "" ? null : parseFloat(val) || 0,
-                              }));
-                            }}
-                            placeholder="0.00"
+                            value={formData.bid_price ?? ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "bid_price",
+                                e.target.value === ""
+                                  ? null
+                                  : parseFloat(e.target.value)
+                              )
+                            }
+                            placeholder="0"
                             className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                           />
                         </div>
                         <div>
                           <label className="block text-xs font-medium text-gray-500 mb-1">
-                            2. Dolar to yen Rate (JPY per 1 USD)
+                            2. SER+COM
+                          </label>
+                          <input
+                            type="number"
+                            step="any"
+                            value={formData.ser_com ?? ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "ser_com",
+                                e.target.value === ""
+                                  ? null
+                                  : parseFloat(e.target.value)
+                              )
+                            }
+                            placeholder="0"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            3. Amount (JPY) — BID + SER+COM
+                          </label>
+                          <input
+                            type="number"
+                            step="any"
+                            value={foreignAmount}
+                            readOnly
+                            title="Sum of BID and SER+COM"
+                            placeholder="0.00"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-800 font-medium"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Row 2: Yen → USD */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            4. Dolar to yen Rate (JPY per 1 USD)
                           </label>
                           <input
                             type="number"
@@ -1003,7 +1105,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                         </div>
                         <div>
                           <label className="block text-xs font-medium text-gray-500 mb-1">
-                            3. Calculated Amount (USD)
+                            5. Calculated Amount (USD)
                           </label>
                           <input
                             type="number"
@@ -1014,13 +1116,14 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                             className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-700 font-medium"
                           />
                         </div>
+                        <div className="hidden md:block" aria-hidden={true} />
                       </div>
 
-                      {/* Row 2: Dollar -> BDT */}
+                      {/* Row 3: USD → BDT */}
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                           <label className="block text-xs font-medium text-gray-500 mb-1">
-                            4. Amount (USD)
+                            6. Amount (USD)
                           </label>
                           <input
                             type="number"
@@ -1033,7 +1136,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                         </div>
                         <div>
                           <label className="block text-xs font-medium text-gray-500 mb-1">
-                            5. Dollar to BDT Rate (৳)
+                            7. Dollar to BDT Rate (৳)
                           </label>
                           <input
                             type="number"
@@ -1046,7 +1149,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                         </div>
                         <div>
                           <label className="block text-xs font-medium text-gray-500 mb-1">
-                            6. Calculated Total (BDT)
+                            8. Calculated Total (BDT)
                           </label>
                           <input
                             type="number"
@@ -1059,54 +1162,91 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       </div>
                     </div>
                   ) : (
-                    // Dollar Layout: 1 Row
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">
-                          Amount (USD)
-                        </label>
-                        <input
-                          type="number"
-                          step="any"
-                          value={foreignAmount}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setForeignAmount(val);
-                            setFormData((prev) => ({
-                              ...prev,
-                              foreign_amount: val === "" ? null : parseFloat(val) || 0,
-                            }));
-                          }}
-                          placeholder="0.00"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                        />
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            1. BID
+                          </label>
+                          <input
+                            type="number"
+                            step="any"
+                            value={formData.bid_price ?? ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "bid_price",
+                                e.target.value === ""
+                                  ? null
+                                  : parseFloat(e.target.value)
+                              )
+                            }
+                            placeholder="0"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            2. SER+COM
+                          </label>
+                          <input
+                            type="number"
+                            step="any"
+                            value={formData.ser_com ?? ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "ser_com",
+                                e.target.value === ""
+                                  ? null
+                                  : parseFloat(e.target.value)
+                              )
+                            }
+                            placeholder="0"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            3. Amount (USD) — BID + SER+COM
+                          </label>
+                          <input
+                            type="number"
+                            step="any"
+                            value={foreignAmount}
+                            readOnly
+                            title="Sum of BID and SER+COM"
+                            placeholder="0.00"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-800 font-medium"
+                          />
+                        </div>
                       </div>
 
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">
-                          Dollar to BDT Rate (৳)
-                        </label>
-                        <input
-                          type="number"
-                          step="any"
-                          value={dollarToBdtRate}
-                          onChange={(e) => setDollarToBdtRate(e.target.value)}
-                          placeholder="0.00"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">
-                          Calculated Total (BDT)
-                        </label>
-                        <input
-                          type="number"
-                          step="any"
-                          value={formData.purchase_amount || ""}
-                          readOnly
-                          className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-200 text-gray-700 font-bold"
-                        />
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            4. Dollar to BDT Rate (৳)
+                          </label>
+                          <input
+                            type="number"
+                            step="any"
+                            value={dollarToBdtRate}
+                            onChange={(e) => setDollarToBdtRate(e.target.value)}
+                            placeholder="0.00"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            5. Calculated Total (BDT)
+                          </label>
+                          <input
+                            type="number"
+                            step="any"
+                            value={formData.purchase_amount || ""}
+                            readOnly
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-200 text-gray-700 font-bold"
+                          />
+                        </div>
+                        <div className="hidden md:block" aria-hidden={true} />
                       </div>
                     </div>
                   )}

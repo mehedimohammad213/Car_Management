@@ -23,6 +23,8 @@ class PurchaseHistory extends Model
         'govt_duty',
         'cnf_amount',
         'miscellaneous',
+        'bid_price',
+        'ser_com',
         'lc_date',
         'lc_number',
         'lc_bank_name',
@@ -48,6 +50,8 @@ class PurchaseHistory extends Model
         'foreign_amount' => 'decimal:2',
         'bdt_amount' => 'decimal:2',
         'cnf_amount' => 'decimal:2',
+        'bid_price' => 'decimal:2',
+        'ser_com' => 'decimal:2',
         'lc_date' => 'date',
     ];
 

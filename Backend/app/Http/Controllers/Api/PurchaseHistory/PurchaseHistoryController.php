@@ -55,6 +55,37 @@ class PurchaseHistoryController extends Controller
     }
 
     /**
+     * foreign_amount is always bid_price + ser_com (null when both empty).
+     */
+    private function foreignAmountFromBidAndSer(mixed $bid, mixed $ser): ?float
+    {
+        $hasBid = $bid !== null && $bid !== '';
+        $hasSer = $ser !== null && $ser !== '';
+
+        if (! $hasBid && ! $hasSer) {
+            return null;
+        }
+
+        return (float) ($hasBid ? $bid : 0) + (float) ($hasSer ? $ser : 0);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function applyComputedForeignAmountToData(array &$data, ?PurchaseHistory $existing = null): void
+    {
+        if ($existing === null) {
+            $bid = $data['bid_price'] ?? null;
+            $ser = $data['ser_com'] ?? null;
+        } else {
+            $bid = array_key_exists('bid_price', $data) ? $data['bid_price'] : $existing->bid_price;
+            $ser = array_key_exists('ser_com', $data) ? $data['ser_com'] : $existing->ser_com;
+        }
+
+        $data['foreign_amount'] = $this->foreignAmountFromBidAndSer($bid, $ser);
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(Request $request): JsonResponse
@@ -144,6 +175,8 @@ class PurchaseHistoryController extends Controller
                 'govt_duty' => 'nullable|string',
                 'cnf_amount' => 'nullable|numeric',
                 'miscellaneous' => 'nullable|string',
+                'bid_price' => 'nullable|numeric',
+                'ser_com' => 'nullable|numeric',
                 'lc_date' => 'nullable|date',
                 'lc_number' => 'nullable|string',
                 'lc_bank_name' => 'nullable|string',
@@ -181,6 +214,8 @@ class PurchaseHistoryController extends Controller
                 'govt_duty',
                 'cnf_amount',
                 'miscellaneous',
+                'bid_price',
+                'ser_com',
                 'lc_date',
                 'lc_number',
                 'lc_bank_name',
@@ -209,6 +244,8 @@ class PurchaseHistoryController extends Controller
                     $data[$field] = $this->handlePdfUpload($request->file($field), $field);
                 }
             }
+
+            $this->applyComputedForeignAmountToData($data);
 
             $purchaseHistory = PurchaseHistory::create($data);
 
@@ -295,6 +332,8 @@ class PurchaseHistoryController extends Controller
                 'govt_duty' => 'nullable|string',
                 'cnf_amount' => 'nullable|numeric',
                 'miscellaneous' => 'nullable|string',
+                'bid_price' => 'nullable|numeric',
+                'ser_com' => 'nullable|numeric',
                 'lc_date' => 'nullable|date',
                 'lc_number' => 'nullable|string',
                 'lc_bank_name' => 'nullable|string',
@@ -332,6 +371,8 @@ class PurchaseHistoryController extends Controller
                 'govt_duty',
                 'cnf_amount',
                 'miscellaneous',
+                'bid_price',
+                'ser_com',
                 'lc_date',
                 'lc_number',
                 'lc_bank_name',
@@ -363,6 +404,8 @@ class PurchaseHistoryController extends Controller
                     $data[$field] = $this->handlePdfUpload($request->file($field), $field);
                 }
             }
+
+            $this->applyComputedForeignAmountToData($data, $purchaseHistory);
 
             $purchaseHistory->update($data);
 
