@@ -198,8 +198,12 @@ const StockManagement: React.FC = () => {
               onColorFilterChange={setColorFilter}
               fuelFilter={fuelFilter}
               onFuelFilterChange={setFuelFilter}
-              isGeneratingPDF={isGeneratingPDF}
-              onGeneratePDF={generatePDF}
+              isGeneratingPDF={
+                activeTab === "current" ? isGeneratingPDF : false
+              }
+              onGeneratePDF={
+                activeTab === "current" ? generatePDF : undefined
+              }
               onCreateInvoice={() => setShowInvoiceModal(true)}
               onCreateStock={handleCreateStock}
               filterOptions={filterOptions}
