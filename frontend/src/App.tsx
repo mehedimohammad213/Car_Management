@@ -25,6 +25,9 @@ const PurchaseHistory = lazy(
 const PurchaseHistoryDetails = lazy(
   () => import("./pages/purchase-history/PurchaseHistoryDetails"),
 );
+const PurchaseHistoryEditorPage = lazy(
+  () => import("./pages/purchase-history/PurchaseHistoryEditorPage"),
+);
 const PaymentHistory = lazy(
   () => import("./pages/payment-history/PaymentHistory"),
 );
@@ -134,6 +137,22 @@ function App() {
                         element={
                           <ProtectedRoute role="admin">
                             <PurchaseHistory />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/purchase-history/create"
+                        element={
+                          <ProtectedRoute role="admin">
+                            <PurchaseHistoryEditorPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/purchase-history/edit/:id"
+                        element={
+                          <ProtectedRoute role="admin">
+                            <PurchaseHistoryEditorPage />
                           </ProtectedRoute>
                         }
                       />

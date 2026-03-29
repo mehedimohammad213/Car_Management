@@ -9,6 +9,27 @@ import { carApi, Car } from "../../services/carApi";
 import { cartApi, CartItem } from "../../services/cartApi";
 import { ShoppingCart } from "lucide-react";
 
+function PurchaseFormSection({
+  variant,
+  children,
+}: {
+  variant: "modal" | "page";
+  children: React.ReactNode;
+}) {
+  if (variant === "page") {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="p-6">{children}</div>
+      </div>
+    );
+  }
+  return (
+    <div className="bg-gray-50 dark:bg-gray-800/80 p-6 rounded-2xl border border-gray-100 dark:border-gray-700">
+      {children}
+    </div>
+  );
+}
+
 interface PurchaseHistoryModalProps {
   isOpen: boolean;
   mode: "create" | "update";
@@ -17,6 +38,8 @@ interface PurchaseHistoryModalProps {
   onSubmit: (
     data: CreatePurchaseHistoryData | UpdatePurchaseHistoryData | CreatePurchaseHistoryData[]
   ) => void;
+  /** Full-page layout (no overlay); use with dedicated routes */
+  variant?: "modal" | "page";
 }
 
 const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
@@ -25,7 +48,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   purchaseHistory,
   onClose,
   onSubmit,
+  variant = "modal",
 }) => {
+  const effectiveOpen = variant === "page" || isOpen;
   const mainHistory = Array.isArray(purchaseHistory) ? purchaseHistory[0] : purchaseHistory;
 
   const toInputDate = (value: string | null | undefined): string | null => {
@@ -96,11 +121,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   const [loadingCart, setLoadingCart] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
+    if (effectiveOpen) {
       fetchCars();
       fetchCartItems();
     }
-  }, [isOpen]);
+  }, [effectiveOpen]);
 
   const fetchCartItems = async () => {
     try {
@@ -294,7 +319,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       setExistingFiles({});
       setCarEntries([]);
     }
-  }, [purchaseHistory, mode, isOpen]);
+  }, [purchaseHistory, mode, effectiveOpen]);
 
   // Calculate purchase_amount with two-step conversion for Yen
   useEffect(() => {
@@ -493,7 +518,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     return filePath.split('/').pop() || filePath.split('\\').pop() || 'Unknown file';
   };
 
-  if (!isOpen) return null;
+  if (variant === "modal" && !isOpen) return null;
 
   const pdfFields = [
     { key: "bill_of_lading", label: "Bill of Lading" },
@@ -512,36 +537,13 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     { key: "custom_three", label: "Custom Three" },
   ];
 
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-hidden my-8">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-primary-600 to-primary-800 text-white p-6 sticky top-0 z-10">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold">
-              {mode === "create"
-                ? "Create Purchase History"
-                : "Update Purchase History"}
-            </h2>
-            <button
-              onClick={onClose}
-              className="p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition-all"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
+  const isPage = variant === "page";
 
-        {/* Content */}
-        <form
-          onSubmit={handleSubmit}
-          className="overflow-y-auto max-h-[calc(95vh-120px)]"
-        >
-          <div className="p-6 space-y-6">
-
+  const renderSections = () => (
+    <>
             {/* 1. LC Information (Common) - Moved to Top */}
-            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <PurchaseFormSection variant={variant}>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 LC Information <span className="text-xs font-normal text-gray-500 bg-white px-2 py-0.5 rounded-full border border-gray-200">Shared across all cars</span>
               </h3>
               <div className="space-y-6">
@@ -644,12 +646,20 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                   />
                 </div>
               </div>
-            </div>
-            <div className="border-t border-gray-200 my-6"></div>
+            </PurchaseFormSection>
+            {variant === "modal" && (
+              <div className="border-t border-gray-200 my-6" />
+            )}
 
             {/* 3. Added Cars List (Shows in Create and can be enabled for Update if we want) */}
             {(mode === 'create') && carEntries.length > 0 && (
-              <div className="bg-primary-50 p-6 rounded-2xl border border-primary-100">
+              <div
+                className={
+                  isPage
+                    ? "bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 ring-1 ring-primary-100 dark:ring-primary-900/30"
+                    : "bg-primary-50 p-6 rounded-2xl border border-primary-100"
+                }
+              >
                 <h3 className="text-lg font-semibold text-primary-900 mb-4 flex items-center gap-2">
                   Added Cars ({carEntries.length}) <span className="text-xs font-normal text-primary-600 px-2 py-0.5 bg-white rounded-full border border-primary-100">Ready to submit</span>
                 </h3>
@@ -701,7 +711,13 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
             {/* 4. Cart List - NEW */}
             {(mode === 'create') && cartItems.length > 0 && (
-              <div className="bg-amber-50 p-6 rounded-2xl border border-amber-100 mb-6">
+              <div
+                className={
+                  isPage
+                    ? "bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 ring-1 ring-amber-100 dark:ring-amber-900/30 mb-0"
+                    : "bg-amber-50 p-6 rounded-2xl border border-amber-100 mb-6"
+                }
+              >
                 <h3 className="text-lg font-semibold text-amber-900 mb-4 flex items-center gap-2">
                   <ShoppingCart className="w-5 h-5" /> From Cart List ({cartItems.length})
                 </h3>
@@ -734,7 +750,13 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
             {/* 4. Car Entry Form */}
             {mode === 'create' && (
-              <div className={`p-6 rounded-2xl border bg-white border-blue-200 shadow-md ring-1 ring-blue-100 mb-6`}>
+              <div
+                className={
+                  isPage
+                    ? "p-6 rounded-2xl border bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 shadow-sm ring-1 ring-blue-100 dark:ring-blue-900/30 mb-0"
+                    : "p-6 rounded-2xl border bg-white border-blue-200 shadow-md ring-1 ring-blue-100 mb-6"
+                }
+              >
                 <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
                   <Plus className="w-5 h-5 text-blue-600" /> Add Car to Purchase
                 </h3>
@@ -846,8 +868,14 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
             {/* Individual Details Section - Show only for Single Edit or Create */}
             {(!Array.isArray(purchaseHistory) || mode === "create") && (
-              <div className="bg-white p-6 rounded-2xl border border-gray-200">
-                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <div
+                className={
+                  isPage
+                    ? "bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700"
+                    : "bg-white p-6 rounded-2xl border border-gray-200"
+                }
+              >
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                   {mode === 'create' ? "Current Entry Details" : "Car & Financial Details"}
                 </h3>
 
@@ -880,8 +908,14 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 {/* Calculator section from line 1040 original... */}
 
                 {/* Purchase Amount Calculation */}
-                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mb-6">
-                  <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">
+                <div
+                  className={
+                    isPage
+                      ? "bg-gray-50 dark:bg-gray-900/50 rounded-xl p-6 border border-gray-200 dark:border-gray-600 mb-6"
+                      : "bg-gray-50 rounded-xl p-6 border border-gray-200 mb-6"
+                  }
+                >
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 uppercase tracking-wide">
                     Purchase Price & Financial Details
                   </h3>
                   <div className="flex flex-wrap items-center gap-4 mb-4">
@@ -1147,8 +1181,13 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
             {/* PDF Documents Section - Single Edit or Create */}
             {(!Array.isArray(purchaseHistory) || mode === "create") && (
-              <div className="mt-6 border-t border-gray-200 pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div
+                className={
+                  isPage ? "" : "mt-6 border-t border-gray-200 pt-6"
+                }
+              >
+                <PurchaseFormSection variant={variant}>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Document Attachments
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1256,28 +1295,98 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                     );
                   })}
                 </div>
+                </PurchaseFormSection>
               </div>
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
+            {isPage ? (
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div className="p-6 flex items-center justify-end gap-4">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-8 py-3 text-white bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-500 rounded-xl font-semibold transition-all duration-200 shadow-sm hover:shadow-md border border-red-700/20"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-8 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-green-600/20 hover:shadow-xl"
+                  >
+                    {mode === "create"
+                      ? carEntries.length > 0
+                        ? `Submit All (${carEntries.length} Cars)`
+                        : "Create"
+                      : "Update"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-6 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-medium"
+                >
+                  {mode === "create"
+                    ? carEntries.length > 0
+                      ? `Submit All (${carEntries.length} Cars)`
+                      : "Create"
+                    : "Update"}
+                </button>
+              </div>
+            )}
+    </>
+  );
+
+  return (
+    <div
+      className={
+        isPage
+          ? "w-full"
+          : "fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto"
+      }
+    >
+      {isPage ? (
+        <form
+          onSubmit={handleSubmit}
+          className="w-full px-8 pt-3 pb-8"
+        >
+          <div className="space-y-5">{renderSections()}</div>
+        </form>
+      ) : (
+        <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-hidden my-8">
+          <div className="bg-gradient-to-r from-primary-600 to-primary-800 text-white p-6 sticky top-0 z-10">
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="text-2xl font-bold">
+                {mode === "create"
+                  ? "Create Purchase History"
+                  : "Update Purchase History"}
+              </h2>
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+                className="p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition-all"
               >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-medium"
-              >
-                {mode === "create" ? (carEntries.length > 0 ? `Submit All (${carEntries.length} Cars)` : "Create") : "Update"}
+                <X className="w-6 h-6" />
               </button>
             </div>
           </div>
-        </form>
-      </div>
+          <form
+            onSubmit={handleSubmit}
+            className="overflow-y-auto max-h-[calc(95vh-120px)]"
+          >
+            <div className="p-6 space-y-6">{renderSections()}</div>
+          </form>
+        </div>
+      )}
     </div>
   );
 };

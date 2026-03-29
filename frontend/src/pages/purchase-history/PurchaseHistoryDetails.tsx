@@ -266,9 +266,7 @@ const PurchaseHistoryDetails: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() =>
-                navigate("/admin/purchase-history", {
-                  state: { editId: purchaseHistory.id },
-                })
+                navigate(`/admin/purchase-history/edit/${purchaseHistory.id}`)
               }
               className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
             >

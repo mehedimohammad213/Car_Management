@@ -1,31 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Plus, Search, X } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   purchaseHistoryApi,
   PurchaseHistory,
-  CreatePurchaseHistoryData,
-  UpdatePurchaseHistoryData,
 } from "../../services/purchaseHistoryApi";
-import PurchaseHistoryModal from "../../components/purchase-history/PurchaseHistoryModal";
 import PurchaseHistoryTable from "../../components/purchase-history/PurchaseHistoryTable";
 import PurchaseHistoryLCView from "../../components/purchase-history/PurchaseHistoryLCView";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 import Pagination from "../../components/car/Pagination";
-import { LayoutGrid, List } from "lucide-react";
 
 const PurchaseHistoryPage: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation() as { state?: { editId?: number } };
   const [purchaseHistories, setPurchaseHistories] = useState<PurchaseHistory[]>(
     []
   );
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "update">("create");
-  const [selectedPurchaseHistory, setSelectedPurchaseHistory] =
-    useState<PurchaseHistory | PurchaseHistory[] | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [purchaseHistoryToDelete, setPurchaseHistoryToDelete] =
     useState<PurchaseHistory | null>(null);
@@ -46,21 +37,6 @@ const PurchaseHistoryPage: React.FC = () => {
   useEffect(() => {
     fetchPurchaseHistories();
   }, [currentPage, searchTerm, filterMonth, filterYear]);
-
-  // Open edit modal if navigated with state { editId }
-  useEffect(() => {
-    if (!loading && purchaseHistories.length > 0 && location.state?.editId) {
-      const toEdit = purchaseHistories.find(
-        (ph) => ph.id === location.state!.editId
-      );
-      if (toEdit) {
-        setSelectedPurchaseHistory(toEdit);
-        setModalMode("update");
-        setShowModal(true);
-      }
-      // Do not attempt to clear the history state here to avoid navigation issues
-    }
-  }, [loading, purchaseHistories, location.state]);
 
   const fetchPurchaseHistories = async () => {
     try {
@@ -90,9 +66,7 @@ const PurchaseHistoryPage: React.FC = () => {
   };
 
   const handleCreate = () => {
-    setSelectedPurchaseHistory(null);
-    setModalMode("create");
-    setShowModal(true);
+    navigate("/admin/purchase-history/create");
   };
 
   const handleView = (purchaseHistory: PurchaseHistory) => {
@@ -100,9 +74,13 @@ const PurchaseHistoryPage: React.FC = () => {
   };
 
   const handleEdit = (purchaseHistory: PurchaseHistory | PurchaseHistory[]) => {
-    setSelectedPurchaseHistory(purchaseHistory);
-    setModalMode("update");
-    setShowModal(true);
+    if (Array.isArray(purchaseHistory)) {
+      navigate("/admin/purchase-history/edit/bulk", {
+        state: { records: purchaseHistory },
+      });
+    } else {
+      navigate(`/admin/purchase-history/edit/${purchaseHistory.id}`);
+    }
   };
 
   const handleDelete = (purchaseHistory: PurchaseHistory) => {
@@ -131,78 +109,6 @@ const PurchaseHistoryPage: React.FC = () => {
       toast.error("Failed to delete purchase history");
     } finally {
       setIsDeleting(false);
-    }
-  };
-
-  const handleModalSubmit = async (
-    data: CreatePurchaseHistoryData | UpdatePurchaseHistoryData | CreatePurchaseHistoryData[]
-  ) => {
-    try {
-      if (Array.isArray(data)) {
-        let successCount = 0;
-        let failCount = 0;
-
-        for (const item of data) {
-          const itemWithId = item as (CreatePurchaseHistoryData & { id?: number });
-          let response;
-
-          if (modalMode === "update" && itemWithId.id) {
-            // Update existing record
-            response = await purchaseHistoryApi.updatePurchaseHistory(itemWithId.id, item);
-          } else {
-            // Create new record
-            response = await purchaseHistoryApi.createPurchaseHistory(item);
-          }
-
-          if (response.success) {
-            successCount++;
-          } else {
-            failCount++;
-            console.error(`Failed to ${itemWithId.id ? 'update' : 'create'} purchase history:`, response.message);
-          }
-        }
-
-        if (successCount > 0) {
-          toast.success(`${successCount} records processed successfully`);
-          setShowModal(false);
-          fetchPurchaseHistories();
-        }
-        if (failCount > 0) {
-          toast.error(`${failCount} records failed`);
-        }
-        return;
-      }
-
-      if (modalMode === "update" && selectedPurchaseHistory) {
-        const historyToUpdate = Array.isArray(selectedPurchaseHistory) ? selectedPurchaseHistory[0] : selectedPurchaseHistory;
-        const response = await purchaseHistoryApi.updatePurchaseHistory(
-          historyToUpdate.id,
-          data as UpdatePurchaseHistoryData
-        );
-        if (response.success) {
-          toast.success("Purchase history updated successfully");
-          setShowModal(false);
-          setSelectedPurchaseHistory(null);
-          fetchPurchaseHistories();
-          navigate("/admin/purchase-history");
-        } else {
-          toast.error(response.message || "Failed to update purchase history");
-        }
-      } else {
-        const response = await purchaseHistoryApi.createPurchaseHistory(
-          data as CreatePurchaseHistoryData
-        );
-        if (response.success) {
-          toast.success("Purchase history created successfully");
-          setShowModal(false);
-          fetchPurchaseHistories();
-        } else {
-          toast.error(response.message || "Failed to create purchase history");
-        }
-      }
-    } catch (error) {
-      console.error("Error saving purchase history:", error);
-      toast.error("Failed to save purchase history");
     }
   };
 
@@ -355,18 +261,6 @@ const PurchaseHistoryPage: React.FC = () => {
           totalItems={totalItems}
           perPage={perPage}
           onPageChange={setCurrentPage}
-        />
-
-        {/* Modal */}
-        <PurchaseHistoryModal
-          isOpen={showModal}
-          mode={modalMode}
-          purchaseHistory={selectedPurchaseHistory}
-          onClose={() => {
-            setShowModal(false);
-            setSelectedPurchaseHistory(null);
-          }}
-          onSubmit={handleModalSubmit}
         />
 
         {/* Delete Confirmation Modal */}
