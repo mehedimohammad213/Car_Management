@@ -9,16 +9,38 @@ interface InvoiceItem {
 
 export type StockPageTab = "current" | "before" | "soldout";
 
+export type StockTabCounts = {
+  pending: number;
+  current: number;
+  soldout: number;
+};
+
 interface StockHeaderProps {
   onCreateInvoice?: () => void;
   activeTab: StockPageTab;
   onTabChange: (tab: StockPageTab) => void;
+  /** Live row counts per tab (updates when lists change). */
+  tabCounts: StockTabCounts;
+}
+
+function TabDataCount({ n, active }: { n: number; active: boolean }) {
+  return (
+    <span
+      className={`ml-1.5 inline-flex min-w-[1.35rem] items-center justify-center rounded-md px-1.5 py-0.5 text-[11px] font-bold tabular-nums ${active
+          ? "bg-white/25 text-white"
+          : "bg-gray-200/90 text-gray-600"
+        }`}
+    >
+      {n}
+    </span>
+  );
 }
 
 export const StockHeader: React.FC<StockHeaderProps> = ({
   onCreateInvoice,
   activeTab,
   onTabChange,
+  tabCounts,
 }) => {
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
@@ -89,15 +111,8 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
                   : "text-gray-600 hover:bg-gray-100"
                 }`}
             >
-              <span
-                className={`flex h-5 min-w-[1.25rem] items-center justify-center rounded-md text-[10px] font-bold tabular-nums ${activeTab === "before"
-                    ? "bg-white/20 text-white"
-                    : "bg-gray-200 text-gray-600"
-                  }`}
-              >
-                1
-              </span>
               Pending
+              <TabDataCount n={tabCounts.pending} active={activeTab === "before"} />
             </button>
             <button
               onClick={() => onTabChange("current")}
@@ -106,15 +121,8 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
                   : "text-gray-600 hover:bg-gray-100"
                 }`}
             >
-              <span
-                className={`flex h-5 min-w-[1.25rem] items-center justify-center rounded-md text-[10px] font-bold tabular-nums ${activeTab === "current"
-                    ? "bg-white/20 text-white"
-                    : "bg-gray-200 text-gray-600"
-                  }`}
-              >
-                2
-              </span>
               Current
+              <TabDataCount n={tabCounts.current} active={activeTab === "current"} />
             </button>
             <button
               onClick={() => onTabChange("soldout")}
@@ -123,15 +131,8 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
                   : "text-gray-600 hover:bg-gray-100"
                 }`}
             >
-              <span
-                className={`flex h-5 min-w-[1.25rem] items-center justify-center rounded-md text-[10px] font-bold tabular-nums ${activeTab === "soldout"
-                    ? "bg-white/20 text-white"
-                    : "bg-gray-200 text-gray-600"
-                  }`}
-              >
-                3
-              </span>
               Sold out
+              <TabDataCount n={tabCounts.soldout} active={activeTab === "soldout"} />
             </button>
           </div>
         </div>

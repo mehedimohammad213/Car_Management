@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 import {
   StockHeader,
@@ -19,6 +19,7 @@ import type { StockPageTab } from "../../components/stock/StockHeader";
 import { useNavigate } from "react-router-dom";
 import { stockApi, Stock } from "../../services/stockApi";
 import { carApi } from "../../services/carApi";
+import { isStockRowSold } from "../../utils/stockStatus";
 
 const StockManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -91,6 +92,19 @@ const StockManagement: React.FC = () => {
   } = useStockManagement(stockScope);
 
   const pendingFilters = usePendingCarsFilters(availableCars);
+
+  const stockTabCounts = useMemo(
+    () => ({
+      pending: pendingFilters.sourceCount,
+      current: allStocks.length,
+      soldout: allStocks.filter((s) => isStockRowSold(s)).length,
+    }),
+    [pendingFilters.sourceCount, allStocks]
+  );
+
+  useEffect(() => {
+    fetchAvailableCars();
+  }, [fetchAvailableCars]);
 
   useEffect(() => {
     if (activeTab === "before") {
@@ -178,6 +192,7 @@ const StockManagement: React.FC = () => {
           onCreateInvoice={() => setShowInvoiceModal(true)}
           activeTab={activeTab}
           onTabChange={setActiveTab}
+          tabCounts={stockTabCounts}
         />
 
         <MessageDisplay message={message} />
