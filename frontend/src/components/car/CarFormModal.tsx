@@ -597,8 +597,13 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
         </div>
       )}
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="p-8 space-y-8">
+      {/* Form — tighter vertical rhythm on full page (non-modal) */}
+      <form
+        onSubmit={handleSubmit}
+        className={
+          isModal ? "p-8 space-y-8" : "px-8 pt-3 pb-8 space-y-5"
+        }
+      >
 
         {/* Basic Information Section */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">

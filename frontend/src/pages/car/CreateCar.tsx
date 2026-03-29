@@ -115,9 +115,9 @@ const CreateCar: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 pt-5 pb-8 sm:pt-6">
         {/* Header card — same style as form sections; title lives with back */}
-        <div className="mb-8 px-8">
+        <div className="mb-4 px-8">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <div className="p-6 flex flex-col gap-4 sm:flex-row sm:items-center">
               <button
@@ -142,7 +142,7 @@ const CreateCar: React.FC = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 mx-8 p-4 bg-red-50 border border-red-200 rounded-xl">
+          <div className="mb-4 mx-8 p-4 bg-red-50 border border-red-200 rounded-xl">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <svg
