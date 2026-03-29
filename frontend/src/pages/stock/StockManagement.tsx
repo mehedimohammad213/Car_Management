@@ -22,7 +22,7 @@ const StockManagement: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<StockPageTab>("current");
 
-  const stockScope = activeTab === "soldout" ? "sold" : "inventory";
+  const stockScope = activeTab === "soldout" ? "sold" : "all";
 
   const {
     stocks,
@@ -77,6 +77,7 @@ const StockManagement: React.FC = () => {
     fetchAvailableCars,
     showMessage,
     scopedStocks,
+    statusTotals,
   } = useStockManagement(stockScope);
 
   useEffect(() => {
@@ -172,6 +173,8 @@ const StockManagement: React.FC = () => {
               onView={handleViewCar}
               onRefresh={fetchStocks}
               emptyStateVariant={activeTab === "soldout" ? "soldout" : "default"}
+              showStatusGroups={activeTab === "current"}
+              statusTotals={statusTotals}
             />
 
             <Pagination

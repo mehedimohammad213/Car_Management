@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import {
-  Package,
-} from "lucide-react";
 import { InvoiceCreationModal } from "./InvoiceCreationModal";
 
 interface InvoiceItem {
@@ -84,16 +81,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
             </h1>
           </div>
           {/* Tab Selection - right side of header */}
-          <div className="flex gap-1">
-            <button
-              onClick={() => onTabChange("current")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "current"
-                  ? "bg-primary-600 text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-                }`}
-            >
-              Current Stock
-            </button>
+          <div className="flex flex-wrap gap-1">
             <button
               onClick={() => onTabChange("before")}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "before"
@@ -101,7 +89,32 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
                   : "text-gray-600 hover:bg-gray-100"
                 }`}
             >
-              Pending Stock
+              <span
+                className={`flex h-5 min-w-[1.25rem] items-center justify-center rounded-md text-[10px] font-bold tabular-nums ${activeTab === "before"
+                    ? "bg-white/20 text-white"
+                    : "bg-gray-200 text-gray-600"
+                  }`}
+              >
+                1
+              </span>
+              Pending
+            </button>
+            <button
+              onClick={() => onTabChange("current")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "current"
+                  ? "bg-primary-600 text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              <span
+                className={`flex h-5 min-w-[1.25rem] items-center justify-center rounded-md text-[10px] font-bold tabular-nums ${activeTab === "current"
+                    ? "bg-white/20 text-white"
+                    : "bg-gray-200 text-gray-600"
+                  }`}
+              >
+                2
+              </span>
+              Current
             </button>
             <button
               onClick={() => onTabChange("soldout")}
@@ -110,6 +123,14 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
                   : "text-gray-600 hover:bg-gray-100"
                 }`}
             >
+              <span
+                className={`flex h-5 min-w-[1.25rem] items-center justify-center rounded-md text-[10px] font-bold tabular-nums ${activeTab === "soldout"
+                    ? "bg-white/20 text-white"
+                    : "bg-gray-200 text-gray-600"
+                  }`}
+              >
+                3
+              </span>
               Sold out
             </button>
           </div>

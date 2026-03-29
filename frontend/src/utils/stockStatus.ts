@@ -36,3 +36,29 @@ export function getEffectiveStockStatus(stock: Stock): string {
 export function isStockRowSold(stock: Stock): boolean {
   return getEffectiveStockStatus(stock) === "sold";
 }
+
+/** Order for “status-wise” lists: in-stock first, then issues, sold last */
+const STATUS_LIST_ORDER = [
+  "available",
+  "reserved",
+  "damaged",
+  "lost",
+  "stolen",
+  "sold",
+] as const;
+
+export function getStatusSortRank(status: string): number {
+  const idx = STATUS_LIST_ORDER.indexOf(
+    status as (typeof STATUS_LIST_ORDER)[number]
+  );
+  return idx === -1 ? STATUS_LIST_ORDER.length : idx;
+}
+
+export const STATUS_SECTION_LABELS: Record<string, string> = {
+  available: "Available",
+  reserved: "Reserved",
+  damaged: "Damaged",
+  lost: "Lost",
+  stolen: "Stolen",
+  sold: "Sold",
+};

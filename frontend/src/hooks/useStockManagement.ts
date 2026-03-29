@@ -10,7 +10,7 @@ type MessageState = {
   text: string;
 } | null;
 
-export const useStockManagement = (stockScope: StockListScope = "inventory") => {
+export const useStockManagement = (stockScope: StockListScope = "all") => {
   const [allStocks, setAllStocks] = useState<Stock[]>([]);
   const [availableCars, setAvailableCars] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);

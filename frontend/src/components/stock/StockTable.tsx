@@ -2,6 +2,10 @@ import React from "react";
 import { Package } from "lucide-react";
 import { Stock } from "../../services/stockApi";
 import StockTableRow from "./StockTableRow";
+import {
+  getEffectiveStockStatus,
+  STATUS_SECTION_LABELS,
+} from "../../utils/stockStatus";
 
 interface StockTableProps {
   stocks: Stock[];
@@ -15,6 +19,8 @@ interface StockTableProps {
   onView?: (stock: Stock) => void;
   onRefresh: () => void;
   emptyStateVariant?: "default" | "soldout";
+  showStatusGroups?: boolean;
+  statusTotals?: Record<string, number>;
 }
 
 const StockTable: React.FC<StockTableProps> = ({
@@ -29,6 +35,8 @@ const StockTable: React.FC<StockTableProps> = ({
   onView,
   onRefresh,
   emptyStateVariant = "default",
+  showStatusGroups = false,
+  statusTotals = {},
 }) => {
 
   // Calculate current stock count for each make/model
@@ -121,18 +129,53 @@ const StockTable: React.FC<StockTableProps> = ({
 
           {/* Table Body */}
           <div className="divide-y divide-gray-100">
-            {stocks.map((stock, index) => {
-              const makeModelKey = stock.car ? `${stock.car.make}_${stock.car.model}` : "";
+            {stocks.flatMap((stock, index) => {
+              const makeModelKey = stock.car
+                ? `${stock.car.make}_${stock.car.model}`
+                : "";
               const currentStockCount = stock.car
                 ? stockCountsMap.get(makeModelKey) || 0
                 : 0;
 
-              // Only show count on first occurrence of each make/model in the current list
-              const isFirstOfMakeModel = stock.car && stocks.findIndex(
-                (s) => s.car && `${s.car.make}_${s.car.model}` === makeModelKey
-              ) === index;
+              const isFirstOfMakeModel =
+                stock.car &&
+                stocks.findIndex(
+                  (s) =>
+                    s.car && `${s.car.make}_${s.car.model}` === makeModelKey
+                ) === index;
 
-              return (
+              const effective = getEffectiveStockStatus(stock);
+              const prevEffective =
+                index > 0
+                  ? getEffectiveStockStatus(stocks[index - 1])
+                  : null;
+              const showGroupHeader =
+                showStatusGroups && effective !== prevEffective;
+              const sectionLabel =
+                STATUS_SECTION_LABELS[effective] ??
+                effective.charAt(0).toUpperCase() + effective.slice(1);
+              const sectionCount = statusTotals[effective];
+
+              const nodes: React.ReactNode[] = [];
+              if (showGroupHeader) {
+                nodes.push(
+                  <div
+                    key={`status-${stock.id}-${effective}`}
+                    className="bg-slate-50 border-y border-slate-200 px-4 py-2.5"
+                  >
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                      {sectionLabel}
+                      {sectionCount != null && (
+                        <span className="ml-2 font-semibold text-slate-400 normal-case">
+                          ({sectionCount})
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                );
+              }
+
+              nodes.push(
                 <StockTableRow
                   key={stock.id}
                   stock={stock}
@@ -143,6 +186,7 @@ const StockTable: React.FC<StockTableProps> = ({
                   onView={onView}
                 />
               );
+              return nodes;
             })}
           </div>
         </div>

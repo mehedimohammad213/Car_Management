@@ -1,6 +1,10 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { Stock } from "../services/stockApi";
-import { isStockRowSold } from "../utils/stockStatus";
+import {
+    getEffectiveStockStatus,
+    getStatusSortRank,
+    isStockRowSold,
+} from "../utils/stockStatus";
 
 export type FilterOptions = {
     years?: number[];
@@ -10,11 +14,11 @@ export type FilterOptions = {
 
 const PER_PAGE = 10;
 
-export type StockListScope = "inventory" | "sold";
+export type StockListScope = "all" | "sold";
 
 export const useStockFilters = (
     allStocks: Stock[],
-    stockScope: StockListScope = "inventory"
+    stockScope: StockListScope = "all"
 ) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [yearFilter, setYearFilter] = useState("");
@@ -38,7 +42,7 @@ export const useStockFilters = (
         if (stockScope === "sold") {
             return allStocks.filter((s) => isStockRowSold(s));
         }
-        return allStocks.filter((s) => !isStockRowSold(s));
+        return allStocks;
     }, [allStocks, stockScope]);
 
     const derivedData = useMemo(() => {
@@ -47,6 +51,7 @@ export const useStockFilters = (
                 stocks: [] as Stock[],
                 totalPages: 1,
                 totalItems: 0,
+                statusTotals: {} as Record<string, number>,
                 filterOptions: {} as FilterOptions,
             };
         }
@@ -103,6 +108,14 @@ export const useStockFilters = (
 
         if (sortBy) {
             filtered.sort((a, b) => {
+                if (stockScope === "all") {
+                    const ra = getStatusSortRank(getEffectiveStockStatus(a));
+                    const rb = getStatusSortRank(getEffectiveStockStatus(b));
+                    if (ra !== rb) {
+                        return ra - rb;
+                    }
+                }
+
                 let aValue: any;
                 let bValue: any;
 
@@ -131,6 +144,12 @@ export const useStockFilters = (
             });
         }
 
+        const statusTotals: Record<string, number> = {};
+        for (const s of filtered) {
+            const k = getEffectiveStockStatus(s);
+            statusTotals[k] = (statusTotals[k] || 0) + 1;
+        }
+
         const startIndex = (currentPage - 1) * PER_PAGE;
         const endIndex = startIndex + PER_PAGE;
         const paginatedStocks = filtered.slice(startIndex, endIndex);
@@ -149,6 +168,7 @@ export const useStockFilters = (
             stocks: paginatedStocks,
             totalPages: Math.max(Math.ceil(filtered.length / PER_PAGE), 1),
             totalItems: filtered.length,
+            statusTotals,
             filterOptions: {
                 years: Array.from(years).sort((a, b) => b - a),
                 colors: Array.from(colors).sort(),
