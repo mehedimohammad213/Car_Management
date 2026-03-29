@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { Stock } from "../services/stockApi";
+import { isStockRowSold } from "../utils/stockStatus";
 
 export type FilterOptions = {
     years?: number[];
@@ -9,7 +10,12 @@ export type FilterOptions = {
 
 const PER_PAGE = 10;
 
-export const useStockFilters = (allStocks: Stock[]) => {
+export type StockListScope = "inventory" | "sold";
+
+export const useStockFilters = (
+    allStocks: Stock[],
+    stockScope: StockListScope = "inventory"
+) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [yearFilter, setYearFilter] = useState("");
     const [makeFilter, setMakeFilter] = useState("");
@@ -24,8 +30,19 @@ export const useStockFilters = (allStocks: Stock[]) => {
         setCurrentPage(1);
     }, [searchTerm, yearFilter, makeFilter, modelFilter, colorFilter, fuelFilter]);
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [stockScope]);
+
+    const scopedStocks = useMemo(() => {
+        if (stockScope === "sold") {
+            return allStocks.filter((s) => isStockRowSold(s));
+        }
+        return allStocks.filter((s) => !isStockRowSold(s));
+    }, [allStocks, stockScope]);
+
     const derivedData = useMemo(() => {
-        if (allStocks.length === 0) {
+        if (scopedStocks.length === 0) {
             return {
                 stocks: [] as Stock[],
                 totalPages: 1,
@@ -34,7 +51,7 @@ export const useStockFilters = (allStocks: Stock[]) => {
             };
         }
 
-        let filtered = [...allStocks];
+        let filtered = [...scopedStocks];
 
         if (searchTerm) {
             const searchLower = searchTerm.toLowerCase();
@@ -122,7 +139,7 @@ export const useStockFilters = (allStocks: Stock[]) => {
         const colors = new Set<string>();
         const fuels = new Set<string>();
 
-        allStocks.forEach((stock) => {
+        scopedStocks.forEach((stock) => {
             if (stock.car?.year) years.add(stock.car.year);
             if (stock.car?.color) colors.add(stock.car.color);
             if (stock.car?.fuel) fuels.add(stock.car.fuel);
@@ -139,7 +156,7 @@ export const useStockFilters = (allStocks: Stock[]) => {
             },
         };
     }, [
-        allStocks,
+        scopedStocks,
         colorFilter,
         currentPage,
         fuelFilter,
@@ -178,6 +195,7 @@ export const useStockFilters = (allStocks: Stock[]) => {
 
     return {
         ...derivedData,
+        scopedStocks,
         searchTerm,
         setSearchTerm,
         yearFilter,

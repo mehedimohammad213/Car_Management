@@ -13,14 +13,16 @@ import {
 import Pagination from "../../components/car/Pagination";
 import { InvoiceCreationModal } from "../../components/stock/InvoiceCreationModal";
 import AvailableCarsTable from "../../components/stock/AvailableCarsTable";
-import TotalStockTable from "../../components/stock/TotalStockTable";
 import { useStockManagement } from "../../hooks/useStockManagement";
+import type { StockPageTab } from "../../components/stock/StockHeader";
 import { useNavigate } from "react-router-dom";
 import { stockApi, Stock } from "../../services/stockApi";
 
 const StockManagement: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"current" | "before" | "total">("current");
+  const [activeTab, setActiveTab] = useState<StockPageTab>("current");
+
+  const stockScope = activeTab === "soldout" ? "sold" : "inventory";
 
   const {
     stocks,
@@ -74,7 +76,8 @@ const StockManagement: React.FC = () => {
     fetchStocks,
     fetchAvailableCars,
     showMessage,
-  } = useStockManagement();
+    scopedStocks,
+  } = useStockManagement(stockScope);
 
   useEffect(() => {
     if (activeTab === "before") {
@@ -128,13 +131,13 @@ const StockManagement: React.FC = () => {
       <div className="max-w-full mx-auto px-4 pb-6">
         <StockHeader
           onCreateInvoice={() => setShowInvoiceModal(true)}
-          activeTab={activeTab === "total" ? "current" : activeTab as "current" | "before"}
-          onTabChange={(tab) => setActiveTab(tab)}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
         />
 
         <MessageDisplay message={message} />
 
-        {activeTab === "current" ? (
+        {activeTab === "current" || activeTab === "soldout" ? (
           <>
             <StockFilters
               searchTerm={searchTerm}
@@ -159,7 +162,7 @@ const StockManagement: React.FC = () => {
 
             <StockTable
               stocks={stocks}
-              allStocks={allStocks}
+              allStocks={scopedStocks}
               isLoading={isLoading}
               sortBy={sortBy}
               sortOrder={sortOrder}
@@ -168,6 +171,7 @@ const StockManagement: React.FC = () => {
               onDelete={handleDeleteStock}
               onView={handleViewCar}
               onRefresh={fetchStocks}
+              emptyStateVariant={activeTab === "soldout" ? "soldout" : "default"}
             />
 
             <Pagination
@@ -186,10 +190,7 @@ const StockManagement: React.FC = () => {
             onView={handleViewCar}
             onRefresh={fetchAvailableCars}
           />
-        ) : (
-          null
-          // <TotalStockTable />
-        )}
+        ) : null}
 
         {/* Add Stock Popup - Commented out */}
         {/* <StockDrawer

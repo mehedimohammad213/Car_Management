@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { stockApi, Stock } from "../services/stockApi";
-import { useStockFilters } from "./useStockFilters";
+import { useStockFilters, StockListScope } from "./useStockFilters";
 import { useStockActions } from "./useStockActions";
 
 type MessageState = {
@@ -10,7 +10,7 @@ type MessageState = {
   text: string;
 } | null;
 
-export const useStockManagement = () => {
+export const useStockManagement = (stockScope: StockListScope = "inventory") => {
   const [allStocks, setAllStocks] = useState<Stock[]>([]);
   const [availableCars, setAvailableCars] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -67,7 +67,7 @@ export const useStockManagement = () => {
     fetchStocks();
   }, [fetchStocks]);
 
-  const stockFilters = useStockFilters(allStocks);
+  const stockFilters = useStockFilters(allStocks, stockScope);
   const stockActions = useStockActions(
     fetchStocks,
     showMessage,

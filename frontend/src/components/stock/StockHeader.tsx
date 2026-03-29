@@ -10,10 +10,12 @@ interface InvoiceItem {
   price: number;
 }
 
+export type StockPageTab = "current" | "before" | "soldout";
+
 interface StockHeaderProps {
   onCreateInvoice?: () => void;
-  activeTab: "current" | "before";
-  onTabChange: (tab: "current" | "before") => void;
+  activeTab: StockPageTab;
+  onTabChange: (tab: StockPageTab) => void;
 }
 
 export const StockHeader: React.FC<StockHeaderProps> = ({
@@ -100,6 +102,15 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
                 }`}
             >
               Pending Stock
+            </button>
+            <button
+              onClick={() => onTabChange("soldout")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "soldout"
+                  ? "bg-primary-600 text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              Sold out
             </button>
           </div>
         </div>

@@ -14,6 +14,7 @@ interface StockTableProps {
   onDelete: (stock: Stock) => void;
   onView?: (stock: Stock) => void;
   onRefresh: () => void;
+  emptyStateVariant?: "default" | "soldout";
 }
 
 const StockTable: React.FC<StockTableProps> = ({
@@ -27,6 +28,7 @@ const StockTable: React.FC<StockTableProps> = ({
   onDelete,
   onView,
   onRefresh,
+  emptyStateVariant = "default",
 }) => {
 
   // Calculate current stock count for each make/model
@@ -58,17 +60,19 @@ const StockTable: React.FC<StockTableProps> = ({
   }
 
   if (stocks.length === 0) {
+    const isSoldoutTab = emptyStateVariant === "soldout";
     return (
       <div className="text-center py-20">
         <div className="w-40 h-40 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
           <Package className="w-20 h-20 text-primary-600" />
         </div>
         <h3 className="text-3xl font-bold text-gray-900 mb-4">
-          No stocks found
+          {isSoldoutTab ? "No sold vehicles" : "No stocks found"}
         </h3>
         <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
-          We couldn&apos;t find any stocks matching your criteria. Try
-          adjusting your filters or search terms to discover more options.
+          {isSoldoutTab
+            ? "There are no sold stock records yet, or none match your filters. Sold items appear here when stock status is set to sold."
+            : "We couldn&apos;t find any stocks matching your criteria. Try adjusting your filters or search terms to discover more options."}
         </p>
         <button
           onClick={onRefresh}

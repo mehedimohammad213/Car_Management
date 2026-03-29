@@ -2,6 +2,7 @@ import React from "react";
 import { Eye, Edit, Trash2, Car } from "lucide-react";
 import { Stock } from "../../services/stockApi";
 import { getGradeColor, formatPrice as formatPriceUtil } from "../../utils/carUtils";
+import { getEffectiveStockStatus } from "../../utils/stockStatus";
 
 interface StockTableRowProps {
   stock: Stock;
@@ -21,6 +22,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
   onView,
 }) => {
   const car = stock.car;
+  const effectiveStatus = getEffectiveStockStatus(stock);
 
   const formatPrice = (amount?: number | string, currency?: string) => {
     if (amount === undefined || amount === null) return "Price on request";
@@ -81,9 +83,31 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
             {car?.chassis_no_full || car?.chassis_no_masked || "N/A"}
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
-            {stock.status === "available" && stock.quantity > 0 && (
+            {effectiveStatus === "available" && stock.quantity > 0 && (
               <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-green-100 text-green-700 border border-green-200">
                 Available
+              </span>
+            )}
+            {effectiveStatus === "available" && stock.quantity === 0 && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                Unavailable
+              </span>
+            )}
+            {effectiveStatus === "sold" && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
+                Sold
+              </span>
+            )}
+            {effectiveStatus === "reserved" && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                Reserved
+              </span>
+            )}
+            {(effectiveStatus === "damaged" ||
+              effectiveStatus === "lost" ||
+              effectiveStatus === "stolen") && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-orange-100 text-orange-800 border border-orange-200 capitalize">
+                {effectiveStatus}
               </span>
             )}
             {car?.package && (
