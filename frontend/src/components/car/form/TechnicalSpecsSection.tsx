@@ -67,8 +67,8 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
         Technical Specifications
       </h3>
       <div className="space-y-6">
-        {/* First row - Mileage, Chassis Number, Engine Capacity, Fuel Type */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Row 1 — five fields */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <FormField
             label="Mileage"
             field="mileage_km"
@@ -114,10 +114,6 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("fuel", value ?? "")}
           />
-        </div>
-
-        {/* Second row - Transmission, Drivetrain, Engine Number, Seats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <SelectField
             label="Transmission"
             field="transmission"
@@ -132,6 +128,10 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("transmission", value ?? "")}
           />
+        </div>
+
+        {/* Row 2 — five fields */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <SelectField
             label="Drivetrain"
             field="drive"
@@ -169,10 +169,6 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("seats", value)}
           />
-        </div>
-
-        {/* Third row - Number of Keys, Key Features */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <FormField
             label="Number of Keys"
             field="number_of_keys"
