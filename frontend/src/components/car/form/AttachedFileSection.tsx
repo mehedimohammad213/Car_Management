@@ -161,8 +161,8 @@ const AttachedFileSection: React.FC<AttachedFileSectionProps> = ({
   };
 
   return (
-    <div className="bg-gray-50 rounded-xl p-4">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+    <div className="rounded-xl p-4">
+      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
         <Upload className="w-5 h-5 text-primary-600" />
         Attached File
       </h3>
