@@ -23,6 +23,49 @@ interface PurchaseHistoryLCViewProps {
     onDelete?: (purchaseHistory: PurchaseHistory) => void;
 }
 
+/** Aligns with PurchaseHistoryDetails summary “Total” (purchase + duty + CNF + misc). */
+const toNumber = (value: string | number | null | undefined): number | null => {
+    if (value === null || value === undefined) return null;
+    if (typeof value === "number") return value;
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    const parsed = parseFloat(trimmed);
+    return Number.isNaN(parsed) ? null : parsed;
+};
+
+const getPurchaseSummaryTotal = (ph: PurchaseHistory): number | null => {
+    const purchaseAmountValue = toNumber(ph.purchase_amount);
+    const govtDutyValue = toNumber(ph.govt_duty);
+    const cnfAmountValue = toNumber(ph.cnf_amount);
+    const miscellaneousValue = toNumber(ph.miscellaneous);
+
+    const hasCostValues = [
+        purchaseAmountValue,
+        toNumber(ph.foreign_amount),
+        toNumber(ph.bdt_amount),
+        govtDutyValue,
+        cnfAmountValue,
+        miscellaneousValue,
+    ].some((v) => v !== null);
+
+    if (!hasCostValues) return null;
+
+    return (
+        (purchaseAmountValue || 0) +
+        (govtDutyValue || 0) +
+        (cnfAmountValue || 0) +
+        (miscellaneousValue || 0)
+    );
+};
+
+const formatBdt = (amount: number | null): string => {
+    if (amount === null) return "N/A";
+    return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "BDT",
+    }).format(amount);
+};
+
 const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
     purchaseHistories,
     isLoading,
@@ -227,15 +270,10 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                                                                 }) : "N/A"}
                                                             </span>
                                                         </div>
-                                                        <div className="flex items-center justify-between">
-                                                            <span className="text-xs font-bold text-gray-400 uppercase">Purchase Date</span>
-                                                            <span className="text-sm font-bold text-gray-700 flex items-center gap-1.5">
-                                                                <Calendar className="w-3.5 h-3.5 text-primary-400" />
-                                                                {history.purchase_date ? new Date(history.purchase_date).toLocaleDateString("en-US", {
-                                                                    month: 'short',
-                                                                    day: 'numeric',
-                                                                    year: 'numeric'
-                                                                }) : "N/A"}
+                                                        <div className="flex items-center justify-between gap-2">
+                                                            <span className="text-xs font-bold text-gray-400 uppercase shrink-0">Total</span>
+                                                            <span className="text-sm font-bold text-gray-800 tabular-nums text-right break-all">
+                                                                {formatBdt(getPurchaseSummaryTotal(history))}
                                                             </span>
                                                         </div>
                                                     </div>
