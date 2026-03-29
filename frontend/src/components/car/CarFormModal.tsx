@@ -9,7 +9,8 @@ import { Category } from "../../services/categoryApi";
 import {
   BasicInfoSection,
   TechnicalSpecsSection,
-  GradingLocationSection,
+  GradingSection,
+  LocationStatusSection,
   // PricingSection,
   NotesSection,
   PhotoSection,
@@ -626,15 +627,27 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
           </div>
         </div>
 
-        {/* Grading & Location Section combined */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6">
-            <GradingLocationSection
-              formData={formData}
-              errors={errors}
-              isViewMode={isViewMode}
-              onInputChange={handleInputChange}
-            />
+        {/* Grading & location — two cards, same row on large screens */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden min-w-0">
+            <div className="p-6">
+              <GradingSection
+                formData={formData}
+                errors={errors}
+                isViewMode={isViewMode}
+                onInputChange={handleInputChange}
+              />
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden min-w-0">
+            <div className="p-6">
+              <LocationStatusSection
+                formData={formData}
+                errors={errors}
+                isViewMode={isViewMode}
+                onInputChange={handleInputChange}
+              />
+            </div>
           </div>
         </div>
 
@@ -651,21 +664,33 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
         </div>
         */}
 
-        {/* Photos Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6">
-            <PhotoSection
-              formData={formData}
-              isViewMode={isViewMode}
-              onAddPhoto={addPhoto}
-              onAddPhotos={addPhotos}
-              onRemovePhoto={removePhoto}
-              onUpdatePhoto={(index, photo) => {
-                const newPhotos = [...(formData.photos || [])];
-                newPhotos[index] = photo;
-                setFormData((prev) => ({ ...prev, photos: newPhotos }));
-              }}
-            />
+        {/* Photos & attachment — one row on large screens */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden min-w-0">
+            <div className="p-6">
+              <PhotoSection
+                formData={formData}
+                isViewMode={isViewMode}
+                onAddPhoto={addPhoto}
+                onAddPhotos={addPhotos}
+                onRemovePhoto={removePhoto}
+                onUpdatePhoto={(index, photo) => {
+                  const newPhotos = [...(formData.photos || [])];
+                  newPhotos[index] = photo;
+                  setFormData((prev) => ({ ...prev, photos: newPhotos }));
+                }}
+              />
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden min-w-0">
+            <div className="p-6">
+              <AttachedFileSection
+                formData={formData}
+                errors={errors}
+                isViewMode={isViewMode}
+                onInputChange={handleInputChange}
+              />
+            </div>
           </div>
         </div>
 
@@ -684,18 +709,6 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
               onAddSubDetail={addSubDetail}
               onRemoveSubDetail={removeSubDetail}
               onSubDetailChange={handleSubDetailChange}
-            />
-          </div>
-        </div>
-
-        {/* Attached File Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6">
-            <AttachedFileSection
-              formData={formData}
-              errors={errors}
-              isViewMode={isViewMode}
-              onInputChange={handleInputChange}
             />
           </div>
         </div>
