@@ -40,7 +40,7 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({
         <select
           value={statusFilter}
           onChange={(e) => onStatusFilterChange(e.target.value)}
-          className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base"
+          className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
         >
           <option value="">All Status</option>
           <option value="active">Active</option>
@@ -51,7 +51,7 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({
         <select
           value={typeFilter}
           onChange={(e) => onTypeFilterChange(e.target.value)}
-          className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base"
+          className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
         >
           <option value="">All Types</option>
           <option value="parent">Parent Categories</option>

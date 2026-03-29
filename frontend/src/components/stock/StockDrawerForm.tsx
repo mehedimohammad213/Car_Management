@@ -269,7 +269,7 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
               disabled={isLoadingCars}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
                 errors.car_id ? "border-red-300" : "border-gray-300"
-              } ${isLoadingCars ? "bg-gray-100 cursor-not-allowed" : ""}`}
+              } ${isLoadingCars ? "bg-gray-100 cursor-not-allowed" : "bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"}`}
             >
               <option value="">
                 {isLoadingCars ? "Loading cars..." : "Select a car"}

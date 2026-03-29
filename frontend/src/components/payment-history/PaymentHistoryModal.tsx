@@ -547,7 +547,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                               type="date"
                               value={installment.installment_date || ""}
                               onChange={(e) => updateInstallment(index, "installment_date", e.target.value || null)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                             />
                           </div>
                           <div>
@@ -559,7 +559,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                               step="0.01"
                               value={installment.amount || ""}
                               onChange={(e) => updateInstallment(index, "amount", e.target.value ? parseFloat(e.target.value) : null)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                             />
                           </div>
                           <div>
@@ -569,7 +569,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                             <select
                               value={installment.payment_method || ""}
                               onChange={(e) => updateInstallment(index, "payment_method", e.target.value || null)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                             >
                               <option value="">Select method</option>
                               <option value="Bank">Bank</option>
@@ -585,7 +585,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                               step="0.01"
                               value={installment.balance || ""}
                               onChange={(e) => updateInstallment(index, "balance", e.target.value ? parseFloat(e.target.value) : null)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                             />
                           </div>
                         </div>
@@ -600,7 +600,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                                 type="text"
                                 value={installment.bank_name || ""}
                                 onChange={(e) => updateInstallment(index, "bank_name", e.target.value || null)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                               />
                             </div>
                             <div>
@@ -611,7 +611,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                                 type="text"
                                 value={installment.cheque_number || ""}
                                 onChange={(e) => updateInstallment(index, "cheque_number", e.target.value || null)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                               />
                             </div>
                           </div>
@@ -626,7 +626,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                               type="text"
                               value={installment.description || ""}
                               onChange={(e) => updateInstallment(index, "description", e.target.value || null)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                             />
                           </div>
                           <div>
@@ -636,7 +636,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                             <select
                               value={installment.status || ""}
                               onChange={(e) => updateInstallment(index, "status", e.target.value || null)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                             >
                               <option value="">Select status</option>
                               <option value="Paid">Paid</option>
@@ -654,7 +654,7 @@ const PaymentHistoryModal: React.FC<PaymentHistoryModalProps> = ({
                               value={installment.remarks || ""}
                               onChange={(e) => updateInstallment(index, "remarks", e.target.value || null)}
                               rows={2}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                             />
                           </div>
                         </div>
