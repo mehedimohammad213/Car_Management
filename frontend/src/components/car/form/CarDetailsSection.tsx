@@ -96,28 +96,26 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
                           key={subDetailIndex}
                           className="border border-gray-200 rounded-lg p-3"
                         >
-                          <div className="space-y-2">
-                            {subDetail.title && (
-                              <div>
+                          {(subDetail.title || subDetail.description) && (
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
+                              <div className="sm:w-[32%] sm:min-w-0 sm:flex-shrink-0">
                                 <span className="text-sm font-medium text-gray-600">
                                   Title:{" "}
                                 </span>
-                                <span className="text-sm text-gray-900">
-                                  {subDetail.title}
+                                <span className="text-sm text-gray-900 break-words">
+                                  {subDetail.title || "—"}
                                 </span>
                               </div>
-                            )}
-                            {subDetail.description && (
-                              <div>
+                              <div className="sm:flex-1 sm:min-w-0 border-t border-gray-100 pt-2 sm:border-t-0 sm:pt-0 sm:border-l sm:border-gray-200 sm:pl-4">
                                 <span className="text-sm font-medium text-gray-600">
                                   Description:{" "}
                                 </span>
-                                <span className="text-sm text-gray-900">
-                                  {subDetail.description}
+                                <span className="text-sm text-gray-900 break-words">
+                                  {subDetail.description || "—"}
                                 </span>
                               </div>
-                            )}
-                          </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -248,8 +246,8 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
                             </button>
                           )}
                       </div>
-                      <div className="space-y-3">
-                        <div>
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                        <div className="w-full sm:w-[32%] sm:min-w-0 sm:flex-shrink-0">
                           <label className="block text-xs font-medium text-gray-600 mb-1">
                             Title
                           </label>
@@ -268,7 +266,7 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
                             className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                           />
                         </div>
-                        <div>
+                        <div className="w-full sm:flex-1 sm:min-w-0">
                           <label className="block text-xs font-medium text-gray-600 mb-1">
                             Description
                           </label>
@@ -284,7 +282,7 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
                             }
                             rows={2}
                             placeholder="Sub detail description"
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm min-h-[42px] sm:min-h-[74px] resize-y"
                           />
                         </div>
                       </div>
