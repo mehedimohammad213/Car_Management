@@ -626,6 +626,103 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     { key: "custom_three", label: "Custom Three" },
   ];
 
+  const renderPdfAttachmentField = (field: (typeof pdfFields)[number]) => {
+    const existingFile = existingFiles[field.key];
+    const newFile =
+      formData[field.key as keyof CreatePurchaseHistoryData] instanceof File
+        ? (formData[field.key as keyof CreatePurchaseHistoryData] as File)
+        : null;
+
+    return (
+      <div key={field.key} className="min-w-0">
+        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 leading-snug">
+          {field.label}
+        </label>
+
+        {existingFile && (
+          <div className="mb-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 p-2">
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-semibold text-primary-700 uppercase">Current</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const newExistingFiles = { ...existingFiles };
+                  delete newExistingFiles[field.key];
+                  setExistingFiles(newExistingFiles);
+                }}
+                className="text-red-600 hover:text-red-700 p-1"
+                title="Remove existing file"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <FileIcon className="w-4 h-4 shrink-0 text-red-600" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
+                  {getFileName(existingFile)}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {newFile && (
+          <div className="mb-2 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-800 p-2">
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-semibold text-green-700 uppercase">New</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  handleFileChange(field.key, null);
+                }}
+                className="text-red-600 hover:text-red-700 p-1"
+                title="Remove new file"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <FileIcon className="w-4 h-4 shrink-0 text-red-600" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
+                  {getFileName(newFile)}
+                </p>
+                <p className="text-[10px] text-gray-500">
+                  {(newFile.size / 1024).toFixed(2)} KB
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!newFile && (
+          <label className="flex flex-col items-center justify-center w-full min-h-[7rem] border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/80 transition-colors bg-white dark:bg-gray-800">
+            <div className="flex flex-col items-center justify-center py-3 px-2">
+              <Upload className="w-6 h-6 mb-1 text-gray-400" />
+              <p className="text-xs text-gray-500 text-center">
+                {existingFile ? "Replace file" : "Upload PDF"}
+              </p>
+            </div>
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={(e) => {
+                const file = e.target.files?.[0] || null;
+                handleFileChange(field.key, file);
+              }}
+              className="hidden"
+            />
+          </label>
+        )}
+      </div>
+    );
+  };
+
   const isPage = variant === "page";
 
   const renderSections = () => (
@@ -635,11 +732,10 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 LC Information <span className="text-xs font-normal text-gray-500 bg-white px-2 py-0.5 rounded-full border border-gray-200">Shared across all cars</span>
               </h3>
-              <div className="space-y-6">
-                {/* First row: LC Date */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                  <div className="min-w-0">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       LC Date
                     </label>
                     <input
@@ -648,15 +744,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       onChange={(e) =>
                         handleInputChange("lc_date", e.target.value || null)
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                      className="w-full min-w-0 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
                     />
                   </div>
-                </div>
-
-                {/* Second row: 4 fields in same row */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="min-w-0">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Total Units per LC
                     </label>
                     <input
@@ -669,11 +761,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                           e.target.value ? parseFloat(e.target.value) : null
                         )
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                      className="w-full min-w-0 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="min-w-0">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       LC Number
                     </label>
                     <input
@@ -682,12 +774,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       onChange={(e) =>
                         handleInputChange("lc_number", e.target.value || null)
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                      className="w-full min-w-0 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
                     />
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="min-w-0">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       LC Bank Name
                     </label>
                     <input
@@ -696,12 +787,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       onChange={(e) =>
                         handleInputChange("lc_bank_name", e.target.value || null)
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                      className="w-full min-w-0 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
                     />
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="min-w-0">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       LC Bank Branch Name
                     </label>
                     <input
@@ -713,13 +803,12 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                           e.target.value || null
                         )
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                      className="w-full min-w-0 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
                     />
                   </div>
                 </div>
-                {/* Third row: LC Bank Branch Address */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     LC Bank Branch Address
                   </label>
                   <textarea
@@ -731,7 +820,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       )
                     }
                     rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
                   />
                 </div>
               </div>
@@ -1028,314 +1117,320 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                       Yen
                     </label>
                   </div>
-                  {currencyType === "yen" ? (
-                    <div className="space-y-4">
-                      {/* Row 1: 1. BID, 2. SER+COM, 3. Amount (JPY) */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
-                            1. BID
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={formData.bid_price ?? ""}
-                            onChange={(e) =>
-                              handleInputChange(
-                                "bid_price",
-                                e.target.value === ""
-                                  ? null
-                                  : parseFloat(e.target.value)
-                              )
-                            }
-                            placeholder="0"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
-                            2. SER+COM
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={formData.ser_com ?? ""}
-                            onChange={(e) =>
-                              handleInputChange(
-                                "ser_com",
-                                e.target.value === ""
-                                  ? null
-                                  : parseFloat(e.target.value)
-                              )
-                            }
-                            placeholder="0"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
-                            3. Amount (JPY) — BID + SER+COM
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={foreignAmount}
-                            readOnly
-                            title="Sum of BID and SER+COM"
-                            placeholder="0.00"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-800 font-medium"
-                          />
-                        </div>
-                      </div>
+                  <div className="space-y-4">
+                    {/* Row 1: 1–5 */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                      {currencyType === "yen" ? (
+                        <>
+                          <div className="min-w-0">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              1. BID
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={formData.bid_price ?? ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "bid_price",
+                                  e.target.value === ""
+                                    ? null
+                                    : parseFloat(e.target.value)
+                                )
+                              }
+                              placeholder="0"
+                              className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              2. SER+COM
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={formData.ser_com ?? ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "ser_com",
+                                  e.target.value === ""
+                                    ? null
+                                    : parseFloat(e.target.value)
+                                )
+                              }
+                              placeholder="0"
+                              className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              3. Amount (JPY)
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={foreignAmount}
+                              readOnly
+                              title="Sum of BID and SER+COM"
+                              placeholder="0.00"
+                              className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-800 font-medium"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              4. JPY per 1 USD
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={yenToDollarRate}
+                              onChange={(e) => setYenToDollarRate(e.target.value)}
+                              placeholder="0.0000"
+                              className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              5. Calc. USD
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={intermediateDollar}
+                              readOnly
+                              placeholder="USD"
+                              className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-700 font-medium"
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="min-w-0">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              1. BID
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={formData.bid_price ?? ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "bid_price",
+                                  e.target.value === ""
+                                    ? null
+                                    : parseFloat(e.target.value)
+                                )
+                              }
+                              placeholder="0"
+                              className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              2. SER+COM
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={formData.ser_com ?? ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "ser_com",
+                                  e.target.value === ""
+                                    ? null
+                                    : parseFloat(e.target.value)
+                                )
+                              }
+                              placeholder="0"
+                              className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              3. Amount (USD)
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={foreignAmount}
+                              readOnly
+                              title="Sum of BID and SER+COM"
+                              placeholder="0.00"
+                              className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-800 font-medium"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              4. USD → BDT (৳)
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={dollarToBdtRate}
+                              onChange={(e) => setDollarToBdtRate(e.target.value)}
+                              placeholder="0.00"
+                              className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              5. Total (BDT)
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={formData.purchase_amount || ""}
+                              readOnly
+                              className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl bg-gray-200 text-gray-700 font-bold"
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
 
-                      {/* Row 2: Yen → USD */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
-                            4. Dolar to yen Rate (JPY per 1 USD)
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={yenToDollarRate}
-                            onChange={(e) => setYenToDollarRate(e.target.value)}
-                            placeholder="0.0000"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
-                            5. Calculated Amount (USD)
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={intermediateDollar}
-                            readOnly
-                            placeholder="Calculated USD"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-700 font-medium"
-                          />
-                        </div>
-                        <div className="hidden md:block" aria-hidden={true} />
+                    {/* Row 2: 6–10 (Yen: 6–8 + Govt + CNF; Dollar: placeholders + Govt + CNF) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                      {currencyType === "yen" ? (
+                        <>
+                          <div className="min-w-0">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              6. Amount (USD)
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={intermediateDollar}
+                              readOnly
+                              placeholder="USD Amount"
+                              className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-700 font-medium"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              7. Dollar to BDT (৳)
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={dollarToBdtRate}
+                              onChange={(e) => setDollarToBdtRate(e.target.value)}
+                              placeholder="0.00"
+                              className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              8. Total (BDT)
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={formData.purchase_amount || ""}
+                              readOnly
+                              className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl bg-gray-200 text-gray-700 font-bold"
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="min-w-0 hidden lg:block" aria-hidden />
+                          <div className="min-w-0 hidden lg:block" aria-hidden />
+                          <div className="min-w-0 hidden lg:block" aria-hidden />
+                        </>
+                      )}
+                      <div className="min-w-0">
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          9. Govt Duty
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.govt_duty || ""}
+                          onChange={(e) => handleInputChange("govt_duty", e.target.value || null)}
+                          className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
+                        />
                       </div>
-
-                      {/* Row 3: USD → BDT */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
-                            6. Amount (USD)
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={intermediateDollar}
-                            readOnly
-                            placeholder="USD Amount"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-700 font-medium"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
-                            7. Dollar to BDT Rate (৳)
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={dollarToBdtRate}
-                            onChange={(e) => setDollarToBdtRate(e.target.value)}
-                            placeholder="0.00"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
-                            8. Calculated Total (BDT)
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={formData.purchase_amount || ""}
-                            readOnly
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-200 text-gray-700 font-bold"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
-                            1. BID
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={formData.bid_price ?? ""}
-                            onChange={(e) =>
-                              handleInputChange(
-                                "bid_price",
-                                e.target.value === ""
-                                  ? null
-                                  : parseFloat(e.target.value)
-                              )
-                            }
-                            placeholder="0"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
-                            2. SER+COM
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={formData.ser_com ?? ""}
-                            onChange={(e) =>
-                              handleInputChange(
-                                "ser_com",
-                                e.target.value === ""
-                                  ? null
-                                  : parseFloat(e.target.value)
-                              )
-                            }
-                            placeholder="0"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
-                            3. Amount (USD) — BID + SER+COM
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={foreignAmount}
-                            readOnly
-                            title="Sum of BID and SER+COM"
-                            placeholder="0.00"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-800 font-medium"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
-                            4. Dollar to BDT Rate (৳)
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={dollarToBdtRate}
-                            onChange={(e) => setDollarToBdtRate(e.target.value)}
-                            placeholder="0.00"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
-                            5. Calculated Total (BDT)
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={formData.purchase_amount || ""}
-                            readOnly
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-200 text-gray-700 font-bold"
-                          />
-                        </div>
-                        <div className="hidden md:block" aria-hidden={true} />
+                      <div className="min-w-0">
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          10. CNF Amount
+                        </label>
+                        <input
+                          type="number"
+                          step="any"
+                          value={formData.cnf_amount || ""}
+                          onChange={(e) =>
+                            handleInputChange("cnf_amount", e.target.value ? parseFloat(e.target.value) : null)
+                          }
+                          className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
+                        />
                       </div>
                     </div>
-                  )}
 
-                  {/* Divider */}
-                  <div className="border-t border-gray-300 my-4"></div>
-
-                  {/* Other Financial Fields */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Govt Duty
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.govt_duty || ""}
-                        onChange={(e) => handleInputChange("govt_duty", e.target.value || null)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        CNF Amount
-                      </label>
-                      <input
-                        type="number"
-                        step="any"
-                        value={formData.cnf_amount || ""}
-                        onChange={(e) => handleInputChange("cnf_amount", e.target.value ? parseFloat(e.target.value) : null)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Miscellaneous
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.miscellaneous || ""}
-                        onChange={(e) => handleInputChange("miscellaneous", e.target.value || null)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Price Amount
-                      </label>
-                      <input
-                        type="number"
-                        step="any"
-                        value={formData.price_amount || ""}
-                        onChange={(e) => handleInputChange("price_amount", e.target.value ? parseFloat(e.target.value) : null)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Price Basis
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.price_basis || ""}
-                        onChange={(e) => handleInputChange("price_basis", e.target.value || null)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        FOB Value (USD)
-                      </label>
-                      <input
-                        type="number"
-                        step="any"
-                        value={formData.fob_value_usd || ""}
-                        onChange={(e) => handleInputChange("fob_value_usd", e.target.value ? parseFloat(e.target.value) : null)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Freight (USD)
-                      </label>
-                      <input
-                        type="number"
-                        step="any"
-                        value={formData.freight_usd || ""}
-                        onChange={(e) => handleInputChange("freight_usd", e.target.value ? parseFloat(e.target.value) : null)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                      />
+                    {/* Row 3: 11–15 */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                      <div className="min-w-0">
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          11. Miscellaneous
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.miscellaneous || ""}
+                          onChange={(e) => handleInputChange("miscellaneous", e.target.value || null)}
+                          className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          12. Price Amount
+                        </label>
+                        <input
+                          type="number"
+                          step="any"
+                          value={formData.price_amount || ""}
+                          onChange={(e) =>
+                            handleInputChange("price_amount", e.target.value ? parseFloat(e.target.value) : null)
+                          }
+                          className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          13. Price Basis
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.price_basis || ""}
+                          onChange={(e) => handleInputChange("price_basis", e.target.value || null)}
+                          className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          14. FOB Value (USD)
+                        </label>
+                        <input
+                          type="number"
+                          step="any"
+                          value={formData.fob_value_usd || ""}
+                          onChange={(e) =>
+                            handleInputChange("fob_value_usd", e.target.value ? parseFloat(e.target.value) : null)
+                          }
+                          className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          15. Freight (USD)
+                        </label>
+                        <input
+                          type="number"
+                          step="any"
+                          value={formData.freight_usd || ""}
+                          onChange={(e) =>
+                            handleInputChange("freight_usd", e.target.value ? parseFloat(e.target.value) : null)
+                          }
+                          className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1354,110 +1449,13 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Document Attachments
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {pdfFields.map((field) => {
-                    const existingFile = existingFiles[field.key];
-                    const newFile = formData[field.key as keyof CreatePurchaseHistoryData] instanceof File
-                      ? formData[field.key as keyof CreatePurchaseHistoryData] as File
-                      : null;
-
-                    return (
-                      <div key={field.key}>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          {field.label}
-                        </label>
-
-                        {/* Show existing file if available */}
-                        {existingFile && (
-                          <div className="mb-3 bg-white rounded-lg border border-gray-200 p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-semibold text-primary-700 uppercase">Current File</span>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const newExistingFiles = { ...existingFiles };
-                                  delete newExistingFiles[field.key];
-                                  setExistingFiles(newExistingFiles);
-                                }}
-                                className="text-red-600 hover:text-red-700 p-1"
-                                title="Remove existing file"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <FileIcon className="w-5 h-5 text-red-600" />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900 truncate">
-                                  {getFileName(existingFile)}
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  Existing file
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Show new file if selected */}
-                        {newFile && (
-                          <div className="mb-3 bg-green-50 rounded-lg border border-green-200 p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-semibold text-green-700 uppercase">New File</span>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  handleFileChange(field.key, null);
-                                }}
-                                className="text-red-600 hover:text-red-700 p-1"
-                                title="Remove new file"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <FileIcon className="w-5 h-5 text-red-600" />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900 truncate">
-                                  {getFileName(newFile)}
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  {(newFile.size / 1024).toFixed(2)} KB
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Upload area */}
-                        {!newFile && (
-                          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer hover:bg-white transition-colors bg-white">
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                              <Upload className="w-8 h-8 mb-2 text-gray-400" />
-                              <p className="text-sm text-gray-500">
-                                {existingFile
-                                  ? "Replace file"
-                                  : "Upload PDF"}
-                              </p>
-                            </div>
-                            <input
-                              type="file"
-                              accept=".pdf"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0] || null;
-                                handleFileChange(field.key, file);
-                              }}
-                              className="hidden"
-                            />
-                          </label>
-                        )}
-                      </div>
-                    );
-                  })}
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    {pdfFields.slice(0, 6).map((field) => renderPdfAttachmentField(field))}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    {pdfFields.slice(6).map((field) => renderPdfAttachmentField(field))}
+                  </div>
                 </div>
                 </PurchaseFormSection>
               </div>
