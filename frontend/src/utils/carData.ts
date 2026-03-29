@@ -349,3 +349,60 @@ export const bodyTypes = [
     "Van",
     "Wagon",
 ];
+
+/** Common exterior colors for dropdowns; merged with API filter options in forms */
+export const carColors = [
+    "Beige",
+    "Black",
+    "Blue",
+    "Bronze",
+    "Brown",
+    "Burgundy",
+    "Champagne",
+    "Gold",
+    "Gray",
+    "Green",
+    "Grey",
+    "Maroon",
+    "Metallic Silver",
+    "Navy",
+    "Orange",
+    "Pearl White",
+    "Pink",
+    "Purple",
+    "Red",
+    "Silver",
+    "Teal",
+    "Turquoise",
+    "White",
+    "Yellow",
+];
+
+/** Merged with API `fuels` in car forms */
+export const fuelTypes = [
+    "CNG",
+    "Diesel",
+    "Electric",
+    "Gasoline",
+    "Hybrid",
+    "LPG",
+    "Petrol",
+    "Plug-in Hybrid",
+];
+
+/** Merged with API `transmissions` in car forms */
+export const transmissionTypes = [
+    "Automatic",
+    "CVT",
+    "Manual",
+    "Semi-Automatic",
+];
+
+/** Merged with API `drives` in car forms (drivetrain) */
+export const drivetrainTypes = [
+    "2WD",
+    "4WD",
+    "AWD",
+    "FWD",
+    "RWD",
+];

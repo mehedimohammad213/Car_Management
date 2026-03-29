@@ -619,6 +619,7 @@ const CarFormModal: React.FC<CarFormModalProps> = ({
             <TechnicalSpecsSection
               formData={formData}
               errors={errors}
+              filterOptions={filterOptions}
               isViewMode={isViewMode}
               onInputChange={handleInputChange}
             />

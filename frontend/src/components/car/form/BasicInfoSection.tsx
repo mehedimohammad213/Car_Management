@@ -14,7 +14,7 @@ interface BasicInfoSectionProps {
   onInputChange: (field: keyof CreateCarData, value: any) => void;
 }
 
-import { makeToModels, bodyTypes } from "../../../utils/carData";
+import { makeToModels, bodyTypes, carColors } from "../../../utils/carData";
 
 const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
   formData,
@@ -52,6 +52,16 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
     // Use mapped models or add "Other" option
     return modelsList.length > 0 ? modelsList : ["Other"];
   }, [formData.make, formData.model]);
+
+  const colorOptions = useMemo(() => {
+    const fromApi = filterOptions?.colors ?? [];
+    const merged = new Set<string>([...fromApi, ...carColors]);
+    const current = formData.color?.trim();
+    if (current) merged.add(current);
+    return Array.from(merged).sort((a, b) =>
+      a.localeCompare(b, undefined, { sensitivity: "base" })
+    );
+  }, [filterOptions?.colors, formData.color]);
 
   // Handle make change - reset model when make changes
   const handleMakeChange = (value: string) => {
@@ -161,17 +171,19 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("year", value)}
           />
-          <FormField
+          <SelectField
             label="Color"
             field="color"
-            type="text"
-            placeholder="e.g., Red, Blue, Silver, Black"
+            options={colorOptions.map((color) => ({
+              value: color,
+              label: color,
+            }))}
             required={false}
-            maxLength={64}
+            placeholder="Select Color"
             value={formData.color}
             error={errors.color}
             isViewMode={isViewMode}
-            onChange={(value) => onInputChange("color", value)}
+            onChange={(value) => onInputChange("color", value ?? "")}
           />
           <FormField
             label="Registration Year/Month"

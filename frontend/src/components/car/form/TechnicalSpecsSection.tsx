@@ -1,11 +1,18 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Settings } from "lucide-react";
-import { CreateCarData } from "../../../services/carApi";
+import { CreateCarData, CarFilterOptions } from "../../../services/carApi";
 import FormField from "./FormField";
+import SelectField from "./SelectField";
+import {
+  fuelTypes,
+  transmissionTypes,
+  drivetrainTypes,
+} from "../../../utils/carData";
 
 interface TechnicalSpecsSectionProps {
   formData: CreateCarData;
   errors: Record<string, string>;
+  filterOptions?: CarFilterOptions | null;
   isViewMode: boolean;
   onInputChange: (field: keyof CreateCarData, value: any) => void;
 }
@@ -13,9 +20,46 @@ interface TechnicalSpecsSectionProps {
 const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
   formData,
   errors,
+  filterOptions,
   isViewMode,
   onInputChange,
 }) => {
+  const fuelOptions = useMemo(() => {
+    const merged = new Set<string>([
+      ...(filterOptions?.fuels ?? []),
+      ...fuelTypes,
+    ]);
+    const cur = formData.fuel?.trim();
+    if (cur) merged.add(cur);
+    return Array.from(merged).sort((a, b) =>
+      a.localeCompare(b, undefined, { sensitivity: "base" })
+    );
+  }, [filterOptions?.fuels, formData.fuel]);
+
+  const transmissionOptions = useMemo(() => {
+    const merged = new Set<string>([
+      ...(filterOptions?.transmissions ?? []),
+      ...transmissionTypes,
+    ]);
+    const cur = formData.transmission?.trim();
+    if (cur) merged.add(cur);
+    return Array.from(merged).sort((a, b) =>
+      a.localeCompare(b, undefined, { sensitivity: "base" })
+    );
+  }, [filterOptions?.transmissions, formData.transmission]);
+
+  const drivetrainOptions = useMemo(() => {
+    const merged = new Set<string>([
+      ...(filterOptions?.drives ?? []),
+      ...drivetrainTypes,
+    ]);
+    const cur = formData.drive?.trim();
+    if (cur) merged.add(cur);
+    return Array.from(merged).sort((a, b) =>
+      a.localeCompare(b, undefined, { sensitivity: "base" })
+    );
+  }, [filterOptions?.drives, formData.drive]);
+
   return (
     <div className="rounded-xl p-4">
       <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -59,45 +103,48 @@ const TechnicalSpecsSection: React.FC<TechnicalSpecsSectionProps> = ({
             isViewMode={isViewMode}
             onChange={(value) => onInputChange("engine_cc", value)}
           />
-          <FormField
+          <SelectField
             label="Fuel Type"
             field="fuel"
-            type="text"
-            placeholder="e.g., Gasoline, Diesel, Electric, Hybrid"
+            options={fuelOptions.map((v) => ({ value: v, label: v }))}
             required={false}
-            maxLength={32}
+            placeholder="Select Fuel Type"
             value={formData.fuel}
             error={errors.fuel}
             isViewMode={isViewMode}
-            onChange={(value) => onInputChange("fuel", value)}
+            onChange={(value) => onInputChange("fuel", value ?? "")}
           />
         </div>
 
         {/* Second row - Transmission, Drivetrain, Engine Number, Seats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <FormField
+          <SelectField
             label="Transmission"
             field="transmission"
-            type="text"
-            placeholder="e.g., Automatic, Manual, CVT"
+            options={transmissionOptions.map((v) => ({
+              value: v,
+              label: v,
+            }))}
             required={false}
-            maxLength={32}
+            placeholder="Select Transmission"
             value={formData.transmission}
             error={errors.transmission}
             isViewMode={isViewMode}
-            onChange={(value) => onInputChange("transmission", value)}
+            onChange={(value) => onInputChange("transmission", value ?? "")}
           />
-          <FormField
+          <SelectField
             label="Drivetrain"
             field="drive"
-            type="text"
-            placeholder="e.g., FWD, AWD, RWD"
+            options={drivetrainOptions.map((v) => ({
+              value: v,
+              label: v,
+            }))}
             required={false}
-            maxLength={32}
+            placeholder="Select Drivetrain"
             value={formData.drive}
             error={errors.drive}
             isViewMode={isViewMode}
-            onChange={(value) => onInputChange("drive", value)}
+            onChange={(value) => onInputChange("drive", value ?? "")}
           />
           <FormField
             label="Engine Number"
