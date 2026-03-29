@@ -11,6 +11,8 @@ interface StockTableRowProps {
   onEdit: (stock: Stock) => void;
   onDelete: (stock: Stock) => void;
   onView?: (stock: Stock) => void;
+  /** When false, hide delete (e.g. sold-out tab). */
+  showDelete?: boolean;
 }
 
 const StockTableRow: React.FC<StockTableRowProps> = ({
@@ -20,6 +22,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
   onEdit,
   onDelete,
   onView,
+  showDelete = true,
 }) => {
   const car = stock.car;
   const effectiveStatus = getEffectiveStockStatus(stock);
@@ -276,13 +279,15 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
         >
           <Edit className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
         </button>
-        <button
-          onClick={() => onDelete(stock)}
-          className="shrink-0 p-2 text-red-600 hover:text-red-700 rounded-lg transition-all duration-200 group/btn"
-          title="Delete Stock"
-        >
-          <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-        </button>
+        {showDelete && (
+          <button
+            onClick={() => onDelete(stock)}
+            className="shrink-0 p-2 text-red-600 hover:text-red-700 rounded-lg transition-all duration-200 group/btn"
+            title="Delete Stock"
+          >
+            <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+          </button>
+        )}
       </div>
     </div>
   );

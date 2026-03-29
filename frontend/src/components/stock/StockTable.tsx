@@ -21,6 +21,7 @@ interface StockTableProps {
   emptyStateVariant?: "default" | "soldout";
   showStatusGroups?: boolean;
   statusTotals?: Record<string, number>;
+  showDelete?: boolean;
 }
 
 const StockTable: React.FC<StockTableProps> = ({
@@ -37,6 +38,7 @@ const StockTable: React.FC<StockTableProps> = ({
   emptyStateVariant = "default",
   showStatusGroups = false,
   statusTotals = {},
+  showDelete = true,
 }) => {
 
   // Calculate current stock count for each make/model
@@ -184,6 +186,7 @@ const StockTable: React.FC<StockTableProps> = ({
                   onEdit={onEdit}
                   onDelete={onDelete}
                   onView={onView}
+                  showDelete={showDelete}
                 />
               );
               return nodes;
