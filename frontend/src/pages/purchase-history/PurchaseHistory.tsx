@@ -21,7 +21,7 @@ const PurchaseHistoryPage: React.FC = () => {
   const [purchaseHistoryToDelete, setPurchaseHistoryToDelete] =
     useState<PurchaseHistory | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [activeTab, setActiveTab] = useState<"history" | "lc_wise">("history");
+  const [activeTab, setActiveTab] = useState<"history" | "lc_wise">("lc_wise");
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
@@ -150,17 +150,8 @@ const PurchaseHistoryPage: React.FC = () => {
                 Purchases / Purchase History
               </h1>
             </div>
-            {/* Tab Selection - right side of header */}
+            {/* Tab Selection - LC wise first (default) */}
             <div className="flex gap-1">
-              <button
-                onClick={() => setActiveTab("history")}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "history"
-                  ? "bg-primary-600 text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-                  }`}
-              >
-                History Table
-              </button>
               <button
                 onClick={() => setActiveTab("lc_wise")}
                 className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "lc_wise"
@@ -169,6 +160,15 @@ const PurchaseHistoryPage: React.FC = () => {
                   }`}
               >
                 LC Wise View
+              </button>
+              <button
+                onClick={() => setActiveTab("history")}
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "history"
+                  ? "bg-primary-600 text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+                  }`}
+              >
+                History Table
               </button>
             </div>
           </div>

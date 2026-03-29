@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { X, Upload, File as FileIcon, Search, Plus, Trash2 } from "lucide-react";
 import {
   PurchaseHistory,
@@ -102,13 +102,14 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     price_basis: null,
     fob_value_usd: null,
     freight_usd: null,
+    currency_type: "yen",
   });
 
   const [foreignAmount, setForeignAmount] = useState<string>("");
   const [yenToDollarRate, setYenToDollarRate] = useState<string>("");
   const [dollarToBdtRate, setDollarToBdtRate] = useState<string>("");
   const [intermediateDollar, setIntermediateDollar] = useState<string>("");
-  const [currencyType, setCurrencyType] = useState<"dollar" | "yen">("dollar");
+  const [currencyType, setCurrencyType] = useState<"dollar" | "yen">("yen");
   const [existingFiles, setExistingFiles] = useState<Record<string, string>>(
     {}
   );
@@ -119,6 +120,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   const [carEntries, setCarEntries] = useState<CreatePurchaseHistoryData[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loadingCart, setLoadingCart] = useState(false);
+  /** Avoid clearing manual Total Units when list was never used (create flow). */
+  const hadCarEntriesInCreateRef = useRef(false);
 
   useEffect(() => {
     if (effectiveOpen) {
@@ -126,6 +129,19 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       fetchCartItems();
     }
   }, [effectiveOpen]);
+
+  // Create mode: Total Units per LC follows the "add to list" count
+  useEffect(() => {
+    if (mode !== "create") return;
+    const n = carEntries.length;
+    if (n > 0) {
+      hadCarEntriesInCreateRef.current = true;
+      setFormData((prev) => ({ ...prev, total_units_per_lc: String(n) }));
+    } else if (hadCarEntriesInCreateRef.current) {
+      hadCarEntriesInCreateRef.current = false;
+      setFormData((prev) => ({ ...prev, total_units_per_lc: null }));
+    }
+  }, [carEntries.length, mode]);
 
   const fetchCartItems = async () => {
     try {
@@ -173,7 +189,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
           purchase_amount: ph.purchase_amount,
           foreign_amount: ph.foreign_amount ?? null,
           bdt_amount: ph.bdt_amount ?? null,
-          currency_type: ph.currency_type || "dollar",
+          currency_type: ph.currency_type || "yen",
           govt_duty: ph.govt_duty,
           cnf_amount: ph.cnf_amount,
           miscellaneous: ph.miscellaneous,
@@ -200,9 +216,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
           : ""
       );
 
-      setCurrencyType((mainHistory.currency_type as "dollar" | "yen") || "dollar");
+      setCurrencyType("yen");
 
-      if (mainHistory.currency_type === 'yen' && mainHistory.foreign_amount && mainHistory.purchase_amount) {
+      if (mainHistory.currency_type === "yen" && mainHistory.foreign_amount && mainHistory.purchase_amount) {
         const yenAmount = mainHistory.foreign_amount;
         const finalBdt = mainHistory.purchase_amount;
         const dollarToBdt = mainHistory.bdt_amount || 0;
@@ -223,7 +239,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         purchase_amount: mainHistory.purchase_amount,
         foreign_amount: mainHistory.foreign_amount ?? null,
         bdt_amount: mainHistory.bdt_amount ?? null,
-        currency_type: mainHistory.currency_type || "dollar",
+        currency_type: "yen",
         govt_duty: mainHistory.govt_duty || null,
         cnf_amount: mainHistory.cnf_amount || null,
         miscellaneous: mainHistory.miscellaneous || null,
@@ -310,14 +326,16 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         price_basis: null,
         fob_value_usd: null,
         freight_usd: null,
+        currency_type: "yen",
       });
       setForeignAmount("");
       setYenToDollarRate("");
       setDollarToBdtRate("");
       setIntermediateDollar("");
-      setCurrencyType("dollar");
+      setCurrencyType("yen");
       setExistingFiles({});
       setCarEntries([]);
+      hadCarEntriesInCreateRef.current = false;
     }
   }, [purchaseHistory, mode, effectiveOpen]);
 
