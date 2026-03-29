@@ -173,9 +173,10 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
         <button
           type="button"
           onClick={onAddDetail}
-          className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-2"
+          title="Add detail section"
+          className="w-10 h-10 shrink-0 rounded-full bg-green-600 text-white hover:bg-green-700 transition-colors flex items-center justify-center shadow-sm hover:shadow-md"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-5 h-5" />
         </button>
       </div>
 
@@ -226,7 +227,8 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({
                   <button
                     type="button"
                     onClick={() => onAddSubDetail(detailIndex)}
-                    className="px-3 py-1 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-1 text-sm shrink-0"
+                    title="Add sub detail"
+                    className="w-9 h-9 shrink-0 rounded-full bg-green-600 text-white hover:bg-green-700 transition-colors flex items-center justify-center shadow-sm"
                   >
                     <Plus className="w-5 h-5" />
                   </button>

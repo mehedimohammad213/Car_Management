@@ -137,7 +137,7 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
                 }}
               />
               {photo.is_primary && (
-                <div className="absolute top-2 right-2 bg-primary-600 text-white text-xs px-2 py-1 rounded">
+                <div className="absolute top-2 right-2 bg-green-600 text-white text-xs px-2 py-1 rounded-full">
                   Primary
                 </div>
               )}
@@ -262,7 +262,7 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
           <button
             type="button"
             onClick={onAddPhoto}
-            className="flex-1 p-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-primary-500 hover:text-primary-600 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 p-4 border-2 border-dashed border-gray-300 rounded-2xl text-gray-500 hover:border-green-500 hover:text-green-700 transition-colors flex items-center justify-center gap-2"
           >
             <Plus className="w-5 h-5" />
             Add URL
@@ -271,7 +271,7 @@ const PhotoSection: React.FC<PhotoSectionProps> = ({
             type="button"
             onClick={triggerBulkFileInput}
             disabled={isBulkUploading}
-            className="flex-1 p-4 border-2 border-dashed border-primary-300 bg-primary-50/30 rounded-xl text-primary-600 hover:border-primary-500 hover:bg-primary-50 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            className="flex-1 p-4 border-2 border-dashed border-green-300 bg-green-50/50 dark:bg-green-950/20 rounded-2xl text-green-700 dark:text-green-400 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-950/40 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isBulkUploading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
