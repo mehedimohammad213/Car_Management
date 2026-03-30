@@ -84,8 +84,8 @@ const Header: React.FC = () => {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await logout();
-      clearCart();
+      await clearCart();
+      logout();
       navigate("/login");
     } catch (error) {
       console.error("Logout error:", error);
