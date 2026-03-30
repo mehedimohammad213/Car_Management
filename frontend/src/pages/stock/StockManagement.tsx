@@ -238,7 +238,7 @@ const StockManagement: React.FC = () => {
               emptyStateVariant={activeTab === "soldout" ? "soldout" : "default"}
               showStatusGroups={activeTab === "current"}
               statusTotals={statusTotals}
-              showDelete={activeTab !== "soldout"}
+              showDelete={activeTab !== "soldout" && activeTab !== "available"}
             />
 
             <Pagination

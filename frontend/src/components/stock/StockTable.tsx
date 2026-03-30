@@ -159,7 +159,12 @@ const StockTable: React.FC<StockTableProps> = ({
               const sectionCount = statusTotals[effective];
 
               const nodes: React.ReactNode[] = [];
-              if (showGroupHeader) {
+              // In the "Current" tab we don't want the redundant "Available (N)" section header.
+              // (The individual row still shows its own status badge.)
+              const shouldRenderSectionHeader =
+                showGroupHeader && effective !== "available";
+
+              if (shouldRenderSectionHeader) {
                 nodes.push(
                   <div
                     key={`status-${stock.id}-${effective}`}
