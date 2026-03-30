@@ -118,16 +118,6 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
                 {car.package}
               </span>
             )}
-            <span
-              className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold ${stock.quantity === 0
-                ? "bg-red-100 text-red-700 border border-red-200"
-                : stock.quantity <= 2
-                  ? "bg-amber-100 text-amber-700 border border-amber-200"
-                  : "bg-green-100 text-green-700 border border-green-200"
-                }`}
-            >
-              Stock: {stock.quantity}
-            </span>
           </div>
         </div>
       </div>
