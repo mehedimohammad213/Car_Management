@@ -1,5 +1,5 @@
 import React from "react";
-import { Package, Car, Eye, Edit, Trash2, PackagePlus } from "lucide-react";
+import { Car, Eye, Edit, Trash2, PackagePlus } from "lucide-react";
 import { getCssColor, getGradeColor } from "../../utils/carUtils";
 
 interface AvailableCar {

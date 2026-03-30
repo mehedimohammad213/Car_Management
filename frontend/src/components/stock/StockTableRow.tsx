@@ -1,5 +1,5 @@
 import React from "react";
-import { Eye, Edit, Trash2, Car } from "lucide-react";
+import { Eye, Edit, Trash2 } from "lucide-react";
 import { Stock } from "../../services/stockApi";
 import {
   getGradeColor,
@@ -143,6 +143,12 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
             {car?.package && (
               <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 border border-primary-200">
                 {car.package}
+              </span>
+            )}
+            {/* Stock quantity badge (previously overlayed on the thumbnail) */}
+            {stock.quantity > 0 && (
+              <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-green-500 text-white shadow-sm">
+                {stock.quantity}
               </span>
             )}
           </div>

@@ -12,7 +12,8 @@ import {
 const TotalStockTable: React.FC = () => {
   const [cars, setCars] = useState<CarType[]>([]);
   const [stocks, setStocks] = useState<Stock[]>([]);
-  const [availableCars, setAvailableCars] = useState<any[]>([]);
+  type AvailableCarCount = { make: string; model: string };
+  const [availableCars, setAvailableCars] = useState<AvailableCarCount[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,7 +64,7 @@ const TotalStockTable: React.FC = () => {
       ]);
 
       // Process cars
-      let allCars = carsResponse;
+      const allCars = [...carsResponse];
       allCars.sort((a, b) => {
         if (a.make !== b.make) {
           return a.make.localeCompare(b.make);
@@ -78,14 +79,22 @@ const TotalStockTable: React.FC = () => {
       const stocksData = stocksResponse.success ? stocksResponse.data || [] : [];
 
       // Process available cars
-      const availableCarsData = availableCarsResponse.success ? availableCarsResponse.data || [] : [];
+      const availableCarsData = availableCarsResponse.success
+        ? availableCarsResponse.data || []
+        : [];
 
       setCars(allCars);
       setStocks(stocksData);
-      setAvailableCars(availableCarsData);
-    } catch (err: any) {
+      setAvailableCars(
+        (availableCarsData as Array<{ make?: string; model?: string }>).map((c) => ({
+          make: c.make || "",
+          model: c.model || "",
+        }))
+      );
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to fetch total stock";
       console.error("Error fetching total stock:", err);
-      setError(err?.message || "Failed to fetch total stock");
+      setError(message);
     } finally {
       setIsLoading(false);
     }
