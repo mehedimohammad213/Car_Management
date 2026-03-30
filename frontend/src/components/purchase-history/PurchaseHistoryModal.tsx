@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
-import { X, Upload, File as FileIcon, Search, Plus, Trash2 } from "lucide-react";
+import {
+  X,
+  Upload,
+  File as FileIcon,
+  Search,
+  Plus,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
 import {
   PurchaseHistory,
   CreatePurchaseHistoryData,
@@ -153,6 +161,10 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   const [carSearchQuery, setCarSearchQuery] = useState("");
   const [isCarDropdownOpen, setIsCarDropdownOpen] = useState(false);
   const [carEntries, setCarEntries] = useState<CreatePurchaseHistoryData[]>([]);
+  /** After "Add Car to List", collapse the draft form until user clicks "Add another car". */
+  const [draftFormExpanded, setDraftFormExpanded] = useState(true);
+  /** Index in carEntries being edited; null = new car draft. */
+  const [editingEntryIndex, setEditingEntryIndex] = useState<number | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loadingCart, setLoadingCart] = useState(false);
   /** Avoid clearing manual Total Units when list was never used (create flow). */
@@ -177,6 +189,22 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       setFormData((prev) => ({ ...prev, total_units_per_lc: null }));
     }
   }, [carEntries.length, mode]);
+
+  useEffect(() => {
+    if (mode === "create" && carEntries.length === 0) {
+      setDraftFormExpanded(true);
+      setEditingEntryIndex(null);
+    }
+  }, [carEntries.length, mode]);
+
+  useEffect(() => {
+    if (
+      editingEntryIndex !== null &&
+      (editingEntryIndex < 0 || editingEntryIndex >= carEntries.length)
+    ) {
+      setEditingEntryIndex(null);
+    }
+  }, [carEntries.length, editingEntryIndex]);
 
   const fetchCartItems = async () => {
     try {
@@ -391,6 +419,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       );
       setExistingFiles({});
       setCarEntries([]);
+      setEditingEntryIndex(null);
       hadCarEntriesInCreateRef.current = false;
     }
   }, [purchaseHistory, mode, effectiveOpen, lcPrefillForCreate]);
@@ -460,56 +489,12 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     }));
   };
 
-  const handleAddEntry = () => {
-    if (!formData.car_id) {
-      // alert("Please select a car first");
-      return;
-    }
-
-    // Check if car already added
-    if (carEntries.some(e => e.car_id === formData.car_id)) {
-      // alert("Car already added to list");
-      return;
-    }
-
-    const newEntry: CreatePurchaseHistoryData = {
-      car_id: formData.car_id,
-      purchase_amount: formData.purchase_amount,
-      foreign_amount: sumBidSer(formData.bid_price, formData.ser_com),
-      bdt_amount: formData.bdt_amount,
-      currency_type: currencyType,
-      govt_duty: formData.govt_duty,
-      cnf_amount: formData.cnf_amount,
-      miscellaneous: formData.miscellaneous,
-      bid_price: formData.bid_price ?? null,
-      ser_com: formData.ser_com ?? null,
-      purchase_date: formData.purchase_date,
-
-      // Add PDF fields
-      bill_of_lading: formData.bill_of_lading,
-      invoice_number: formData.invoice_number,
-      export_certificate: formData.export_certificate,
-      export_certificate_translated: formData.export_certificate_translated,
-      bill_of_exchange_amount: formData.bill_of_exchange_amount,
-      custom_duty_copy_3pages: formData.custom_duty_copy_3pages,
-      cheque_copy: formData.cheque_copy,
-      certificate: formData.certificate,
-      custom_one: formData.custom_one,
-      custom_two: formData.custom_two,
-      custom_three: formData.custom_three,
-      hs_code: formData.hs_code,
-      price_amount: formData.price_amount,
-      price_basis: formData.price_basis,
-      fob_value_usd: formData.fob_value_usd,
-      freight_usd: formData.freight_usd,
-    };
-
-    setCarEntries([...carEntries, newEntry]);
-
-    // Clear specific fields
-    setFormData(prev => ({
+  const clearCarDraftFields = () => {
+    setFormData((prev) => ({
       ...prev,
       car_id: null,
+      car_ids: [],
+      purchase_date: null,
       purchase_amount: null,
       foreign_amount: null,
       bdt_amount: null,
@@ -518,7 +503,6 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       miscellaneous: null,
       bid_price: null,
       ser_com: null,
-      // Clear PDF fields
       bill_of_lading: null,
       invoice_number: null,
       export_certificate: null,
@@ -539,11 +523,191 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     setForeignAmount("");
     setYenToDollarRate("");
     setDollarToBdtRate("");
+    setIntermediateDollar("");
     setExistingFiles({});
   };
 
+  const applyEntryToDraftForm = (entry: CreatePurchaseHistoryData) => {
+    const ct: "dollar" | "yen" =
+      entry.currency_type === "dollar" ? "dollar" : "yen";
+    setCurrencyType(ct);
+
+    const bid = entry.bid_price ?? null;
+    const ser = entry.ser_com ?? null;
+    const sumForeign = sumBidSer(bid, ser);
+    const sumStr =
+      sumForeign != null && !Number.isNaN(Number(sumForeign))
+        ? String(sumForeign)
+        : "";
+
+    setFormData((prev) => ({
+      ...prev,
+      car_id: entry.car_id ?? null,
+      car_ids: entry.car_id ? [entry.car_id] : [],
+      purchase_date: entry.purchase_date ?? null,
+      purchase_amount: entry.purchase_amount ?? null,
+      foreign_amount: sumForeign,
+      bdt_amount: entry.bdt_amount ?? null,
+      bid_price: bid,
+      ser_com: ser,
+      govt_duty: entry.govt_duty ?? null,
+      cnf_amount: entry.cnf_amount ?? null,
+      miscellaneous: entry.miscellaneous ?? null,
+      hs_code: entry.hs_code ?? null,
+      price_amount: entry.price_amount ?? null,
+      price_basis: entry.price_basis ?? null,
+      fob_value_usd: entry.fob_value_usd ?? null,
+      freight_usd: entry.freight_usd ?? null,
+      bill_of_lading: entry.bill_of_lading ?? null,
+      invoice_number: entry.invoice_number ?? null,
+      export_certificate: entry.export_certificate ?? null,
+      export_certificate_translated: entry.export_certificate_translated ?? null,
+      bill_of_exchange_amount: entry.bill_of_exchange_amount ?? null,
+      custom_duty_copy_3pages: entry.custom_duty_copy_3pages ?? null,
+      cheque_copy: entry.cheque_copy ?? null,
+      certificate: entry.certificate ?? null,
+      custom_one: entry.custom_one ?? null,
+      custom_two: entry.custom_two ?? null,
+      custom_three: entry.custom_three ?? null,
+      currency_type: ct,
+    }));
+
+    setForeignAmount(sumStr);
+    setDollarToBdtRate(
+      entry.bdt_amount != null ? String(entry.bdt_amount) : ""
+    );
+
+    if (ct === "yen") {
+      const yenBasis =
+        sumForeign != null && !Number.isNaN(Number(sumForeign))
+          ? Number(sumForeign)
+          : 0;
+      const finalBdt = entry.purchase_amount;
+      const dollarToBdt = entry.bdt_amount;
+      if (
+        yenBasis > 0 &&
+        finalBdt != null &&
+        Number(finalBdt) > 0 &&
+        dollarToBdt != null &&
+        Number(dollarToBdt) > 0
+      ) {
+        const calculatedDollar = Number(finalBdt) / Number(dollarToBdt);
+        const yenPerDollar = yenBasis / calculatedDollar;
+        setYenToDollarRate(yenPerDollar.toString());
+        setIntermediateDollar(calculatedDollar.toString());
+      } else {
+        setYenToDollarRate("");
+        setIntermediateDollar("");
+      }
+    } else {
+      setYenToDollarRate("");
+      setIntermediateDollar("");
+    }
+
+    setExistingFiles({});
+  };
+
+  const handleStartEditEntry = (index: number) => {
+    const entry = carEntries[index];
+    if (!entry) return;
+    setEditingEntryIndex(index);
+    applyEntryToDraftForm(entry);
+    setDraftFormExpanded(true);
+    setCarSearchQuery("");
+    setIsCarDropdownOpen(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingEntryIndex(null);
+    clearCarDraftFields();
+    if (carEntries.length > 0) {
+      setDraftFormExpanded(false);
+    } else {
+      setDraftFormExpanded(true);
+    }
+  };
+
+  const handleAddNewDraft = () => {
+    setEditingEntryIndex(null);
+    clearCarDraftFields();
+    setDraftFormExpanded(true);
+    setCarSearchQuery("");
+    setIsCarDropdownOpen(false);
+  };
+
+  /** Collapse the three-part draft without saving (new car only). */
+  const handleMinimizeDraft = () => {
+    if (editingEntryIndex !== null) return;
+    clearCarDraftFields();
+    if (carEntries.length > 0) {
+      setDraftFormExpanded(false);
+    }
+  };
+
+  const handleAddEntry = () => {
+    if (!formData.car_id) {
+      return;
+    }
+
+    const duplicate = carEntries.some(
+      (e, i) => e.car_id === formData.car_id && i !== editingEntryIndex
+    );
+    if (duplicate) {
+      return;
+    }
+
+    const newEntry: CreatePurchaseHistoryData = {
+      car_id: formData.car_id,
+      purchase_amount: formData.purchase_amount,
+      foreign_amount: sumBidSer(formData.bid_price, formData.ser_com),
+      bdt_amount: formData.bdt_amount,
+      currency_type: currencyType,
+      govt_duty: formData.govt_duty,
+      cnf_amount: formData.cnf_amount,
+      miscellaneous: formData.miscellaneous,
+      bid_price: formData.bid_price ?? null,
+      ser_com: formData.ser_com ?? null,
+      purchase_date: formData.purchase_date,
+
+      bill_of_lading: formData.bill_of_lading,
+      invoice_number: formData.invoice_number,
+      export_certificate: formData.export_certificate,
+      export_certificate_translated: formData.export_certificate_translated,
+      bill_of_exchange_amount: formData.bill_of_exchange_amount,
+      custom_duty_copy_3pages: formData.custom_duty_copy_3pages,
+      cheque_copy: formData.cheque_copy,
+      certificate: formData.certificate,
+      custom_one: formData.custom_one,
+      custom_two: formData.custom_two,
+      custom_three: formData.custom_three,
+      hs_code: formData.hs_code,
+      price_amount: formData.price_amount,
+      price_basis: formData.price_basis,
+      fob_value_usd: formData.fob_value_usd,
+      freight_usd: formData.freight_usd,
+    };
+
+    if (editingEntryIndex !== null) {
+      setCarEntries((prev) =>
+        prev.map((e, i) => (i === editingEntryIndex ? newEntry : e))
+      );
+      setEditingEntryIndex(null);
+    } else {
+      setCarEntries((prev) => [...prev, newEntry]);
+    }
+    setDraftFormExpanded(false);
+
+    clearCarDraftFields();
+  };
+
   const handleRemoveEntry = (index: number) => {
-    setCarEntries(prev => prev.filter((_, i) => i !== index));
+    setCarEntries((prev) => prev.filter((_, i) => i !== index));
+    if (editingEntryIndex === index) {
+      setEditingEntryIndex(null);
+      clearCarDraftFields();
+    } else if (editingEntryIndex !== null && editingEntryIndex > index) {
+      setEditingEntryIndex((e) => (e != null ? e - 1 : null));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -729,6 +893,21 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
   const showCarPurchaseSection =
     mode === "create" || !Array.isArray(purchaseHistory);
 
+  /** Create mode: hide the big draft (car + pricing + docs) after adding to list until user adds another. */
+  const showDraftCarForm =
+    mode !== "create" || carEntries.length === 0 || draftFormExpanded;
+
+  const showDocumentAttachmentsSection =
+    mode === "create"
+      ? showDraftCarForm
+      : !Array.isArray(purchaseHistory);
+
+  /** Same collapse as Add Car to Purchase + Document Attachments in create mode. */
+  const showCurrentEntryDetailsSection =
+    mode === "create"
+      ? showDraftCarForm
+      : !Array.isArray(purchaseHistory);
+
   const renderSections = () => (
     <>
             {/* 1. LC Information (Common) - Moved to Top */}
@@ -847,64 +1026,140 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 </h2>
                 <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                   Per vehicle: add cars, pricing, and document attachments. LC is a separate section above.
+                  {mode === "create" && (
+                    <>
+                      {" "}
+                      Click a car row or <span className="font-medium text-gray-800 dark:text-gray-200">Add new</span> to open the full draft. After <span className="font-medium text-gray-800 dark:text-gray-200">Add Car to List</span>, it minimizes again.
+                    </>
+                  )}
                 </p>
               </div>
               <div className="p-5 sm:p-6 space-y-6">
 
-            {/* Added Cars List */}
-            {(mode === 'create') && carEntries.length > 0 && (
-              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  Added Cars ({carEntries.length}) <span className="text-xs font-normal text-gray-600 dark:text-gray-400 px-2 py-0.5 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-600">Ready to submit</span>
-                </h3>
-                <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
-                    <thead className="bg-white dark:bg-gray-800">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Car</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Purchase Amount</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Duty</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">CNF</th>
-                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
-                      {carEntries.map((entry, idx) => {
-                        const car = cars.find(c => c.id === entry.car_id);
-                        return (
-                          <tr key={idx} className="hover:bg-gray-50">
-                            <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                              {car ? `${car.make} ${car.model} (${car.chassis_no_full || car.chassis_no_masked})` : `Car ID: ${entry.car_id}`}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-700 text-right">
-                              {entry.purchase_amount?.toLocaleString()}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-700 text-right">
-                              {entry.govt_duty || '-'}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-700 text-right">
-                              {entry.cnf_amount?.toLocaleString() || '-'}
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveEntry(idx)}
-                                className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+            {/* Added cars — minimized rows + add another / remove */}
+            {mode === "create" && carEntries.length > 0 && (
+              <div className="rounded-xl border border-emerald-200/80 dark:border-emerald-800/60 bg-gradient-to-br from-emerald-50/90 to-white dark:from-emerald-950/30 dark:to-gray-800/80 p-4 sm:p-5">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    Added to list
+                    <span className="text-xs font-medium text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded-full bg-emerald-100/90 dark:bg-emerald-900/50 border border-emerald-200/80 dark:border-emerald-700">
+                      {carEntries.length} car{carEntries.length !== 1 ? "s" : ""}
+                    </span>
+                  </h3>
+                  {!draftFormExpanded && (
+                    <button
+                      type="button"
+                      onClick={handleAddNewDraft}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-primary-500 bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-primary-700 dark:border-primary-500 dark:bg-primary-600 dark:hover:bg-primary-500"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add new
+                    </button>
+                  )}
                 </div>
+                <ul className="space-y-2">
+                  {carEntries.map((entry, idx) => {
+                    const car = cars.find((c) => c.id === entry.car_id);
+                    const title = car
+                      ? `${car.make} ${car.model}`
+                      : `Car #${entry.car_id}`;
+                    const sub = car
+                      ? car.chassis_no_full || car.chassis_no_masked || ""
+                      : "";
+                    const isDraftOpenForThisRow =
+                      showDraftCarForm && editingEntryIndex === idx;
+                    const isEditingCard = editingEntryIndex === idx;
+                    return (
+                      <li
+                        key={`${entry.car_id}-${idx}`}
+                        className={`flex min-h-[3rem] items-center gap-2 rounded-xl border bg-white/95 px-3 py-2.5 shadow-sm transition dark:bg-gray-800/90 ${
+                          isEditingCard
+                            ? "border-primary-500 ring-2 ring-primary-200 dark:border-primary-400 dark:ring-primary-900/50"
+                            : "border-gray-200/90 cursor-pointer hover:border-primary-300 hover:bg-primary-50/50 dark:border-gray-600 dark:hover:border-primary-600 dark:hover:bg-primary-950/20"
+                        }`}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => {
+                          if (showDraftCarForm && editingEntryIndex === idx) {
+                            handleCancelEdit();
+                          } else {
+                            handleStartEditEntry(idx);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            if (showDraftCarForm && editingEntryIndex === idx) {
+                              handleCancelEdit();
+                            } else {
+                              handleStartEditEntry(idx);
+                            }
+                          }
+                        }}
+                      >
+                        <div className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-3">
+                          <span className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {title}
+                          </span>
+                          {sub ? (
+                            <span className="truncate text-xs text-gray-500 dark:text-gray-400 font-mono">
+                              {sub}
+                            </span>
+                          ) : null}
+                          <span className="text-xs text-gray-600 dark:text-gray-300 sm:ml-auto">
+                            {entry.purchase_amount != null
+                              ? `৳ ${Number(entry.purchase_amount).toLocaleString()}`
+                              : "—"}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (isDraftOpenForThisRow) {
+                              handleCancelEdit();
+                            } else {
+                              handleStartEditEntry(idx);
+                            }
+                          }}
+                          className="shrink-0 rounded-lg p-1.5 text-gray-500 transition hover:bg-primary-100 hover:text-primary-700 dark:hover:bg-primary-950/60 dark:hover:text-primary-300"
+                          aria-label={
+                            isDraftOpenForThisRow
+                              ? "Minimize draft (collapse)"
+                              : "Open draft for this car"
+                          }
+                          title={
+                            isDraftOpenForThisRow
+                              ? "Minimize"
+                              : "Open to edit"
+                          }
+                        >
+                          {isDraftOpenForThisRow ? (
+                            <ChevronDown className="h-4 w-4" />
+                          ) : (
+                            <ChevronUp className="h-4 w-4" />
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveEntry(idx);
+                          }}
+                          className="shrink-0 rounded-lg p-1.5 text-gray-400 transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50 dark:hover:text-red-400"
+                          aria-label="Remove from list"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
             )}
 
             {/* From cart */}
-            {(mode === 'create') && cartItems.length > 0 && (
+            {mode === "create" && showDraftCarForm && cartItems.length > 0 && (
               <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <ShoppingCart className="w-5 h-5" /> From Cart List ({cartItems.length})
@@ -912,7 +1167,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {cartItems.map((item) => {
                     const isSelected = formData.car_id === item.car_id || (formData.car_ids || []).includes(item.car_id);
-                    const isAlreadyAdded = carEntries.some(e => e.car_id === item.car_id);
+                    const isAlreadyAdded = carEntries.some(
+                      (e, i) => e.car_id === item.car_id && i !== editingEntryIndex
+                    );
 
                     if (isAlreadyAdded) return null;
 
@@ -937,11 +1194,26 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
             )}
 
             {/* Add Car to Purchase */}
-            {mode === 'create' && (
+            {mode === "create" && showDraftCarForm && (
               <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
-                  <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" /> Add Car to Purchase
-                </h3>
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+                    <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" /> Add Car to Purchase
+                  </h3>
+                  {(editingEntryIndex === null &&
+                    ((formData.car_id != null && formData.car_id !== 0) ||
+                      (formData.car_ids && formData.car_ids.length > 0))) && (
+                    <button
+                      type="button"
+                      onClick={handleMinimizeDraft}
+                      className="shrink-0 rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-50 hover:text-red-600 dark:hover:bg-red-950/50 dark:hover:text-red-400"
+                      aria-label="Remove draft car selection"
+                      title="Remove draft"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
                 <p className="text-xs text-gray-600 dark:text-gray-400 mb-5">
                   Complete pricing and documents below, then click <span className="font-medium text-gray-800 dark:text-gray-200">Add Car to List</span> under Document Attachments.
                 </p>
@@ -1008,7 +1280,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                                     return searchStr.includes(carSearchQuery.toLowerCase());
                                   })
                                   .map(car => {
-                                    const isAlreadyAdded = carEntries.some(e => e.car_id === car.id);
+                                    const isAlreadyAdded = carEntries.some(
+                                      (e, i) => e.car_id === car.id && i !== editingEntryIndex
+                                    );
                                     if (isAlreadyAdded) return null;
                                     return (
                                       <div
@@ -1063,8 +1337,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
               </div>
             )}
 
-            {/* Current Entry Details */}
-            {(!Array.isArray(purchaseHistory) || mode === "create") && (
+            {/* Current Entry Details — with Add Car to Purchase + Document Attachments as one draft block in create */}
+            {showCurrentEntryDetailsSection && (
               <div className="rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-5">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
                   {mode === 'create' ? "Current Entry Details" : "Car & Financial Details"}
@@ -1448,7 +1722,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
             )}
 
             {/* Document Attachments */}
-            {(!Array.isArray(purchaseHistory) || mode === "create") && (
+            {showDocumentAttachmentsSection && (
               <div className="rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-5">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Document Attachments
@@ -1464,16 +1738,32 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
               </div>
             )}
 
-            {mode === "create" && (
-              <div className="flex justify-end mt-2 pt-6 border-t border-gray-200 dark:border-gray-600">
-                <button
-                  type="button"
-                  onClick={handleAddEntry}
-                  className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg transform active:scale-95"
-                >
-                  <Plus className="w-5 h-5" />
-                  Add Car to List
-                </button>
+            {mode === "create" && showDraftCarForm && (
+              <div className="flex flex-wrap items-center justify-between gap-3 mt-2 pt-6 border-t border-gray-200 dark:border-gray-600">
+                <div className="flex flex-wrap items-center gap-2">
+                  {carEntries.length > 0 && editingEntryIndex === null && (
+                    <button
+                      type="button"
+                      onClick={handleMinimizeDraft}
+                      className="inline-flex items-center justify-center rounded-lg border border-gray-300 p-2 text-gray-700 transition hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700/80"
+                      aria-label="Minimize draft"
+                      title="Minimize draft"
+                    >
+                      {/* Draft is currently open; point down */}
+                      <ChevronDown className="h-5 w-5" />
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-wrap items-center justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={handleAddEntry}
+                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg transform active:scale-95"
+                  >
+                    <Plus className="w-5 h-5" />
+                    Add Car to List
+                  </button>
+                </div>
               </div>
             )}
 
