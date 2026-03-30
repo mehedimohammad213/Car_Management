@@ -141,7 +141,7 @@ const UserManagement: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto no-horizontal-scrollbar">
               <div className="min-w-[1000px]">
                 {/* Clean Professional Table Header */}
                 <div className="bg-gray-200 border-b border-gray-300 text-gray-700">

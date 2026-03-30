@@ -154,7 +154,7 @@ const TotalStockTable: React.FC = () => {
 
   return (
     <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto no-horizontal-scrollbar">
         <div className="min-w-[1200px] sm:min-w-full">
           {/* Professional Table Header with Gradient */}
           <div className="bg-gradient-to-r from-purple-600 via-purple-700 to-primary-800 shadow-lg">

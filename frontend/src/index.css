@@ -444,6 +444,17 @@ code {
   background: #9ca3af;
 }
 
+/* Hide scrollbar track (keep scrolling) for table containers */
+.no-horizontal-scrollbar {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-horizontal-scrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
 /* Professional Color System - CSS Custom Properties */
 :root {
   /* Primary Colors - Deep Navy Blue */

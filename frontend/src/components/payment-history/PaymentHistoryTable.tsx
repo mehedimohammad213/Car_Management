@@ -62,7 +62,7 @@ const PaymentHistoryTable: React.FC<PaymentHistoryTableProps> = ({
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto no-horizontal-scrollbar">
         <div className="min-w-[1400px]">
           {/* Clean Professional Table Header */}
           <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
