@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useCart } from "../contexts/CartContext";
@@ -20,6 +20,7 @@ import {
   CreditCard,
   Search,
 } from "lucide-react";
+import type { StockPageTab } from "./stock/StockHeader";
 
 type NavItem = {
   path: string;
@@ -48,6 +49,13 @@ const Header: React.FC = () => {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const [mobileStockSubmenuOpen, setMobileStockSubmenuOpen] = useState(
+    location.pathname === "/admin/stock"
+  );
+  const [mobilePurchaseSubmenuOpen, setMobilePurchaseSubmenuOpen] = useState(
+    location.pathname === "/admin/purchase-history"
+  );
 
   // Handle clicking outside dropdowns and escape key
   React.useEffect(() => {
@@ -120,6 +128,32 @@ const Header: React.FC = () => {
   if (!user) {
     return null;
   }
+
+  const allowedStockTabs: StockPageTab[] = ["before", "current", "available", "soldout"];
+  const tabParam = new URLSearchParams(location.search).get("tab");
+  const effectiveStockTab: StockPageTab =
+    tabParam && allowedStockTabs.includes(tabParam as StockPageTab)
+      ? (tabParam as StockPageTab)
+      : "before";
+
+  React.useEffect(() => {
+    if (location.pathname === "/admin/stock") setMobileStockSubmenuOpen(true);
+    // Only respond to pathname changes (query param changes shouldn't force-open).
+  }, [location.pathname]);
+
+  React.useEffect(() => {
+    if (location.pathname === "/admin/purchase-history")
+      setMobilePurchaseSubmenuOpen(true);
+    // Only respond to pathname changes (query param changes shouldn't force-open).
+  }, [location.pathname]);
+
+  type PurchaseTab = "lc_wise" | "history";
+  const allowedPurchaseTabs: PurchaseTab[] = ["lc_wise", "history"];
+  const purchaseTabParam = new URLSearchParams(location.search).get("tab");
+  const effectivePurchaseTab: PurchaseTab =
+    purchaseTabParam && allowedPurchaseTabs.includes(purchaseTabParam as PurchaseTab)
+      ? (purchaseTabParam as PurchaseTab)
+      : "lc_wise";
 
   return (
     <>
@@ -238,6 +272,142 @@ const Header: React.FC = () => {
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActiveRoute = isActive(item.path);
+
+                // Custom "Stock" submenu for mobile menu.
+                if (item.path === "/admin/stock") {
+                  const stockMainPath = `/admin/stock?tab=${effectiveStockTab}`;
+                  const stockTabClass = (tab: StockPageTab) =>
+                    `flex items-center space-x-2 w-full px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                      effectiveStockTab === tab
+                        ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
+                        : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
+                    }`;
+
+                  return (
+                    <div key={item.path}>
+                      <Link
+                        to={stockMainPath}
+                        onClick={() => setMobileStockSubmenuOpen((v) => !v)}
+                        className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                          isActiveRoute
+                            ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
+                            : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                        }`}
+                      >
+                        <Icon className="h-5 w-5" />
+                        <span>{item.label}</span>
+                        <ChevronDownIcon
+                          className={`ml-auto h-4 w-4 opacity-60 transform transition-transform ${
+                            mobileStockSubmenuOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </Link>
+
+                      {mobileStockSubmenuOpen && (
+                        <div className="ml-5 mt-1 flex flex-col gap-1">
+                          <Link
+                            to="/admin/stock?tab=before"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setMobileStockSubmenuOpen(false);
+                            }}
+                            className={stockTabClass("before")}
+                          >
+                            <span>Pending Stock</span>
+                          </Link>
+                          <Link
+                            to="/admin/stock?tab=current"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setMobileStockSubmenuOpen(false);
+                            }}
+                            className={stockTabClass("current")}
+                          >
+                            <span>Current Stock</span>
+                          </Link>
+                          <Link
+                            to="/admin/stock?tab=available"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setMobileStockSubmenuOpen(false);
+                            }}
+                            className={stockTabClass("available")}
+                          >
+                            <span>Available Stock</span>
+                          </Link>
+                          <Link
+                            to="/admin/stock?tab=soldout"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setMobileStockSubmenuOpen(false);
+                            }}
+                            className={stockTabClass("soldout")}
+                          >
+                            <span>Sold Out</span>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                // Custom "Purchase" submenu for mobile menu.
+                if (item.path === "/admin/purchase-history") {
+                  const purchaseMainPath = `/admin/purchase-history?tab=${effectivePurchaseTab}`;
+                  const purchaseTabClass = (tab: PurchaseTab) =>
+                    `flex items-center space-x-2 w-full px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                      effectivePurchaseTab === tab
+                        ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
+                        : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
+                    }`;
+
+                  return (
+                    <div key={item.path}>
+                      <Link
+                        to={purchaseMainPath}
+                        onClick={() => setMobilePurchaseSubmenuOpen((v) => !v)}
+                        className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                          isActiveRoute
+                            ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
+                            : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                        }`}
+                      >
+                        <Icon className="h-5 w-5" />
+                        <span>{item.label}</span>
+                        <ChevronDownIcon
+                          className={`ml-auto h-4 w-4 opacity-60 transform transition-transform ${
+                            mobilePurchaseSubmenuOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </Link>
+
+                      {mobilePurchaseSubmenuOpen && (
+                        <div className="ml-5 mt-1 flex flex-col gap-1">
+                          <Link
+                            to="/admin/purchase-history?tab=lc_wise"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setMobilePurchaseSubmenuOpen(false);
+                            }}
+                            className={purchaseTabClass("lc_wise")}
+                          >
+                            <span>LC Wise View</span>
+                          </Link>
+                          <Link
+                            to="/admin/purchase-history?tab=history"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setMobilePurchaseSubmenuOpen(false);
+                            }}
+                            className={purchaseTabClass("history")}
+                          >
+                            <span>History</span>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
 
                 return (
                   <Link

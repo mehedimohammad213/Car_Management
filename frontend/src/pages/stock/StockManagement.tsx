@@ -16,14 +16,21 @@ import AvailableCarsTable from "../../components/stock/AvailableCarsTable";
 import { useStockManagement } from "../../hooks/useStockManagement";
 import { usePendingCarsFilters } from "../../hooks/usePendingCarsFilters";
 import type { StockPageTab } from "../../components/stock/StockHeader";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { stockApi, Stock } from "../../services/stockApi";
 import { carApi } from "../../services/carApi";
 import { getEffectiveStockStatus, isStockRowSold } from "../../utils/stockStatus";
 
 const StockManagement: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<StockPageTab>("before");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const allowedTabs: StockPageTab[] = ["before", "current", "available", "soldout"];
+  const queryTab = searchParams.get("tab");
+  const initialTab: StockPageTab =
+    (queryTab && allowedTabs.includes(queryTab as StockPageTab) ? (queryTab as StockPageTab) : "before");
+
+  const [activeTab, setActiveTab] = useState<StockPageTab>(initialTab);
   const [showPendingCarDeleteModal, setShowPendingCarDeleteModal] =
     useState(false);
   const [pendingCarToDelete, setPendingCarToDelete] = useState<{
@@ -113,6 +120,15 @@ const StockManagement: React.FC = () => {
     }
   }, [activeTab, fetchAvailableCars]);
 
+  // Sync tab state from URL query param (`/admin/stock?tab=current|available|soldout|before`).
+  useEffect(() => {
+    const t = searchParams.get("tab") as StockPageTab | null;
+    if (!t) return;
+    if (!allowedTabs.includes(t)) return;
+    setActiveTab(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.toString()]);
+
   const handleCreateStockFromCar = async (car: any) => {
     try {
       console.log("Creating stock from car:", car);
@@ -191,7 +207,14 @@ const StockManagement: React.FC = () => {
       <div className="max-w-full mx-auto px-4 pb-6">
         <StockHeader
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={(tab) => {
+            setActiveTab(tab);
+            setSearchParams((prev) => {
+              const next = new URLSearchParams(prev);
+              next.set("tab", tab);
+              return next;
+            });
+          }}
           tabCounts={stockTabCounts}
         />
 

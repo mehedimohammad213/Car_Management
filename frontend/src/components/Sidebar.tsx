@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import {
   BarChartIcon,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   CarIcon,
   ShoppingCartIcon,
   UserIcon,
@@ -12,6 +13,7 @@ import {
   UsersIcon,
   CreditCard,
 } from "lucide-react";
+import type { StockPageTab } from "./stock/StockHeader";
 
 type NavItem = {
   path: string;
@@ -40,6 +42,37 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
 
   if (!user) return null;
 
+  const isOnStockRoute = location.pathname === "/admin/stock";
+  const [stockSubmenuOpen, setStockSubmenuOpen] = useState(isOnStockRoute);
+
+  const allowedStockTabs: StockPageTab[] = [
+    "before",
+    "current",
+    "available",
+    "soldout",
+  ];
+  const tabParam = new URLSearchParams(location.search).get("tab");
+  const effectiveStockTab: StockPageTab =
+    (tabParam && allowedStockTabs.includes(tabParam as StockPageTab)
+      ? (tabParam as StockPageTab)
+      : "before");
+
+  const isOnPurchaseRoute = location.pathname === "/admin/purchase-history";
+  type PurchaseTab = "lc_wise" | "history";
+  const [purchaseSubmenuOpen, setPurchaseSubmenuOpen] = useState(
+    isOnPurchaseRoute
+  );
+  const allowedPurchaseTabs: PurchaseTab[] = ["lc_wise", "history"];
+  const purchaseTabParam = new URLSearchParams(location.search).get("tab");
+  const effectivePurchaseTab: PurchaseTab =
+    purchaseTabParam && allowedPurchaseTabs.includes(purchaseTabParam as PurchaseTab)
+      ? (purchaseTabParam as PurchaseTab)
+      : "lc_wise";
+
+  useEffect(() => {
+    if (isOnPurchaseRoute) setPurchaseSubmenuOpen(true);
+  }, [isOnPurchaseRoute]);
+
   const adminNavItems: NavItem[] = [
     { path: "/admin", label: "Dashboard", icon: BarChartIcon },
     { path: "/admin/stock", label: "Stock", icon: PackageIcon },
@@ -57,6 +90,11 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   ];
 
   const navItems = user.role === "admin" ? adminNavItems : userNavItems;
+
+  useEffect(() => {
+    // Open submenu when user navigates to stock page; keep it closable by user.
+    if (isOnStockRoute) setStockSubmenuOpen(true);
+  }, [isOnStockRoute]);
 
   return (
     <aside
@@ -112,6 +150,161 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
+
+            // Custom "Stock" submenu.
+            if (item.path === "/admin/stock") {
+              const stockMainPath = `/admin/stock?tab=${effectiveStockTab}`;
+
+              const stockTabLinkClasses = (tab: StockPageTab) =>
+                `flex items-center w-full transition-colors py-2 rounded-none ${
+                  collapsed
+                    ? "justify-center px-0 border-l-0"
+                    : "justify-start gap-3 px-3 border-l-4 border-transparent"
+                } ${
+                  effectiveStockTab === tab
+                    ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200 border-primary-500"
+                    : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+                }`;
+
+              return (
+                <div key={item.path}>
+                  <Link
+                    to={stockMainPath}
+                    onClick={() => setStockSubmenuOpen((v) => !v)}
+                    className={`flex items-center w-full transition-colors py-2 rounded-none ${
+                      collapsed
+                        ? "justify-center px-0 border-l-0"
+                        : "justify-start gap-3 px-3 border-l-4 border-transparent"
+                    } ${
+                      isActive
+                        ? collapsed
+                          ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
+                          : "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200 border-primary-500"
+                        : collapsed
+                        ? "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className={`truncate ${collapsed ? "hidden" : "inline"}`}>
+                      {item.label}
+                    </span>
+
+                    {!collapsed && (
+                      <ChevronDown
+                        className={`ml-auto w-4 h-4 opacity-60 transform transition-transform ${
+                          stockSubmenuOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    )}
+                  </Link>
+
+                  {!collapsed && stockSubmenuOpen && (
+                    <div className="mt-1 flex flex-col gap-1 pl-7 pr-2">
+                      <Link
+                        to="/admin/stock?tab=before"
+                        className={stockTabLinkClasses("before")}
+                        onClick={() => setStockSubmenuOpen(false)}
+                      >
+                        <span className="truncate">Pending Stock</span>
+                      </Link>
+                      <Link
+                        to="/admin/stock?tab=current"
+                        className={stockTabLinkClasses("current")}
+                        onClick={() => setStockSubmenuOpen(false)}
+                      >
+                        <span className="truncate">Current Stock</span>
+                      </Link>
+                      <Link
+                        to="/admin/stock?tab=available"
+                        className={stockTabLinkClasses("available")}
+                        onClick={() => setStockSubmenuOpen(false)}
+                      >
+                        <span className="truncate">Available Stock</span>
+                      </Link>
+                      <Link
+                        to="/admin/stock?tab=soldout"
+                        className={stockTabLinkClasses("soldout")}
+                        onClick={() => setStockSubmenuOpen(false)}
+                      >
+                        <span className="truncate">Sold Out</span>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            // Custom "Purchase" submenu.
+            if (item.path === "/admin/purchase-history") {
+              const purchaseMainPath = `/admin/purchase-history?tab=${effectivePurchaseTab}`;
+
+              const purchaseTabLinkClasses = (tab: PurchaseTab) =>
+                `flex items-center w-full transition-colors py-2 rounded-none ${
+                  collapsed
+                    ? "justify-center px-0 border-l-0"
+                    : "justify-start gap-3 px-3 border-l-4 border-transparent"
+                } ${
+                  effectivePurchaseTab === tab
+                    ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200 border-primary-500"
+                    : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+                }`;
+
+              return (
+                <div key={item.path}>
+                  <Link
+                    to={purchaseMainPath}
+                    onClick={() => setPurchaseSubmenuOpen((v) => !v)}
+                    className={`flex items-center w-full transition-colors py-2 rounded-none ${
+                      collapsed
+                        ? "justify-center px-0 border-l-0"
+                        : "justify-start gap-3 px-3 border-l-4 border-transparent"
+                    } ${
+                      isActive
+                        ? collapsed
+                          ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
+                          : "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200 border-primary-500"
+                        : collapsed
+                          ? "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                          : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className={`truncate ${collapsed ? "hidden" : "inline"}`}>
+                      {item.label}
+                    </span>
+
+                    {!collapsed && (
+                      <ChevronDown
+                        className={`ml-auto w-4 h-4 opacity-60 transform transition-transform ${
+                          purchaseSubmenuOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    )}
+                  </Link>
+
+                  {!collapsed && purchaseSubmenuOpen && (
+                    <div className="mt-1 flex flex-col gap-1 pl-7 pr-2">
+                      <Link
+                        to="/admin/purchase-history?tab=lc_wise"
+                        className={purchaseTabLinkClasses("lc_wise")}
+                        onClick={() => setPurchaseSubmenuOpen(false)}
+                      >
+                        <span className="truncate">LC Wise View</span>
+                      </Link>
+                      <Link
+                        to="/admin/purchase-history?tab=history"
+                        className={purchaseTabLinkClasses("history")}
+                        onClick={() => setPurchaseSubmenuOpen(false)}
+                      >
+                        <span className="truncate">History</span>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={item.path}

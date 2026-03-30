@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Plus, Search, X } from "lucide-react";
 import { toast } from "react-toastify";
 import {
@@ -13,6 +13,7 @@ import Pagination from "../../components/car/Pagination";
 
 const PurchaseHistoryPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [purchaseHistories, setPurchaseHistories] = useState<PurchaseHistory[]>(
     []
   );
@@ -22,7 +23,24 @@ const PurchaseHistoryPage: React.FC = () => {
   const [purchaseHistoryToDelete, setPurchaseHistoryToDelete] =
     useState<PurchaseHistory | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [activeTab, setActiveTab] = useState<"history" | "lc_wise">("lc_wise");
+  type PurchaseTab = "history" | "lc_wise";
+  const allowedTabs: PurchaseTab[] = ["lc_wise", "history"];
+  const tabParam = searchParams.get("tab");
+  const initialTab: PurchaseTab =
+    tabParam && allowedTabs.includes(tabParam as PurchaseTab)
+      ? (tabParam as PurchaseTab)
+      : "lc_wise";
+
+  const [activeTab, setActiveTab] = useState<PurchaseTab>(initialTab);
+
+  // Sync tab from URL (`/admin/purchase-history?tab=lc_wise|history`).
+  useEffect(() => {
+    const t = searchParams.get("tab") as PurchaseTab | null;
+    if (!t) return;
+    if (!allowedTabs.includes(t)) return;
+    setActiveTab(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.toString()]);
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
@@ -240,7 +258,14 @@ const PurchaseHistoryPage: React.FC = () => {
             {/* Tab Selection - LC wise first (default) */}
             <div className="flex gap-1">
               <button
-                onClick={() => setActiveTab("lc_wise")}
+                onClick={() => {
+                  setActiveTab("lc_wise");
+                  setSearchParams((prev) => {
+                    const next = new URLSearchParams(prev);
+                    next.set("tab", "lc_wise");
+                    return next;
+                  });
+                }}
                 className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "lc_wise"
                   ? "bg-primary-600 text-white"
                   : "text-gray-600 hover:bg-gray-100"
@@ -249,7 +274,14 @@ const PurchaseHistoryPage: React.FC = () => {
                 LC Wise View
               </button>
               <button
-                onClick={() => setActiveTab("history")}
+                onClick={() => {
+                  setActiveTab("history");
+                  setSearchParams((prev) => {
+                    const next = new URLSearchParams(prev);
+                    next.set("tab", "history");
+                    return next;
+                  });
+                }}
                 className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "history"
                   ? "bg-primary-600 text-white"
                   : "text-gray-600 hover:bg-gray-100"
