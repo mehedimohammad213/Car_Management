@@ -95,7 +95,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-gray-900 p-4 sm:p-6">
+        <div className="min-h-screen bg-white dark:bg-gray-900 p-4 sm:p-6">
             <div className="max-w-7xl mx-auto space-y-8">
                 {/* Enhanced Stats Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -51,12 +51,12 @@ function App() {
             <Router>
               <Suspense
                 fallback={
-                  <div className="flex min-h-screen items-center justify-center bg-slate-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+                  <div className="flex min-h-screen items-center justify-center bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100">
                     Loading...
                   </div>
                 }
               >
-                <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
+                <div className="min-h-screen bg-white dark:bg-gray-900">
                   <Routes>
                     <Route path="/login" element={<Login />} />
                     {/* Public stock gallery (no header layout) */}
