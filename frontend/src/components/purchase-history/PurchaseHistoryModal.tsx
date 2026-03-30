@@ -939,10 +939,10 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                   <Plus className="w-5 h-5 text-blue-600" /> Add Car to Purchase
                 </h3>
 
-                {/* Car Selection */}
-                <div className="border-b border-gray-200 pb-6">
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                {/* Car selection + Purchase Date + H.S Code — one row on lg+ */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 border-b border-gray-200 dark:border-gray-700 pb-6">
+                  <div className="relative min-w-0">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Select Car to Add
                     </label>
 
@@ -956,15 +956,15 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                         if (!car) return null;
 
                         return (
-                          <div key={id} className="bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-between w-full border border-blue-200">
-                            <span>{car.make} {car.model} — <span className="text-gray-500 font-normal">{car.chassis_no_full || car.chassis_no_masked}</span></span>
+                          <div key={id} className="bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-between w-full border border-blue-200 dark:border-blue-800">
+                            <span>{car.make} {car.model} — <span className="text-gray-500 dark:text-gray-400 font-normal">{car.chassis_no_full || car.chassis_no_masked}</span></span>
                             <button
                               type="button"
                               onClick={() => {
                                 handleInputChange("car_id", null);
                                 handleInputChange("car_ids", []);
                               }}
-                              className="text-blue-400 hover:text-blue-700"
+                              className="text-blue-400 hover:text-blue-700 dark:hover:text-blue-200"
                             >
                               <X className="w-5 h-5" />
                             </button>
@@ -986,11 +986,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                             setIsCarDropdownOpen(true);
                           }}
                           onFocus={() => setIsCarDropdownOpen(true)}
-                          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
                         />
 
                         {isCarDropdownOpen && (
-                          <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                          <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-xl max-h-60 overflow-y-auto">
                             {loadingCars ? (
                               <div className="p-4 text-center text-gray-500 text-sm">Loading cars...</div>
                             ) : (
@@ -1012,11 +1012,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                                           setIsCarDropdownOpen(false);
                                           setCarSearchQuery("");
                                         }}
-                                        className="px-4 py-2 cursor-pointer flex items-center justify-between hover:bg-gray-50"
+                                        className="px-4 py-2 cursor-pointer flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/80"
                                       >
                                         <div className="flex flex-col">
-                                          <span className="text-sm font-medium text-gray-900">{car.make} {car.model}</span>
-                                          <span className="text-xs text-gray-500">{car.chassis_no_full || car.chassis_no_masked}</span>
+                                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{car.make} {car.model}</span>
+                                          <span className="text-xs text-gray-500 dark:text-gray-400">{car.chassis_no_full || car.chassis_no_masked}</span>
                                         </div>
                                       </div>
                                     );
@@ -1027,6 +1027,30 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                         )}
                       </div>
                     )}
+                  </div>
+
+                  <div className="min-w-0">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Purchase Date
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.purchase_date || ""}
+                      onChange={(e) => handleInputChange("purchase_date", e.target.value || null)}
+                      className="w-full min-w-0 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
+                    />
+                  </div>
+
+                  <div className="min-w-0">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      H.S Code
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.hs_code || ""}
+                      onChange={(e) => handleInputChange("hs_code", e.target.value || null)}
+                      className="w-full min-w-0 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 dark:border-gray-600"
+                    />
                   </div>
                 </div>
 
@@ -1057,31 +1081,33 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                   {mode === 'create' ? "Current Entry Details" : "Car & Financial Details"}
                 </h3>
 
-                {/* Purchase Date and H.S Code */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Purchase Date
-                    </label>
-                    <input
-                      type="date"
-                      value={formData.purchase_date || ""}
-                      onChange={(e) => handleInputChange("purchase_date", e.target.value || null)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    />
+                {/* Purchase Date and H.S Code — edit single record only (create flow uses Add Car section) */}
+                {mode === "update" && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Purchase Date
+                      </label>
+                      <input
+                        type="date"
+                        value={formData.purchase_date || ""}
+                        onChange={(e) => handleInputChange("purchase_date", e.target.value || null)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        H.S Code
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.hs_code || ""}
+                        onChange={(e) => handleInputChange("hs_code", e.target.value || null)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      H.S Code
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.hs_code || ""}
-                      onChange={(e) => handleInputChange("hs_code", e.target.value || null)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
+                )}
 
                 {/* Calculator section from line 1040 original... */}
 
