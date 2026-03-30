@@ -199,6 +199,21 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                   (c) => `${c.make}_${c.model}` === makeModelKey
                 ) === index;
 
+              const refNo =
+                car.ref_no ||
+                (car.id != null
+                  ? `AA${car.id.toString().padStart(6, "0")}`
+                  : "N/A");
+              const chassisNo =
+                car.chassis_no_full || car.chassis_no_masked || "N/A";
+
+              const keyFeatures = car?.keys_feature
+                ? car.keys_feature
+                    .split(",")
+                    .map((feature: string) => feature.trim())
+                    .filter(Boolean)
+                : [];
+
               return (
                 <div
                   key={car.id}
@@ -231,13 +246,19 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                       </div>
                       <div className="text-xs font-semibold text-gray-600 mb-1">
                         <span className="text-gray-500">Ref:</span>{" "}
-                        <span className="text-primary-600 font-mono">
-                          {car.ref_no || `AA${car.id?.toString().padStart(6, "0") || ""}`}
+                        <span
+                          className="text-primary-600 font-mono break-all"
+                          title={refNo}
+                        >
+                          {refNo}
                         </span>
                       </div>
-                      <div className="text-xs text-gray-500 mb-2 font-mono truncate">
+                      <div
+                        className="text-xs text-gray-500 mb-2 font-mono break-all"
+                        title={chassisNo}
+                      >
                         <span className="text-gray-400">Chassis:</span>{" "}
-                        {car.chassis_no_full || car.chassis_no_masked || "N/A"}
+                        {chassisNo}
                       </div>
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-200">
@@ -315,12 +336,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                   {/* Key Features - Enhanced */}
                   <div className="col-span-2 flex items-center">
                     <div className="flex flex-wrap gap-1.5 max-w-full">
-                      {(car.keys_feature
-                        ?.split(",")
-                        .map((feature: string) => feature.trim())
-                        .filter(Boolean)
-                        .slice(0, 8) || []
-                      ).map((feature: string) => (
+                      {keyFeatures.map((feature: string) => (
                         <span
                           key={feature}
                           className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200"
@@ -328,7 +344,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                           {feature}
                         </span>
                       ))}
-                      {!car.keys_feature && (
+                      {keyFeatures.length === 0 && (
                         <span className="text-xs text-gray-400 italic">No features listed</span>
                       )}
                     </div>

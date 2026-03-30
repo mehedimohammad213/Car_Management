@@ -69,6 +69,13 @@ const CarTable: React.FC<CarTableProps> = ({
           <div className="divide-y divide-gray-100">
             {cars.map((car, index) => {
               const stock = stockData.get(car.id);
+              const refNo =
+                car.ref_no ||
+                (car.id != null
+                  ? `AA${car.id.toString().padStart(6, "0")}`
+                  : "N/A");
+              const chassisNo =
+                car.chassis_no_full || car.chassis_no_masked || "N/A";
               return (
                 <div
                   key={car.id}
@@ -111,13 +118,19 @@ const CarTable: React.FC<CarTableProps> = ({
                       </div>
                       <div className="text-xs font-semibold text-gray-600 mb-1">
                         <span className="text-gray-500">Ref:</span>{" "}
-                        <span className="text-primary-600 font-mono">
-                          {car.ref_no || `AA${car.id.toString().padStart(6, "0")}`}
+                        <span
+                          className="text-primary-600 font-mono break-all"
+                          title={refNo}
+                        >
+                          {refNo}
                         </span>
                       </div>
-                      <div className="text-xs text-gray-500 mb-2 font-mono truncate">
+                      <div
+                        className="text-xs text-gray-500 mb-2 font-mono break-all"
+                        title={chassisNo}
+                      >
                         <span className="text-gray-400">Chassis:</span>{" "}
-                        {car.chassis_no_full || car.chassis_no_masked || "N/A"}
+                        {chassisNo}
                       </div>
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span

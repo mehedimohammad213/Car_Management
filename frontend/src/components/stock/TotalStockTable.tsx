@@ -212,6 +212,21 @@ const TotalStockTable: React.FC = () => {
                 (c) => `${c.make}_${c.model}` === makeModelKey
               ).length;
 
+              const refNo =
+                car?.ref_no ||
+                (car?.id != null
+                  ? `AA${car.id.toString().padStart(6, "0")}`
+                  : "N/A");
+              const chassisNo =
+                car?.chassis_no_full || car?.chassis_no_masked || "N/A";
+
+              const keyFeatures = car?.keys_feature
+                ? car.keys_feature
+                    .split(",")
+                    .map((feature: string) => feature.trim())
+                    .filter(Boolean)
+                : [];
+
               // Calculate current stock count for this make/model
               const currentStockCount = stocks.filter(
                 (stock) => stock.car && `${stock.car.make}_${stock.car.model}` === makeModelKey
@@ -261,13 +276,19 @@ const TotalStockTable: React.FC = () => {
                     </div>
                     <div className="text-xs font-semibold text-gray-600 mb-1">
                       <span className="text-gray-500">Ref:</span>{" "}
-                      <span className="text-purple-600 font-mono">
-                        {car?.ref_no || `AA${car?.id?.toString().padStart(6, "0") || ""}`}
+                      <span
+                        className="text-purple-600 font-mono break-all"
+                        title={refNo}
+                      >
+                        {refNo}
                       </span>
                     </div>
-                    <div className="text-xs text-gray-500 mb-2 font-mono truncate">
+                    <div
+                      className="text-xs text-gray-500 mb-2 font-mono break-all"
+                      title={chassisNo}
+                    >
                       <span className="text-gray-400">Chassis:</span>{" "}
-                      {car?.chassis_no_full || car?.chassis_no_masked || "N/A"}
+                      {chassisNo}
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5">
                       {car?.package && (
@@ -365,12 +386,7 @@ const TotalStockTable: React.FC = () => {
                 {/* Key Features - Enhanced */}
                 <div className="col-span-1 flex items-center">
                   <div className="flex flex-wrap gap-1.5 max-w-full">
-                    {(car?.keys_feature
-                      ?.split(",")
-                      .map((feature: string) => feature.trim())
-                      .filter(Boolean)
-                      .slice(0, 8) || []
-                    ).map((feature: string) => (
+                    {keyFeatures.map((feature: string) => (
                       <span
                         key={feature}
                         className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200"
@@ -378,12 +394,7 @@ const TotalStockTable: React.FC = () => {
                         {feature}
                       </span>
                     ))}
-                    {car?.keys_feature && car.keys_feature.split(",").filter(Boolean).length > 8 && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium text-gray-500">
-                        +{car.keys_feature.split(",").filter(Boolean).length - 8} more
-                      </span>
-                    )}
-                    {!car?.keys_feature && (
+                    {keyFeatures.length === 0 && (
                       <span className="text-xs text-gray-400 italic">No features listed</span>
                     )}
                   </div>
