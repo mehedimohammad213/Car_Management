@@ -134,7 +134,8 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
             const xSep = 92; // dotted divider x like the screenshot
             const xLeft = marginX;
             const xCarVal = xLeft + 6;
-            const xChassisVal = xSep + 6;
+            // Keep chassis values on the left side of the center divider (no overlap with right money panel)
+            const xChassisVal = xSep - 28;
             const xRightLabel = xSep + 18;
             const xRightValue = pageWidth - marginX;
 
@@ -240,9 +241,10 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
 
             let y = 60;
             const blockHeight = 62;
+            const blockGap = 14; // extra space to prevent text/dash overlaps
 
             const ensureSpace = () => {
-                if (y + blockHeight > pageHeight - 10) {
+                if (y + blockHeight + blockGap > pageHeight - 10) {
                     doc.addPage();
                     drawHeader();
                     drawInfoRow();
@@ -331,41 +333,41 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
 
                     doc.text("BID PRICE YEN", xRightLabel, rightTopY + 2);
                     doc.text(formatYen(bidYen), xRightValue, rightTopY + 2, { align: "right" });
-                    doc.text("SER+COM YEN", xRightLabel, rightTopY + 7);
-                    doc.text(formatYen(serYen), xRightValue, rightTopY + 7, { align: "right" });
+                    doc.text("SER+COM YEN", xRightLabel, rightTopY + 6);
+                    doc.text(formatYen(serYen), xRightValue, rightTopY + 6, { align: "right" });
 
-                    drawDottedHLine(xSep + 2, xRightValue - 2, rightTopY + 13);
+                    drawDottedHLine(xSep + 2, xRightValue - 2, rightTopY + 14);
 
                     doc.text(
                         `US DOLLAR (USD/JPY)=${formatRate(usdJpyRate)}`,
                         xRightLabel,
-                        rightTopY + 18
+                        rightTopY + 19
                     );
-                    doc.text(formatUsd(usdAmount), xRightValue, rightTopY + 18, { align: "right" });
+                    doc.text(formatUsd(usdAmount), xRightValue, rightTopY + 19, { align: "right" });
 
                     doc.text(
                         `BDT (USD*BDT = ${formatRate(usdBdtRate)})`,
                         xRightLabel,
-                        rightTopY + 23
+                        rightTopY + 24
                     );
-                    doc.text(formatBdt(bdtAmount), xRightValue, rightTopY + 23, { align: "right" });
+                    doc.text(formatBdt(bdtAmount), xRightValue, rightTopY + 24, { align: "right" });
 
-                    drawDottedHLine(xSep + 2, xRightValue - 2, rightTopY + 29);
+                    drawDottedHLine(xSep + 2, xRightValue - 2, rightTopY + 30);
 
-                    doc.text("GOVT DUTY", xRightLabel, rightTopY + 34);
-                    doc.text(formatBdt(govtDuty), xRightValue, rightTopY + 34, { align: "right" });
-                    doc.text("C&F AMOUNT", xRightLabel, rightTopY + 39);
-                    doc.text(formatBdt(cnfAmount), xRightValue, rightTopY + 39, { align: "right" });
-                    doc.text("MISCELLANEOUS", xRightLabel, rightTopY + 44);
-                    doc.text(formatBdt(misc), xRightValue, rightTopY + 44, { align: "right" });
+                    doc.text("GOVT DUTY", xRightLabel, rightTopY + 35);
+                    doc.text(formatBdt(govtDuty), xRightValue, rightTopY + 35, { align: "right" });
+                    doc.text("C&F AMOUNT", xRightLabel, rightTopY + 40);
+                    doc.text(formatBdt(cnfAmount), xRightValue, rightTopY + 40, { align: "right" });
+                    doc.text("MISCELLANEOUS", xRightLabel, rightTopY + 45);
+                    doc.text(formatBdt(misc), xRightValue, rightTopY + 45, { align: "right" });
 
-                    drawDottedHLine(xSep + 2, xRightValue - 2, rightTopY + 49);
+                    drawDottedHLine(xSep + 2, xRightValue - 2, rightTopY + 50);
                     doc.setFont("helvetica", "bold");
-                    doc.text("TOTAL", xRightLabel, rightTopY + 54);
-                    doc.text(formatBdt(total ?? null), xRightValue, rightTopY + 54, { align: "right" });
+                    doc.text("TOTAL", xRightLabel, rightTopY + 55);
+                    doc.text(formatBdt(total ?? null), xRightValue, rightTopY + 55, { align: "right" });
                     doc.setFont("helvetica", "normal");
 
-                    y += blockHeight + 4; // gap like screenshot between vehicles
+                    y += blockHeight + blockGap;
                 });
             });
 
