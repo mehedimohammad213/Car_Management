@@ -3,7 +3,11 @@ import { Car, Gauge, Settings, Palette, Award, Tag, Package } from "lucide-react
 import { carApi, Car as CarType } from "../../services/carApi";
 import { stockApi, Stock } from "../../services/stockApi";
 import { CurrencyBDTIcon } from "../icons/CurrencyBDTIcon";
-import { getGradeColor, formatPrice as formatPriceUtil } from "../../utils/carUtils";
+import {
+  getGradeColor,
+  formatPrice as formatPriceUtil,
+  getCssColor,
+} from "../../utils/carUtils";
 
 const TotalStockTable: React.FC = () => {
   const [cars, setCars] = useState<CarType[]>([]);
@@ -340,7 +344,7 @@ const TotalStockTable: React.FC = () => {
                       <div
                         className="w-4 h-4 rounded-full border-2 border-gray-300 shadow-sm bg-gray-200"
                         style={{
-                          backgroundColor: car.color,
+                          backgroundColor: getCssColor(car.color),
                         }}
                         title={car.color}
                       />

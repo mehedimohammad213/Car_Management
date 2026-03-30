@@ -35,6 +35,38 @@ export const getGradeColor = (grade?: string | number) => {
   return "bg-red-100 text-red-800";
 };
 
+/**
+ * Convert a vehicle color value (often a name or hex) into a valid CSS color.
+ * If the value can't be used directly, generate a deterministic fallback.
+ */
+export const getCssColor = (color?: string | null): string => {
+  const raw = color?.trim();
+  if (!raw) return "#9CA3AF"; // Tailwind gray-400
+
+  const normalized = raw.startsWith("#") ? raw : raw.toLowerCase();
+
+  // Fast-path for hex/rgb/hsl-ish inputs.
+  if (/^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(raw)) return raw;
+  if (/^(rgb|rgba|hsl|hsla)\(/i.test(normalized)) return raw;
+
+  // Named CSS colors (e.g. "red", "silver")
+  if (typeof CSS !== "undefined" && typeof CSS.supports === "function") {
+    try {
+      if (CSS.supports("color", normalized)) return normalized;
+    } catch {
+      // ignore and fall back below
+    }
+  }
+
+  // Deterministic fallback: hash string -> HSL.
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    hash = (hash * 31 + raw.charCodeAt(i)) % 360;
+  }
+
+  return `hsl(${hash} 60% 55%)`;
+};
+
 export const getStockStatusColor = (quantity: number, status: string) => {
   if (quantity === 0) return "text-red-600";
   if (quantity <= 2) return "text-amber-600";

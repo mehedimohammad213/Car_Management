@@ -3,6 +3,7 @@ import { Car, Eye, ShoppingCart, Edit, Trash2, Gauge, Settings, Palette, Award, 
 import { Car as CarType } from "../../services/carApi";
 import { Stock } from "../../services/stockApi";
 import { CurrencyBDTIcon } from "../icons/CurrencyBDTIcon";
+import { getCssColor } from "../../utils/carUtils";
 
 interface CarTableProps {
   cars: CarType[];
@@ -195,7 +196,7 @@ const CarTable: React.FC<CarTableProps> = ({
                         <div
                           className="w-4 h-4 rounded-full border-2 border-gray-300 shadow-sm bg-gray-200"
                           style={{
-                            backgroundColor: car.color,
+                            backgroundColor: getCssColor(car.color),
                           }}
                           title={car.color}
                         />

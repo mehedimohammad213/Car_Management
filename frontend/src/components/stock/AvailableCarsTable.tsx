@@ -1,6 +1,6 @@
 import React from "react";
 import { Package, Car, Eye, Edit, Trash2, PackagePlus } from "lucide-react";
-import { getGradeColor } from "../../utils/carUtils";
+import { getCssColor, getGradeColor } from "../../utils/carUtils";
 
 interface AvailableCar {
   id: number;
@@ -305,7 +305,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                         <div
                           className="w-4 h-4 rounded-full border-2 border-gray-300 shadow-sm"
                           style={{
-                            backgroundColor: car.color,
+                            backgroundColor: getCssColor(car.color),
                           }}
                           title={car.color}
                         />

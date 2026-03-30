@@ -1,7 +1,11 @@
 import React from "react";
 import { Eye, Edit, Trash2, Car } from "lucide-react";
 import { Stock } from "../../services/stockApi";
-import { getGradeColor, formatPrice as formatPriceUtil } from "../../utils/carUtils";
+import {
+  getGradeColor,
+  formatPrice as formatPriceUtil,
+  getCssColor,
+} from "../../utils/carUtils";
 import { getEffectiveStockStatus } from "../../utils/stockStatus";
 
 interface StockTableRowProps {
@@ -173,7 +177,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
             <div
               className="w-4 h-4 rounded-full border-2 border-gray-300 shadow-sm bg-gray-200"
               style={{
-                backgroundColor: car.color,
+                backgroundColor: getCssColor(car.color),
               }}
               title={car.color}
             />
