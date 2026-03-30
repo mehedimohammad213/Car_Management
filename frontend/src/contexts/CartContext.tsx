@@ -227,7 +227,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       console.error("Failed to clear cart:", error);
       // Even if API call fails, clear local state
       setItems([]);
-      showErrorToast("Failed to clear cart");
+      const status = (error as any)?.response?.status as number | undefined;
+      // During logout, cart endpoints may legitimately fail (logged out / route mismatch).
+      // In those cases we keep the UX clean and skip the toast.
+      if (status !== 401 && status !== 403 && status !== 404) {
+        showErrorToast("Failed to clear cart");
+      }
     } finally {
       setIsLoading(false);
     }

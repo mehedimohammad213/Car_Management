@@ -71,9 +71,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('cart')->group(function () {
         Route::get('/', [CartController::class, 'index']);
         Route::post('/', [CartController::class, 'store']);
+        Route::delete('/clear', [CartController::class, 'clear']);
+        // Important: put explicit `/clear` route before `/{cart}` to avoid
+        // Laravel route-model binding treating "clear" as a cart id.
         Route::put('/{cart}', [CartController::class, 'update']);
         Route::delete('/{cart}', [CartController::class, 'destroy']);
-        Route::delete('/clear', [CartController::class, 'clear']);
         Route::get('/summary', [CartController::class, 'summary']);
     });
 
