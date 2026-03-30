@@ -13,7 +13,9 @@ import {
     Edit2,
     Trash2,
     Plus,
+    Download,
 } from "lucide-react";
+import jsPDF from "jspdf";
 
 interface PurchaseHistoryLCViewProps {
     purchaseHistories: PurchaseHistory[];
@@ -77,6 +79,7 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
     onAddUnderLc,
 }) => {
     const [expandedLC, setExpandedLC] = useState<string | null>(null);
+    const [downloadingLc, setDownloadingLc] = useState<string | null>(null);
 
     const groupedByLC = useMemo(() => {
         const groups: Record<string, PurchaseHistory[]> = {};
@@ -117,6 +120,261 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
             </div>
         );
     }
+
+    const downloadLcPdf = (lcNumber: string, histories: PurchaseHistory[]) => {
+        if (!histories?.length) return;
+        setDownloadingLc(lcNumber);
+
+        try {
+            const doc = new jsPDF("p", "mm", "a4");
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+
+            const marginX = 14;
+            const xSep = 92; // dotted divider x like the screenshot
+            const xLeft = marginX;
+            const xCarVal = xLeft + 6;
+            const xChassisVal = xSep + 6;
+            const xRightLabel = xSep + 18;
+            const xRightValue = pageWidth - marginX;
+
+            const nf2 = new Intl.NumberFormat("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
+
+            const formatYen = (n: number | null): string => {
+                if (n === null) return "N/A";
+                return `¥${nf2.format(n)}`;
+            };
+            const formatUsd = (n: number | null): string => {
+                if (n === null) return "N/A";
+                return `$${nf2.format(n)}`;
+            };
+            const formatBdt = (n: number | null): string => {
+                if (n === null) return "N/A";
+                // Screenshot-style uses ৳
+                return `৳${nf2.format(n)}`;
+            };
+            const formatRate = (n: number | null): string => {
+                if (n === null) return "N/A";
+                return nf2.format(n);
+            };
+
+            const setDotted = () => {
+                const maybeFn = (doc as unknown as { setLineDash?: (pattern: number[]) => void })
+                    .setLineDash;
+                if (typeof maybeFn === "function") {
+                    maybeFn.call(doc, [2, 2]);
+                }
+            };
+            const resetDotted = () => {
+                const maybeFn = (doc as unknown as { setLineDash?: (pattern: number[]) => void })
+                    .setLineDash;
+                if (typeof maybeFn === "function") {
+                    maybeFn.call(doc, []);
+                }
+            };
+
+            const drawHeader = () => {
+                const titleY = 14;
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(13);
+                doc.setTextColor(0, 0, 0);
+                doc.text("DREAM AGENT CAR VISION", pageWidth / 2, titleY, {
+                    align: "center",
+                });
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                doc.text(
+                    "57,Purana Palton Line, VIP Road ,Dhaka-1000.",
+                    pageWidth / 2,
+                    titleY + 6,
+                    { align: "center" }
+                );
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(12);
+                const lcReportY = titleY + 22;
+                const text = "L/C Report";
+                doc.text(text, pageWidth / 2, lcReportY, { align: "center" });
+
+                const tw = doc.getTextWidth(text);
+                doc.setLineWidth(0.3);
+                doc.line(
+                    pageWidth / 2 - tw / 2,
+                    lcReportY + 2,
+                    pageWidth / 2 + tw / 2,
+                    lcReportY + 2
+                );
+            };
+
+            const first = histories[0];
+            const lcDate = first.lc_date
+                ? new Date(first.lc_date).toLocaleDateString("en-US", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                })
+                : "N/A";
+
+            const totalCars = histories.reduce(
+                (acc, curr) => acc + (curr.cars?.length || (curr.car ? 1 : 0)),
+                0
+            );
+            const totalUnit = first.total_units_per_lc || String(totalCars);
+
+            const drawInfoRow = () => {
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                const y = 48;
+                doc.text(`L/C Number: ${lcNumber}`, xLeft, y);
+                doc.text(`L/C Date: ${lcDate}`, pageWidth / 2, y, { align: "center" });
+                doc.text(`Total Unit: ${totalUnit}`, xRightValue, y, { align: "right" });
+            };
+
+            drawHeader();
+            drawInfoRow();
+
+            let y = 60;
+            const blockHeight = 62;
+
+            const ensureSpace = () => {
+                if (y + blockHeight > pageHeight - 10) {
+                    doc.addPage();
+                    drawHeader();
+                    drawInfoRow();
+                    y = 60;
+                }
+            };
+
+            const drawDottedVertical = (topY: number, bottomY: number) => {
+                doc.setDrawColor(0, 0, 0);
+                doc.setLineWidth(0.2);
+                setDotted();
+                doc.line(xSep, topY, xSep, bottomY);
+                resetDotted();
+            };
+            const drawDottedHLine = (fromX: number, toX: number, atY: number) => {
+                doc.setDrawColor(0, 0, 0);
+                doc.setLineWidth(0.2);
+                setDotted();
+                doc.line(fromX, atY, toX, atY);
+                resetDotted();
+            };
+
+            histories.forEach((history) => {
+                const cars = (history.cars && history.cars.length > 0)
+                    ? history.cars
+                    : (history.car ? [history.car] : []);
+
+                const safeCars = cars.length > 0 ? cars : [null];
+
+                safeCars.forEach((car) => {
+                    ensureSpace();
+                    const topY = y;
+                    const rightTopY = topY + 8;
+
+                    // Left headings
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(9.2);
+                    doc.text("Car Name", xLeft + 6, topY + 2);
+                    doc.text("Chassis No.", xSep - 30, topY + 2);
+
+                    // Left values
+                    const carName = (car?.model || car?.make || "N/A").toString();
+                    const year = car?.year ?? "N/A";
+                    const color = car?.color ?? "N/A";
+                    const chassis = (car?.chassis_no_full || car?.chassis_no_masked || "N/A").toString();
+
+                    doc.setFontSize(10);
+                    doc.text(carName, xCarVal, topY + 16);
+                    doc.setFontSize(9.2);
+                    doc.text(`Year: ${year}`, xCarVal, topY + 21);
+                    doc.text(`Color: ${color}`, xCarVal, topY + 26);
+                    doc.setFontSize(10);
+                    doc.text(chassis, xChassisVal, topY + 16);
+
+                    // Dotted divider through block
+                    drawDottedVertical(topY + 5, topY + blockHeight - 7);
+
+                    // Amounts (per history)
+                    const bidYen = toNumber(history.bid_price);
+                    const serYen = toNumber(history.ser_com);
+                    const yenTotal = (bidYen ?? 0) + (serYen ?? 0);
+
+                    const usdAmount = toNumber(history.foreign_amount);
+                    const bdtAmount = toNumber(history.bdt_amount);
+
+                    const usdJpyRate =
+                        usdAmount && usdAmount > 0 ? yenTotal / usdAmount : null;
+                    const usdBdtRate =
+                        usdAmount && usdAmount > 0 && bdtAmount !== null
+                            ? (bdtAmount ?? 0) / usdAmount
+                            : null;
+
+                    const govtDuty = toNumber(history.govt_duty);
+                    const cnfAmount = toNumber(history.cnf_amount);
+                    const misc = toNumber(history.miscellaneous);
+
+                    const total =
+                        getPurchaseSummaryTotal(history) ??
+                        ((bdtAmount ?? 0) +
+                            (govtDuty ?? 0) +
+                            (cnfAmount ?? 0) +
+                            (misc ?? 0));
+
+                    // Right panel (YEN -> USD -> BDT)
+                    doc.setFontSize(9.2);
+
+                    doc.text("BID PRICE YEN", xRightLabel, rightTopY + 2);
+                    doc.text(formatYen(bidYen), xRightValue, rightTopY + 2, { align: "right" });
+                    doc.text("SER+COM YEN", xRightLabel, rightTopY + 7);
+                    doc.text(formatYen(serYen), xRightValue, rightTopY + 7, { align: "right" });
+
+                    drawDottedHLine(xSep + 2, xRightValue - 2, rightTopY + 13);
+
+                    doc.text(
+                        `US DOLLAR (USD/JPY)=${formatRate(usdJpyRate)}`,
+                        xRightLabel,
+                        rightTopY + 18
+                    );
+                    doc.text(formatUsd(usdAmount), xRightValue, rightTopY + 18, { align: "right" });
+
+                    doc.text(
+                        `BDT (USD*BDT = ${formatRate(usdBdtRate)})`,
+                        xRightLabel,
+                        rightTopY + 23
+                    );
+                    doc.text(formatBdt(bdtAmount), xRightValue, rightTopY + 23, { align: "right" });
+
+                    drawDottedHLine(xSep + 2, xRightValue - 2, rightTopY + 29);
+
+                    doc.text("GOVT DUTY", xRightLabel, rightTopY + 34);
+                    doc.text(formatBdt(govtDuty), xRightValue, rightTopY + 34, { align: "right" });
+                    doc.text("C&F AMOUNT", xRightLabel, rightTopY + 39);
+                    doc.text(formatBdt(cnfAmount), xRightValue, rightTopY + 39, { align: "right" });
+                    doc.text("MISCELLANEOUS", xRightLabel, rightTopY + 44);
+                    doc.text(formatBdt(misc), xRightValue, rightTopY + 44, { align: "right" });
+
+                    drawDottedHLine(xSep + 2, xRightValue - 2, rightTopY + 49);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("TOTAL", xRightLabel, rightTopY + 54);
+                    doc.text(formatBdt(total ?? null), xRightValue, rightTopY + 54, { align: "right" });
+                    doc.setFont("helvetica", "normal");
+
+                    y += blockHeight + 4; // gap like screenshot between vehicles
+                });
+            });
+
+            const safeLc = lcNumber.replace(/[^a-zA-Z0-9-_]/g, "_");
+            doc.save(`lc-report-${safeLc}.pdf`);
+        } finally {
+            setDownloadingLc(null);
+        }
+    };
 
     return (
         <div className="space-y-4">
@@ -184,6 +442,17 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                                     title="Delete LC"
                                 >
                                     <Trash2 className="w-5 h-5" />
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        downloadLcPdf(lcNumber, histories);
+                                    }}
+                                    disabled={downloadingLc === lcNumber}
+                                    className="p-2.5 rounded-xl bg-primary-50 text-primary-600 hover:bg-primary-100 transition-all border border-primary-100 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                                    title="Download LC PDF"
+                                >
+                                    <Download className="w-5 h-5" />
                                 </button>
                                 <button
                                     className={`p-2.5 rounded-xl transition-all duration-500 ${isExpanded ? "bg-primary-600 text-white" : "bg-gray-100 text-gray-400 group-hover:bg-primary-100 group-hover:text-primary-500"
