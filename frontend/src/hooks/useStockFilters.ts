@@ -14,7 +14,7 @@ export type FilterOptions = {
 
 const PER_PAGE = 10;
 
-export type StockListScope = "all" | "sold";
+export type StockListScope = "all" | "available" | "sold";
 
 export const useStockFilters = (
     allStocks: Stock[],
@@ -41,6 +41,9 @@ export const useStockFilters = (
     const scopedStocks = useMemo(() => {
         if (stockScope === "sold") {
             return allStocks.filter((s) => isStockRowSold(s));
+        }
+        if (stockScope === "available") {
+            return allStocks.filter((s) => getEffectiveStockStatus(s) === "available");
         }
         return allStocks;
     }, [allStocks, stockScope]);

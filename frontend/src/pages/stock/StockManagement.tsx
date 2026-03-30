@@ -19,7 +19,7 @@ import type { StockPageTab } from "../../components/stock/StockHeader";
 import { useNavigate } from "react-router-dom";
 import { stockApi, Stock } from "../../services/stockApi";
 import { carApi } from "../../services/carApi";
-import { isStockRowSold } from "../../utils/stockStatus";
+import { getEffectiveStockStatus, isStockRowSold } from "../../utils/stockStatus";
 
 const StockManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const StockManagement: React.FC = () => {
   } | null>(null);
   const [isDeletingPendingCar, setIsDeletingPendingCar] = useState(false);
 
-  const stockScope = activeTab === "soldout" ? "sold" : "all";
+  const stockScope = activeTab === "soldout" ? "sold" : activeTab === "available" ? "available" : "all";
 
   const {
     stocks,
@@ -97,6 +97,7 @@ const StockManagement: React.FC = () => {
     () => ({
       pending: pendingFilters.sourceCount,
       current: allStocks.length,
+      available: allStocks.filter((s) => getEffectiveStockStatus(s) === "available").length,
       soldout: allStocks.filter((s) => isStockRowSold(s)).length,
     }),
     [pendingFilters.sourceCount, allStocks]
@@ -189,7 +190,6 @@ const StockManagement: React.FC = () => {
     <div className="min-h-screen">
       <div className="max-w-full mx-auto px-4 pb-6">
         <StockHeader
-          onCreateInvoice={() => setShowInvoiceModal(true)}
           activeTab={activeTab}
           onTabChange={setActiveTab}
           tabCounts={stockTabCounts}
@@ -197,7 +197,7 @@ const StockManagement: React.FC = () => {
 
         <MessageDisplay message={message} />
 
-        {activeTab === "current" || activeTab === "soldout" ? (
+        {activeTab === "current" || activeTab === "available" || activeTab === "soldout" ? (
           <>
             <StockFilters
               searchTerm={searchTerm}
