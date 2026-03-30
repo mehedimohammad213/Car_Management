@@ -48,8 +48,7 @@ function resolveBidSerFromPh(ph: PurchaseHistory): {
   if (
     bid_price == null &&
     ser_com == null &&
-    ph.foreign_amount != null &&
-    ph.foreign_amount !== ""
+    ph.foreign_amount != null
   ) {
     const n =
       typeof ph.foreign_amount === "number"
@@ -284,7 +283,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       const { bid_price: rateBid, ser_com: rateSer } = resolveBidSerFromPh(mainHistory);
       const yenBasis =
         sumBidSer(rateBid, rateSer) ??
-        (mainHistory.foreign_amount != null && mainHistory.foreign_amount !== ""
+        (mainHistory.foreign_amount != null
           ? Number(mainHistory.foreign_amount)
           : null);
 
