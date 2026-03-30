@@ -72,7 +72,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
       >
         {/* Toolbar */}
         <div
-          className={`relative pb-4 mb-4 border-b border-gray-200 dark:border-gray-700 ${
+          className={`relative pb-4 mb-4 ${
             collapsed ? "px-1" : "px-2"
           }`}
         >
@@ -108,7 +108,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
           )}
         </button>
 
-        <nav className="flex-1 border-t border-gray-200 dark:border-gray-700">
+        <nav className="flex-1">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
@@ -116,7 +116,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center w-full transition-colors py-2 rounded-none border-b border-gray-200 dark:border-gray-700 ${
+                className={`flex items-center w-full transition-colors py-2 rounded-none ${
                   collapsed
                     ? "justify-center px-0 border-l-0"
                     : "justify-start gap-3 px-3 border-l-4 border-transparent"
@@ -140,7 +140,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
         </nav>
 
         <div
-          className={`pt-4 border-t border-gray-200 dark:border-gray-700 ${
+          className={`pt-4 ${
             collapsed ? "hidden" : "block"
           }`}
         >
