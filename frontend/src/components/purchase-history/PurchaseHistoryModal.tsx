@@ -725,6 +725,10 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
   const isPage = variant === "page";
 
+  /** Single record or create: show vehicle/pricing/docs block. Bulk array update uses LC only here. */
+  const showCarPurchaseSection =
+    mode === "create" || !Array.isArray(purchaseHistory);
+
   const renderSections = () => (
     <>
             {/* 1. LC Information (Common) - Moved to Top */}
@@ -829,13 +833,31 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
               <div className="border-t border-gray-200 my-6" />
             )}
 
-            {/* 3. Added Cars List (Shows in Create and can be enabled for Update if we want) */}
+            {showCarPurchaseSection && (
+            <div
+              className={
+                isPage
+                  ? "rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden ring-1 ring-slate-100/80 dark:ring-slate-800"
+                  : "rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/40 overflow-hidden"
+              }
+            >
+              <div className="px-5 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-emerald-50/70 dark:bg-emerald-950/40">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Car & purchase details
+                </h2>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                  Per vehicle: add cars, pricing, and document attachments. LC is a separate section above.
+                </p>
+              </div>
+              <div className="p-5 sm:p-6 space-y-6">
+
+            {/* Added Cars List */}
             {(mode === 'create') && carEntries.length > 0 && (
               <div
                 className={
                   isPage
-                    ? "bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 ring-1 ring-primary-100 dark:ring-primary-900/30"
-                    : "bg-primary-50 p-6 rounded-2xl border border-primary-100"
+                    ? "rounded-xl border border-primary-200/80 dark:border-primary-800/60 bg-primary-50/50 dark:bg-primary-950/25 p-5"
+                    : "rounded-xl border border-primary-200 bg-primary-50/80 p-5"
                 }
               >
                 <h3 className="text-lg font-semibold text-primary-900 mb-4 flex items-center gap-2">
@@ -887,13 +909,13 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
               </div>
             )}
 
-            {/* 4. Cart List - NEW */}
+            {/* From cart */}
             {(mode === 'create') && cartItems.length > 0 && (
               <div
                 className={
                   isPage
-                    ? "bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 ring-1 ring-amber-100 dark:ring-amber-900/30 mb-0"
-                    : "bg-amber-50 p-6 rounded-2xl border border-amber-100 mb-6"
+                    ? "rounded-xl border border-amber-200/80 dark:border-amber-800/50 bg-amber-50/40 dark:bg-amber-950/20 p-5"
+                    : "rounded-xl border border-amber-200 bg-amber-50/90 p-5"
                 }
               >
                 <h3 className="text-lg font-semibold text-amber-900 mb-4 flex items-center gap-2">
@@ -926,21 +948,18 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
               </div>
             )}
 
-            {/* 4. Car Entry Form */}
+            {/* Add Car to Purchase */}
             {mode === 'create' && (
-              <div
-                className={
-                  isPage
-                    ? "p-6 rounded-2xl border bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 shadow-sm ring-1 ring-blue-100 dark:ring-blue-900/30 mb-0"
-                    : "p-6 rounded-2xl border bg-white border-blue-200 shadow-md ring-1 ring-blue-100 mb-6"
-                }
-              >
-                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <Plus className="w-5 h-5 text-blue-600" /> Add Car to Purchase
+              <div className="rounded-xl border border-blue-200/80 dark:border-blue-800/50 bg-blue-50/30 dark:bg-blue-950/20 p-5">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+                  <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" /> Add Car to Purchase
                 </h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-5">
+                  Complete pricing and documents below, then click <span className="font-medium text-gray-800 dark:text-gray-200">Add Car to List</span> under Document Attachments.
+                </p>
 
                 {/* Car selection + Purchase Date + H.S Code — one row on lg+ */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 border-b border-gray-200 dark:border-gray-700 pb-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
                   <div className="relative min-w-0">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Select Car to Add
@@ -1053,31 +1072,13 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                     />
                   </div>
                 </div>
-
-                {/* Add Button */}
-                <div className="mt-6 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={handleAddEntry}
-                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg transform active:scale-95"
-                  >
-                    <Plus className="w-5 h-5" />
-                    Add Car to List
-                  </button>
-                </div>
               </div>
             )}
 
-            {/* Individual Details Section - Show only for Single Edit or Create */}
+            {/* Current Entry Details */}
             {(!Array.isArray(purchaseHistory) || mode === "create") && (
-              <div
-                className={
-                  isPage
-                    ? "bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700"
-                    : "bg-white p-6 rounded-2xl border border-gray-200"
-                }
-              >
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+              <div className="rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50/60 dark:bg-gray-900/40 p-5">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
                   {mode === 'create' ? "Current Entry Details" : "Car & Financial Details"}
                 </h3>
 
@@ -1464,14 +1465,9 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
               </div>
             )}
 
-            {/* PDF Documents Section - Single Edit or Create */}
+            {/* Document Attachments */}
             {(!Array.isArray(purchaseHistory) || mode === "create") && (
-              <div
-                className={
-                  isPage ? "" : "mt-6 border-t border-gray-200 pt-6"
-                }
-              >
-                <PurchaseFormSection variant={variant}>
+              <div className="rounded-xl border border-gray-200 dark:border-gray-600 bg-slate-50/50 dark:bg-slate-900/30 p-5">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Document Attachments
                 </h3>
@@ -1483,8 +1479,24 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                     {pdfFields.slice(6).map((field) => renderPdfAttachmentField(field))}
                   </div>
                 </div>
-                </PurchaseFormSection>
               </div>
+            )}
+
+            {mode === "create" && (
+              <div className="flex justify-end mt-2 pt-6 border-t border-gray-200 dark:border-gray-600">
+                <button
+                  type="button"
+                  onClick={handleAddEntry}
+                  className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg transform active:scale-95"
+                >
+                  <Plus className="w-5 h-5" />
+                  Add Car to List
+                </button>
+              </div>
+            )}
+
+              </div>
+            </div>
             )}
 
             {/* Actions */}
