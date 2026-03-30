@@ -134,8 +134,8 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
             const xSep = 92; // dotted divider x like the screenshot
             const xLeft = marginX;
             const xCarVal = xLeft + 6;
-            // Keep chassis values on the left side of the center divider (no overlap with right money panel)
-            const xChassisVal = xSep - 28;
+            // Keep chassis values aligned with the "Chassis No." title
+            const xChassisVal = xSep - 30;
             const xRightLabel = xSep + 18;
             const xRightValue = pageWidth - marginX;
 
