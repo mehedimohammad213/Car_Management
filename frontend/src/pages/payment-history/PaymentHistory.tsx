@@ -191,7 +191,7 @@ const PaymentHistoryPage: React.FC = () => {
             {/* Add Button moved here */}
             <button
               onClick={handleCreate}
-              className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all font-medium shadow-sm hover:shadow-md whitespace-nowrap ml-auto"
+              className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all font-medium shadow-sm hover:shadow-md whitespace-nowrap"
             >
               <Plus className="w-4 h-4" />
               Add Payment History
