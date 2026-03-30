@@ -93,6 +93,7 @@ const Header: React.FC = () => {
   const adminNavItems: NavItem[] = [
     { path: "/admin", label: "Dashboard", icon: BarChartIcon },
     // { path: "/admin/cars", label: "Car", icon: CarIcon },
+    { path: "/admin/stock", label: "Stock", icon: PackageIcon },
     {
       path: "/admin/purchase-history",
       label: "Purchase",
@@ -103,7 +104,6 @@ const Header: React.FC = () => {
       label: "Payment",
       icon: CreditCard,
     },
-    { path: "/admin/stock", label: "Stock", icon: PackageIcon },
     { path: "/admin/orders", label: "Order", icon: ShoppingCartIcon },
     { path: "/admin/users", label: "User", icon: UsersIcon },
   ];
