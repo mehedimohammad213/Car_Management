@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Search, X } from "lucide-react";
 import { toast } from "react-toastify";
@@ -16,6 +16,7 @@ const PurchaseHistoryPage: React.FC = () => {
   const [purchaseHistories, setPurchaseHistories] = useState<PurchaseHistory[]>(
     []
   );
+  const [lcHistoriesAll, setLcHistoriesAll] = useState<PurchaseHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [purchaseHistoryToDelete, setPurchaseHistoryToDelete] =
@@ -30,20 +31,41 @@ const PurchaseHistoryPage: React.FC = () => {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage] = useState(15);
+  const HISTORY_PER_PAGE = 15;
+  const LC_PER_PAGE = 10;
+  // Frontend LC-wise pagination needs a complete enough dataset to group by `lc_number`.
+  // Increase this if you have many LC groups and still see missing groups.
+  const LC_FETCH_PER_PAGE = 1000;
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
-  useEffect(() => {
-    fetchPurchaseHistories();
-  }, [currentPage, searchTerm, filterMonth, filterYear]);
+  type GetPurchaseHistoriesParams = NonNullable<
+    Parameters<typeof purchaseHistoryApi.getPurchaseHistories>[0]
+  >;
 
-  const fetchPurchaseHistories = async () => {
+  useEffect(() => {
+    // When switching tab or changing filters/search, always restart pagination.
+    setCurrentPage(1);
+  }, [activeTab, searchTerm, filterMonth, filterYear]);
+
+  useEffect(() => {
+    if (activeTab !== "history") return;
+    fetchHistoryPurchaseHistories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, currentPage, searchTerm, filterMonth, filterYear]);
+
+  useEffect(() => {
+    if (activeTab !== "lc_wise") return;
+    fetchLcHistoriesAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, searchTerm, filterMonth, filterYear]);
+
+  const fetchHistoryPurchaseHistories = async () => {
     try {
       setLoading(true);
-      const params: any = {
+      const params: GetPurchaseHistoriesParams = {
         page: currentPage,
-        per_page: perPage,
+        per_page: HISTORY_PER_PAGE,
         sort_by: "created_at",
         sort_order: "desc",
       };
@@ -64,6 +86,63 @@ const PurchaseHistoryPage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const fetchLcHistoriesAll = async () => {
+    try {
+      setLoading(true);
+      const params: GetPurchaseHistoriesParams = {
+        page: 1,
+        per_page: LC_FETCH_PER_PAGE,
+        sort_by: "created_at",
+        sort_order: "desc",
+      };
+
+      if (searchTerm) params.search = searchTerm;
+      if (filterMonth) params.lc_month = filterMonth;
+      if (filterYear) params.lc_year = filterYear;
+
+      const response = await purchaseHistoryApi.getPurchaseHistories(params);
+      setLcHistoriesAll(response.data || []);
+    } catch (error) {
+      console.error("Error fetching LC-wise purchase histories:", error);
+      toast.error("Failed to fetch purchase history (LC-wise)");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const groupedByLC = useMemo(() => {
+    const groups: Record<string, PurchaseHistory[]> = {};
+    lcHistoriesAll.forEach((ph) => {
+      const lc = ph.lc_number || "No LC Number";
+      if (!groups[lc]) groups[lc] = [];
+      groups[lc].push(ph);
+    });
+    return groups;
+  }, [lcHistoriesAll]);
+
+  const lcKeys = useMemo(() => Object.keys(groupedByLC), [groupedByLC]);
+  const lcTotalPages = Math.max(Math.ceil(lcKeys.length / LC_PER_PAGE), 1);
+  const lcTotalItems = lcKeys.length;
+
+  useEffect(() => {
+    if (activeTab !== "lc_wise") return;
+    // Clamp page if filters reduced total LC groups.
+    if (currentPage > lcTotalPages) setCurrentPage(lcTotalPages);
+  }, [activeTab, currentPage, lcTotalPages]);
+
+  const pagedLcKeys = useMemo(() => {
+    const start = (currentPage - 1) * LC_PER_PAGE;
+    return lcKeys.slice(start, start + LC_PER_PAGE);
+  }, [currentPage, lcKeys]);
+
+  const lcPurchaseHistoriesForPage = useMemo(() => {
+    const items: PurchaseHistory[] = [];
+    pagedLcKeys.forEach((lcKey) => {
+      items.push(...(groupedByLC[lcKey] || []));
+    });
+    return items;
+  }, [pagedLcKeys, groupedByLC]);
 
   const handleCreate = () => {
     navigate("/admin/purchase-history/create");
@@ -102,7 +181,11 @@ const PurchaseHistoryPage: React.FC = () => {
       );
       if (response.success) {
         toast.success("Purchase history deleted successfully");
-        fetchPurchaseHistories();
+          if (activeTab === "history") {
+            fetchHistoryPurchaseHistories();
+          } else {
+            fetchLcHistoriesAll();
+          }
         setShowDeleteModal(false);
         setPurchaseHistoryToDelete(null);
       } else {
@@ -246,11 +329,11 @@ const PurchaseHistoryPage: React.FC = () => {
             onEdit={handleEdit}
             onDelete={handleDelete}
             onView={handleView}
-            onRefresh={fetchPurchaseHistories}
+            onRefresh={fetchHistoryPurchaseHistories}
           />
         ) : (
           <PurchaseHistoryLCView
-            purchaseHistories={purchaseHistories}
+            purchaseHistories={lcPurchaseHistoriesForPage}
             isLoading={loading}
             onView={handleView}
             onEdit={handleEdit}
@@ -260,13 +343,27 @@ const PurchaseHistoryPage: React.FC = () => {
         )}
 
         {/* Pagination - same as Car page */}
+        {/*
+          In `lc_wise`, pagination is by LC groups (cards), not by raw purchase-history rows.
+        */}
+        {(() => {
+          const paginationTotalPages =
+            activeTab === "lc_wise" ? lcTotalPages : totalPages;
+          const paginationTotalItems =
+            activeTab === "lc_wise" ? lcTotalItems : totalItems;
+          const paginationPerPage =
+            activeTab === "lc_wise" ? LC_PER_PAGE : HISTORY_PER_PAGE;
+
+          return (
         <Pagination
           currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          perPage={perPage}
+          totalPages={paginationTotalPages}
+          totalItems={paginationTotalItems}
+          perPage={paginationPerPage}
           onPageChange={setCurrentPage}
         />
+          );
+        })()}
 
         {/* Delete Confirmation Modal */}
         <DeleteConfirmationModal

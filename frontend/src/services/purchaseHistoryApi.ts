@@ -110,6 +110,8 @@ class PurchaseHistoryApi {
     search?: string;
     purchase_date_from?: string;
     purchase_date_to?: string;
+    lc_month?: string;
+    lc_year?: string;
     sort_by?: string;
     sort_order?: string;
     per_page?: number;
