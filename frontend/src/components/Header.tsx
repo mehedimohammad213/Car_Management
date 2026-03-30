@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useCart } from "../contexts/CartContext";
-import { usePendingOrders } from "../hooks/usePendingOrders";
 import {
   HomeIcon,
   CarIcon,
@@ -19,6 +18,7 @@ import {
   ChevronDownIcon,
   FolderIcon,
   CreditCard,
+  Search,
 } from "lucide-react";
 
 type NavItem = {
@@ -39,7 +39,6 @@ const BdtIcon: React.FC<{ className?: string }> = ({ className }) => (
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const { getTotalItems, clearCart } = useCart();
-  const { pendingCount } = usePendingOrders();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -48,6 +47,7 @@ const Header: React.FC = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Handle clicking outside dropdowns and escape key
   React.useEffect(() => {
@@ -123,24 +123,24 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
-        <div className="mx-auto max-w-full px-4 lg:pl-48 lg:pr-48">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-xl z-40">
+        <div className="mx-auto max-w-full px-4">
           <div className="relative flex items-center justify-between h-16 gap-3">
-            {/* Logo - Left side */}
-            <div className="flex items-center flex-shrink-0">
-              <Link
-                to={user.role === "admin" ? "/admin" : "/dashboard"}
-                className="flex flex-col items-center justify-center -space-y-1"
-              >
-                <CarIcon className="h-7 w-7 text-primary-600 dark:text-primary-400 flex-shrink-0" />
-                <span className="text-[10px] font-medium tracking-wider text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                  DREAM AGENT CAR VISION
-                </span>
-              </Link>
+            {/* Search (centered like reference navbar) */}
+            <div className="flex-1 min-w-0">
+              <div className="max-w-lg flex items-center gap-2 h-10 px-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm">
+                <Search className="h-4 w-4 text-gray-500 dark:text-gray-300 flex-shrink-0" />
+                <input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search..."
+                  className="w-full bg-transparent outline-none text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400"
+                />
+              </div>
             </div>
 
             {/* Desktop Navigation - Centered */}
-            <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 absolute left-1/2 transform -translate-x-1/2">
+            <nav className="hidden">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActiveRoute = isActive(item.path);
@@ -167,7 +167,7 @@ const Header: React.FC = () => {
             </nav>
 
             {/* Right side actions - Right side */}
-            <div className="flex items-center justify-end flex-shrink-0 ml-auto">
+            <div className="flex items-center justify-end flex-shrink-0 ml-auto pl-4 border-l border-gray-200 dark:border-gray-700 gap-2">
               {/* Profile Dropdown */}
               <div className="relative profile-dropdown">
                 <button

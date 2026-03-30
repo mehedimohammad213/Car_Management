@@ -455,6 +455,16 @@ code {
   height: 0;
 }
 
+/* Hide vertical scrollbar (keep scrolling) */
+.no-vertical-scrollbar {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-vertical-scrollbar::-webkit-scrollbar {
+  width: 0;
+}
+
 /* Professional Color System - CSS Custom Properties */
 :root {
   /* Primary Colors - Brand Green (base rgb(76 212 161) => #4cd4a1) */
