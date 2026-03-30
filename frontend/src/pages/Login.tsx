@@ -147,24 +147,30 @@ const Login: React.FC = () => {
         </div>
       </div>
 
-      {/* Image Section */}
+      {/* Video Section */}
       <div className="hidden lg:flex lg:flex-1 relative overflow-hidden">
-        {/* Car Image */}
+        {/* Background video */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <img
-            src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-            alt="Unique Vintage Sports Car"
+          <video
+            src="/login-bg.mp4"
             className="w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
           />
         </div>
       </div>
 
-      {/* Mobile Image Section */}
+      {/* Mobile Video Section */}
       <div className="lg:hidden w-full h-68 sm:h-64 relative overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-          alt="Unique Vintage Sports Car"
+        <video
+          src="/login-bg.mp4"
           className="w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
         />
       </div>
     </div>
