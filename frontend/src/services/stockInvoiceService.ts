@@ -74,11 +74,11 @@ export class StockInvoiceService {
     const pageHeight = doc.internal.pageSize.getHeight();
 
     // Colors for Stock Invoice
-    const primaryColor = "#059669"; // Green
+    const primaryColor = "#4cd4a1"; // Brand Green
     const secondaryColor = "#64748b"; // Gray
     const accentColor = "#dc2626"; // Red
     const textColor = "#1e293b"; // Dark gray
-    const lightGray = "#f0fdf4"; // Light green
+    const lightGray = "#f7fdfb"; // Light brand green
 
     // Helper function to add text with styling
     const addText = (text: string, x: number, y: number, options: any = {}) => {

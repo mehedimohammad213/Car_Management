@@ -52,9 +52,9 @@ export class InvoiceService {
     const pageHeight = doc.internal.pageSize.getHeight();
 
     // Colors
-    const primaryColor = "#2563eb"; // Blue
+    const primaryColor = "#4cd4a1"; // Brand Green
     const secondaryColor = "#64748b"; // Gray
-    const accentColor = "#10b981"; // Green
+    const accentColor = "#4cd4a1"; // Brand Green
     const textColor = "#1e293b"; // Dark gray
     const lightGray = "#f1f5f9";
 
@@ -328,11 +328,11 @@ export class InvoiceService {
       case "pending":
         return "#f59e0b"; // Yellow
       case "approved":
-        return "#10b981"; // Green
+        return "#4cd4a1"; // Brand Green
       case "shipped":
         return "#3b82f6"; // Blue
       case "delivered":
-        return "#10b981"; // Green
+        return "#4cd4a1"; // Brand Green
       case "canceled":
         return "#ef4444"; // Red
       default:

@@ -19,19 +19,20 @@ export default {
         "desktop-lg": "1440px",
       },
       colors: {
-        // Professional Primary Color Palette - Deep Navy Blue
+        // Professional Primary Color Palette - Brand Green
+        // Base color: rgb(76 212 161) => #4cd4a1
         primary: {
-          50: "#eff6ff",
-          100: "#dbeafe",
-          200: "#bfdbfe",
-          300: "#93c5fd",
-          400: "#60a5fa",
-          500: "#3b82f6",
-          600: "#2563eb",
-          700: "#1d4ed8",
-          800: "#1e40af",
-          900: "#1e3a8a",
-          950: "#172554",
+          50: "#f7fdfb",
+          100: "#daf6ec",
+          200: "#b7eed9",
+          300: "#93e5c6",
+          400: "#70ddb4",
+          500: "#4cd4a1",
+          600: "#33ce94",
+          700: "#2bb380",
+          800: "#259a6e",
+          900: "#20855f",
+          950: "#1c7352",
         },
         // Professional Secondary Color Palette - Sophisticated Teal
         secondary: {
@@ -77,16 +78,16 @@ export default {
         // Professional Status Colors
         status: {
           success: {
-            50: "#f0fdf4",
-            100: "#dcfce7",
-            200: "#bbf7d0",
-            300: "#86efac",
-            400: "#4ade80",
-            500: "#22c55e",
-            600: "#16a34a",
-            700: "#15803d",
-            800: "#166534",
-            900: "#14532d",
+            50: "#f7fdfb",
+            100: "#daf6ec",
+            200: "#b7eed9",
+            300: "#93e5c6",
+            400: "#70ddb4",
+            500: "#4cd4a1",
+            600: "#33ce94",
+            700: "#2bb380",
+            800: "#259a6e",
+            900: "#20855f",
           },
           warning: {
             50: "#fffbeb",

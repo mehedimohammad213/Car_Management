@@ -112,7 +112,7 @@ body {
     transform: translateX(-50%);
     width: 20px;
     height: 20px;
-    border: 2px solid #3b82f6;
+    border: 2px solid #4cd4a1;
     border-top: 2px solid transparent;
     border-radius: 50%;
     opacity: 0;
@@ -187,7 +187,7 @@ body {
   }
 
   .mobile-nav-item.active {
-    color: #3b82f6;
+    color: #4cd4a1;
   }
 
   .mobile-nav-item svg {
@@ -240,8 +240,8 @@ body {
 
   .mobile-form-input:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #4cd4a1;
+    box-shadow: 0 0 0 3px rgba(76, 212, 161, 0.1);
   }
 
   /* Mobile loading states */
@@ -256,7 +256,7 @@ body {
     width: 32px;
     height: 32px;
     border: 3px solid #f3f4f6;
-    border-top: 3px solid #3b82f6;
+    border-top: 3px solid #4cd4a1;
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
@@ -358,7 +358,7 @@ code {
 }
 
 .Toastify__toast--success {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #4cd4a1, #259a6e);
   color: white;
 }
 
@@ -398,7 +398,7 @@ code {
 
 /* Dark mode toast styles */
 .dark .Toastify__toast--success {
-  background: linear-gradient(135deg, #059669, #047857);
+  background: linear-gradient(135deg, #33ce94, #1c7352);
 }
 
 .dark .Toastify__toast--error {
@@ -457,18 +457,18 @@ code {
 
 /* Professional Color System - CSS Custom Properties */
 :root {
-  /* Primary Colors - Deep Navy Blue */
-  --color-primary-50: #f0f4ff;
-  --color-primary-100: #e0e7ff;
-  --color-primary-200: #c7d2fe;
-  --color-primary-300: #a5b4fc;
-  --color-primary-400: #818cf8;
-  --color-primary-500: #6366f1;
-  --color-primary-600: #4f46e5;
-  --color-primary-700: #4338ca;
-  --color-primary-800: #3730a3;
-  --color-primary-900: #312e81;
-  --color-primary-950: #1e1b4b;
+  /* Primary Colors - Brand Green (base rgb(76 212 161) => #4cd4a1) */
+  --color-primary-50: #f7fdfb;
+  --color-primary-100: #daf6ec;
+  --color-primary-200: #b7eed9;
+  --color-primary-300: #93e5c6;
+  --color-primary-400: #70ddb4;
+  --color-primary-500: #4cd4a1;
+  --color-primary-600: #33ce94;
+  --color-primary-700: #2bb380;
+  --color-primary-800: #259a6e;
+  --color-primary-900: #20855f;
+  --color-primary-950: #1c7352;
 
   /* Secondary Colors - Sophisticated Teal */
   --color-secondary-50: #f0fdfa;
@@ -484,8 +484,8 @@ code {
   --color-secondary-950: #042f2e;
 
   /* Status Colors */
-  --color-success-500: #22c55e;
-  --color-success-600: #16a34a;
+  --color-success-500: #4cd4a1;
+  --color-success-600: #33ce94;
   --color-warning-500: #f59e0b;
   --color-warning-600: #d97706;
   --color-error-500: #ef4444;
@@ -666,7 +666,7 @@ body {
 
 .form-input:focus {
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(76, 212, 161, 0.1);
   outline: none;
 }
 
