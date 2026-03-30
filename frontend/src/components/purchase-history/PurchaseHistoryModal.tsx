@@ -1774,7 +1774,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
             {/* Actions */}
             {isPage ? (
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-                <div className="p-6 flex items-center justify-end gap-4">
+                <div className="p-6 flex items-center justify-center gap-4">
                   <button
                     type="button"
                     onClick={onClose}
@@ -1795,7 +1795,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
+              <div className="flex items-center justify-center gap-4 pt-6 border-t border-gray-200">
                 <button
                   type="button"
                   onClick={onClose}
