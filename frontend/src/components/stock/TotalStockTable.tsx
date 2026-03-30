@@ -253,22 +253,28 @@ const TotalStockTable: React.FC = () => {
               >
                 {/* Car Information - Enhanced */}
                 <div className="col-span-2 flex items-center gap-3">
-                  <div className="relative w-28 h-24 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 rounded-xl overflow-hidden flex-shrink-0 shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-gray-200 group-hover:border-purple-300">
-                    {car?.photos && car.photos.length > 0 ? (
-                      <img
-                        src={
-                          car.photos.find((p: any) => p.is_primary)?.url ||
-                          car.photos[0].url
-                        }
-                        alt={`${car.make} ${car.model}`}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                        <Car className="w-10 h-10 text-gray-400" />
-                      </div>
-                    )}
-                  </div>
+                  {/*
+                    Car image (hidden). Uncomment to show vehicle thumbnail again.
+                    Kept commented for reuse in future UI tweaks.
+                  */}
+                  {/*
+                    <div className="relative w-28 h-24 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 rounded-xl overflow-hidden flex-shrink-0 shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-gray-200 group-hover:border-purple-300">
+                      {car?.photos && car.photos.length > 0 ? (
+                        <img
+                          src={
+                            car.photos.find((p: any) => p.is_primary)?.url ||
+                            car.photos[0].url
+                          }
+                          alt={`${car.make} ${car.model}`}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                          <Car className="w-10 h-10 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                  */}
                   <div className="flex-1 min-w-0">
                     <div className="text-base font-bold text-gray-900 mb-1 group-hover:text-purple-700 transition-colors">
                       {car?.year} {car?.make} {car?.model}

@@ -63,27 +63,33 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
       <div className="absolute left-0 top-2 bottom-2 w-1.5 bg-primary-600 rounded-r-md opacity-0 group-hover:opacity-100 transition-all duration-200 transform -translate-x-1 group-hover:translate-x-0" />
       {/* Car Information - Enhanced */}
       <div className="col-span-2 flex items-center gap-3">
-        <div className="relative w-28 h-24 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 rounded-xl overflow-hidden flex-shrink-0 shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-gray-200 group-hover:border-blue-300">
-          {car?.photos && car.photos.length > 0 ? (
-            <img
-              src={
-                car.photos.find((p: any) => p.is_primary)?.url ||
-                car.photos[0].url
-              }
-              alt={`${car.make} ${car.model}`}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-              <Car className="w-10 h-10 text-gray-400" />
-            </div>
-          )}
-          {stock.quantity > 0 && (
-            <div className="absolute top-1 right-1 bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-md">
-              {stock.quantity}
-            </div>
-          )}
-        </div>
+        {/*
+          Car image (hidden). Uncomment to show vehicle thumbnail again.
+          Keeping it commented for reuse in future UI tweaks.
+        */}
+        {/*
+          <div className="relative w-28 h-24 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 rounded-xl overflow-hidden flex-shrink-0 shadow-lg group-hover:shadow-xl transition-shadow duration-300 border-2 border-gray-200 group-hover:border-blue-300">
+            {car?.photos && car.photos.length > 0 ? (
+              <img
+                src={
+                  car.photos.find((p: any) => p.is_primary)?.url ||
+                  car.photos[0].url
+                }
+                alt={`${car.make} ${car.model}`}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                <Car className="w-10 h-10 text-gray-400" />
+              </div>
+            )}
+            {stock.quantity > 0 && (
+              <div className="absolute top-1 right-1 bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-md">
+                {stock.quantity}
+              </div>
+            )}
+          </div>
+        */}
         <div className="flex-1 min-w-0">
           <div className="text-base font-bold text-gray-900 mb-1 group-hover:text-primary-700 transition-colors">
             {car?.year} {car?.make} {car?.model}
