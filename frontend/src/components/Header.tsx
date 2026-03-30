@@ -137,14 +137,21 @@ const Header: React.FC = () => {
       : "before";
 
   React.useEffect(() => {
-    if (location.pathname === "/admin/stock") setMobileStockSubmenuOpen(true);
-    // Only respond to pathname changes (query param changes shouldn't force-open).
-  }, [location.pathname]);
+    // Keep only the current route submenu open in mobile menu.
+    if (location.pathname === "/admin/stock") {
+      setMobileStockSubmenuOpen(true);
+      setMobilePurchaseSubmenuOpen(false);
+      return;
+    }
 
-  React.useEffect(() => {
-    if (location.pathname === "/admin/purchase-history")
+    if (location.pathname === "/admin/purchase-history") {
       setMobilePurchaseSubmenuOpen(true);
-    // Only respond to pathname changes (query param changes shouldn't force-open).
+      setMobileStockSubmenuOpen(false);
+      return;
+    }
+
+    setMobileStockSubmenuOpen(false);
+    setMobilePurchaseSubmenuOpen(false);
   }, [location.pathname]);
 
   type PurchaseTab = "lc_wise" | "history";
@@ -287,7 +294,10 @@ const Header: React.FC = () => {
                     <div key={item.path}>
                       <Link
                         to={stockMainPath}
-                        onClick={() => setMobileStockSubmenuOpen((v) => !v)}
+                        onClick={() => {
+                          setMobileStockSubmenuOpen((v) => !v);
+                          setMobilePurchaseSubmenuOpen(false);
+                        }}
                         className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${
                           isActiveRoute
                             ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
@@ -309,7 +319,8 @@ const Header: React.FC = () => {
                             to="/admin/stock?tab=before"
                             onClick={() => {
                               setMobileMenuOpen(false);
-                              setMobileStockSubmenuOpen(false);
+                              setMobileStockSubmenuOpen(true);
+                              setMobilePurchaseSubmenuOpen(false);
                             }}
                             className={stockTabClass("before")}
                           >
@@ -319,7 +330,8 @@ const Header: React.FC = () => {
                             to="/admin/stock?tab=current"
                             onClick={() => {
                               setMobileMenuOpen(false);
-                              setMobileStockSubmenuOpen(false);
+                              setMobileStockSubmenuOpen(true);
+                              setMobilePurchaseSubmenuOpen(false);
                             }}
                             className={stockTabClass("current")}
                           >
@@ -329,7 +341,8 @@ const Header: React.FC = () => {
                             to="/admin/stock?tab=available"
                             onClick={() => {
                               setMobileMenuOpen(false);
-                              setMobileStockSubmenuOpen(false);
+                              setMobileStockSubmenuOpen(true);
+                              setMobilePurchaseSubmenuOpen(false);
                             }}
                             className={stockTabClass("available")}
                           >
@@ -339,7 +352,8 @@ const Header: React.FC = () => {
                             to="/admin/stock?tab=soldout"
                             onClick={() => {
                               setMobileMenuOpen(false);
-                              setMobileStockSubmenuOpen(false);
+                              setMobileStockSubmenuOpen(true);
+                              setMobilePurchaseSubmenuOpen(false);
                             }}
                             className={stockTabClass("soldout")}
                           >
@@ -365,7 +379,10 @@ const Header: React.FC = () => {
                     <div key={item.path}>
                       <Link
                         to={purchaseMainPath}
-                        onClick={() => setMobilePurchaseSubmenuOpen((v) => !v)}
+                        onClick={() => {
+                          setMobilePurchaseSubmenuOpen((v) => !v);
+                          setMobileStockSubmenuOpen(false);
+                        }}
                         className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${
                           isActiveRoute
                             ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
@@ -387,7 +404,8 @@ const Header: React.FC = () => {
                             to="/admin/purchase-history?tab=lc_wise"
                             onClick={() => {
                               setMobileMenuOpen(false);
-                              setMobilePurchaseSubmenuOpen(false);
+                              setMobilePurchaseSubmenuOpen(true);
+                              setMobileStockSubmenuOpen(false);
                             }}
                             className={purchaseTabClass("lc_wise")}
                           >
@@ -397,7 +415,8 @@ const Header: React.FC = () => {
                             to="/admin/purchase-history?tab=history"
                             onClick={() => {
                               setMobileMenuOpen(false);
-                              setMobilePurchaseSubmenuOpen(false);
+                              setMobilePurchaseSubmenuOpen(true);
+                              setMobileStockSubmenuOpen(false);
                             }}
                             className={purchaseTabClass("history")}
                           >
@@ -413,7 +432,11 @@ const Header: React.FC = () => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setMobileStockSubmenuOpen(false);
+                      setMobilePurchaseSubmenuOpen(false);
+                    }}
                     className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${isActiveRoute
                       ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
                       : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"

@@ -69,9 +69,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
       ? (purchaseTabParam as PurchaseTab)
       : "lc_wise";
 
-  useEffect(() => {
-    if (isOnPurchaseRoute) setPurchaseSubmenuOpen(true);
-  }, [isOnPurchaseRoute]);
 
   const adminNavItems: NavItem[] = [
     { path: "/admin", label: "Dashboard", icon: BarChartIcon },
@@ -92,9 +89,10 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   const navItems = user.role === "admin" ? adminNavItems : userNavItems;
 
   useEffect(() => {
-    // Open submenu when user navigates to stock page; keep it closable by user.
-    if (isOnStockRoute) setStockSubmenuOpen(true);
-  }, [isOnStockRoute]);
+    // Keep only the current route submenu open.
+    setStockSubmenuOpen(isOnStockRoute);
+    setPurchaseSubmenuOpen(isOnPurchaseRoute);
+  }, [isOnStockRoute, isOnPurchaseRoute]);
 
   return (
     <aside
@@ -170,7 +168,10 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                 <div key={item.path}>
                   <Link
                     to={stockMainPath}
-                    onClick={() => setStockSubmenuOpen((v) => !v)}
+                    onClick={() => {
+                      setStockSubmenuOpen((v) => !v);
+                      setPurchaseSubmenuOpen(false);
+                    }}
                     className={`flex items-center w-full transition-colors py-2 rounded-none ${
                       collapsed
                         ? "justify-center px-0 border-l-0"
@@ -204,28 +205,40 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                       <Link
                         to="/admin/stock?tab=before"
                         className={stockTabLinkClasses("before")}
-                        onClick={() => setStockSubmenuOpen(false)}
+                        onClick={() => {
+                          setStockSubmenuOpen(true);
+                          setPurchaseSubmenuOpen(false);
+                        }}
                       >
                         <span className="truncate">Pending Stock</span>
                       </Link>
                       <Link
                         to="/admin/stock?tab=current"
                         className={stockTabLinkClasses("current")}
-                        onClick={() => setStockSubmenuOpen(false)}
+                        onClick={() => {
+                          setStockSubmenuOpen(true);
+                          setPurchaseSubmenuOpen(false);
+                        }}
                       >
                         <span className="truncate">Current Stock</span>
                       </Link>
                       <Link
                         to="/admin/stock?tab=available"
                         className={stockTabLinkClasses("available")}
-                        onClick={() => setStockSubmenuOpen(false)}
+                        onClick={() => {
+                          setStockSubmenuOpen(true);
+                          setPurchaseSubmenuOpen(false);
+                        }}
                       >
                         <span className="truncate">Available Stock</span>
                       </Link>
                       <Link
                         to="/admin/stock?tab=soldout"
                         className={stockTabLinkClasses("soldout")}
-                        onClick={() => setStockSubmenuOpen(false)}
+                        onClick={() => {
+                          setStockSubmenuOpen(true);
+                          setPurchaseSubmenuOpen(false);
+                        }}
                       >
                         <span className="truncate">Sold Out</span>
                       </Link>
@@ -254,7 +267,10 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                 <div key={item.path}>
                   <Link
                     to={purchaseMainPath}
-                    onClick={() => setPurchaseSubmenuOpen((v) => !v)}
+                    onClick={() => {
+                      setPurchaseSubmenuOpen((v) => !v);
+                      setStockSubmenuOpen(false);
+                    }}
                     className={`flex items-center w-full transition-colors py-2 rounded-none ${
                       collapsed
                         ? "justify-center px-0 border-l-0"
@@ -288,14 +304,20 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                       <Link
                         to="/admin/purchase-history?tab=lc_wise"
                         className={purchaseTabLinkClasses("lc_wise")}
-                        onClick={() => setPurchaseSubmenuOpen(false)}
+                        onClick={() => {
+                          setPurchaseSubmenuOpen(true);
+                          setStockSubmenuOpen(false);
+                        }}
                       >
                         <span className="truncate">LC Wise View</span>
                       </Link>
                       <Link
                         to="/admin/purchase-history?tab=history"
                         className={purchaseTabLinkClasses("history")}
-                        onClick={() => setPurchaseSubmenuOpen(false)}
+                        onClick={() => {
+                          setPurchaseSubmenuOpen(true);
+                          setStockSubmenuOpen(false);
+                        }}
                       >
                         <span className="truncate">History</span>
                       </Link>
@@ -309,6 +331,10 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
               <Link
                 key={item.path}
                 to={item.path}
+                onClick={() => {
+                  setStockSubmenuOpen(false);
+                  setPurchaseSubmenuOpen(false);
+                }}
                 className={`flex items-center w-full transition-colors py-2 rounded-none ${
                   collapsed
                     ? "justify-center px-0 border-l-0"
