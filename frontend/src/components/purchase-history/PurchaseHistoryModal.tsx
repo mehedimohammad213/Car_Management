@@ -24,7 +24,7 @@ function PurchaseFormSection({
     );
   }
   return (
-    <div className="bg-gray-50 dark:bg-gray-800/80 p-6 rounded-2xl border border-gray-100 dark:border-gray-700">
+    <div className="bg-white dark:bg-gray-800/80 p-6 rounded-2xl border border-gray-100 dark:border-gray-700">
       {children}
     </div>
   );
@@ -670,7 +670,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         )}
 
         {newFile && (
-          <div className="mb-2 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-800 p-2">
+          <div className="mb-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 p-2">
             <div className="flex items-center justify-between mb-1.5">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-semibold text-green-700 uppercase">New</span>
@@ -838,10 +838,10 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
               className={
                 isPage
                   ? "rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden ring-1 ring-slate-100/80 dark:ring-slate-800"
-                  : "rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/40 overflow-hidden"
+                  : "rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden"
               }
             >
-              <div className="px-5 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-emerald-50/70 dark:bg-emerald-950/40">
+              <div className="px-5 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                   Car & purchase details
                 </h2>
@@ -853,19 +853,13 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
             {/* Added Cars List */}
             {(mode === 'create') && carEntries.length > 0 && (
-              <div
-                className={
-                  isPage
-                    ? "rounded-xl border border-primary-200/80 dark:border-primary-800/60 bg-primary-50/50 dark:bg-primary-950/25 p-5"
-                    : "rounded-xl border border-primary-200 bg-primary-50/80 p-5"
-                }
-              >
-                <h3 className="text-lg font-semibold text-primary-900 mb-4 flex items-center gap-2">
-                  Added Cars ({carEntries.length}) <span className="text-xs font-normal text-primary-600 px-2 py-0.5 bg-white rounded-full border border-primary-100">Ready to submit</span>
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  Added Cars ({carEntries.length}) <span className="text-xs font-normal text-gray-600 dark:text-gray-400 px-2 py-0.5 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-600">Ready to submit</span>
                 </h3>
-                <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                    <thead className="bg-white dark:bg-gray-800">
                       <tr>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Car</th>
                         <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Purchase Amount</th>
@@ -874,7 +868,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                         <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
                       {carEntries.map((entry, idx) => {
                         const car = cars.find(c => c.id === entry.car_id);
                         return (
@@ -911,14 +905,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
             {/* From cart */}
             {(mode === 'create') && cartItems.length > 0 && (
-              <div
-                className={
-                  isPage
-                    ? "rounded-xl border border-amber-200/80 dark:border-amber-800/50 bg-amber-50/40 dark:bg-amber-950/20 p-5"
-                    : "rounded-xl border border-amber-200 bg-amber-50/90 p-5"
-                }
-              >
-                <h3 className="text-lg font-semibold text-amber-900 mb-4 flex items-center gap-2">
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <ShoppingCart className="w-5 h-5" /> From Cart List ({cartItems.length})
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -936,7 +924,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                           handleInputChange("car_ids", [item.car_id]);
                           // Optionally pre-fill other fields from car if needed
                         }}
-                        className={`p-4 rounded-xl border bg-white cursor-pointer transition-all hover:shadow-md ${isSelected ? 'border-amber-500 ring-2 ring-amber-200' : 'border-gray-200'}`}
+                        className={`p-4 rounded-xl border bg-white dark:bg-gray-800 cursor-pointer transition-all hover:shadow-md dark:border-gray-600 ${isSelected ? 'border-primary-500 ring-2 ring-primary-100 dark:ring-primary-900/40' : 'border-gray-200 dark:border-gray-600'}`}
                       >
                         <div className="font-bold text-gray-900">{item.car.make} {item.car.model}</div>
                         <div className="text-xs text-gray-500 mt-1">Ref: {(item.car as any).ref_no || 'N/A'}</div>
@@ -950,7 +938,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
             {/* Add Car to Purchase */}
             {mode === 'create' && (
-              <div className="rounded-xl border border-blue-200/80 dark:border-blue-800/50 bg-blue-50/30 dark:bg-blue-950/20 p-5">
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
                   <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" /> Add Car to Purchase
                 </h3>
@@ -975,7 +963,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                         if (!car) return null;
 
                         return (
-                          <div key={id} className="bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-between w-full border border-blue-200 dark:border-blue-800">
+                          <div key={id} className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-between w-full border border-gray-200 dark:border-gray-600">
                             <span>{car.make} {car.model} — <span className="text-gray-500 dark:text-gray-400 font-normal">{car.chassis_no_full || car.chassis_no_masked}</span></span>
                             <button
                               type="button"
@@ -983,7 +971,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                                 handleInputChange("car_id", null);
                                 handleInputChange("car_ids", []);
                               }}
-                              className="text-blue-400 hover:text-blue-700 dark:hover:text-blue-200"
+                              className="text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-300"
                             >
                               <X className="w-5 h-5" />
                             </button>
@@ -1077,7 +1065,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
             {/* Current Entry Details */}
             {(!Array.isArray(purchaseHistory) || mode === "create") && (
-              <div className="rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50/60 dark:bg-gray-900/40 p-5">
+              <div className="rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-5">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
                   {mode === 'create' ? "Current Entry Details" : "Car & Financial Details"}
                 </h3>
@@ -1113,13 +1101,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 {/* Calculator section from line 1040 original... */}
 
                 {/* Purchase Amount Calculation */}
-                <div
-                  className={
-                    isPage
-                      ? "bg-gray-50 dark:bg-gray-900/50 rounded-xl p-6 border border-gray-200 dark:border-gray-600 mb-6"
-                      : "bg-gray-50 rounded-xl p-6 border border-gray-200 mb-6"
-                  }
-                >
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-600 mb-6">
                   <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 uppercase tracking-wide">
                     Purchase Price & Financial Details
                   </h3>
@@ -1467,7 +1449,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
             {/* Document Attachments */}
             {(!Array.isArray(purchaseHistory) || mode === "create") && (
-              <div className="rounded-xl border border-gray-200 dark:border-gray-600 bg-slate-50/50 dark:bg-slate-900/30 p-5">
+              <div className="rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-5">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Document Attachments
                 </h3>
