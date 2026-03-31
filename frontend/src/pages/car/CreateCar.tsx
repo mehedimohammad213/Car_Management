@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeftIcon } from "lucide-react";
 import CarFormModal from "../../components/car/CarFormModal";
 import { carApi, CreateCarData, CarFilterOptions } from "../../services/carApi";
 import { categoryApi, Category } from "../../services/categoryApi";
+import type { StockPageTab } from "../../components/stock/StockHeader";
+import { stockManagementPath } from "../../utils/stockNavigation";
 
 const CreateCar: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [filterOptions, setFilterOptions] = useState<CarFilterOptions | null>(null);
@@ -64,7 +67,9 @@ const CreateCar: React.FC = () => {
       console.log("Submitting car data:", formData);
       const response = await carApi.createCar(formData);
       console.log("Car creation response:", response);
-      navigate("/admin/stock", {
+      const returnTab = (location.state as { returnStockTab?: StockPageTab } | null)
+        ?.returnStockTab;
+      navigate(stockManagementPath(returnTab), {
         state: { message: "Car created successfully!" },
       });
     } catch (error: any) {
@@ -110,7 +115,9 @@ const CreateCar: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate("/admin/stock");
+    const returnTab = (location.state as { returnStockTab?: StockPageTab } | null)
+      ?.returnStockTab;
+    navigate(stockManagementPath(returnTab));
   };
 
   return (

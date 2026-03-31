@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { ArrowLeftIcon } from "lucide-react";
 import CarFormModal from "../../components/car/CarFormModal";
 import { carApi, Car, CreateCarData, CarFilterOptions } from "../../services/carApi";
 import { categoryApi, Category } from "../../services/categoryApi";
+import type { StockPageTab } from "../../components/stock/StockHeader";
+import { stockManagementPath } from "../../utils/stockNavigation";
 
 const UpdateCar: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams<{ id: string }>();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -75,7 +78,9 @@ const UpdateCar: React.FC = () => {
         response = await carApi.updateCar({ id: car.id, ...formData });
       }
       console.log("Car update response:", response);
-      navigate("/admin/stock", {
+      const returnTab = (location.state as { returnStockTab?: StockPageTab } | null)
+        ?.returnStockTab;
+      navigate(stockManagementPath(returnTab), {
         state: { message: "Car updated successfully!" },
       });
     } catch (error: any) {
@@ -121,7 +126,9 @@ const UpdateCar: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate("/admin/stock");
+    const returnTab = (location.state as { returnStockTab?: StockPageTab } | null)
+      ?.returnStockTab;
+    navigate(stockManagementPath(returnTab));
   };
 
   if (isLoading) {
@@ -140,7 +147,12 @@ const UpdateCar: React.FC = () => {
             {fetchError || "Car not found"}
           </h2>
           <button
-            onClick={() => navigate("/admin/stock")}
+            onClick={() => {
+              const returnTab = (
+                location.state as { returnStockTab?: StockPageTab } | null
+              )?.returnStockTab;
+              navigate(stockManagementPath(returnTab));
+            }}
             className="px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
           >
             Back to Stock
@@ -159,7 +171,12 @@ const UpdateCar: React.FC = () => {
             <div className="p-6 flex flex-col gap-4 sm:flex-row sm:items-center">
               <button
                 type="button"
-                onClick={() => navigate("/admin/stock")}
+                onClick={() => {
+                  const returnTab = (
+                    location.state as { returnStockTab?: StockPageTab } | null
+                  )?.returnStockTab;
+                  navigate(stockManagementPath(returnTab));
+                }}
                 className="flex items-center gap-2 shrink-0 px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/80 rounded-xl transition-colors border border-gray-200 dark:border-gray-600"
               >
                 <ArrowLeftIcon className="w-4 h-4" />

@@ -166,12 +166,16 @@ const StockManagement: React.FC = () => {
 
   const handleEditCar = (stock: Stock) => {
     if (stock.car?.id) {
-      navigate(`/update-car/${stock.car.id}`);
+      navigate(`/update-car/${stock.car.id}`, {
+        state: { returnStockTab: activeTab },
+      });
     }
   };
 
   const handleEditPendingCar = (car: { id: number }) => {
-    navigate(`/update-car/${car.id}`);
+    navigate(`/update-car/${car.id}`, {
+      state: { returnStockTab: "before" as const },
+    });
   };
 
   const handleDeletePendingCar = (car: {
@@ -291,7 +295,11 @@ const StockManagement: React.FC = () => {
               isGeneratingPDF={false}
               filterOptions={pendingFilters.filterOptions}
               searchPlaceholder="Search pending cars by make, model, year, ref no, chassis…"
-              onAddCar={() => navigate("/create-car")}
+              onAddCar={() =>
+                navigate("/create-car", {
+                  state: { returnStockTab: "before" as const },
+                })
+              }
             />
             <AvailableCarsTable
               cars={pendingFilters.paginatedCars as any[]}
