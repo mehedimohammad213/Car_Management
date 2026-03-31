@@ -474,24 +474,9 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                                             <Car className="w-5 h-5 text-primary-500" />
                                             Vehicles under LC: {lcNumber}
                                         </h4>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-sm font-medium text-primary-600 bg-primary-50 px-3 py-1 rounded-full border border-primary-100">
-                                                Found {totalCars} cars
-                                            </span>
-                                            {onAddUnderLc && histories[0] && (
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        onAddUnderLc(histories[0]);
-                                                    }}
-                                                    className="flex items-center justify-center p-2.5 rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition-all border border-primary-500 shadow-sm"
-                                                    title="Add purchase history under this LC"
-                                                >
-                                                    <Plus className="w-5 h-5" />
-                                                </button>
-                                            )}
-                                        </div>
+                                        <span className="text-sm font-medium text-primary-600 bg-primary-50 px-3 py-1 rounded-full border border-primary-100">
+                                            Found {totalCars} cars
+                                        </span>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -577,6 +562,29 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                                                 </div>
                                             ));
                                         })}
+                                        {onAddUnderLc && histories[0] && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onAddUnderLc(histories[0]);
+                                                }}
+                                                className="min-h-[280px] flex flex-col items-center justify-center gap-4 rounded-2xl p-5 border-2 border-dashed border-primary-300 bg-white/80 shadow-sm hover:shadow-xl hover:border-primary-500 hover:bg-primary-50/60 transition-all duration-300 group/add text-center"
+                                                title="Add purchase history under this LC"
+                                            >
+                                                <div className="p-4 rounded-2xl bg-primary-100 text-primary-600 group-hover/add:bg-primary-600 group-hover/add:text-white transition-colors shadow-sm">
+                                                    <Plus className="w-8 h-8" strokeWidth={2.5} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-base font-bold text-gray-900 group-hover/add:text-primary-700">
+                                                        Add car
+                                                    </p>
+                                                    <p className="text-xs text-gray-500 mt-1">
+                                                        New purchase under this LC
+                                                    </p>
+                                                </div>
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
