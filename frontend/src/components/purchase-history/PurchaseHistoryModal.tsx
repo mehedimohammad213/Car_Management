@@ -247,6 +247,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
       if (historyArray.length > 1) {
         const entries: (CreatePurchaseHistoryData & { id?: number })[] = historyArray.map((ph) => {
           const { bid_price, ser_com } = resolveBidSerFromPh(ph);
+          const hsCode = ph.hs_code ?? ph.car?.code ?? null;
+          const priceAmount = ph.price_amount ?? ph.car?.price_amount ?? null;
+          const priceBasis = ph.price_basis ?? ph.car?.price_basis ?? null;
+          const fobValueUsd = ph.fob_value_usd ?? ph.car?.fob_value_usd ?? null;
+          const freightUsd = ph.freight_usd ?? ph.car?.freight_usd ?? null;
           return {
           id: ph.id,
           car_id: ph.car_id,
@@ -260,11 +265,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
           bid_price,
           ser_com,
           purchase_date: ph.purchase_date ? toInputDate(ph.purchase_date) : null,
-          hs_code: ph.hs_code,
-          price_amount: ph.price_amount,
-          price_basis: ph.price_basis,
-          fob_value_usd: ph.fob_value_usd,
-          freight_usd: ph.freight_usd,
+          hs_code: hsCode,
+          price_amount: priceAmount,
+          price_basis: priceBasis,
+          fob_value_usd: fobValueUsd,
+          freight_usd: freightUsd,
         };
         });
         setCarEntries(entries);
@@ -308,6 +313,12 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
 
       const { bid_price: preBid, ser_com: preSer } = resolveBidSerFromPh(mainHistory);
 
+      const hsCode = mainHistory.hs_code ?? mainHistory.car?.code ?? null;
+      const priceAmount = mainHistory.price_amount ?? mainHistory.car?.price_amount ?? null;
+      const priceBasis = mainHistory.price_basis ?? mainHistory.car?.price_basis ?? null;
+      const fobValueUsd = mainHistory.fob_value_usd ?? mainHistory.car?.fob_value_usd ?? null;
+      const freightUsd = mainHistory.freight_usd ?? mainHistory.car?.freight_usd ?? null;
+
       const initialFormData: CreatePurchaseHistoryData = {
         car_ids: mainHistory.cars?.map(c => c.id) || (mainHistory.car_id ? [mainHistory.car_id] : []),
         car_id: mainHistory.car_id ?? null,
@@ -338,11 +349,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
         custom_one: null,
         custom_two: null,
         custom_three: null,
-        hs_code: mainHistory.hs_code || null,
-        price_amount: mainHistory.price_amount || null,
-        price_basis: mainHistory.price_basis || null,
-        fob_value_usd: mainHistory.fob_value_usd || null,
-        freight_usd: mainHistory.freight_usd || null,
+        hs_code: hsCode,
+        price_amount: priceAmount,
+        price_basis: priceBasis,
+        fob_value_usd: fobValueUsd,
+        freight_usd: freightUsd,
       };
 
       setFormData(initialFormData);

@@ -23,6 +23,11 @@ class PurchaseHistory extends Model
         'govt_duty',
         'cnf_amount',
         'miscellaneous',
+        'hs_code',
+        'price_amount',
+        'price_basis',
+        'fob_value_usd',
+        'freight_usd',
         'bid_price',
         'ser_com',
         'lc_date',
@@ -52,6 +57,9 @@ class PurchaseHistory extends Model
         'cnf_amount' => 'decimal:2',
         'bid_price' => 'decimal:2',
         'ser_com' => 'decimal:2',
+        'price_amount' => 'decimal:2',
+        'fob_value_usd' => 'decimal:2',
+        'freight_usd' => 'decimal:2',
         'lc_date' => 'date',
     ];
 

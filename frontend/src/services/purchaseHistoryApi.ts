@@ -183,6 +183,21 @@ class PurchaseHistoryApi {
     }
     if (data.total_units_per_lc)
       formData.append("total_units_per_lc", data.total_units_per_lc);
+    if (data.hs_code !== undefined && data.hs_code !== null && data.hs_code !== "") {
+      formData.append("hs_code", data.hs_code);
+    }
+    if (data.price_amount !== undefined && data.price_amount !== null) {
+      formData.append("price_amount", data.price_amount.toString());
+    }
+    if (data.price_basis !== undefined && data.price_basis !== null && data.price_basis !== "") {
+      formData.append("price_basis", data.price_basis);
+    }
+    if (data.fob_value_usd !== undefined && data.fob_value_usd !== null) {
+      formData.append("fob_value_usd", data.fob_value_usd.toString());
+    }
+    if (data.freight_usd !== undefined && data.freight_usd !== null) {
+      formData.append("freight_usd", data.freight_usd.toString());
+    }
 
     // Add PDF files
     const pdfFields = [
@@ -257,6 +272,11 @@ class PurchaseHistoryApi {
         "lc_bank_branch_name",
         "lc_bank_branch_address",
         "total_units_per_lc",
+        "hs_code",
+        "price_amount",
+        "price_basis",
+        "fob_value_usd",
+        "freight_usd",
       ];
 
       baseFields.forEach((field) => {
@@ -336,6 +356,30 @@ class PurchaseHistoryApi {
       );
     if (data.total_units_per_lc !== undefined)
       formData.append("total_units_per_lc", data.total_units_per_lc || "");
+    if (data.hs_code !== undefined) {
+      formData.append("hs_code", data.hs_code ?? "");
+    }
+    if (data.price_amount !== undefined) {
+      formData.append(
+        "price_amount",
+        data.price_amount !== null ? data.price_amount.toString() : ""
+      );
+    }
+    if (data.price_basis !== undefined) {
+      formData.append("price_basis", data.price_basis ?? "");
+    }
+    if (data.fob_value_usd !== undefined) {
+      formData.append(
+        "fob_value_usd",
+        data.fob_value_usd !== null ? data.fob_value_usd.toString() : ""
+      );
+    }
+    if (data.freight_usd !== undefined) {
+      formData.append(
+        "freight_usd",
+        data.freight_usd !== null ? data.freight_usd.toString() : ""
+      );
+    }
     if (data.car_ids !== undefined) {
       formData.append("car_ids", JSON.stringify(data.car_ids || []));
     }
