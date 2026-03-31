@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
   Edit,
@@ -20,10 +20,22 @@ import {
   PurchaseHistory,
 } from "../../services/purchaseHistoryApi";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
+import {
+  purchaseHistoryPath,
+  type PurchasePageTab,
+} from "../../utils/purchaseNavigation";
 
 const PurchaseHistoryDetails: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams<{ id: string }>();
+
+  const returnPurchaseTab = (
+    location.state as { returnPurchaseTab?: PurchasePageTab } | null
+  )?.returnPurchaseTab;
+
+  const goToPurchaseList = () =>
+    navigate(purchaseHistoryPath(returnPurchaseTab));
   const [purchaseHistory, setPurchaseHistory] =
     useState<PurchaseHistory | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,12 +58,12 @@ const PurchaseHistoryDetails: React.FC = () => {
         setPurchaseHistory(response.data);
       } else {
         toast.error("Purchase history not found");
-        navigate("/admin/purchase-history");
+        goToPurchaseList();
       }
     } catch (error) {
       console.error("Error fetching purchase history:", error);
       toast.error("Failed to load purchase history");
-      navigate("/admin/purchase-history");
+      goToPurchaseList();
     } finally {
       setLoading(false);
     }
@@ -67,7 +79,7 @@ const PurchaseHistoryDetails: React.FC = () => {
       );
       if (response.success) {
         toast.success("Purchase history deleted successfully");
-        navigate("/admin/purchase-history");
+        goToPurchaseList();
       } else {
         toast.error(response.message || "Failed to delete purchase history");
       }
@@ -195,7 +207,7 @@ const PurchaseHistoryDetails: React.FC = () => {
         <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
         <p className="text-gray-500 text-lg">Purchase history not found</p>
         <button
-          onClick={() => navigate("/admin/purchase-history")}
+          onClick={() => goToPurchaseList()}
           className="mt-4 text-primary-600 hover:text-primary-700"
         >
           Back to Purchase History
@@ -249,7 +261,7 @@ const PurchaseHistoryDetails: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate("/admin/purchase-history")}
+              onClick={() => goToPurchaseList()}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <ArrowLeft className="w-6 h-6 text-gray-600" />
@@ -266,7 +278,9 @@ const PurchaseHistoryDetails: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() =>
-                navigate(`/admin/purchase-history/edit/${purchaseHistory.id}`)
+                navigate(`/admin/purchase-history/edit/${purchaseHistory.id}`, {
+                  state: { returnPurchaseTab },
+                })
               }
               className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
             >

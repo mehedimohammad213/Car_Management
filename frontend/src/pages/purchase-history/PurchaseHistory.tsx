@@ -163,24 +163,32 @@ const PurchaseHistoryPage: React.FC = () => {
   }, [pagedLcKeys, groupedByLC]);
 
   const handleCreate = () => {
-    navigate("/admin/purchase-history/create");
+    navigate("/admin/purchase-history/create", {
+      state: { returnPurchaseTab: activeTab },
+    });
   };
 
   const handleAddUnderLc = (template: PurchaseHistory) => {
-    navigate("/admin/purchase-history/create", { state: { lcTemplate: template } });
+    navigate("/admin/purchase-history/create", {
+      state: { lcTemplate: template, returnPurchaseTab: activeTab },
+    });
   };
 
   const handleView = (purchaseHistory: PurchaseHistory) => {
-    navigate(`/admin/purchase-history/view/${purchaseHistory.id}`);
+    navigate(`/admin/purchase-history/view/${purchaseHistory.id}`, {
+      state: { returnPurchaseTab: activeTab },
+    });
   };
 
   const handleEdit = (purchaseHistory: PurchaseHistory | PurchaseHistory[]) => {
     if (Array.isArray(purchaseHistory)) {
       navigate("/admin/purchase-history/edit/bulk", {
-        state: { records: purchaseHistory },
+        state: { records: purchaseHistory, returnPurchaseTab: activeTab },
       });
     } else {
-      navigate(`/admin/purchase-history/edit/${purchaseHistory.id}`);
+      navigate(`/admin/purchase-history/edit/${purchaseHistory.id}`, {
+        state: { returnPurchaseTab: activeTab },
+      });
     }
   };
 

@@ -9,11 +9,17 @@ import {
   CreatePurchaseHistoryData,
   UpdatePurchaseHistoryData,
 } from "../../services/purchaseHistoryApi";
+import {
+  purchaseHistoryPath,
+  type PurchasePageTab,
+} from "../../utils/purchaseNavigation";
 
 type LocationState = {
   records?: PurchaseHistory[];
   /** First row of an LC group — used to prefill LC fields on create */
   lcTemplate?: PurchaseHistory;
+  /** Tab to restore on `/admin/purchase-history` (from list / view). */
+  returnPurchaseTab?: PurchasePageTab;
 };
 
 const PurchaseHistoryEditorPage: React.FC = () => {
@@ -36,9 +42,12 @@ const PurchaseHistoryEditorPage: React.FC = () => {
   >(null);
   const [loading, setLoading] = useState(!isCreate);
 
+  const returnPurchaseTab = (location.state as LocationState | null)
+    ?.returnPurchaseTab;
+
   const goBack = useCallback(() => {
-    navigate("/admin/purchase-history");
-  }, [navigate]);
+    navigate(purchaseHistoryPath(returnPurchaseTab));
+  }, [navigate, returnPurchaseTab]);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,7 +63,7 @@ const PurchaseHistoryEditorPage: React.FC = () => {
         const records = (location.state as LocationState | null)?.records;
         if (!records?.length) {
           toast.error("No records to edit. Open bulk edit from LC view.");
-          navigate("/admin/purchase-history", { replace: true });
+          navigate(purchaseHistoryPath(returnPurchaseTab), { replace: true });
           return;
         }
         setPurchaseHistory(records);
@@ -65,7 +74,7 @@ const PurchaseHistoryEditorPage: React.FC = () => {
       const numId = parseInt(id!, 10);
       if (Number.isNaN(numId)) {
         toast.error("Invalid purchase id");
-        navigate("/admin/purchase-history", { replace: true });
+        navigate(purchaseHistoryPath(returnPurchaseTab), { replace: true });
         return;
       }
 
@@ -77,13 +86,13 @@ const PurchaseHistoryEditorPage: React.FC = () => {
           setPurchaseHistory(response.data);
         } else {
           toast.error(response.message || "Purchase history not found");
-          navigate("/admin/purchase-history", { replace: true });
+          navigate(purchaseHistoryPath(returnPurchaseTab), { replace: true });
         }
       } catch (e) {
         console.error(e);
         if (!cancelled) {
           toast.error("Failed to load purchase history");
-          navigate("/admin/purchase-history", { replace: true });
+          navigate(purchaseHistoryPath(returnPurchaseTab), { replace: true });
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -94,7 +103,7 @@ const PurchaseHistoryEditorPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [id, isBulkEdit, isCreate, navigate, location.state]);
+  }, [id, isBulkEdit, isCreate, navigate, location.state, returnPurchaseTab]);
 
   const handleSubmit = async (
     data: CreatePurchaseHistoryData | UpdatePurchaseHistoryData | CreatePurchaseHistoryData[]
@@ -130,7 +139,7 @@ const PurchaseHistoryEditorPage: React.FC = () => {
 
         if (successCount > 0) {
           toast.success(`${successCount} records processed successfully`);
-          navigate("/admin/purchase-history");
+          navigate(purchaseHistoryPath(returnPurchaseTab));
         }
         if (failCount > 0) {
           toast.error(`${failCount} records failed`);
@@ -148,7 +157,7 @@ const PurchaseHistoryEditorPage: React.FC = () => {
         );
         if (response.success) {
           toast.success("Purchase history updated successfully");
-          navigate("/admin/purchase-history");
+          navigate(purchaseHistoryPath(returnPurchaseTab));
         } else {
           toast.error(response.message || "Failed to update purchase history");
         }
@@ -158,7 +167,7 @@ const PurchaseHistoryEditorPage: React.FC = () => {
         );
         if (response.success) {
           toast.success("Purchase history created successfully");
-          navigate("/admin/purchase-history");
+          navigate(purchaseHistoryPath(returnPurchaseTab));
         } else {
           toast.error(response.message || "Failed to create purchase history");
         }
