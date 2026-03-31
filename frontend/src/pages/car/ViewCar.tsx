@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams, useLocation } from "react-router-dom";
 import { carApi, Car as CarType } from "../../services/carApi";
 import { stockApi, Stock } from "../../services/stockApi";
 import { useAuth } from "../../contexts/AuthContext";
@@ -9,10 +9,13 @@ import CarSpecifications from "../../components/car/CarSpecifications";
 import CarDetailsSection from "../../components/car/CarDetailsSection";
 import CarAttachedFile from "../../components/car/CarAttachedFile";
 import ImageModal from "../../components/car/ImageModal";
+import type { StockPageTab } from "../../components/stock/StockHeader";
+import { stockManagementPath } from "../../utils/stockNavigation";
 
 const ViewCar: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const [car, setCar] = useState<CarType | null>(null);
@@ -201,9 +204,13 @@ const ViewCar: React.FC = () => {
     }
   };
 
+  const returnStockTab = (
+    location.state as { returnStockTab?: StockPageTab } | null
+  )?.returnStockTab;
+
   const getBackRoute = () => {
     return isAdmin
-      ? "/admin/stock"
+      ? stockManagementPath(returnStockTab)
       : `/cars?${searchParams.toString()}`;
   };
 

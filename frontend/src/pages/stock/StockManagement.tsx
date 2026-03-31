@@ -161,7 +161,9 @@ const StockManagement: React.FC = () => {
     // For Stock items, the car data is nested in 'car' property
     // For AvailableCar items, the item itself is the car
     const carId = item.car ? item.car.id : item.id;
-    navigate(`/car-view/${carId}`);
+    navigate(`/car-view/${carId}`, {
+      state: { returnStockTab: activeTab },
+    });
   };
 
   const handleEditCar = (stock: Stock) => {
