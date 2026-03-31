@@ -1062,10 +1062,11 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                     <button
                       type="button"
                       onClick={handleAddNewDraft}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-primary-500 bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-primary-700 dark:border-primary-500 dark:bg-primary-600 dark:hover:bg-primary-500"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-primary-500 bg-primary-600 text-white shadow-sm transition hover:bg-primary-700 dark:border-primary-500 dark:bg-primary-600 dark:hover:bg-primary-500"
+                      aria-label="Add new"
+                      title="Add new"
                     >
                       <Plus className="h-4 w-4" />
-                      Add new
                     </button>
                   )}
                 </div>
@@ -1158,7 +1159,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                             e.stopPropagation();
                             handleRemoveEntry(idx);
                           }}
-                          className="shrink-0 rounded-lg p-1.5 text-gray-400 transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50 dark:hover:text-red-400"
+                          className="shrink-0 rounded-lg p-1.5 text-red-500 transition hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-red-950/50 dark:hover:text-red-300"
                           aria-label="Remove from list"
                         >
                           <X className="h-4 w-4" />
@@ -1218,7 +1219,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                     <button
                       type="button"
                       onClick={handleMinimizeDraft}
-                      className="shrink-0 rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-50 hover:text-red-600 dark:hover:bg-red-950/50 dark:hover:text-red-400"
+                      className="shrink-0 rounded-lg p-1.5 text-red-500 transition hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-red-950/50 dark:hover:text-red-300"
                       aria-label="Remove draft car selection"
                       title="Remove draft"
                     >
@@ -1255,7 +1256,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                                 handleInputChange("car_id", null);
                                 handleInputChange("car_ids", []);
                               }}
-                              className="text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-300"
+                              className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
                             >
                               <X className="w-5 h-5" />
                             </button>
