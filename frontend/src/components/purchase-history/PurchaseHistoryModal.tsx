@@ -917,6 +917,8 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
     mode === "create"
       ? showDraftCarForm
       : !Array.isArray(purchaseHistory);
+  const isCreateSubmitDisabled =
+    mode === "create" && (carEntries.length === 0 || showDraftCarForm);
 
   const renderSections = () => (
     <>
@@ -1784,7 +1786,7 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
             {/* Actions */}
             {isPage ? (
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-                <div className="p-6 flex items-center justify-center gap-4">
+                <div className="p-6 flex items-center justify-end gap-4">
                   <button
                     type="button"
                     onClick={onClose}
@@ -1794,7 +1796,12 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                   </button>
                   <button
                     type="submit"
-                    className="px-8 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-green-600/20 hover:shadow-xl"
+                    disabled={isCreateSubmitDisabled}
+                    className={`px-8 py-3 text-white rounded-xl font-semibold transition-all duration-200 ${
+                      isCreateSubmitDisabled
+                        ? "bg-green-600/60 blur-[0.4px] cursor-not-allowed opacity-70"
+                        : "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 shadow-lg shadow-green-600/20 hover:shadow-xl"
+                    }`}
                   >
                     {mode === "create"
                       ? carEntries.length > 0
@@ -1815,7 +1822,12 @@ const PurchaseHistoryModal: React.FC<PurchaseHistoryModalProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-medium"
+                  disabled={isCreateSubmitDisabled}
+                  className={`px-6 py-2 text-white rounded-xl transition-colors font-medium ${
+                    isCreateSubmitDisabled
+                      ? "bg-primary-600/60 blur-[0.4px] cursor-not-allowed opacity-70"
+                      : "bg-primary-600 hover:bg-primary-700"
+                  }`}
                 >
                   {mode === "create"
                     ? carEntries.length > 0
