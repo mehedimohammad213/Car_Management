@@ -157,8 +157,8 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto no-horizontal-scrollbar">
         <div className="min-w-[1200px] sm:min-w-full">
-          {/* Table Header - same style as CarTable */}
-          <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
+          {/* Table Header - project primary theme color */}
+          <div className="bg-primary-100 border-b border-primary-200 text-primary-800">
             <div className="grid grid-cols-12 gap-4 p-4 text-xs font-bold uppercase tracking-wider">
               <div className="col-span-2">
                 <span>Car Information</span>
