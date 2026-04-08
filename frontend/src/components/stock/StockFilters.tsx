@@ -178,11 +178,12 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
           <button
             type="button"
             onClick={onAddCar}
-            className="w-10 h-10 flex items-center justify-center bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors shadow-sm"
-            title="Add car"
-            aria-label="Add car"
+            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors shadow-sm whitespace-nowrap"
+            title="Add Stock List"
+            aria-label="Add Stock List"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-4 h-4" />
+            <span>Add Stock List</span>
           </button>
         )}
 
