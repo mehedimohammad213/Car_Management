@@ -543,8 +543,8 @@ const PurchaseHistoryDetails: React.FC = () => {
                   <div
                     key={field.key}
                     className={`border-2 rounded-xl p-4 ${hasFile
-                        ? "border-primary-200 bg-primary-50"
-                        : "border-gray-200 bg-gray-50"
+                        ? "border-primary-200 bg-white"
+                        : "border-gray-200 bg-white"
                       }`}
                   >
                     <div className="flex items-center justify-between mb-2">
@@ -641,32 +641,32 @@ const PurchaseHistoryDetails: React.FC = () => {
             <h3 className="text-lg font-bold mb-4">Summary</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-primary-100">Purchase Amount:</span>
+                <span className="text-primary-100 font-bold">Purchase Amount:</span>
                 <span className="font-bold">
                   {formatCurrency(purchaseHistory.purchase_amount)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-primary-100">Govt Duty:</span>
+                <span className="text-primary-100 font-bold">Govt Duty:</span>
                 <span className="font-bold">
                   {formatCurrency(purchaseHistory.govt_duty)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-primary-100">CNF Amount:</span>
+                <span className="text-primary-100 font-bold">CNF Amount:</span>
                 <span className="font-bold">
                   {formatCurrency(purchaseHistory.cnf_amount)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-primary-100">Miscellaneous:</span>
+                <span className="text-primary-100 font-bold">Miscellaneous:</span>
                 <span className="font-bold">
                   {formatCurrency(purchaseHistory.miscellaneous)}
                 </span>
               </div>
               <div className="pt-3 border-t border-primary-400">
                 <div className="flex justify-between">
-                  <span className="text-primary-100">Total:</span>
+                  <span className="text-primary-100 font-bold">Total:</span>
                   <span className="font-bold">
                     {formatCurrency(calculatedPurchaseAmount)}
                   </span>
