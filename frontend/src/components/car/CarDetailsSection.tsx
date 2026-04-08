@@ -42,7 +42,7 @@ const CarDetailsSection: React.FC<CarDetailsSectionProps> = ({ details, onImageC
                   {detail.sub_details.map((subDetail, subIndex) => (
                     <div
                       key={subIndex}
-                      className="bg-gray-50 border border-gray-200 rounded-lg p-3"
+                      className="bg-white border border-gray-200 rounded-lg p-3"
                     >
                       <div className="space-y-1">
                         {subDetail.title && (
