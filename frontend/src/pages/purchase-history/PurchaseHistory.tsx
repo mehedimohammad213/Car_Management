@@ -255,54 +255,54 @@ const PurchaseHistoryPage: React.FC = () => {
   return (
     <div className="min-h-screen">
       <div className="max-w-full mx-auto px-4 pb-6">
-        {/* Header - same style as Car page */}
-        <div className="p-0 mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-primary-600">
-                Purchases / Purchase History
-              </h1>
-            </div>
-            {/* Tab Selection - LC wise first (default) */}
-            <div className="flex gap-1">
-              <button
-                onClick={() => {
-                  setActiveTab("lc_wise");
-                  setSearchParams((prev) => {
-                    const next = new URLSearchParams(prev);
-                    next.set("tab", "lc_wise");
-                    return next;
-                  });
-                }}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "lc_wise"
-                  ? "bg-primary-600 text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-                  }`}
-              >
-                LC Wise View
-              </button>
-              <button
-                onClick={() => {
-                  setActiveTab("history");
-                  setSearchParams((prev) => {
-                    const next = new URLSearchParams(prev);
-                    next.set("tab", "history");
-                    return next;
-                  });
-                }}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "history"
-                  ? "bg-primary-600 text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-                  }`}
-              >
-                History Table
-              </button>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-4 sm:p-6 mb-6">
+          {/* Header - aligned with Stock page style */}
+          <div className="p-0 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h1 className="text-2xl font-bold text-primary-600">
+                  Purchases / Purchase History
+                </h1>
+              </div>
+              {/* Tab Selection - LC wise first (default) */}
+              <div className="flex flex-wrap gap-1">
+                <button
+                  onClick={() => {
+                    setActiveTab("lc_wise");
+                    setSearchParams((prev) => {
+                      const next = new URLSearchParams(prev);
+                      next.set("tab", "lc_wise");
+                      return next;
+                    });
+                  }}
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "lc_wise"
+                    ? "bg-primary-600 text-white"
+                    : "text-gray-600 hover:bg-gray-100"
+                    }`}
+                >
+                  LC Wise View
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab("history");
+                    setSearchParams((prev) => {
+                      const next = new URLSearchParams(prev);
+                      next.set("tab", "history");
+                      return next;
+                    });
+                  }}
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "history"
+                    ? "bg-primary-600 text-white"
+                    : "text-gray-600 hover:bg-gray-100"
+                    }`}
+                >
+                  History Table
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Filters - same layout as Car SearchFilters */}
-        <div className="mb-8">
+          {/* Filters - aligned with Stock page top section */}
           <div className="flex flex-col lg:flex-row gap-4 items-center">
             <div className="flex-1 relative w-full lg:w-auto">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
