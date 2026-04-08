@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, FileText, X } from "lucide-react";
+import { Plus, Search, X } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   paymentHistoryApi,
@@ -151,19 +151,19 @@ const PaymentHistoryPage: React.FC = () => {
   return (
     <div className="min-h-screen">
       <div className="max-w-full mx-auto px-4 pb-6">
-        {/* Header matching SearchFilters style */}
-        <div className="p-0 mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-primary-600">
-                Payments / Payment History
-              </h1>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-4 sm:p-6 mb-6">
+          {/* Header aligned with Stock page style */}
+          <div className="p-0 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h1 className="text-2xl font-bold text-primary-600">
+                  Payments / Payment History
+                </h1>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Filters matching SearchFilters style */}
-        <div className="mb-8">
+          {/* Filters aligned with Stock page top section */}
           <div className="flex flex-col lg:flex-row gap-4 items-center">
             {/* Search */}
             <div className="flex-1 relative w-full lg:w-auto">

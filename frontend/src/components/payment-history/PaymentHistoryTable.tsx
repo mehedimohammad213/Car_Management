@@ -64,8 +64,8 @@ const PaymentHistoryTable: React.FC<PaymentHistoryTableProps> = ({
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto no-horizontal-scrollbar">
         <div className="min-w-[1200px]">
-          {/* Clean Professional Table Header */}
-          <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
+          {/* Table Header - aligned with Stock page theme */}
+          <div className="bg-primary-100 border-b border-primary-200 text-primary-800">
             <div className="grid grid-cols-12 gap-4 p-4 text-xs font-bold uppercase tracking-wider">
               <div className="col-span-3">Car Details</div>
               <div className="col-span-2">Showroom</div>
