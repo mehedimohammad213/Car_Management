@@ -268,11 +268,8 @@ const PurchaseHistoryDetails: React.FC = () => {
             </button>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                Purchase History #{purchaseHistory.id}
+                Purchase History
               </h1>
-              <p className="text-gray-600 mt-1">
-                Created: {formatDate(purchaseHistory.created_at)}
-              </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
