@@ -1,11 +1,9 @@
 import React from "react";
-import { SlidersHorizontal, MapPin } from "lucide-react";
+import { SlidersHorizontal, MapPin, Boxes } from "lucide-react";
 import { Car as CarType } from "../../services/carApi";
 import { Stock } from "../../services/stockApi";
 import {
   getStatusColor,
-  getStockStatusColor,
-  getStockStatusTextColor,
 } from "../../utils/carUtils";
 
 interface CarSpecificationsProps {
@@ -17,6 +15,13 @@ const CarSpecifications: React.FC<CarSpecificationsProps> = ({
   car,
   stockData,
 }) => {
+  const carExtras = car as CarType & {
+    drive_type?: string;
+    drivetrain?: string;
+    port?: string;
+    chassis_no?: string;
+  };
+
   const specificationItems: Array<{
     label: string;
     value: React.ReactNode;
@@ -43,8 +48,7 @@ const CarSpecifications: React.FC<CarSpecificationsProps> = ({
       },
       {
         label: "Drivetrain",
-        value:
-          (car as any).drive_type || (car as any).drivetrain || "N/A",
+        value: carExtras.drive_type || carExtras.drivetrain || "N/A",
       },
       {
         label: "Steering",
@@ -118,7 +122,7 @@ const CarSpecifications: React.FC<CarSpecificationsProps> = ({
             Specifications
           </h3>
         </div>
-        <div className="space-y-2 sm:space-y-3">
+        <div className="space-y-4 sm:space-y-5">
           {/* Refined Specifications Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-sm">
             {specificationItems.map(({ label, value }) => (
@@ -136,48 +140,101 @@ const CarSpecifications: React.FC<CarSpecificationsProps> = ({
             ))}
           </div>
 
-          {/* Stock Information - Full Width */}
+          {/* Stock Section */}
           {stockData && (
-            <div className="flex justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
-              <span className="text-gray-600 dark:text-gray-400">Stock:</span>
-              <div className="flex flex-col items-end">
-                <span
-                  className={`text-sm font-medium ${getStockStatusColor(
-                    stockData.quantity,
-                    stockData.status
-                  )}`}
-                >
-                  {stockData.quantity}
-                </span>
-                <span
-                  className={`text-xs ${getStockStatusTextColor(
-                    stockData.quantity,
-                    stockData.status
-                  )}`}
-                >
-                  {stockData.status}
-                </span>
-                {stockData.price && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Stock Price: {typeof stockData.price === "string" ? parseFloat(stockData.price).toLocaleString() : stockData.price.toLocaleString()}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Boxes className="w-4 h-4 text-gray-600" />
+                <h4 className="text-sm sm:text-base font-semibold text-gray-800">
+                  Stock
+                </h4>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-sm">
+                <div className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+                  <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                    Availability
                   </span>
+                  <div className="mt-2 text-sm font-semibold text-gray-900">
+                    {stockData.quantity}
+                  </div>
+                </div>
+                {stockData.price && (
+                  <div className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+                    <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                      Stock Price
+                    </span>
+                    <div className="mt-2 text-sm font-semibold text-gray-900">
+                      {typeof stockData.price === "string"
+                        ? parseFloat(stockData.price).toLocaleString()
+                        : stockData.price.toLocaleString()}
+                    </div>
+                  </div>
                 )}
                 {stockData.notes && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400 italic">
-                    {stockData.notes}
-                  </span>
+                  <div className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm sm:col-span-2">
+                    <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                      Notes
+                    </span>
+                    <div className="mt-2 text-sm text-gray-700 italic">
+                      {stockData.notes}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Location Section */}
+          {(car.location || car.country_origin || carExtras.port) && (
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin className="w-4 h-4 text-gray-600" />
+                <h4 className="text-sm sm:text-base font-semibold text-gray-800">
+                  Location
+                </h4>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-sm">
+                {carExtras.port && (
+                  <div className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+                    <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                      Port
+                    </span>
+                    <div className="mt-2 text-sm font-semibold text-gray-900">
+                      {carExtras.port}
+                    </div>
+                  </div>
+                )}
+                {car.location && (
+                  <div className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+                    <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                      Location
+                    </span>
+                    <div className="mt-2 text-sm font-semibold text-gray-900">
+                      {car.location}
+                    </div>
+                  </div>
+                )}
+                {car.country_origin && (
+                  <div className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+                    <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                      Country
+                    </span>
+                    <div className="mt-2 text-sm font-semibold text-gray-900">
+                      {car.country_origin}
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
           )}
 
           {/* Chassis Number with View Button */}
-          {(car as any).chassis_no && (
+          {carExtras.chassis_no && (
             <div className="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700">
               <span className="text-gray-600 dark:text-gray-400">Chassis No.:</span>
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-gray-900 dark:text-gray-100">
-                  {(car as any).chassis_no}
+                  {carExtras.chassis_no}
                 </span>
                 <button className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-blue-300 text-xs font-medium">
                   View
@@ -209,35 +266,6 @@ const CarSpecifications: React.FC<CarSpecificationsProps> = ({
               {car.detail.description}
             </p>
           )}
-        </div>
-      )}
-
-      {/* Location */}
-      {(car.location || car.country_origin || (car as any).port) && (
-        <div>
-          <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 sm:mb-3">
-            Location
-          </h3>
-          <div className="space-y-2">
-            {(car as any).port && (
-              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                <MapPin className="w-4 h-4" />
-                <span>Port: {(car as any).port}</span>
-              </div>
-            )}
-            {car.location && (
-              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                <MapPin className="w-4 h-4" />
-                <span>Location: {car.location}</span>
-              </div>
-            )}
-            {car.country_origin && (
-              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                <MapPin className="w-4 h-4" />
-                <span>Country: {car.country_origin}</span>
-              </div>
-            )}
-          </div>
         </div>
       )}
 

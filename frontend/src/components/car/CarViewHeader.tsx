@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { Car, ArrowLeft } from "lucide-react";
 import { Car as CarType } from "../../services/carApi";
 import { getStatusColor } from "../../utils/carUtils";
@@ -13,15 +12,12 @@ interface CarViewHeaderProps {
 const CarViewHeader: React.FC<CarViewHeaderProps> = ({
   car,
   isAdmin,
-  getBackRoute,
 }) => {
-  const navigate = useNavigate();
-
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
       <button
-        onClick={() => navigate(getBackRoute())}
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-3 sm:mb-4 transition-colors"
+        disabled
+        className="flex items-center gap-2 text-gray-400 mb-3 sm:mb-4 transition-colors cursor-not-allowed"
       >
         <ArrowLeft className="w-5 h-5" />
         <span className="font-medium">Back to Dream Agent Car Vision</span>

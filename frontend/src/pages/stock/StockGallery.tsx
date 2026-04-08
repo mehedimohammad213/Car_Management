@@ -279,14 +279,16 @@ const StockGallery: React.FC = () => {
           </div>
         </div>
 
-        <CarDetailsSection
-          details={car.details}
-          onImageClick={(imageUrl, alt) => {
-            setModalImageUrl(imageUrl);
-            setModalImageAlt(alt);
-            setShowImageModal(true);
-          }}
-        />
+        <div className="mt-6">
+          <CarDetailsSection
+            details={car.details}
+            onImageClick={(imageUrl, alt) => {
+              setModalImageUrl(imageUrl);
+              setModalImageAlt(alt);
+              setShowImageModal(true);
+            }}
+          />
+        </div>
 
         {/* Attached File - Admin Only */}
         {isAdmin && attachedFileInfo && (
