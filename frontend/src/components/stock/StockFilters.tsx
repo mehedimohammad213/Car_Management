@@ -62,7 +62,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
     fuelFilter;
 
   return (
-    <div className="mb-8">
+    <div className="mb-0">
       <div className="flex flex-col lg:flex-row gap-4 items-center">
         {/* Search */}
         <div className="flex-1 relative w-full lg:w-auto">
@@ -183,7 +183,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
             aria-label="Add Stock List"
           >
             <Plus className="w-4 h-4" />
-            <span>Add Stock List</span>
+            <span className="font-bold text-white">Add Stock List</span>
           </button>
         )}
 

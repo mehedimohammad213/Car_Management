@@ -211,23 +211,21 @@ const StockManagement: React.FC = () => {
   return (
     <div className="min-h-screen">
       <div className="max-w-full mx-auto px-4 pb-6">
-        <StockHeader
-          activeTab={activeTab}
-          onTabChange={(tab) => {
-            setActiveTab(tab);
-            setSearchParams((prev) => {
-              const next = new URLSearchParams(prev);
-              next.set("tab", tab);
-              return next;
-            });
-          }}
-          tabCounts={stockTabCounts}
-        />
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-4 sm:p-6 mb-6">
+          <StockHeader
+            activeTab={activeTab}
+            onTabChange={(tab) => {
+              setActiveTab(tab);
+              setSearchParams((prev) => {
+                const next = new URLSearchParams(prev);
+                next.set("tab", tab);
+                return next;
+              });
+            }}
+            tabCounts={stockTabCounts}
+          />
 
-        <MessageDisplay message={message} />
-
-        {activeTab === "current" || activeTab === "available" || activeTab === "soldout" ? (
-          <>
+          {activeTab === "current" || activeTab === "available" || activeTab === "soldout" ? (
             <StockFilters
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
@@ -242,17 +240,43 @@ const StockManagement: React.FC = () => {
               onColorFilterChange={setColorFilter}
               fuelFilter={fuelFilter}
               onFuelFilterChange={setFuelFilter}
-              isGeneratingPDF={
-                activeTab === "current" ? isGeneratingPDF : false
-              }
-              onGeneratePDF={
-                activeTab === "current" ? generatePDF : undefined
-              }
+              isGeneratingPDF={activeTab === "current" ? isGeneratingPDF : false}
+              onGeneratePDF={activeTab === "current" ? generatePDF : undefined}
               onCreateInvoice={() => setShowInvoiceModal(true)}
               onCreateStock={handleCreateStock}
               filterOptions={filterOptions}
             />
+          ) : activeTab === "before" ? (
+            <StockFilters
+              searchTerm={pendingFilters.searchTerm}
+              onSearchChange={pendingFilters.setSearchTerm}
+              onClearFilters={pendingFilters.handleClearFilters}
+              yearFilter={pendingFilters.yearFilter}
+              onYearFilterChange={pendingFilters.setYearFilter}
+              makeFilter={pendingFilters.makeFilter}
+              onMakeFilterChange={pendingFilters.setMakeFilter}
+              modelFilter={pendingFilters.modelFilter}
+              onModelFilterChange={pendingFilters.setModelFilter}
+              colorFilter={pendingFilters.colorFilter}
+              onColorFilterChange={pendingFilters.setColorFilter}
+              fuelFilter={pendingFilters.fuelFilter}
+              onFuelFilterChange={pendingFilters.setFuelFilter}
+              isGeneratingPDF={false}
+              filterOptions={pendingFilters.filterOptions}
+              searchPlaceholder="Search pending cars by make, model, year, ref no, chassis…"
+              onAddCar={() =>
+                navigate("/create-car", {
+                  state: { returnStockTab: "before" as const },
+                })
+              }
+            />
+          ) : null}
+        </div>
 
+        <MessageDisplay message={message} />
+
+        {activeTab === "current" || activeTab === "available" || activeTab === "soldout" ? (
+          <>
             <StockTable
               stocks={stocks}
               allStocks={scopedStocks}
@@ -280,29 +304,6 @@ const StockManagement: React.FC = () => {
           </>
         ) : activeTab === "before" ? (
           <>
-            <StockFilters
-              searchTerm={pendingFilters.searchTerm}
-              onSearchChange={pendingFilters.setSearchTerm}
-              onClearFilters={pendingFilters.handleClearFilters}
-              yearFilter={pendingFilters.yearFilter}
-              onYearFilterChange={pendingFilters.setYearFilter}
-              makeFilter={pendingFilters.makeFilter}
-              onMakeFilterChange={pendingFilters.setMakeFilter}
-              modelFilter={pendingFilters.modelFilter}
-              onModelFilterChange={pendingFilters.setModelFilter}
-              colorFilter={pendingFilters.colorFilter}
-              onColorFilterChange={pendingFilters.setColorFilter}
-              fuelFilter={pendingFilters.fuelFilter}
-              onFuelFilterChange={pendingFilters.setFuelFilter}
-              isGeneratingPDF={false}
-              filterOptions={pendingFilters.filterOptions}
-              searchPlaceholder="Search pending cars by make, model, year, ref no, chassis…"
-              onAddCar={() =>
-                navigate("/create-car", {
-                  state: { returnStockTab: "before" as const },
-                })
-              }
-            />
             <AvailableCarsTable
               cars={pendingFilters.paginatedCars as any[]}
               filteredAllCars={pendingFilters.filteredAllCars as any[]}
