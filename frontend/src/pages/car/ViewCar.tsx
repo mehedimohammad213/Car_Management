@@ -241,8 +241,8 @@ const ViewCar: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-neutral-50 dark:bg-neutral-900">
-      <div className="w-full px-2 sm:px-4 lg:px-6 py-4 sm:py-6">
+    <div className="min-h-screen w-full bg-gray-50 p-3 sm:p-4 md:p-6">
+      <div className="w-full">
         <CarViewHeader
           car={car}
           isAdmin={isAdmin}
@@ -250,8 +250,8 @@ const ViewCar: React.FC = () => {
         />
 
         {/* Content */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-xl overflow-hidden">
-          <div className="p-2 sm:p-4 lg:p-6 xl:p-8">
+        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
+          <div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               <CarImageGallery
                 car={car}

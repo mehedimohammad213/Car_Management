@@ -30,7 +30,7 @@ const CarImageGallery: React.FC<CarImageGalleryProps> = ({
       {/* Main Photo */}
       <div className="relative mb-4">
         {car.photos && car.photos.length > 0 ? (
-          <div className="w-full h-[60vh] sm:h-[70vh] lg:h-[80vh] flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-xl overflow-hidden">
+          <div className="w-full h-[60vh] sm:h-[70vh] lg:h-[80vh] flex items-center justify-center bg-white rounded-xl overflow-hidden">
             <img
               src={car.photos[currentImageIndex].url}
               alt={`${car.make} ${car.model}`}
@@ -39,7 +39,7 @@ const CarImageGallery: React.FC<CarImageGalleryProps> = ({
             />
           </div>
         ) : (
-          <div className="h-[60vh] sm:h-[70vh] lg:h-[80vh] bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center">
+          <div className="h-[60vh] sm:h-[70vh] lg:h-[80vh] bg-white rounded-xl flex items-center justify-center">
             <Car className="w-24 h-24 text-gray-400" />
             <p className="text-gray-500 dark:text-gray-400 ml-4 text-lg">
               No photos available

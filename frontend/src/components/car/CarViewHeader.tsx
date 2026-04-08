@@ -18,10 +18,10 @@ const CarViewHeader: React.FC<CarViewHeaderProps> = ({
   const navigate = useNavigate();
 
   return (
-    <div className="mb-4 sm:mb-6 pl-2 sm:pl-4 lg:pl-6 xl:pl-8">
+    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
       <button
         onClick={() => navigate(getBackRoute())}
-        className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-3 sm:mb-4 transition-colors"
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-3 sm:mb-4 transition-colors"
       >
         <ArrowLeft className="w-5 h-5" />
         <span className="font-medium">Back to Dream Agent Car Vision</span>
@@ -29,7 +29,7 @@ const CarViewHeader: React.FC<CarViewHeaderProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Car className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600" />
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {car.year} {car.make} {car.model}
             {car.variant && ` - ${car.variant}`}
           </h1>

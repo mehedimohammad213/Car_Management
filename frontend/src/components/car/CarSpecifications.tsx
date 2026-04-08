@@ -124,7 +124,7 @@ const CarSpecifications: React.FC<CarSpecificationsProps> = ({
             {specificationItems.map(({ label, value }) => (
               <div
                 key={label}
-                className="rounded-xl border border-gray-100 dark:border-gray-700 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 px-4 py-3 shadow-sm"
+                className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm"
               >
                 <span className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
                   {label}
