@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Car, ArrowLeft } from "lucide-react";
 import { Car as CarType } from "../../services/carApi";
 import { getStatusColor } from "../../utils/carUtils";
@@ -7,17 +8,31 @@ interface CarViewHeaderProps {
   car: CarType;
   isAdmin: boolean;
   getBackRoute: () => string;
+  disableBack?: boolean;
 }
 
 const CarViewHeader: React.FC<CarViewHeaderProps> = ({
   car,
   isAdmin,
+  getBackRoute,
+  disableBack = false,
 }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
       <button
-        disabled
-        className="flex items-center gap-2 text-gray-400 mb-3 sm:mb-4 transition-colors cursor-not-allowed"
+        disabled={disableBack}
+        onClick={() => {
+          if (!disableBack) {
+            navigate(getBackRoute());
+          }
+        }}
+        className={`flex items-center gap-2 mb-3 sm:mb-4 transition-colors ${
+          disableBack
+            ? "text-gray-400 cursor-not-allowed"
+            : "text-gray-600 hover:text-gray-900"
+        }`}
       >
         <ArrowLeft className="w-5 h-5" />
         <span className="font-medium">Back to Dream Agent Car Vision</span>

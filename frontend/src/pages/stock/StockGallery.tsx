@@ -252,6 +252,7 @@ const StockGallery: React.FC = () => {
           car={car}
           isAdmin={isAdmin}
           getBackRoute={() => "/stock-management"}
+          disableBack={true}
         />
 
         {/* Content */}
