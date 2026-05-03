@@ -1,6 +1,7 @@
 import React from "react";
 import { Car, Eye, Edit, PackagePlus } from "lucide-react";
 import { getCssColor, getGradeColor } from "../../utils/carUtils";
+import { isCarStatusSold } from "../../utils/stockStatus";
 
 interface AvailableCar {
   id: number;
@@ -191,6 +192,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
           {/* Table Body with Enhanced Styling */}
           <div className="divide-y divide-gray-100">
             {cars.map((car, index) => {
+              const carSold = isCarStatusSold(car);
               const makeModelKey = `${car.make}_${car.model}`;
               const availableCarsCount = availableCarsCountMap.get(makeModelKey) || 0;
 
@@ -267,9 +269,15 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                         {chassisNo}
                       </div>
                       <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-200">
-                          Pending
-                        </span>
+                        {carSold ? (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
+                            Sold
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-200">
+                            Pending
+                          </span>
+                        )}
                         {car.category && (
                           <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200">
                             {car.category.name}
@@ -419,9 +427,18 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                     <button
                       type="button"
                       onClick={() => onCreateStock(car)}
-                      className="shrink-0 p-2 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
-                      title="Add Stock"
-                      aria-label="Add Stock"
+                      disabled={carSold}
+                      className="shrink-0 p-2 rounded-lg transition-all duration-200 group/btn text-primary-600 hover:text-primary-700 disabled:pointer-events-none disabled:opacity-40 disabled:text-gray-400"
+                      title={
+                        carSold
+                          ? "Sold — cannot add stock"
+                          : "Add Stock"
+                      }
+                      aria-label={
+                        carSold
+                          ? "Add Stock (disabled: car is sold)"
+                          : "Add Stock"
+                      }
                     >
                       <PackagePlus className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
                     </button>

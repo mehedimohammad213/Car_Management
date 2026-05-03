@@ -37,6 +37,11 @@ export function isStockRowSold(stock: Stock): boolean {
   return getEffectiveStockStatus(stock) === "sold";
 }
 
+/** Cars in the “no stock row yet” pool still carry `car.status` (e.g. sold after stock was removed). */
+export function isCarStatusSold(car: { status?: string } | null | undefined): boolean {
+  return String(car?.status ?? "").toLowerCase() === "sold";
+}
+
 /** Order for “status-wise” lists: in-stock first, then issues, sold last */
 const STATUS_LIST_ORDER = [
   "available",

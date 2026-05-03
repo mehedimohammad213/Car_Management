@@ -6,6 +6,7 @@ import {
   getCssColor,
 } from "../../utils/carUtils";
 import type { PendingCarRecord } from "../../hooks/usePendingCarsFilters";
+import { isCarStatusSold } from "../../utils/stockStatus";
 
 interface PendingCarUnifiedRowProps {
   car: PendingCarRecord;
@@ -37,6 +38,7 @@ const PendingCarUnifiedRow: React.FC<PendingCarUnifiedRowProps> = ({
   onDelete,
   onCreateStock,
 }) => {
+  const carSold = isCarStatusSold(car);
   const refNo =
     car.ref_no ||
     (car.id != null ? `AA${car.id.toString().padStart(6, "0")}` : "N/A");
@@ -75,9 +77,15 @@ const PendingCarUnifiedRow: React.FC<PendingCarUnifiedRowProps> = ({
             <span className="text-gray-400">Chassis:</span> {chassisNo}
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-200">
-              Pending
-            </span>
+            {carSold ? (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
+                Sold
+              </span>
+            ) : (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-200">
+                Pending
+              </span>
+            )}
             {car.category &&
             typeof car.category === "object" &&
             car.category !== null &&
@@ -224,9 +232,14 @@ const PendingCarUnifiedRow: React.FC<PendingCarUnifiedRowProps> = ({
         <button
           type="button"
           onClick={() => onCreateStock(car)}
-          className="shrink-0 p-2 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
-          title="Add Stock"
-          aria-label="Add Stock"
+          disabled={carSold}
+          className="shrink-0 p-2 rounded-lg transition-all duration-200 group/btn text-primary-600 hover:text-primary-700 disabled:pointer-events-none disabled:opacity-40 disabled:text-gray-400"
+          title={
+            carSold
+              ? "Sold — cannot add stock"
+              : "Add Stock"
+          }
+          aria-label={carSold ? "Add Stock (disabled: car is sold)" : "Add Stock"}
         >
           <PackagePlus className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
         </button>

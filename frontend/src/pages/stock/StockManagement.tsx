@@ -19,7 +19,11 @@ import type { StockPageTab } from "../../components/stock/StockHeader";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { stockApi, Stock } from "../../services/stockApi";
 import { carApi } from "../../services/carApi";
-import { getEffectiveStockStatus, isStockRowSold } from "../../utils/stockStatus";
+import {
+  getEffectiveStockStatus,
+  isCarStatusSold,
+  isStockRowSold,
+} from "../../utils/stockStatus";
 import { filterPendingCarsLikeStockFilters } from "../../utils/filterPendingCarsLikeStockFilters";
 import type { UnifiedStockRow } from "../../components/stock/StockTable";
 
@@ -198,6 +202,10 @@ const StockManagement: React.FC = () => {
   }, [searchParams.toString()]);
 
   const handleCreateStockFromCar = async (car: any) => {
+    if (isCarStatusSold(car)) {
+      showMessage("error", "Cannot add stock while the car is marked sold.");
+      return;
+    }
     try {
       console.log("Creating stock from car:", car);
       const stockData = {

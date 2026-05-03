@@ -92,7 +92,8 @@ export const useStockManagement = (stockScope: StockListScope = "all") => {
     showMessage,
     stockFilters.searchTerm,
     stockFilters.sortBy,
-    stockFilters.sortOrder
+    stockFilters.sortOrder,
+    fetchAvailableCars
   );
 
   return {

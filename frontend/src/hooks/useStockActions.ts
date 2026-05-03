@@ -7,7 +7,9 @@ export const useStockActions = (
     showMessage: (type: "success" | "error", text: string) => void,
     searchTerm: string,
     sortBy: string,
-    sortOrder: "asc" | "desc"
+    sortOrder: "asc" | "desc",
+    /** Cars with no stock row (Pending tab count); refresh after stock delete/create/update. */
+    fetchAvailableCars?: () => Promise<void>
 ) => {
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
     const [showDrawer, setShowDrawer] = useState(false);
@@ -45,13 +47,14 @@ export const useStockActions = (
             setStockToDelete(null);
             showMessage("success", "Stock deleted successfully");
             await fetchStocks();
+            await fetchAvailableCars?.();
         } catch (error) {
             console.error("Error deleting stock:", error);
             showMessage("error", "Failed to delete stock");
         } finally {
             setIsDeleting(false);
         }
-    }, [fetchStocks, showMessage, stockToDelete]);
+    }, [fetchStocks, fetchAvailableCars, showMessage, stockToDelete]);
 
     const handleDrawerSubmit = useCallback(
         async (data: CreateStockData | UpdateStockData) => {
@@ -66,6 +69,7 @@ export const useStockActions = (
                         setShowDrawer(false);
                         setSelectedStock(null);
                         await fetchStocks();
+                        await fetchAvailableCars?.();
                     } else {
                         showMessage("error", response.message || "Failed to update stock");
                     }
@@ -76,6 +80,7 @@ export const useStockActions = (
                         setShowDrawer(false);
                         setSelectedStock(null);
                         await fetchStocks();
+                        await fetchAvailableCars?.();
                     } else {
                         showMessage("error", response.message || "Failed to create stock");
                     }
@@ -88,7 +93,7 @@ export const useStockActions = (
                 showMessage("error", errorMessage);
             }
         },
-        [fetchStocks, selectedStock, showMessage]
+        [fetchStocks, fetchAvailableCars, selectedStock, showMessage]
     );
 
     const handleDrawerClose = useCallback(() => {
