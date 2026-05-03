@@ -1,7 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { userApi, User, UsersParams } from "../../services/userApi";
-import { Search, Users, Mail, User as UserIcon, Calendar, Shield, X } from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  userApi,
+  User,
+  UsersParams,
+  CreateUserPayload,
+  UpdateUserPayload,
+  formatUserApiError,
+} from "../../services/userApi";
+import { Search, Users, X, Plus, Pencil, Trash2 } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
+import { MessageDisplay } from "../../components/category";
+import UserFormModal from "../../components/user/UserFormModal";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -13,45 +23,65 @@ const UserManagement: React.FC = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch users data
-  const fetchUsers = async (params: UsersParams = {}) => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [userModalMode, setUserModalMode] = useState<"create" | "edit">(
+    "create",
+  );
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-      const response = await userApi.getAllUsers({
-        page: currentPage,
-        per_page: perPage,
-        search: searchTerm,
-        ...params,
-      });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-      if (response.success) {
-        setUsers(response.data.users);
-        setTotalPages(response.data.pagination.last_page);
-        setTotalItems(response.data.pagination.total);
-      } else {
-        setError("Failed to fetch users");
-      }
-    } catch (err) {
-      console.error("Error fetching users:", err);
-      setError("Failed to fetch users");
-    } finally {
-      setIsLoading(false);
-    }
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  const showMessage = (type: "success" | "error", text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 5000);
   };
 
-  // Initial load
+  const fetchUsers = useCallback(
+    async (params: UsersParams = {}) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const response = await userApi.getAllUsers({
+          page: currentPage,
+          per_page: perPage,
+          search: searchTerm,
+          ...params,
+        });
+
+        if (response.success) {
+          setUsers(response.data.users);
+          setTotalPages(response.data.pagination.last_page);
+          setTotalItems(response.data.pagination.total);
+        } else {
+          setError("Failed to fetch users");
+        }
+      } catch (err) {
+        console.error("Error fetching users:", err);
+        setError(formatUserApiError(err));
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [currentPage, perPage, searchTerm],
+  );
+
   useEffect(() => {
     fetchUsers();
-  }, [currentPage, searchTerm]);
+  }, [fetchUsers]);
 
-  // Handle page change
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  // Format date
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -60,7 +90,6 @@ const UserManagement: React.FC = () => {
     });
   };
 
-  // Get role badge color
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case "admin":
@@ -72,21 +101,94 @@ const UserManagement: React.FC = () => {
     }
   };
 
+  const handleCreateUser = () => {
+    setUserModalMode("create");
+    setSelectedUser(null);
+    setShowUserModal(true);
+  };
+
+  const handleEditUser = (user: User) => {
+    setUserModalMode("edit");
+    setSelectedUser(user);
+    setShowUserModal(true);
+  };
+
+  const handleDeleteUser = (user: User) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+  };
+
+  const handleUserModalClose = () => {
+    setShowUserModal(false);
+    setSelectedUser(null);
+  };
+
+  const handleUserFormSubmit = async (
+    data: CreateUserPayload | UpdateUserPayload,
+  ) => {
+    setIsSaving(true);
+    try {
+      if (selectedUser) {
+        await userApi.updateUser(selectedUser.id, data as UpdateUserPayload);
+        showMessage("success", "User updated successfully");
+      } else {
+        await userApi.createUser(data as CreateUserPayload);
+        showMessage("success", "User created successfully");
+      }
+      handleUserModalClose();
+      fetchUsers();
+    } catch (err) {
+      console.error("Error saving user:", err);
+      showMessage("error", formatUserApiError(err));
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!userToDelete) return;
+    setIsDeleting(true);
+    try {
+      await userApi.deleteUser(userToDelete.id);
+      setUsers((prev) => prev.filter((u) => u.id !== userToDelete.id));
+      setShowDeleteModal(false);
+      setUserToDelete(null);
+      showMessage("success", "User deleted successfully");
+      fetchUsers();
+    } catch (err) {
+      console.error("Error deleting user:", err);
+      showMessage("error", formatUserApiError(err));
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <div className="max-w-full mx-auto px-4 pb-6">
-        {/* Header matching SearchFilters style */}
         <div className="p-0 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-primary-600">
                 Users / User List
               </h1>
+              <p className="text-sm text-gray-600 mt-1">
+                Create, update, and remove user accounts
+              </p>
             </div>
+            <button
+              type="button"
+              onClick={handleCreateUser}
+              className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm self-start sm:self-auto"
+            >
+              <Plus className="w-4 h-4" />
+              Add user
+            </button>
           </div>
         </div>
 
-        {/* Search and Filters matching SearchFilters style */}
+        <MessageDisplay message={message} />
+
         <div className="mb-8">
           <div className="flex flex-col lg:flex-row gap-4 items-center">
             <div className="flex-1 relative w-full lg:w-auto">
@@ -95,15 +197,22 @@ const UserManagement: React.FC = () => {
                 type="text"
                 placeholder="Search users by name, username, or email..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
             {searchTerm && (
               <button
-                onClick={() => setSearchTerm("")}
+                onClick={() => {
+                  setSearchTerm("");
+                  setCurrentPage(1);
+                }}
                 className="w-10 h-10 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-sm"
                 title="Clear Filters"
+                type="button"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -111,11 +220,10 @@ const UserManagement: React.FC = () => {
           </div>
         </div>
 
-        {/* Users Table matching CarTable style */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
             </div>
           ) : error ? (
             <div className="flex items-center justify-center py-12">
@@ -124,6 +232,7 @@ const UserManagement: React.FC = () => {
                 <button
                   onClick={() => fetchUsers()}
                   className="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
+                  type="button"
                 >
                   Retry
                 </button>
@@ -142,75 +251,87 @@ const UserManagement: React.FC = () => {
             </div>
           ) : (
             <div className="overflow-x-auto no-horizontal-scrollbar">
-              <div className="min-w-[1000px]">
-                {/* Clean Professional Table Header */}
+              <div className="min-w-[1100px]">
                 <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
                   <div className="grid grid-cols-12 gap-4 p-4 text-xs font-bold uppercase tracking-wider">
                     <div className="col-span-3">User Information</div>
                     <div className="col-span-2">Username</div>
-                    <div className="col-span-3">Email</div>
+                    <div className="col-span-2">Email</div>
                     <div className="col-span-2">Role</div>
-                    <div className="col-span-2">Joined Date</div>
+                    <div className="col-span-1">Joined</div>
+                    <div className="col-span-2 text-right">Actions</div>
                   </div>
                 </div>
 
-                {/* Table Body matching CarTable style */}
                 <div className="divide-y divide-gray-100">
-                  {users.map((user) => (
+                  {users.map((u) => (
                     <div
-                      key={user.id}
-                      className="grid grid-cols-12 gap-4 p-4 hover:bg-white hover:shadow-md hover:scale-[1.002] transition-all duration-200 cursor-pointer group relative z-0 hover:z-10"
+                      key={u.id}
+                      className="grid grid-cols-12 gap-4 p-4 hover:bg-white hover:shadow-md hover:scale-[1.002] transition-all duration-200 group relative z-0 hover:z-10 items-center"
                     >
-                      {/* Left Side Highlight Stick */}
                       <div className="absolute left-0 top-2 bottom-2 w-1.5 bg-primary-600 rounded-r-md opacity-0 group-hover:opacity-100 transition-all duration-200 transform -translate-x-1 group-hover:translate-x-0" />
 
-                      {/* User Information */}
                       <div className="col-span-3 flex items-center gap-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
                           <span className="text-white text-sm font-bold">
-                            {user.name.charAt(0).toUpperCase()}
+                            {u.name.charAt(0).toUpperCase()}
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-semibold text-gray-900 truncate group-hover:text-primary-700 transition-colors">
-                            {user.name}
+                            {u.name}
                           </div>
                           <div className="text-xs text-gray-500 font-mono">
-                            ID: {user.id}
+                            ID: {u.id}
                           </div>
                         </div>
                       </div>
 
-                      {/* Username */}
                       <div className="col-span-2 flex items-center">
                         <span className="text-sm font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
-                          @{user.username}
+                          @{u.username}
                         </span>
                       </div>
 
-                      {/* Email */}
-                      <div className="col-span-3 flex items-center">
+                      <div className="col-span-2 flex items-center min-w-0">
                         <span className="text-sm font-medium text-gray-700 truncate">
-                          {user.email}
+                          {u.email}
                         </span>
                       </div>
 
-                      {/* Role */}
                       <div className="col-span-2 flex items-center">
                         <span
                           className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold border ${getRoleBadgeColor(
-                            user.role
+                            u.role,
                           )}`}
                         >
-                          {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                          {u.role.charAt(0).toUpperCase() + u.role.slice(1)}
                         </span>
                       </div>
 
-                      {/* Joined Date */}
-                      <div className="col-span-2 flex items-center">
+                      <div className="col-span-1 flex items-center">
                         <span className="text-xs font-medium text-gray-600">
-                          {formatDate(user.created_at)}
+                          {formatDate(u.created_at)}
                         </span>
+                      </div>
+
+                      <div className="col-span-2 flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleEditUser(u)}
+                          className="p-2 rounded-lg text-primary-600 hover:bg-primary-50 transition-colors"
+                          title="Edit user"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteUser(u)}
+                          className="p-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+                          title="Delete user"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -220,7 +341,6 @@ const UserManagement: React.FC = () => {
           )}
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="mt-6">
             <Pagination
@@ -232,6 +352,24 @@ const UserManagement: React.FC = () => {
             />
           </div>
         )}
+
+        <UserFormModal
+          isOpen={showUserModal}
+          onClose={handleUserModalClose}
+          title={userModalMode === "create" ? "Create user" : "Edit user"}
+          user={selectedUser}
+          onSubmit={handleUserFormSubmit}
+          isSubmitting={isSaving}
+        />
+
+        <DeleteConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={confirmDelete}
+          title="Delete user"
+          message={`Are you sure you want to delete "${userToDelete?.name}" (@${userToDelete?.username})? This cannot be undone.`}
+          isLoading={isDeleting}
+        />
       </div>
     </div>
   );

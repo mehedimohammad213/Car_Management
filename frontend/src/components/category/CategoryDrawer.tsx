@@ -6,7 +6,7 @@ interface CategoryDrawerProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   onSave?: () => void;
   onCancel?: () => void;
   showActions?: boolean;
@@ -26,7 +26,10 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({
     sm: "h-1/3",
     md: "h-1/2",
     lg: "h-2/3",
+    xl: "h-[90vh] max-h-[90vh]",
   };
+
+  const showBottomSheetChrome = size === "xl";
 
   if (!isOpen) return null;
 
@@ -38,15 +41,26 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({
         onClick={onClose}
       />
 
-      {/* Drawer */}
+      {/* Drawer — anchored to bottom of viewport */}
       <div
-        className={`fixed bottom-0 left-0 right-0 ${sizeClasses[size]} bg-white rounded-t-2xl shadow-2xl z-50 transform transition-transform duration-300 ease-in-out`}
+        className={`fixed inset-x-0 bottom-0 top-auto ${sizeClasses[size]} bg-white rounded-t-3xl shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col pb-[env(safe-area-inset-bottom,0px)]`}
         style={{
           transform: isOpen ? "translateY(0)" : "translateY(100%)",
         }}
+        role="dialog"
+        aria-modal="true"
       >
+        {showBottomSheetChrome && (
+          <div className="flex flex-shrink-0 justify-center pt-3 pb-1" aria-hidden>
+            <div className="h-1.5 w-12 rounded-full bg-gray-300" />
+          </div>
+        )}
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div
+          className={`flex flex-shrink-0 items-center justify-between border-b border-gray-200 ${
+            showBottomSheetChrome ? "px-6 pb-4 pt-0" : "p-6"
+          }`}
+        >
           <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
           <button
             onClick={onClose}
@@ -56,8 +70,14 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto h-full">
+        {/* Content — xl bottom sheet uses overflow-hidden so children can pin footer */}
+        <div
+          className={`p-6 flex-1 min-h-0 ${
+            showBottomSheetChrome
+              ? "flex flex-col overflow-hidden"
+              : "overflow-y-auto"
+          }`}
+        >
           {children}
 
           {/* Action Buttons */}

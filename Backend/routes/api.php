@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PurchaseHistory\PurchaseHistoryController;
 use App\Http\Controllers\Api\PaymentHistory\PaymentHistoryController;
+use App\Http\Controllers\Api\User\UserController;
 
 // Public routes (no middleware)
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -34,7 +35,15 @@ Route::get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/user', [AuthController::class, 'user']);
-    Route::get('/auth/users', [AuthController::class, 'getAllUsers']);
+
+    // User management (admin only; enforced in controller)
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::post('/', [UserController::class, 'store']);
+        Route::get('/{user}', [UserController::class, 'show']);
+        Route::put('/{user}', [UserController::class, 'update']);
+        Route::delete('/{user}', [UserController::class, 'destroy']);
+    });
 
     // Category API Routes
     Route::prefix('categories')->group(function () {
