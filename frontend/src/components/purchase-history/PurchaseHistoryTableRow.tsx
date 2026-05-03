@@ -1,6 +1,7 @@
 import React from "react";
 import { Pencil, Trash2, Eye } from "lucide-react";
 import { PurchaseHistory } from "../../services/purchaseHistoryApi";
+import StockActionsDropdown from "../stock/StockActionsDropdown";
 
 interface PurchaseHistoryTableRowProps {
   purchaseHistory: PurchaseHistory;
@@ -117,34 +118,40 @@ const PurchaseHistoryTableRow: React.FC<PurchaseHistoryTableRowProps> = ({
         )}
       </div>
 
-      {/* Actions */}
+      {/* Actions — ⋮ menu */}
       <div
-        className="col-span-2 flex items-center justify-center gap-1.5"
+        className="col-span-2 flex items-center justify-center"
         onClick={(e) => e.stopPropagation()}
       >
-        {onView && (
-          <button
-            onClick={() => onView(purchaseHistory)}
-            className="p-2.5 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
-            title="View Purchase History"
-          >
-            <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-          </button>
-        )}
-        <button
-          onClick={() => onEdit(purchaseHistory)}
-          className="p-2.5 text-amber-600 hover:text-amber-700 rounded-lg transition-all duration-200 group/btn"
-          title="Edit Purchase History"
-        >
-          <Pencil className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-        </button>
-        <button
-          onClick={() => onDelete(purchaseHistory)}
-          className="p-2.5 text-red-600 hover:text-red-700 rounded-lg transition-all duration-200 group/btn"
-          title="Delete Purchase History"
-        >
-          <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-        </button>
+        <StockActionsDropdown
+          items={[
+            ...(onView
+              ? [
+                  {
+                    id: "view",
+                    label: "View",
+                    icon: Eye,
+                    onClick: () => onView(purchaseHistory),
+                    variant: "primary" as const,
+                  },
+                ]
+              : []),
+            {
+              id: "edit",
+              label: "Edit",
+              icon: Pencil,
+              onClick: () => onEdit(purchaseHistory),
+              variant: "amber" as const,
+            },
+            {
+              id: "delete",
+              label: "Delete",
+              icon: Trash2,
+              onClick: () => onDelete(purchaseHistory),
+              variant: "danger" as const,
+            },
+          ]}
+        />
       </div>
     </div>
   );

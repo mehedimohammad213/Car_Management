@@ -16,6 +16,7 @@ import {
     Download,
 } from "lucide-react";
 import jsPDF from "jspdf";
+import StockActionsDropdown from "../stock/StockActionsDropdown";
 
 /** Encode TTF binary for jsPDF addFileToVFS (chunked to avoid call-stack limits). */
 function uint8ArrayToBase64(bytes: Uint8Array): string {
@@ -481,40 +482,61 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                             </div>
 
                             <div className="flex items-center gap-2">
+                                <div onClick={(e) => e.stopPropagation()}>
+                                    <StockActionsDropdown
+                                        items={[
+                                            ...(onEdit
+                                                ? [
+                                                      {
+                                                          id: "edit-lc",
+                                                          label: "Edit LC information",
+                                                          icon: Edit2,
+                                                          onClick: () =>
+                                                              onEdit(histories),
+                                                          variant: "amber" as const,
+                                                      },
+                                                  ]
+                                                : []),
+                                            ...(onDelete
+                                                ? [
+                                                      {
+                                                          id: "delete-lc",
+                                                          label: "Delete LC",
+                                                          icon: Trash2,
+                                                          onClick: () =>
+                                                              onDelete(
+                                                                  histories[0]
+                                                              ),
+                                                          variant: "danger" as const,
+                                                      },
+                                                  ]
+                                                : []),
+                                            {
+                                                id: "download-lc-pdf",
+                                                label: "Download LC PDF",
+                                                icon: Download,
+                                                onClick: () =>
+                                                    void downloadLcPdf(
+                                                        lcNumber,
+                                                        histories
+                                                    ),
+                                                variant: "primary" as const,
+                                                hidden:
+                                                    downloadingLc === lcNumber,
+                                            },
+                                        ]}
+                                    />
+                                </div>
                                 <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (onEdit) onEdit(histories);
-                                    }}
-                                    className="p-2.5 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-100 transition-all border border-amber-100 shadow-sm"
-                                    title="Edit LC Information"
-                                >
-                                    <Edit2 className="w-5 h-5" />
-                                </button>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (onDelete) onDelete(histories[0]);
-                                    }}
-                                    className="p-2.5 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-all border border-red-100 shadow-sm"
-                                    title="Delete LC"
-                                >
-                                    <Trash2 className="w-5 h-5" />
-                                </button>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        void downloadLcPdf(lcNumber, histories);
-                                    }}
-                                    disabled={downloadingLc === lcNumber}
-                                    className="p-2.5 rounded-xl bg-primary-50 text-primary-600 hover:bg-primary-100 transition-all border border-primary-100 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
-                                    title="Download LC PDF"
-                                >
-                                    <Download className="w-5 h-5" />
-                                </button>
-                                <button
+                                    type="button"
                                     className={`p-2.5 rounded-xl transition-all duration-500 ${isExpanded ? "bg-primary-600 text-white" : "bg-gray-100 text-gray-400 group-hover:bg-primary-100 group-hover:text-primary-500"
                                         }`}
+                                    aria-expanded={isExpanded}
+                                    title={
+                                        isExpanded
+                                            ? "Collapse LC"
+                                            : "Expand LC"
+                                    }
                                 >
                                     {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                                 </button>
@@ -556,27 +578,46 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                                                                 REF: {car.ref_no || "N/A"}
                                                             </div>
                                                         </div>
-                                                        <div className="flex gap-1.5 opacity-0 group-hover/car:opacity-100 transition-opacity">
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    if (onEdit) onEdit(history);
-                                                                }}
-                                                                className="p-2 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 border border-amber-100"
-                                                                title="Edit"
-                                                            >
-                                                                <Edit2 className="w-4 h-4" />
-                                                            </button>
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    if (onDelete) onDelete(history);
-                                                                }}
-                                                                className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 border border-red-100"
-                                                                title="Delete"
-                                                            >
-                                                                <Trash2 className="w-4 h-4" />
-                                                            </button>
+                                                        <div
+                                                            className="opacity-0 group-hover/car:opacity-100 transition-opacity shrink-0"
+                                                            onClick={(e) =>
+                                                                e.stopPropagation()
+                                                            }
+                                                        >
+                                                            <StockActionsDropdown
+                                                                items={[
+                                                                    ...(onEdit
+                                                                        ? [
+                                                                              {
+                                                                                  id: `edit-${history.id}-${idx}`,
+                                                                                  label: "Edit",
+                                                                                  icon: Edit2,
+                                                                                  onClick: () =>
+                                                                                      onEdit(
+                                                                                          history
+                                                                                      ),
+                                                                                  variant:
+                                                                                      "amber" as const,
+                                                                              },
+                                                                          ]
+                                                                        : []),
+                                                                    ...(onDelete
+                                                                        ? [
+                                                                              {
+                                                                                  id: `delete-${history.id}-${idx}`,
+                                                                                  label: "Delete",
+                                                                                  icon: Trash2,
+                                                                                  onClick: () =>
+                                                                                      onDelete(
+                                                                                          history
+                                                                                      ),
+                                                                                  variant:
+                                                                                      "danger" as const,
+                                                                              },
+                                                                          ]
+                                                                        : []),
+                                                                ]}
+                                                            />
                                                         </div>
                                                         <div className="bg-primary-50 p-2.5 rounded-xl text-primary-500 ml-4 hidden sm:block">
                                                             <Car className="w-5 h-5 shadow-sm" />
