@@ -129,7 +129,7 @@ const Header: React.FC = () => {
     return null;
   }
 
-  const allowedStockTabs: StockPageTab[] = ["all", "before", "current", "available", "soldout"];
+  const allowedStockTabs: StockPageTab[] = ["all", "before", "current"]; // "available", "soldout" — commented out in UI
   const tabParam = new URLSearchParams(location.search).get("tab");
   const effectiveStockTab: StockPageTab =
     tabParam && allowedStockTabs.includes(tabParam as StockPageTab)
@@ -348,6 +348,7 @@ const Header: React.FC = () => {
                           >
                             <span>Current Stock</span>
                           </Link>
+                          {/* Available / Sold Out — commented out (match Sidebar)
                           <Link
                             to="/admin/stock?tab=available"
                             onClick={() => {
@@ -370,6 +371,7 @@ const Header: React.FC = () => {
                           >
                             <span>Sold Out</span>
                           </Link>
+                          */}
                         </div>
                       )}
                     </div>

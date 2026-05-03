@@ -30,7 +30,7 @@ const StockManagement: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const allowedTabs: StockPageTab[] = ["all", "before", "current", "available", "soldout"];
+  const allowedTabs: StockPageTab[] = ["all", "before", "current"]; // "available", "soldout" — UI commented out
   const queryTab = searchParams.get("tab");
   const initialTab: StockPageTab =
     queryTab && allowedTabs.includes(queryTab as StockPageTab)
@@ -298,10 +298,7 @@ const StockManagement: React.FC = () => {
             tabCounts={stockTabCounts}
           />
 
-          {activeTab === "all" ||
-          activeTab === "current" ||
-          activeTab === "available" ||
-          activeTab === "soldout" ? (
+          {activeTab === "all" || activeTab === "current" ? (
             <StockFilters
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
@@ -351,10 +348,7 @@ const StockManagement: React.FC = () => {
 
         <MessageDisplay message={message} />
 
-        {activeTab === "all" ||
-        activeTab === "current" ||
-        activeTab === "available" ||
-        activeTab === "soldout" ? (
+        {activeTab === "all" || activeTab === "current" ? (
           <>
             <StockTable
               stocks={activeTab === "all" ? [] : stocks}
@@ -374,8 +368,8 @@ const StockManagement: React.FC = () => {
                 fetchStocks();
                 fetchAvailableCars();
               }}
-              emptyStateVariant={activeTab === "soldout" ? "soldout" : "default"}
-              showDelete={activeTab !== "soldout" && activeTab !== "available"}
+              emptyStateVariant="default"
+              showDelete
               unifiedRows={activeTab === "all" ? unifiedPageRows : undefined}
               unifiedPendingCallbacks={
                 activeTab === "all"

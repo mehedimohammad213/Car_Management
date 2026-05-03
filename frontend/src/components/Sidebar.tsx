@@ -49,8 +49,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
     "all",
     "before",
     "current",
-    "available",
-    "soldout",
+    // "available",
+    // "soldout",
   ];
   const tabParam = new URLSearchParams(location.search).get("tab");
   const effectiveStockTab: StockPageTab =
@@ -233,6 +233,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                       >
                         <span className="truncate">Current Stock</span>
                       </Link>
+                      {/* Available / Sold Out tabs hidden
                       <Link
                         to="/admin/stock?tab=available"
                         className={stockTabLinkClasses("available")}
@@ -253,6 +254,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                       >
                         <span className="truncate">Sold Out</span>
                       </Link>
+                      */}
                     </div>
                   )}
                 </div>

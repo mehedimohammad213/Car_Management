@@ -123,6 +123,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
               Current
               <TabDataCount n={tabCounts.current} active={activeTab === "current"} />
             </button>
+            {/* Available / Sold out tabs — commented out (see Sidebar)
             <button
               onClick={() => onTabChange("available")}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "available"
@@ -146,6 +147,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
               Sold out
               <TabDataCount n={tabCounts.soldout} active={activeTab === "soldout"} />
             </button>
+            */}
           </div>
         </div>
       </div>
