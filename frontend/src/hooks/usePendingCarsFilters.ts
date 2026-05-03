@@ -30,7 +30,7 @@ export function usePendingCarsFilters(availableCars: PendingCarRecord[]) {
   }, [searchTerm, yearFilter, makeFilter, modelFilter, colorFilter, fuelFilter]);
 
   const derived = useMemo(() => {
-    /** No stock row yet, and only pending/available (exclude sold, reserved, …). */
+    /** No stock row yet; includes sold cars so they can be restocked. */
     const base = availableCars.filter(isCarEligibleForPendingStockTab);
 
     let filtered = [...base];

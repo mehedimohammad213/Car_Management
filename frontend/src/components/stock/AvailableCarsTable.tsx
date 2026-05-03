@@ -427,18 +427,13 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                     <button
                       type="button"
                       onClick={() => onCreateStock(car)}
-                      disabled={carSold}
-                      className="shrink-0 p-2 rounded-lg transition-all duration-200 group/btn text-primary-600 hover:text-primary-700 disabled:pointer-events-none disabled:opacity-40 disabled:text-gray-400"
+                      className="shrink-0 p-2 rounded-lg transition-all duration-200 group/btn text-primary-600 hover:text-primary-700"
                       title={
                         carSold
-                          ? "Sold — cannot add stock"
+                          ? "Add stock (car was sold — status will update to match stock)"
                           : "Add Stock"
                       }
-                      aria-label={
-                        carSold
-                          ? "Add Stock (disabled: car is sold)"
-                          : "Add Stock"
-                      }
+                      aria-label={carSold ? "Add Stock (restock sold car)" : "Add Stock"}
                     >
                       <PackagePlus className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
                     </button>

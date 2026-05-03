@@ -21,7 +21,6 @@ import { stockApi, Stock } from "../../services/stockApi";
 import { carApi } from "../../services/carApi";
 import {
   getEffectiveStockStatus,
-  isCarStatusSold,
   isStockRowSold,
 } from "../../utils/stockStatus";
 import { filterPendingCarsLikeStockFilters } from "../../utils/filterPendingCarsLikeStockFilters";
@@ -202,10 +201,6 @@ const StockManagement: React.FC = () => {
   }, [searchParams.toString()]);
 
   const handleCreateStockFromCar = async (car: any) => {
-    if (isCarStatusSold(car)) {
-      showMessage("error", "Cannot add stock while the car is marked sold.");
-      return;
-    }
     try {
       console.log("Creating stock from car:", car);
       const stockData = {

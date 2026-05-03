@@ -43,14 +43,20 @@ export function isCarStatusSold(car: { status?: string } | null | undefined): bo
 }
 
 /**
- * Stock “Pending” tab + unified All Stock pending block: only cars awaiting stock entry
- * (`pending` or legacy `available`), not sold/reserved/etc.
+ * Stock “Pending” tab + unified All Stock pending block: cars with no stock row yet.
+ * Includes `sold` so a previously sold vehicle can be restocked (new stock uses `available`
+ * and syncs car status from the API).
  */
 export function isCarEligibleForPendingStockTab(
   car: { status?: string } | null | undefined
 ): boolean {
   const s = String(car?.status ?? "").toLowerCase().trim();
-  return s === "pending" || s === "available" || s === "";
+  return (
+    s === "pending" ||
+    s === "available" ||
+    s === "sold" ||
+    s === ""
+  );
 }
 
 /** Order for “status-wise” lists: in-stock first, then issues, sold last */
