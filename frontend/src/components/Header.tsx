@@ -129,12 +129,12 @@ const Header: React.FC = () => {
     return null;
   }
 
-  const allowedStockTabs: StockPageTab[] = ["before", "current", "available", "soldout"];
+  const allowedStockTabs: StockPageTab[] = ["all", "before", "current", "available", "soldout"];
   const tabParam = new URLSearchParams(location.search).get("tab");
   const effectiveStockTab: StockPageTab =
     tabParam && allowedStockTabs.includes(tabParam as StockPageTab)
       ? (tabParam as StockPageTab)
-      : "before";
+      : "all";
 
   React.useEffect(() => {
     // Keep only the current route submenu open in mobile menu.
@@ -315,6 +315,17 @@ const Header: React.FC = () => {
 
                       {mobileStockSubmenuOpen && (
                         <div className="ml-5 mt-1 flex flex-col gap-1">
+                          <Link
+                            to="/admin/stock?tab=all"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setMobileStockSubmenuOpen(true);
+                              setMobilePurchaseSubmenuOpen(false);
+                            }}
+                            className={stockTabClass("all")}
+                          >
+                            <span>All Stock</span>
+                          </Link>
                           <Link
                             to="/admin/stock?tab=before"
                             onClick={() => {

@@ -2,10 +2,11 @@ import React from "react";
 import { Package } from "lucide-react";
 import { Stock } from "../../services/stockApi";
 import StockTableRow from "./StockTableRow";
-import {
-  getEffectiveStockStatus,
-  STATUS_SECTION_LABELS,
-} from "../../utils/stockStatus";
+import PendingCarUnifiedRow from "./PendingCarUnifiedRow";
+import type { PendingCarRecord } from "../../hooks/usePendingCarsFilters";
+export type UnifiedStockRow =
+  | { kind: "pending"; car: PendingCarRecord }
+  | { kind: "stock"; stock: Stock };
 
 interface StockTableProps {
   stocks: Stock[];
@@ -19,9 +20,15 @@ interface StockTableProps {
   onView?: (stock: Stock) => void;
   onRefresh: () => void;
   emptyStateVariant?: "default" | "soldout";
-  showStatusGroups?: boolean;
-  statusTotals?: Record<string, number>;
   showDelete?: boolean;
+  /** When set, renders one combined list (pending cars + stock rows) instead of `stocks` only. */
+  unifiedRows?: UnifiedStockRow[];
+  unifiedPendingCallbacks?: {
+    onView: (car: PendingCarRecord) => void;
+    onEdit: (car: PendingCarRecord) => void;
+    onDelete: (car: PendingCarRecord) => void;
+    onCreateStock: (car: PendingCarRecord) => void;
+  };
 }
 
 const StockTable: React.FC<StockTableProps> = ({
@@ -36,10 +43,11 @@ const StockTable: React.FC<StockTableProps> = ({
   onView,
   onRefresh,
   emptyStateVariant = "default",
-  showStatusGroups = false,
-  statusTotals = {},
   showDelete = true,
+  unifiedRows,
+  unifiedPendingCallbacks,
 }) => {
+  const useUnifiedList = unifiedRows != null;
 
   // Calculate current stock count for each make/model
   const stockCountsMap = React.useMemo(() => {
@@ -52,6 +60,18 @@ const StockTable: React.FC<StockTableProps> = ({
     });
     return counts;
   }, [allStocks]);
+
+  const pendingMakeModelCountsOnPage = React.useMemo(() => {
+    if (!unifiedRows?.length) return new Map<string, number>();
+    const counts = new Map<string, number>();
+    unifiedRows.forEach((row) => {
+      if (row.kind !== "pending") return;
+      const car = row.car;
+      const key = `${car.make ?? ""}_${car.model ?? ""}`;
+      counts.set(key, (counts.get(key) || 0) + 1);
+    });
+    return counts;
+  }, [unifiedRows]);
 
   if (isLoading) {
     return (
@@ -69,7 +89,29 @@ const StockTable: React.FC<StockTableProps> = ({
     );
   }
 
-  if (stocks.length === 0) {
+  if (useUnifiedList && unifiedRows!.length === 0) {
+    return (
+      <div className="text-center py-20">
+        <div className="w-40 h-40 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+          <Package className="w-20 h-20 text-primary-600" />
+        </div>
+        <h3 className="text-3xl font-bold text-gray-900 mb-4">
+          No vehicles match
+        </h3>
+        <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
+          Nothing in this combined list matches your filters. Try clearing filters or search.
+        </p>
+        <button
+          onClick={onRefresh}
+          className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-800 text-white rounded-xl hover:from-primary-700 hover:to-primary-900 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+        >
+          Refresh Data
+        </button>
+      </div>
+    );
+  }
+
+  if (!useUnifiedList && stocks.length === 0) {
     const isSoldoutTab = emptyStateVariant === "soldout";
     return (
       <div className="text-center py-20">
@@ -129,73 +171,103 @@ const StockTable: React.FC<StockTableProps> = ({
             </div>
           </div>
 
-          {/* Table Body */}
+          {/* Table Body — unified All Stock: pending block then stock rows (same order as combined list) */}
           <div className="divide-y divide-gray-100">
-            {stocks.flatMap((stock, index) => {
-              const makeModelKey = stock.car
-                ? `${stock.car.make}_${stock.car.model}`
-                : "";
-              const currentStockCount = stock.car
-                ? stockCountsMap.get(makeModelKey) || 0
-                : 0;
+            {useUnifiedList && unifiedRows && unifiedPendingCallbacks
+              ? (() => {
+                  const pendingSlice = unifiedRows.filter(
+                    (r): r is { kind: "pending"; car: PendingCarRecord } =>
+                      r.kind === "pending"
+                  );
+                  const stockSlice = unifiedRows
+                    .filter((r): r is { kind: "stock"; stock: Stock } => r.kind === "stock")
+                    .map((r) => r.stock);
 
-              const isFirstOfMakeModel =
-                stock.car &&
-                stocks.findIndex(
-                  (s) =>
-                    s.car && `${s.car.make}_${s.car.model}` === makeModelKey
-                ) === index;
+                  const pendingNodes: React.ReactNode[] = [];
+                  pendingSlice.forEach((row, i) => {
+                    const car = row.car;
+                    const makeModelKey = `${car.make ?? ""}_${car.model ?? ""}`;
+                    const totalForKey =
+                      pendingMakeModelCountsOnPage.get(makeModelKey) || 0;
+                    const firstIdx = pendingSlice.findIndex(
+                      (r) =>
+                        `${r.car.make ?? ""}_${r.car.model ?? ""}` ===
+                        makeModelKey
+                    );
+                    pendingNodes.push(
+                      <PendingCarUnifiedRow
+                        key={`pending-${car.id}`}
+                        car={car}
+                        showMakeModelCount={firstIdx === i}
+                        makeModelCount={totalForKey}
+                        onView={unifiedPendingCallbacks.onView}
+                        onEdit={unifiedPendingCallbacks.onEdit}
+                        onDelete={unifiedPendingCallbacks.onDelete}
+                        onCreateStock={unifiedPendingCallbacks.onCreateStock}
+                      />
+                    );
+                  });
 
-              const effective = getEffectiveStockStatus(stock);
-              const prevEffective =
-                index > 0
-                  ? getEffectiveStockStatus(stocks[index - 1])
-                  : null;
-              const showGroupHeader =
-                showStatusGroups && effective !== prevEffective;
-              const sectionLabel =
-                STATUS_SECTION_LABELS[effective] ??
-                effective.charAt(0).toUpperCase() + effective.slice(1);
-              const sectionCount = statusTotals[effective];
+                  const stockNodes = stockSlice.map((stock, index) => {
+                    const makeModelKey = stock.car
+                      ? `${stock.car.make}_${stock.car.model}`
+                      : "";
+                    const currentStockCount = stock.car
+                      ? stockCountsMap.get(makeModelKey) || 0
+                      : 0;
 
-              const nodes: React.ReactNode[] = [];
-              // In the "Current" tab we don't want the redundant "Available (N)" section header.
-              // (The individual row still shows its own status badge.)
-              const shouldRenderSectionHeader =
-                showGroupHeader && effective !== "available";
+                    const isFirstOfMakeModel =
+                      stock.car &&
+                      stockSlice.findIndex(
+                        (s) =>
+                          s.car &&
+                          `${s.car.make}_${s.car.model}` === makeModelKey
+                      ) === index;
 
-              if (shouldRenderSectionHeader) {
-                nodes.push(
-                  <div
-                    key={`status-${stock.id}-${effective}`}
-                    className="bg-slate-50 border-y border-slate-200 px-4 py-2.5"
-                  >
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
-                      {sectionLabel}
-                      {sectionCount != null && (
-                        <span className="ml-2 font-semibold text-slate-400 normal-case">
-                          ({sectionCount})
-                        </span>
-                      )}
-                    </span>
-                  </div>
-                );
-              }
+                    return (
+                      <StockTableRow
+                        key={stock.id}
+                        stock={stock}
+                        currentStockCount={currentStockCount}
+                        showCount={!!isFirstOfMakeModel}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                        onView={onView}
+                        showDelete={showDelete}
+                      />
+                    );
+                  });
 
-              nodes.push(
-                <StockTableRow
-                  key={stock.id}
-                  stock={stock}
-                  currentStockCount={currentStockCount}
-                  showCount={!!isFirstOfMakeModel}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                  onView={onView}
-                  showDelete={showDelete}
-                />
-              );
-              return nodes;
-            })}
+                  return [...pendingNodes, ...stockNodes];
+                })()
+              : stocks.map((stock, index) => {
+                  const makeModelKey = stock.car
+                    ? `${stock.car.make}_${stock.car.model}`
+                    : "";
+                  const currentStockCount = stock.car
+                    ? stockCountsMap.get(makeModelKey) || 0
+                    : 0;
+
+                  const isFirstOfMakeModel =
+                    stock.car &&
+                    stocks.findIndex(
+                      (s) =>
+                        s.car && `${s.car.make}_${s.car.model}` === makeModelKey
+                    ) === index;
+
+                  return (
+                    <StockTableRow
+                      key={stock.id}
+                      stock={stock}
+                      currentStockCount={currentStockCount}
+                      showCount={!!isFirstOfMakeModel}
+                      onEdit={onEdit}
+                      onDelete={onDelete}
+                      onView={onView}
+                      showDelete={showDelete}
+                    />
+                  );
+                })}
           </div>
         </div>
       </div>

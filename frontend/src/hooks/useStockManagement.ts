@@ -25,15 +25,34 @@ export const useStockManagement = (stockScope: StockListScope = "all") => {
   const fetchStocks = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await stockApi.getStocks({
-        sort_by: "created_at",
-        sort_order: "desc",
+      const baseParams = {
+        sort_by: "created_at" as const,
+        sort_order: "desc" as const,
         per_page: 10000,
         page: 1,
-      });
+      };
 
+      const response = await stockApi.getStocks(baseParams);
+
+      let merged: Stock[] = [];
       if (response.success && response.data) {
-        setAllStocks(response.data);
+        merged = response.data;
+        const totalPages = response.last_page ?? 1;
+        if (totalPages > 1) {
+          const pageRequests = [];
+          for (let page = 2; page <= totalPages; page++) {
+            pageRequests.push(
+              stockApi.getStocks({ ...baseParams, page })
+            );
+          }
+          const more = await Promise.all(pageRequests);
+          more.forEach((r) => {
+            if (r.success && r.data?.length) {
+              merged = [...merged, ...r.data];
+            }
+          });
+        }
+        setAllStocks(merged);
       } else {
         setAllStocks([]);
       }

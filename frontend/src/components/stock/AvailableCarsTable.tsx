@@ -40,7 +40,7 @@ interface AvailableCarsTableProps {
   filteredAllCars: AvailableCar[];
   /** True once load finished and API returned at least one car (before client filters). */
   apiHasCars: boolean;
-  /** Non-sold cars from API (pending pool size before search/filters). */
+  /** Cars from API with no stock row (pending pool size before search/filters). */
   sourceCount: number;
   isLoading: boolean;
   onCreateStock: (car: AvailableCar) => void;

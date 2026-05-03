@@ -20,15 +20,19 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { stockApi, Stock } from "../../services/stockApi";
 import { carApi } from "../../services/carApi";
 import { getEffectiveStockStatus, isStockRowSold } from "../../utils/stockStatus";
+import { filterPendingCarsLikeStockFilters } from "../../utils/filterPendingCarsLikeStockFilters";
+import type { UnifiedStockRow } from "../../components/stock/StockTable";
 
 const StockManagement: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const allowedTabs: StockPageTab[] = ["before", "current", "available", "soldout"];
+  const allowedTabs: StockPageTab[] = ["all", "before", "current", "available", "soldout"];
   const queryTab = searchParams.get("tab");
   const initialTab: StockPageTab =
-    (queryTab && allowedTabs.includes(queryTab as StockPageTab) ? (queryTab as StockPageTab) : "before");
+    queryTab && allowedTabs.includes(queryTab as StockPageTab)
+      ? (queryTab as StockPageTab)
+      : "all";
 
   const [activeTab, setActiveTab] = useState<StockPageTab>(initialTab);
   const [showPendingCarDeleteModal, setShowPendingCarDeleteModal] =
@@ -40,7 +44,8 @@ const StockManagement: React.FC = () => {
   } | null>(null);
   const [isDeletingPendingCar, setIsDeletingPendingCar] = useState(false);
 
-  const stockScope = activeTab === "soldout" ? "sold" : activeTab === "available" ? "available" : "all";
+  const stockScope =
+    activeTab === "soldout" ? "sold" : activeTab === "available" ? "available" : "all";
 
   const {
     stocks,
@@ -95,13 +100,15 @@ const StockManagement: React.FC = () => {
     fetchAvailableCars,
     showMessage,
     scopedStocks,
-    statusTotals,
+    filteredStocksFull,
   } = useStockManagement(stockScope);
 
   const pendingFilters = usePendingCarsFilters(availableCars);
 
   const stockTabCounts = useMemo(
     () => ({
+      /** Combined view on All Stock: pending (no stock row) + every stock line */
+      all: allStocks.length + pendingFilters.sourceCount,
       pending: pendingFilters.sourceCount,
       current: allStocks.length,
       available: allStocks.filter((s) => getEffectiveStockStatus(s) === "available").length,
@@ -110,21 +117,82 @@ const StockManagement: React.FC = () => {
     [pendingFilters.sourceCount, allStocks]
   );
 
+  const pendingFilteredForUnified = useMemo(
+    () =>
+      filterPendingCarsLikeStockFilters(availableCars, {
+        searchTerm,
+        yearFilter,
+        makeFilter,
+        modelFilter,
+        colorFilter,
+        fuelFilter,
+      }),
+    [
+      availableCars,
+      searchTerm,
+      yearFilter,
+      makeFilter,
+      modelFilter,
+      colorFilter,
+      fuelFilter,
+    ]
+  );
+
+  const unifiedCombined = useMemo((): UnifiedStockRow[] => {
+    const pending = pendingFilteredForUnified.map((car) => ({
+      kind: "pending" as const,
+      car,
+    }));
+    const stocksPart = filteredStocksFull.map((stock) => ({
+      kind: "stock" as const,
+      stock,
+    }));
+    return [...pending, ...stocksPart];
+  }, [pendingFilteredForUnified, filteredStocksFull]);
+
+  const unifiedTotalItems = unifiedCombined.length;
+  const unifiedTotalPages = Math.max(
+    Math.ceil(unifiedTotalItems / perPage),
+    1
+  );
+
+  const unifiedPageRows = useMemo(() => {
+    const start = (currentPage - 1) * perPage;
+    return unifiedCombined.slice(start, start + perPage);
+  }, [unifiedCombined, currentPage, perPage]);
+
   useEffect(() => {
     fetchAvailableCars();
   }, [fetchAvailableCars]);
 
   useEffect(() => {
-    if (activeTab === "before") {
+    if (activeTab === "before" || activeTab === "all") {
       fetchAvailableCars();
     }
   }, [activeTab, fetchAvailableCars]);
 
-  // Sync tab state from URL query param (`/admin/stock?tab=current|available|soldout|before`).
+  useEffect(() => {
+    if (activeTab !== "all") return;
+    const safe = Math.max(unifiedTotalPages, 1);
+    if (currentPage > safe) {
+      setCurrentPage(safe);
+    }
+  }, [activeTab, unifiedTotalPages, currentPage, setCurrentPage]);
+
+  // Normalize missing/invalid `tab` to default, and sync from URL.
   useEffect(() => {
     const t = searchParams.get("tab") as StockPageTab | null;
-    if (!t) return;
-    if (!allowedTabs.includes(t)) return;
+    if (!t || !allowedTabs.includes(t)) {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          next.set("tab", "all");
+          return next;
+        },
+        { replace: true }
+      );
+      return;
+    }
     setActiveTab(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.toString()]);
@@ -175,8 +243,10 @@ const StockManagement: React.FC = () => {
   };
 
   const handleEditPendingCar = (car: { id: number }) => {
+    const returnStockTab: StockPageTab =
+      activeTab === "all" ? "all" : "before";
     navigate(`/update-car/${car.id}`, {
-      state: { returnStockTab: "before" as const },
+      state: { returnStockTab },
     });
   };
 
@@ -225,7 +295,10 @@ const StockManagement: React.FC = () => {
             tabCounts={stockTabCounts}
           />
 
-          {activeTab === "current" || activeTab === "available" || activeTab === "soldout" ? (
+          {activeTab === "all" ||
+          activeTab === "current" ||
+          activeTab === "available" ||
+          activeTab === "soldout" ? (
             <StockFilters
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
@@ -275,29 +348,52 @@ const StockManagement: React.FC = () => {
 
         <MessageDisplay message={message} />
 
-        {activeTab === "current" || activeTab === "available" || activeTab === "soldout" ? (
+        {activeTab === "all" ||
+        activeTab === "current" ||
+        activeTab === "available" ||
+        activeTab === "soldout" ? (
           <>
             <StockTable
-              stocks={stocks}
+              stocks={activeTab === "all" ? [] : stocks}
               allStocks={scopedStocks}
-              isLoading={isLoading}
+              isLoading={
+                activeTab === "all"
+                  ? isLoading || isLoadingAvailableCars
+                  : isLoading
+              }
               sortBy={sortBy}
               sortOrder={sortOrder}
               onSort={handleSort}
               onEdit={handleEditCar}
               onDelete={handleDeleteStock}
               onView={handleViewCar}
-              onRefresh={fetchStocks}
+              onRefresh={() => {
+                fetchStocks();
+                fetchAvailableCars();
+              }}
               emptyStateVariant={activeTab === "soldout" ? "soldout" : "default"}
-              showStatusGroups={activeTab === "current"}
-              statusTotals={statusTotals}
               showDelete={activeTab !== "soldout" && activeTab !== "available"}
+              unifiedRows={activeTab === "all" ? unifiedPageRows : undefined}
+              unifiedPendingCallbacks={
+                activeTab === "all"
+                  ? {
+                      onView: handleViewCar,
+                      onEdit: handleEditPendingCar,
+                      onDelete: handleDeletePendingCar,
+                      onCreateStock: handleCreateStockFromCar,
+                    }
+                  : undefined
+              }
             />
 
             <Pagination
               currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalItems}
+              totalPages={
+                activeTab === "all" ? unifiedTotalPages : totalPages
+              }
+              totalItems={
+                activeTab === "all" ? unifiedTotalItems : totalItems
+              }
               perPage={perPage}
               onPageChange={(page) => setCurrentPage(page)}
             />

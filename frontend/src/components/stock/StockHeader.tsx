@@ -12,9 +12,10 @@ interface InvoiceItem {
   freight_usd?: number;
 }
 
-export type StockPageTab = "current" | "available" | "before" | "soldout";
+export type StockPageTab = "all" | "before" | "current" | "available" | "soldout";
 
 export type StockTabCounts = {
+  all: number;
   pending: number;
   available: number;
   current: number;
@@ -92,6 +93,16 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
           </div>
           {/* Tab Selection - right side of header */}
           <div className="flex flex-wrap gap-1">
+            <button
+              onClick={() => onTabChange("all")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "all"
+                  ? "bg-primary-600 text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              All Stock
+              <TabDataCount n={tabCounts.all} active={activeTab === "all"} />
+            </button>
             <button
               onClick={() => onTabChange("before")}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "before"

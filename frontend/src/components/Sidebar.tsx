@@ -46,6 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   const [stockSubmenuOpen, setStockSubmenuOpen] = useState(isOnStockRoute);
 
   const allowedStockTabs: StockPageTab[] = [
+    "all",
     "before",
     "current",
     "available",
@@ -53,9 +54,9 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   ];
   const tabParam = new URLSearchParams(location.search).get("tab");
   const effectiveStockTab: StockPageTab =
-    (tabParam && allowedStockTabs.includes(tabParam as StockPageTab)
+    tabParam && allowedStockTabs.includes(tabParam as StockPageTab)
       ? (tabParam as StockPageTab)
-      : "before");
+      : "all";
 
   const isOnPurchaseRoute = location.pathname === "/admin/purchase-history";
   type PurchaseTab = "lc_wise" | "history";
@@ -202,6 +203,16 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
 
                   {!collapsed && stockSubmenuOpen && (
                     <div className="mt-1 flex flex-col gap-1 pl-7 pr-2">
+                      <Link
+                        to="/admin/stock?tab=all"
+                        className={stockTabLinkClasses("all")}
+                        onClick={() => {
+                          setStockSubmenuOpen(true);
+                          setPurchaseSubmenuOpen(false);
+                        }}
+                      >
+                        <span className="truncate">All Stock</span>
+                      </Link>
                       <Link
                         to="/admin/stock?tab=before"
                         className={stockTabLinkClasses("before")}

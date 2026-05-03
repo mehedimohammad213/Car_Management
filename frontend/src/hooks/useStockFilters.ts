@@ -52,9 +52,9 @@ export const useStockFilters = (
         if (scopedStocks.length === 0) {
             return {
                 stocks: [] as Stock[],
+                filteredStocksFull: [] as Stock[],
                 totalPages: 1,
                 totalItems: 0,
-                statusTotals: {} as Record<string, number>,
                 filterOptions: {} as FilterOptions,
             };
         }
@@ -147,12 +147,6 @@ export const useStockFilters = (
             });
         }
 
-        const statusTotals: Record<string, number> = {};
-        for (const s of filtered) {
-            const k = getEffectiveStockStatus(s);
-            statusTotals[k] = (statusTotals[k] || 0) + 1;
-        }
-
         const startIndex = (currentPage - 1) * PER_PAGE;
         const endIndex = startIndex + PER_PAGE;
         const paginatedStocks = filtered.slice(startIndex, endIndex);
@@ -169,9 +163,10 @@ export const useStockFilters = (
 
         return {
             stocks: paginatedStocks,
+            /** Full filtered stock list before pagination (for unified All Stock view). */
+            filteredStocksFull: filtered,
             totalPages: Math.max(Math.ceil(filtered.length / PER_PAGE), 1),
             totalItems: filtered.length,
-            statusTotals,
             filterOptions: {
                 years: Array.from(years).sort((a, b) => b - a),
                 colors: Array.from(colors).sort(),
@@ -180,6 +175,7 @@ export const useStockFilters = (
         };
     }, [
         scopedStocks,
+        stockScope,
         colorFilter,
         currentPage,
         fuelFilter,

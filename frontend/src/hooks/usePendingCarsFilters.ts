@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 
-const PER_PAGE = 10;
+const PER_PAGE = 19;
 
 export type PendingCarRecord = Record<string, unknown> & {
   id: number;
@@ -29,9 +29,8 @@ export function usePendingCarsFilters(availableCars: PendingCarRecord[]) {
   }, [searchTerm, yearFilter, makeFilter, modelFilter, colorFilter, fuelFilter]);
 
   const derived = useMemo(() => {
-    const base = availableCars.filter(
-      (c) => String(c.status ?? "").toLowerCase() !== "sold"
-    );
+    /** All cars returned by the API (no stock row yet). Include sold-status cars so counts match the backend list. */
+    const base = [...availableCars];
 
     let filtered = [...base];
 
