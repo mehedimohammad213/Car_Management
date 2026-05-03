@@ -1,6 +1,7 @@
 import React from "react";
 import { Pencil, Trash2, Eye } from "lucide-react";
 import { PaymentHistory } from "../../services/paymentHistoryApi";
+import StockActionsDropdown from "../stock/StockActionsDropdown";
 
 interface PaymentHistoryTableRowProps {
   paymentHistory: PaymentHistory;
@@ -126,34 +127,40 @@ const PaymentHistoryTableRow: React.FC<PaymentHistoryTableRowProps> = ({
         </div>
       </div>
 
-      {/* Actions */}
+      {/* Actions — ⋮ menu */}
       <div
-        className="col-span-1 flex items-start justify-center gap-1 pt-1"
+        className="col-span-1 flex items-start justify-center pt-1"
         onClick={(e) => e.stopPropagation()}
       >
-        {onView && (
-          <button
-            onClick={() => onView(paymentHistory)}
-            className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200 group/btn"
-            title="View Details"
-          >
-            <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-          </button>
-        )}
-        <button
-          onClick={() => onEdit(paymentHistory)}
-          className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200 group/btn"
-          title="Edit"
-        >
-          <Pencil className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-        </button>
-        <button
-          onClick={() => onDelete(paymentHistory)}
-          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 group/btn"
-          title="Delete"
-        >
-          <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-        </button>
+        <StockActionsDropdown
+          items={[
+            ...(onView
+              ? [
+                  {
+                    id: "view",
+                    label: "View",
+                    icon: Eye,
+                    onClick: () => onView(paymentHistory),
+                    variant: "primary" as const,
+                  },
+                ]
+              : []),
+            {
+              id: "edit",
+              label: "Edit",
+              icon: Pencil,
+              onClick: () => onEdit(paymentHistory),
+              variant: "amber" as const,
+            },
+            {
+              id: "delete",
+              label: "Delete",
+              icon: Trash2,
+              onClick: () => onDelete(paymentHistory),
+              variant: "danger" as const,
+            },
+          ]}
+        />
       </div>
     </div>
   );

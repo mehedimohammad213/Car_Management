@@ -28,6 +28,7 @@ import {
 import { orderApi, Order } from "../../services/orderApi";
 import { InvoiceService } from "../../services/invoiceService";
 import { toast } from "react-toastify";
+import StockActionsDropdown from "../../components/stock/StockActionsDropdown";
 
 const UserOrders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -330,7 +331,7 @@ const UserOrders: React.FC = () => {
         </div>
 
         {/* Orders Table Display */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto overflow-y-visible">
           {sortedOrders.length === 0 ? (
             <div className="text-center py-20">
               <div className="w-40 h-40 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
@@ -441,44 +442,42 @@ const UserOrders: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Actions */}
-                    <div className="col-span-2 flex items-center justify-center gap-1">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedOrder(order);
-                        }}
-                        className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors group/btn"
-                        title="View Details"
-                      >
-                        <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-                      </button>
-                      {order.status === "pending" && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openCancelPopup(order);
-                          }}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors group/btn"
-                          title="Cancel Order"
-                        >
-                          <XCircle className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-                        </button>
-                      )}
-                      {(order.status === "approved" ||
-                        order.status === "shipped" ||
-                        order.status === "delivered") && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDownloadInvoice(order);
-                            }}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors group/btn"
-                            title="Download Invoice"
-                          >
-                            <Download className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-                          </button>
-                        )}
+                    {/* Actions — ⋮ menu */}
+                    <div
+                      className="col-span-2 flex items-center justify-center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <StockActionsDropdown
+                        items={[
+                          {
+                            id: "view",
+                            label: "View",
+                            icon: Eye,
+                            onClick: () => setSelectedOrder(order),
+                            variant: "primary" as const,
+                          },
+                          {
+                            id: "cancel",
+                            label: "Cancel order",
+                            icon: XCircle,
+                            onClick: () => openCancelPopup(order),
+                            variant: "danger" as const,
+                            hidden: order.status !== "pending",
+                          },
+                          {
+                            id: "invoice",
+                            label: "Download invoice",
+                            icon: Download,
+                            onClick: () => handleDownloadInvoice(order),
+                            variant: "default" as const,
+                            hidden: !(
+                              order.status === "approved" ||
+                              order.status === "shipped" ||
+                              order.status === "delivered"
+                            ),
+                          },
+                        ]}
+                      />
                     </div>
                   </div>
                 ))}
@@ -540,34 +539,38 @@ const UserOrders: React.FC = () => {
                       <span className="text-lg font-semibold text-gray-900">
                         Total: BDT {order.total_amount.toLocaleString()}
                       </span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => setSelectedOrder(order)}
-                          className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                          title="View Details"
-                        >
-                          <Eye className="w-5 h-5" />
-                        </button>
-                        {order.status === "pending" && (
-                          <button
-                            onClick={() => openCancelPopup(order)}
-                            className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Cancel Order"
-                          >
-                            <XCircle className="w-5 h-5" />
-                          </button>
-                        )}
-                        {(order.status === "approved" ||
-                          order.status === "shipped" ||
-                          order.status === "delivered") && (
-                            <button
-                              onClick={() => handleDownloadInvoice(order)}
-                              className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
-                              title="Download Invoice"
-                            >
-                              <Download className="w-5 h-5" />
-                            </button>
-                          )}
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <StockActionsDropdown
+                          items={[
+                            {
+                              id: "view",
+                              label: "View",
+                              icon: Eye,
+                              onClick: () => setSelectedOrder(order),
+                              variant: "primary" as const,
+                            },
+                            {
+                              id: "cancel",
+                              label: "Cancel order",
+                              icon: XCircle,
+                              onClick: () => openCancelPopup(order),
+                              variant: "danger" as const,
+                              hidden: order.status !== "pending",
+                            },
+                            {
+                              id: "invoice",
+                              label: "Download invoice",
+                              icon: Download,
+                              onClick: () => handleDownloadInvoice(order),
+                              variant: "default" as const,
+                              hidden: !(
+                                order.status === "approved" ||
+                                order.status === "shipped" ||
+                                order.status === "delivered"
+                              ),
+                            },
+                          ]}
+                        />
                       </div>
                     </div>
                   </div>

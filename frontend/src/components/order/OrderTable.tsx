@@ -1,6 +1,7 @@
 import React from "react";
 import { Package, User, Eye, Download, Trash2, ShoppingCart, Calendar, DollarSign, Tag } from "lucide-react";
 import { Order } from "../../services/orderApi";
+import StockActionsDropdown from "../stock/StockActionsDropdown";
 
 interface OrderTableProps {
   orders: Order[];
@@ -67,8 +68,8 @@ export const OrderTable: React.FC<OrderTableProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="overflow-x-auto no-horizontal-scrollbar">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+      <div className="overflow-x-auto overflow-y-visible no-horizontal-scrollbar">
         <div className="min-w-[1200px]">
           {/* Clean Professional Table Header */}
           <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
@@ -187,36 +188,41 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                   </span>
                 </div>
 
-                {/* Actions */}
+                {/* Actions — ⋮ menu */}
                 <div
-                  className="col-span-2 flex items-center justify-center gap-1.5"
+                  className="col-span-2 flex items-center justify-center"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <button
-                    onClick={() => onView(order)}
-                    className="p-2.5 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
-                    title="View Details"
-                  >
-                    <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-                  </button>
-                  {(order.status === "approved" ||
-                    order.status === "shipped" ||
-                    order.status === "delivered") && (
-                      <button
-                        onClick={() => onDownloadInvoice(order)}
-                        className="p-2.5 text-green-600 hover:text-green-700 rounded-lg transition-all duration-200 group/btn"
-                        title="Download Invoice"
-                      >
-                        <Download className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-                      </button>
-                    )}
-                  <button
-                    onClick={() => onDelete(order)}
-                    className="p-2.5 text-red-600 hover:text-red-700 rounded-lg transition-all duration-200 group/btn"
-                    title="Delete Order"
-                  >
-                    <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-                  </button>
+                  <StockActionsDropdown
+                    items={[
+                      {
+                        id: "view",
+                        label: "View",
+                        icon: Eye,
+                        onClick: () => onView(order),
+                        variant: "primary" as const,
+                      },
+                      {
+                        id: "invoice",
+                        label: "Download invoice",
+                        icon: Download,
+                        onClick: () => onDownloadInvoice(order),
+                        variant: "default" as const,
+                        hidden: !(
+                          order.status === "approved" ||
+                          order.status === "shipped" ||
+                          order.status === "delivered"
+                        ),
+                      },
+                      {
+                        id: "delete",
+                        label: "Delete",
+                        icon: Trash2,
+                        onClick: () => onDelete(order),
+                        variant: "danger" as const,
+                      },
+                    ]}
+                  />
                 </div>
               </div>
             ))}
