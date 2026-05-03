@@ -1,5 +1,5 @@
 import React from "react";
-import { Car, Eye, Edit, Trash2, PackagePlus } from "lucide-react";
+import { Car, Eye, Edit, PackagePlus } from "lucide-react";
 import { getCssColor, getGradeColor } from "../../utils/carUtils";
 
 interface AvailableCar {
@@ -404,6 +404,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                         <Edit className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
                       </button>
                     )}
+                    {/* Pending tab: delete disabled per product request
                     {onDelete && (
                       <button
                         type="button"
@@ -414,6 +415,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                         <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
                       </button>
                     )}
+                    */}
                     <button
                       type="button"
                       onClick={() => onCreateStock(car)}
