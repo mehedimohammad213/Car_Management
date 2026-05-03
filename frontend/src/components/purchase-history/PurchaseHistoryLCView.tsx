@@ -17,6 +17,35 @@ import {
 } from "lucide-react";
 import jsPDF from "jspdf";
 
+/** Encode TTF binary for jsPDF addFileToVFS (chunked to avoid call-stack limits). */
+function uint8ArrayToBase64(bytes: Uint8Array): string {
+    let binary = "";
+    const chunkSize = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+        const chunk = bytes.subarray(i, i + chunkSize);
+        binary += String.fromCharCode.apply(null, chunk as unknown as number[]);
+    }
+    return btoa(binary);
+}
+
+let cachedNotoBengaliBase64: string | null | undefined;
+
+/** Loads Noto Sans Bengali once; needed so ৳ renders in PDF (Helvetica has no glyph). */
+async function fetchNotoSansBengaliBase64(): Promise<string | null> {
+    if (cachedNotoBengaliBase64 !== undefined) return cachedNotoBengaliBase64;
+    try {
+        const url = `${import.meta.env.BASE_URL}fonts/NotoSansBengali-Regular.ttf`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Font HTTP ${res.status}`);
+        const buf = await res.arrayBuffer();
+        cachedNotoBengaliBase64 = uint8ArrayToBase64(new Uint8Array(buf));
+        return cachedNotoBengaliBase64;
+    } catch {
+        cachedNotoBengaliBase64 = null;
+        return null;
+    }
+}
+
 interface PurchaseHistoryLCViewProps {
     purchaseHistories: PurchaseHistory[];
     isLoading: boolean;
@@ -64,10 +93,11 @@ const getPurchaseSummaryTotal = (ph: PurchaseHistory): number | null => {
 
 const formatBdt = (amount: number | null): string => {
     if (amount === null) return "N/A";
-    return new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "BDT",
-    }).format(amount);
+    const nf = new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+    return `৳${nf.format(amount)}`;
 };
 
 const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
@@ -121,7 +151,7 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
         );
     }
 
-    const downloadLcPdf = (lcNumber: string, histories: PurchaseHistory[]) => {
+    const downloadLcPdf = async (lcNumber: string, histories: PurchaseHistory[]) => {
         if (!histories?.length) return;
         setDownloadingLc(lcNumber);
 
@@ -129,6 +159,13 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
             const doc = new jsPDF("p", "mm", "a4");
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
+
+            const notoB64 = await fetchNotoSansBengaliBase64();
+            const useNotoForBdt = Boolean(notoB64);
+            if (notoB64) {
+                doc.addFileToVFS("NotoSansBengali-Regular.ttf", notoB64);
+                doc.addFont("NotoSansBengali-Regular.ttf", "NotoSansBengali", "normal");
+            }
 
             const marginX = 14;
             const xSep = 92; // dotted divider x like the screenshot
@@ -152,10 +189,27 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                 if (n === null) return "N/A";
                 return `$${nf2.format(n)}`;
             };
-            const formatBdt = (n: number | null): string => {
+            const formatBdtPdf = (n: number | null): string => {
                 if (n === null) return "N/A";
-                // Screenshot-style uses ৳
-                return `৳${nf2.format(n)}`;
+                const num = nf2.format(n);
+                if (useNotoForBdt) return `৳${num}`;
+                return `Tk ${num}`;
+            };
+            const drawBdtValue = (n: number | null, x: number, y: number) => {
+                const text = formatBdtPdf(n);
+                if (text === "N/A") {
+                    doc.setFont("helvetica", "normal");
+                    doc.text(text, x, y, { align: "right" });
+                    return;
+                }
+                if (useNotoForBdt) {
+                    doc.setFont("NotoSansBengali", "normal");
+                    doc.text(text, x, y, { align: "right" });
+                } else {
+                    doc.setFont("helvetica", "normal");
+                    doc.text(text, x, y, { align: "right" });
+                }
+                doc.setFont("helvetica", "normal");
             };
             const formatRate = (n: number | null): string => {
                 if (n === null) return "N/A";
@@ -350,21 +404,21 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                         xRightLabel,
                         rightTopY + 24
                     );
-                    doc.text(formatBdt(bdtAmount), xRightValue, rightTopY + 24, { align: "right" });
+                    drawBdtValue(bdtAmount, xRightValue, rightTopY + 24);
 
                     drawDottedHLine(xSep + 2, xRightValue - 2, rightTopY + 30);
 
                     doc.text("GOVT DUTY", xRightLabel, rightTopY + 35);
-                    doc.text(formatBdt(govtDuty), xRightValue, rightTopY + 35, { align: "right" });
+                    drawBdtValue(govtDuty, xRightValue, rightTopY + 35);
                     doc.text("C&F AMOUNT", xRightLabel, rightTopY + 40);
-                    doc.text(formatBdt(cnfAmount), xRightValue, rightTopY + 40, { align: "right" });
+                    drawBdtValue(cnfAmount, xRightValue, rightTopY + 40);
                     doc.text("MISCELLANEOUS", xRightLabel, rightTopY + 45);
-                    doc.text(formatBdt(misc), xRightValue, rightTopY + 45, { align: "right" });
+                    drawBdtValue(misc, xRightValue, rightTopY + 45);
 
                     drawDottedHLine(xSep + 2, xRightValue - 2, rightTopY + 50);
                     doc.setFont("helvetica", "bold");
                     doc.text("TOTAL", xRightLabel, rightTopY + 55);
-                    doc.text(formatBdt(total ?? null), xRightValue, rightTopY + 55, { align: "right" });
+                    drawBdtValue(total ?? null, xRightValue, rightTopY + 55);
                     doc.setFont("helvetica", "normal");
 
                     y += blockHeight + blockGap;
@@ -373,6 +427,8 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
 
             const safeLc = lcNumber.replace(/[^a-zA-Z0-9-_]/g, "_");
             doc.save(`lc-report-${safeLc}.pdf`);
+        } catch (err) {
+            console.error("LC PDF export failed", err);
         } finally {
             setDownloadingLc(null);
         }
@@ -448,7 +504,7 @@ const PurchaseHistoryLCView: React.FC<PurchaseHistoryLCViewProps> = ({
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        downloadLcPdf(lcNumber, histories);
+                                        void downloadLcPdf(lcNumber, histories);
                                     }}
                                     disabled={downloadingLc === lcNumber}
                                     className="p-2.5 rounded-xl bg-primary-50 text-primary-600 hover:bg-primary-100 transition-all border border-primary-100 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
