@@ -137,8 +137,8 @@ const StockTable: React.FC<StockTableProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="overflow-x-auto no-horizontal-scrollbar">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+      <div className="overflow-x-auto overflow-y-visible no-horizontal-scrollbar">
         <div className="min-w-[1200px]">
           {/* Table Header - project primary theme color */}
           <div className="bg-primary-100 border-b border-primary-200 text-primary-800">

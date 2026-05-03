@@ -7,6 +7,7 @@ import {
   getCssColor,
 } from "../../utils/carUtils";
 import { getEffectiveStockStatus } from "../../utils/stockStatus";
+import StockActionsDropdown from "./StockActionsDropdown";
 
 interface StockTableRowProps {
   stock: Stock;
@@ -271,36 +272,44 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
         )}
       </div>
 
-      {/* Actions - Enhanced */}
+      {/* Actions — ⋮ menu */}
       <div
-        className="col-span-1 flex flex-nowrap items-center justify-center gap-1"
+        className="col-span-1 flex items-center justify-center"
         onClick={(e) => e.stopPropagation()}
       >
-        {onView && (
-          <button
-            onClick={() => onView(stock)}
-            className="shrink-0 p-2 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
-            title="View Stock"
-          >
-            <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-          </button>
-        )}
-        <button
-          onClick={() => onEdit(stock)}
-          className="shrink-0 p-2 text-amber-600 hover:text-amber-700 rounded-lg transition-all duration-200 group/btn"
-          title="Edit Car"
-        >
-          <Edit className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-        </button>
-        {showDelete && (
-          <button
-            onClick={() => onDelete(stock)}
-            className="shrink-0 p-2 text-red-600 hover:text-red-700 rounded-lg transition-all duration-200 group/btn"
-            title="Delete Stock"
-          >
-            <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-          </button>
-        )}
+        <StockActionsDropdown
+          items={[
+            ...(onView
+              ? [
+                  {
+                    id: "view",
+                    label: "View",
+                    icon: Eye,
+                    onClick: () => onView(stock),
+                    variant: "primary" as const,
+                  },
+                ]
+              : []),
+            {
+              id: "edit",
+              label: "Edit",
+              icon: Edit,
+              onClick: () => onEdit(stock),
+              variant: "amber" as const,
+            },
+            ...(showDelete
+              ? [
+                  {
+                    id: "delete",
+                    label: "Delete stock",
+                    icon: Trash2,
+                    onClick: () => onDelete(stock),
+                    variant: "danger" as const,
+                  },
+                ]
+              : []),
+          ]}
+        />
       </div>
     </div>
   );

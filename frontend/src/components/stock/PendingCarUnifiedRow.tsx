@@ -7,6 +7,7 @@ import {
 } from "../../utils/carUtils";
 import type { PendingCarRecord } from "../../hooks/usePendingCarsFilters";
 import { isCarStatusSold } from "../../utils/stockStatus";
+import StockActionsDropdown from "./StockActionsDropdown";
 
 interface PendingCarUnifiedRowProps {
   car: PendingCarRecord;
@@ -196,52 +197,53 @@ const PendingCarUnifiedRow: React.FC<PendingCarUnifiedRowProps> = ({
       </div>
 
       <div
-        className="col-span-1 flex flex-nowrap items-center justify-center gap-1"
+        className="col-span-1 flex items-center justify-center"
         onClick={(e) => e.stopPropagation()}
       >
-        {onView && (
-          <button
-            type="button"
-            onClick={() => onView(car)}
-            className="shrink-0 p-2 text-primary-600 hover:text-primary-700 rounded-lg transition-all duration-200 group/btn"
-            title="View Car"
-          >
-            <Eye className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-          </button>
-        )}
-        {onEdit && (
-          <button
-            type="button"
-            onClick={() => onEdit(car)}
-            className="shrink-0 p-2 text-amber-600 hover:text-amber-700 rounded-lg transition-all duration-200 group/btn"
-            title="Edit Car"
-          >
-            <Edit className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-          </button>
-        )}
-        {onDelete && (
-          <button
-            type="button"
-            onClick={() => onDelete(car)}
-            className="shrink-0 p-2 text-red-600 hover:text-red-700 rounded-lg transition-all duration-200 group/btn"
-            title="Delete Car"
-          >
-            <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-          </button>
-        )}
-        <button
-          type="button"
-          onClick={() => onCreateStock(car)}
-          className="shrink-0 p-2 rounded-lg transition-all duration-200 group/btn text-primary-600 hover:text-primary-700"
-          title={
-            carSold
-              ? "Add stock (car was sold — status will update to match stock)"
-              : "Add Stock"
-          }
-          aria-label={carSold ? "Add Stock (restock sold car)" : "Add Stock"}
-        >
-          <PackagePlus className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-        </button>
+        <StockActionsDropdown
+          items={[
+            ...(onView
+              ? [
+                  {
+                    id: "view",
+                    label: "View",
+                    icon: Eye,
+                    onClick: () => onView(car),
+                    variant: "primary" as const,
+                  },
+                ]
+              : []),
+            ...(onEdit
+              ? [
+                  {
+                    id: "edit",
+                    label: "Edit",
+                    icon: Edit,
+                    onClick: () => onEdit(car),
+                    variant: "amber" as const,
+                  },
+                ]
+              : []),
+            ...(onDelete
+              ? [
+                  {
+                    id: "delete",
+                    label: "Delete",
+                    icon: Trash2,
+                    onClick: () => onDelete(car),
+                    variant: "danger" as const,
+                  },
+                ]
+              : []),
+            {
+              id: "add-stock",
+              label: carSold ? "Add stock (restock)" : "Add stock",
+              icon: PackagePlus,
+              onClick: () => onCreateStock(car),
+              variant: "primary" as const,
+            },
+          ]}
+        />
       </div>
     </div>
   );
