@@ -111,14 +111,14 @@ const StockManagement: React.FC = () => {
 
   const stockTabCounts = useMemo(
     () => ({
-      /** Combined view on All Stock: pending (no stock row) + every stock line */
-      all: allStocks.length + pendingFilters.sourceCount,
+      /** All Stock = every stock row + every car without a stock row (same total as unified list when unfiltered). */
+      all: allStocks.length + availableCars.length,
       pending: pendingFilters.sourceCount,
       current: allStocks.length,
       available: allStocks.filter((s) => getEffectiveStockStatus(s) === "available").length,
       soldout: allStocks.filter((s) => isStockRowSold(s)).length,
     }),
-    [pendingFilters.sourceCount, allStocks]
+    [pendingFilters.sourceCount, allStocks, availableCars.length]
   );
 
   const pendingFilteredForUnified = useMemo(

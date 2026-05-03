@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
+import { isCarEligibleForPendingStockTab } from "../utils/stockStatus";
 
 const PER_PAGE = 19;
 
@@ -29,8 +30,8 @@ export function usePendingCarsFilters(availableCars: PendingCarRecord[]) {
   }, [searchTerm, yearFilter, makeFilter, modelFilter, colorFilter, fuelFilter]);
 
   const derived = useMemo(() => {
-    /** All cars returned by the API (no stock row yet). Include sold-status cars so counts match the backend list. */
-    const base = [...availableCars];
+    /** No stock row yet, and only pending/available (exclude sold, reserved, …). */
+    const base = availableCars.filter(isCarEligibleForPendingStockTab);
 
     let filtered = [...base];
 

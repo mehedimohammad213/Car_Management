@@ -42,6 +42,17 @@ export function isCarStatusSold(car: { status?: string } | null | undefined): bo
   return String(car?.status ?? "").toLowerCase() === "sold";
 }
 
+/**
+ * Stock “Pending” tab + unified All Stock pending block: only cars awaiting stock entry
+ * (`pending` or legacy `available`), not sold/reserved/etc.
+ */
+export function isCarEligibleForPendingStockTab(
+  car: { status?: string } | null | undefined
+): boolean {
+  const s = String(car?.status ?? "").toLowerCase().trim();
+  return s === "pending" || s === "available" || s === "";
+}
+
 /** Order for “status-wise” lists: in-stock first, then issues, sold last */
 const STATUS_LIST_ORDER = [
   "available",
@@ -60,6 +71,7 @@ export function getStatusSortRank(status: string): number {
 }
 
 export const STATUS_SECTION_LABELS: Record<string, string> = {
+  pending: "Pending",
   available: "Available",
   reserved: "Reserved",
   damaged: "Damaged",

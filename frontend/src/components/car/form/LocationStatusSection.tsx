@@ -18,6 +18,7 @@ const LocationStatusSection: React.FC<LocationStatusSectionProps> = ({
   onInputChange,
 }) => {
   const statusOptions = [
+    { value: "pending", label: "Pending" },
     { value: "available", label: "Available" },
     { value: "sold", label: "Sold" },
     { value: "reserved", label: "Reserved" },
