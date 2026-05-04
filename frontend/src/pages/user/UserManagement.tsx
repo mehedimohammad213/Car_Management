@@ -12,6 +12,7 @@ import Pagination from "../../components/common/Pagination";
 import { MessageDisplay } from "../../components/category";
 import UserFormModal from "../../components/user/UserFormModal";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
+import StockActionsDropdown from "../../components/stock/StockActionsDropdown";
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -315,23 +316,28 @@ const UserManagement: React.FC = () => {
                         </span>
                       </div>
 
-                      <div className="col-span-2 flex items-center justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleEditUser(u)}
-                          className="p-2 rounded-lg text-primary-600 hover:bg-primary-50 transition-colors"
-                          title="Edit user"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteUser(u)}
-                          className="p-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
-                          title="Delete user"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                      <div
+                        className="col-span-2 flex items-center justify-end"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <StockActionsDropdown
+                          items={[
+                            {
+                              id: "edit",
+                              label: "Edit user",
+                              icon: Pencil,
+                              onClick: () => handleEditUser(u),
+                              variant: "primary",
+                            },
+                            {
+                              id: "delete",
+                              label: "Delete user",
+                              icon: Trash2,
+                              onClick: () => handleDeleteUser(u),
+                              variant: "danger",
+                            },
+                          ]}
+                        />
                       </div>
                     </div>
                   ))}
@@ -341,17 +347,13 @@ const UserManagement: React.FC = () => {
           )}
         </div>
 
-        {totalPages > 1 && (
-          <div className="mt-6">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalItems}
-              perPage={perPage}
-              onPageChange={handlePageChange}
-            />
-          </div>
-        )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          perPage={perPage}
+          onPageChange={handlePageChange}
+        />
 
         <UserFormModal
           isOpen={showUserModal}
