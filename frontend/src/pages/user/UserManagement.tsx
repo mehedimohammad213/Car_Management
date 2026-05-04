@@ -8,7 +8,7 @@ import {
   formatUserApiError,
 } from "../../services/userApi";
 import { Search, Users, X, Plus, Pencil, Trash2 } from "lucide-react";
-import Pagination from "../../components/common/Pagination";
+import Pagination from "../../components/car/Pagination";
 import { MessageDisplay } from "../../components/category";
 import UserFormModal from "../../components/user/UserFormModal";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
