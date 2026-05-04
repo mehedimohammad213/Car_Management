@@ -29,8 +29,12 @@ import { orderApi, Order } from "../../services/orderApi";
 import { InvoiceService } from "../../services/invoiceService";
 import { toast } from "react-toastify";
 import StockActionsDropdown from "../../components/stock/StockActionsDropdown";
+import { useAuth } from "../../contexts/AuthContext";
 
 const UserOrders: React.FC = () => {
+  const { user } = useAuth();
+  const browseInventoryHref =
+    user?.role === "user" ? "/admin/stock?tab=current" : "/cars";
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -249,7 +253,7 @@ const UserOrders: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                to="/cars"
+                to={browseInventoryHref}
                 className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-600 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
               >
                 <ShoppingBag className="w-5 h-5 mr-2" />

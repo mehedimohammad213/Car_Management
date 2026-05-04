@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { TrashIcon, MinusIcon, PlusIcon, ArrowLeftIcon } from "lucide-react";
 import { useCart } from "../../contexts/CartContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { orderApi } from "../../services/orderApi";
 import { toast } from "react-toastify";
 
@@ -23,6 +24,9 @@ const Cart: React.FC = () => {
   const [shippingAddress, setShippingAddress] = useState("");
   const [loadingItems, setLoadingItems] = useState<Set<number>>(new Set());
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const browseInventoryHref =
+    user?.role === "user" ? "/admin/stock?tab=current" : "/cars";
 
   const handleQuantityChange = async (cartId: number, newQuantity: number) => {
     // Add loading state for this specific item
@@ -123,7 +127,7 @@ const Cart: React.FC = () => {
             Looks like you haven't added any cars to your cart yet.
           </p>
           <Link
-            to="/cars"
+            to={browseInventoryHref}
             className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
           >
             <ArrowLeftIcon className="w-5 h-5 mr-2" />

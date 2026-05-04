@@ -1,8 +1,8 @@
 import React, { Suspense, lazy } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -41,6 +41,15 @@ const Cart = lazy(() => import("./pages/cart/Cart"));
 const UserOrders = lazy(() => import("./pages/order/UserOrders"));
 const AdminOrders = lazy(() => import("./pages/order/AdminOrders"));
 const Profile = lazy(() => import("./components/Profile"));
+
+/** Car catalog is for guests and admins only; `user` role uses Current Stock instead. */
+function CarCatalogRoute() {
+  const { user } = useAuth();
+  if (user?.role === "user") {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return <Car />;
+}
 
 function App() {
   return (
@@ -193,7 +202,7 @@ function App() {
 
                       {/* User Routes */}
                       <Route path="/car-view/:id" element={<ViewCar />} />
-                      <Route path="/cars" element={<Car />} />
+                      <Route path="/cars" element={<CarCatalogRoute />} />
                       <Route
                         path="/dashboard"
                         element={

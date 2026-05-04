@@ -209,9 +209,9 @@ const ViewCar: React.FC = () => {
   )?.returnStockTab;
 
   const getBackRoute = () => {
-    return isAdmin
-      ? stockManagementPath(returnStockTab)
-      : `/cars?${searchParams.toString()}`;
+    if (isAdmin) return stockManagementPath(returnStockTab);
+    if (user?.role === "user") return "/admin/stock?tab=current";
+    return `/cars?${searchParams.toString()}`;
   };
 
   if (isLoading) {

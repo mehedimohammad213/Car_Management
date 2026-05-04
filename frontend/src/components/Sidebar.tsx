@@ -81,7 +81,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
 
   const userNavItems: NavItem[] = [
     { path: "/dashboard", label: "Dashboard", icon: BarChartIcon },
-    { path: "/cars", label: "Cars", icon: CarIcon },
     { path: "/admin/stock", label: "Stock", icon: PackageIcon },
     { path: "/cart", label: "Cart", icon: ShoppingCartIcon },
     { path: "/orders", label: "Orders", icon: UserIcon },
