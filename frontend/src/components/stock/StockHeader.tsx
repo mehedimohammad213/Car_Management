@@ -27,6 +27,8 @@ interface StockHeaderProps {
   onTabChange: (tab: StockPageTab) => void;
   /** Live row counts per tab (updates when lists change). */
   tabCounts: StockTabCounts;
+  /** Which tabs to show (defaults to all, before, current). */
+  visibleTabs?: StockPageTab[];
 }
 
 function TabDataCount({ n, active }: { n: number; active: boolean }) {
@@ -42,10 +44,13 @@ function TabDataCount({ n, active }: { n: number; active: boolean }) {
   );
 }
 
+const DEFAULT_VISIBLE_TABS: StockPageTab[] = ["all", "before", "current"];
+
 export const StockHeader: React.FC<StockHeaderProps> = ({
   activeTab,
   onTabChange,
   tabCounts,
+  visibleTabs = DEFAULT_VISIBLE_TABS,
 }) => {
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
@@ -93,6 +98,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
           </div>
           {/* Tab Selection - right side of header */}
           <div className="flex flex-wrap gap-1">
+            {visibleTabs.includes("all") && (
             <button
               onClick={() => onTabChange("all")}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "all"
@@ -103,6 +109,8 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
               All Stock
               <TabDataCount n={tabCounts.all} active={activeTab === "all"} />
             </button>
+            )}
+            {visibleTabs.includes("before") && (
             <button
               onClick={() => onTabChange("before")}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "before"
@@ -113,6 +121,8 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
               Pending
               <TabDataCount n={tabCounts.pending} active={activeTab === "before"} />
             </button>
+            )}
+            {visibleTabs.includes("current") && (
             <button
               onClick={() => onTabChange("current")}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "current"
@@ -123,6 +133,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
               Current
               <TabDataCount n={tabCounts.current} active={activeTab === "current"} />
             </button>
+            )}
             {/* Available / Sold out tabs — commented out (see Sidebar)
             <button
               onClick={() => onTabChange("available")}

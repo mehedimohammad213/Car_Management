@@ -29,6 +29,8 @@ interface StockTableProps {
     onDelete: (car: PendingCarRecord) => void;
     onCreateStock: (car: PendingCarRecord) => void;
   };
+  /** Hide edit/delete for limited roles. */
+  readOnly?: boolean;
 }
 
 const StockTable: React.FC<StockTableProps> = ({
@@ -46,6 +48,7 @@ const StockTable: React.FC<StockTableProps> = ({
   showDelete = true,
   unifiedRows,
   unifiedPendingCallbacks,
+  readOnly = false,
 }) => {
   const useUnifiedList = unifiedRows != null;
 
@@ -234,6 +237,7 @@ const StockTable: React.FC<StockTableProps> = ({
                         onDelete={onDelete}
                         onView={onView}
                         showDelete={showDelete}
+                        readOnly={readOnly}
                       />
                     );
                   });
@@ -265,6 +269,7 @@ const StockTable: React.FC<StockTableProps> = ({
                       onDelete={onDelete}
                       onView={onView}
                       showDelete={showDelete}
+                      readOnly={readOnly}
                     />
                   );
                 })}

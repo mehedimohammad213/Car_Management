@@ -119,6 +119,7 @@ const Header: React.FC = () => {
   const userNavItems: NavItem[] = [
     { path: "/dashboard", label: "Dashboard", icon: BarChartIcon },
     // { path: "/cars", label: "Cars", icon: CarIcon },
+    { path: "/admin/stock", label: "Stock", icon: PackageIcon },
     { path: "/cart", label: "Cart", icon: ShoppingCartIcon },
     { path: "/orders", label: "Orders", icon: UserIcon },
   ];
@@ -129,12 +130,17 @@ const Header: React.FC = () => {
     return null;
   }
 
-  const allowedStockTabs: StockPageTab[] = ["all", "before", "current"]; // "available", "soldout" — commented out in UI
+  const allowedStockTabs: StockPageTab[] =
+    user.role === "admin"
+      ? ["all", "before", "current"]
+      : ["current"];
+  const defaultStockTab: StockPageTab =
+    user.role === "user" ? "current" : "all";
   const tabParam = new URLSearchParams(location.search).get("tab");
   const effectiveStockTab: StockPageTab =
     tabParam && allowedStockTabs.includes(tabParam as StockPageTab)
       ? (tabParam as StockPageTab)
-      : "all";
+      : defaultStockTab;
 
   React.useEffect(() => {
     // Keep only the current route submenu open in mobile menu.
@@ -315,6 +321,7 @@ const Header: React.FC = () => {
 
                       {mobileStockSubmenuOpen && (
                         <div className="ml-5 mt-1 flex flex-col gap-1">
+                          {allowedStockTabs.includes("all") && (
                           <Link
                             to="/admin/stock?tab=all"
                             onClick={() => {
@@ -326,6 +333,8 @@ const Header: React.FC = () => {
                           >
                             <span>All Stock</span>
                           </Link>
+                          )}
+                          {allowedStockTabs.includes("before") && (
                           <Link
                             to="/admin/stock?tab=before"
                             onClick={() => {
@@ -337,6 +346,8 @@ const Header: React.FC = () => {
                           >
                             <span>Pending Stock</span>
                           </Link>
+                          )}
+                          {allowedStockTabs.includes("current") && (
                           <Link
                             to="/admin/stock?tab=current"
                             onClick={() => {
@@ -348,6 +359,7 @@ const Header: React.FC = () => {
                           >
                             <span>Current Stock</span>
                           </Link>
+                          )}
                           {/* Available / Sold Out — commented out (match Sidebar)
                           <Link
                             to="/admin/stock?tab=available"

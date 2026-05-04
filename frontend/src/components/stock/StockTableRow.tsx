@@ -18,6 +18,8 @@ interface StockTableRowProps {
   onView?: (stock: Stock) => void;
   /** When false, hide delete (e.g. sold-out tab). */
   showDelete?: boolean;
+  /** User role: view-only (no edit/delete). */
+  readOnly?: boolean;
 }
 
 const StockTableRow: React.FC<StockTableRowProps> = ({
@@ -28,6 +30,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
   onDelete,
   onView,
   showDelete = true,
+  readOnly = false,
 }) => {
   const car = stock.car;
   const effectiveStatus = getEffectiveStockStatus(stock);
@@ -290,22 +293,26 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
                   },
                 ]
               : []),
-            {
-              id: "edit",
-              label: "Edit",
-              icon: Edit,
-              onClick: () => onEdit(stock),
-              variant: "amber" as const,
-            },
-            ...(showDelete
+            ...(!readOnly
               ? [
                   {
-                    id: "delete",
-                    label: "Delete stock",
-                    icon: Trash2,
-                    onClick: () => onDelete(stock),
-                    variant: "danger" as const,
+                    id: "edit",
+                    label: "Edit",
+                    icon: Edit,
+                    onClick: () => onEdit(stock),
+                    variant: "amber" as const,
                   },
+                  ...(showDelete
+                    ? [
+                        {
+                          id: "delete",
+                          label: "Delete stock",
+                          icon: Trash2,
+                          onClick: () => onDelete(stock),
+                          variant: "danger" as const,
+                        },
+                      ]
+                    : []),
                 ]
               : []),
           ]}

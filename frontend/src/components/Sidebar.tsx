@@ -45,18 +45,17 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   const isOnStockRoute = location.pathname === "/admin/stock";
   const [stockSubmenuOpen, setStockSubmenuOpen] = useState(isOnStockRoute);
 
-  const allowedStockTabs: StockPageTab[] = [
-    "all",
-    "before",
-    "current",
-    // "available",
-    // "soldout",
-  ];
+  const allowedStockTabs: StockPageTab[] =
+    user.role === "admin"
+      ? ["all", "before", "current"]
+      : ["current"];
+  const defaultStockTab: StockPageTab =
+    user.role === "user" ? "current" : "all";
   const tabParam = new URLSearchParams(location.search).get("tab");
   const effectiveStockTab: StockPageTab =
     tabParam && allowedStockTabs.includes(tabParam as StockPageTab)
       ? (tabParam as StockPageTab)
-      : "all";
+      : defaultStockTab;
 
   const isOnPurchaseRoute = location.pathname === "/admin/purchase-history";
   type PurchaseTab = "lc_wise" | "history";
@@ -83,6 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   const userNavItems: NavItem[] = [
     { path: "/dashboard", label: "Dashboard", icon: BarChartIcon },
     { path: "/cars", label: "Cars", icon: CarIcon },
+    { path: "/admin/stock", label: "Stock", icon: PackageIcon },
     { path: "/cart", label: "Cart", icon: ShoppingCartIcon },
     { path: "/orders", label: "Orders", icon: UserIcon },
   ];
@@ -203,6 +203,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
 
                   {!collapsed && stockSubmenuOpen && (
                     <div className="mt-1 flex flex-col gap-1 pl-7 pr-2">
+                      {allowedStockTabs.includes("all") && (
                       <Link
                         to="/admin/stock?tab=all"
                         className={stockTabLinkClasses("all")}
@@ -213,6 +214,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                       >
                         <span className="truncate">All Stock</span>
                       </Link>
+                      )}
+                      {allowedStockTabs.includes("before") && (
                       <Link
                         to="/admin/stock?tab=before"
                         className={stockTabLinkClasses("before")}
@@ -223,6 +226,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                       >
                         <span className="truncate">Pending Stock</span>
                       </Link>
+                      )}
+                      {allowedStockTabs.includes("current") && (
                       <Link
                         to="/admin/stock?tab=current"
                         className={stockTabLinkClasses("current")}
@@ -233,6 +238,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                       >
                         <span className="truncate">Current Stock</span>
                       </Link>
+                      )}
                       {/* Available / Sold Out tabs hidden
                       <Link
                         to="/admin/stock?tab=available"

@@ -25,17 +25,22 @@ import {
 } from "../../utils/stockStatus";
 import { filterPendingCarsLikeStockFilters } from "../../utils/filterPendingCarsLikeStockFilters";
 import type { UnifiedStockRow } from "../../components/stock/StockTable";
+import { useAuth } from "../../contexts/AuthContext";
 
 const StockManagement: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const allowedTabs: StockPageTab[] = ["all", "before", "current"]; // "available", "soldout" — UI commented out
+  const { user } = useAuth();
+  const isStockUserView = user?.role === "user";
+  const defaultTab: StockPageTab = isStockUserView ? "current" : "all";
+  const allowedTabs: StockPageTab[] = isStockUserView
+    ? ["current"]
+    : ["all", "before", "current"];
   const queryTab = searchParams.get("tab");
   const initialTab: StockPageTab =
     queryTab && allowedTabs.includes(queryTab as StockPageTab)
       ? (queryTab as StockPageTab)
-      : "all";
+      : defaultTab;
 
   const [activeTab, setActiveTab] = useState<StockPageTab>(initialTab);
   const [showPendingCarDeleteModal, setShowPendingCarDeleteModal] =
@@ -189,7 +194,7 @@ const StockManagement: React.FC = () => {
       setSearchParams(
         (prev) => {
           const next = new URLSearchParams(prev);
-          next.set("tab", "all");
+          next.set("tab", defaultTab);
           return next;
         },
         { replace: true }
@@ -198,7 +203,7 @@ const StockManagement: React.FC = () => {
     }
     setActiveTab(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams.toString()]);
+  }, [searchParams.toString(), defaultTab]);
 
   const handleCreateStockFromCar = async (car: any) => {
     try {
@@ -296,6 +301,7 @@ const StockManagement: React.FC = () => {
               });
             }}
             tabCounts={stockTabCounts}
+            visibleTabs={allowedTabs}
           />
 
           {activeTab === "all" || activeTab === "current" ? (
@@ -313,10 +319,14 @@ const StockManagement: React.FC = () => {
               onColorFilterChange={setColorFilter}
               fuelFilter={fuelFilter}
               onFuelFilterChange={setFuelFilter}
-              isGeneratingPDF={activeTab === "current" ? isGeneratingPDF : false}
-              onGeneratePDF={activeTab === "current" ? generatePDF : undefined}
+              isGeneratingPDF={
+                activeTab === "current" && !isStockUserView ? isGeneratingPDF : false
+              }
+              onGeneratePDF={
+                activeTab === "current" && !isStockUserView ? generatePDF : undefined
+              }
               onCreateInvoice={() => setShowInvoiceModal(true)}
-              onCreateStock={handleCreateStock}
+              onCreateStock={isStockUserView ? undefined : handleCreateStock}
               filterOptions={filterOptions}
             />
           ) : activeTab === "before" ? (
@@ -369,7 +379,8 @@ const StockManagement: React.FC = () => {
                 fetchAvailableCars();
               }}
               emptyStateVariant="default"
-              showDelete
+              showDelete={!isStockUserView}
+              readOnly={isStockUserView}
               unifiedRows={activeTab === "all" ? unifiedPageRows : undefined}
               unifiedPendingCallbacks={
                 activeTab === "all"
