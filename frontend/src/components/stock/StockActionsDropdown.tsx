@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { MoreVertical, type LucideIcon } from "lucide-react";
 import clsx from "clsx";
 
@@ -16,6 +16,25 @@ export interface StockActionMenuItem {
 /** Width per icon slot in the horizontal toolbar */
 const ICON_CELL_PX = 40;
 const MENU_X_PADDING_PX = 8; /* matches px-1 on menu container */
+/** Toolbar row height + mt/mb gap — used to flip menu above trigger near bottom edges */
+const MENU_APPROX_HEIGHT_PX = 48;
+
+function nearestOverflowAncestor(el: HTMLElement | null): HTMLElement | null {
+  let p: HTMLElement | null = el?.parentElement ?? null;
+  while (p) {
+    const { overflow, overflowX, overflowY } = getComputedStyle(p);
+    const oy = overflowY !== "visible" ? overflowY : overflow;
+    const ox = overflowX !== "visible" ? overflowX : overflow;
+    if (
+      /(auto|scroll|overlay|hidden)/.test(oy) ||
+      /(auto|scroll|overlay|hidden)/.test(ox)
+    ) {
+      return p;
+    }
+    p = p.parentElement;
+  }
+  return null;
+}
 
 const variantRowClass: Record<StockActionVariant, string> = {
   default: "text-gray-700 hover:bg-gray-50",
@@ -37,12 +56,14 @@ interface StockActionsDropdownProps {
 
 /**
  * Kebab (⋮) trigger; opens a horizontal icon-only toolbar (`label` is for tooltip / a11y).
- * Menu is positioned under the trigger, inside the table card (no viewport portal).
+ * Opens upward when there is not enough room below (viewport or overflow ancestor),
+ * so last-row menus are not clipped by table/card overflow.
  */
 const StockActionsDropdown: React.FC<StockActionsDropdownProps> = ({
   items,
 }) => {
   const [open, setOpen] = useState(false);
+  const [openUpward, setOpenUpward] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -50,6 +71,23 @@ const StockActionsDropdown: React.FC<StockActionsDropdownProps> = ({
 
   const menuWidth =
     visibleItems.length * ICON_CELL_PX + MENU_X_PADDING_PX;
+
+  useLayoutEffect(() => {
+    if (!open || !triggerRef.current) return;
+    const el = triggerRef.current;
+    const rect = el.getBoundingClientRect();
+    const clip = nearestOverflowAncestor(el);
+    let spaceBelow = window.innerHeight - rect.bottom;
+    let spaceAbove = rect.top;
+    if (clip) {
+      const cr = clip.getBoundingClientRect();
+      spaceBelow = Math.min(spaceBelow, cr.bottom - rect.bottom);
+      spaceAbove = Math.min(spaceAbove, rect.top - cr.top);
+    }
+    const preferUp =
+      spaceBelow < MENU_APPROX_HEIGHT_PX && spaceAbove >= MENU_APPROX_HEIGHT_PX;
+    setOpenUpward(preferUp);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -100,7 +138,10 @@ const StockActionsDropdown: React.FC<StockActionsDropdownProps> = ({
           ref={menuRef}
           role="menu"
           style={{ width: menuWidth }}
-          className="absolute top-full right-0 mt-1 z-[60] flex flex-row items-center rounded-lg border border-gray-200 bg-white px-1 py-1 shadow-lg"
+          className={clsx(
+            "absolute right-0 z-[60] flex flex-row items-center rounded-lg border border-gray-200 bg-white px-1 py-1 shadow-lg",
+            openUpward ? "bottom-full mb-1" : "top-full mt-1",
+          )}
         >
           {visibleItems.map((item) => {
             const Icon = item.icon;
