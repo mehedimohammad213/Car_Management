@@ -10,9 +10,33 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class StockController extends Controller
 {
+    /**
+     * Map car workflow status to a valid stocks.status enum value (does not mutate the car).
+     */
+    private function stockStatusForCar(?Car $car): string
+    {
+        $allowed = Stock::STATUSES;
+        if (!$car || $car->status === null || $car->status === '') {
+            return 'available';
+        }
+
+        $s = strtolower(trim((string) $car->status));
+        if (in_array($s, $allowed, true)) {
+            return $s;
+        }
+
+        $pendingLike = ['processing', 'incoming', 'before'];
+        if (in_array($s, $pendingLike, true)) {
+            return 'pending';
+        }
+
+        return 'available';
+    }
+
     /**
      * Display a listing of stocks with filtering and search
      */
@@ -66,10 +90,11 @@ class StockController extends Controller
             $isBulkMode = $request->has('car_ids') && is_array($request->car_ids) && count($request->car_ids) > 0;
 
             // Use unified validation that handles both modes
+            // quantity/status from client are ignored: quantity is always 1; status is not taken from the request.
             $rules = [
-                'quantity' => 'required|integer|min:0',
+                'quantity' => 'nullable|integer|min:0',
                 'price' => 'nullable|numeric|min:0',
-                'status' => 'required|in:available,sold,reserved,damaged,lost,stolen',
+                'status' => ['nullable', Rule::in(Stock::STATUSES)],
                 'notes' => 'nullable|string|max:1000',
             ];
 
@@ -102,35 +127,29 @@ class StockController extends Controller
                 $updatedCount = 0;
 
                 foreach ($carIds as $carId) {
+                    $car = Car::find($carId);
                     // Check if stock already exists for this car
                     $existingStock = Stock::where('car_id', $carId)->first();
 
                     if ($existingStock) {
-                        // Update existing stock
+                        // Preserve stock status; quantity is always 1 (never driven to 0 here).
                         $existingStock->update([
-                            'quantity' => $request->quantity,
+                            'quantity' => 1,
                             'price' => $request->price,
-                            'status' => $request->status,
                             'notes' => $request->notes,
                         ]);
                         $updatedCount++;
                         $createdStocks[] = $existingStock;
                     } else {
-                        // Create new stock
+                        // New stock: status follows car (request status is ignored); car record is not modified.
                         $stock = Stock::create([
                             'car_id' => $carId,
-                            'quantity' => $request->quantity,
+                            'quantity' => 1,
                             'price' => $request->price,
-                            'status' => $request->status,
+                            'status' => $this->stockStatusForCar($car),
                             'notes' => $request->notes,
                         ]);
                         $createdStocks[] = $stock;
-                    }
-
-                    // Update car status
-                    $car = Car::find($carId);
-                    if ($car) {
-                        $car->update(['status' => $request->status]);
                     }
                 }
 
@@ -159,13 +178,14 @@ class StockController extends Controller
                     ], 409);
                 }
 
-                $stock = Stock::create($request->all());
-
-                // Update car status if stock is created
                 $car = Car::find($request->car_id);
-                if ($car) {
-                    $car->update(['status' => $request->status]);
-                }
+                $stock = Stock::create([
+                    'car_id' => $request->car_id,
+                    'quantity' => 1,
+                    'price' => $request->price,
+                    'status' => $this->stockStatusForCar($car),
+                    'notes' => $request->notes,
+                ]);
 
                 DB::commit();
 
@@ -226,6 +246,7 @@ class StockController extends Controller
             // Check if using new format (make, model, package, car_ids) or old format
             $isBulkMode = $request->has('car_ids') && is_array($request->car_ids);
 
+            // quantity/status from client are ignored (same rules as store): quantity is always 1; stock status is not updated from the request.
             if ($isBulkMode) {
                 $validator = Validator::make($request->all(), [
                     'make' => 'required|string',
@@ -233,16 +254,16 @@ class StockController extends Controller
                     'package' => 'nullable|string',
                     'car_ids' => 'required|array',
                     'car_ids.*' => 'exists:cars,id',
-                    'quantity' => 'sometimes|integer|min:0',
+                    'quantity' => 'nullable|integer|min:0',
                     'price' => 'sometimes|nullable|numeric|min:0',
-                    'status' => 'sometimes|in:available,sold,reserved,damaged,lost,stolen',
+                    'status' => ['nullable', Rule::in(Stock::STATUSES)],
                     'notes' => 'sometimes|nullable|string|max:1000',
                 ]);
             } else {
                 $validator = Validator::make($request->all(), [
-                    'quantity' => 'sometimes|integer|min:0',
+                    'quantity' => 'nullable|integer|min:0',
                     'price' => 'sometimes|nullable|numeric|min:0',
-                    'status' => 'sometimes|in:available,sold,reserved,damaged,lost,stolen',
+                    'status' => ['nullable', Rule::in(Stock::STATUSES)],
                     'notes' => 'sometimes|nullable|string|max:1000',
                 ]);
             }
@@ -264,7 +285,6 @@ class StockController extends Controller
             if ($isBulkMode) {
                 // Bulk mode: Update stock for all cars with same make+model+package
                 $carIds = $request->car_ids;
-                $updateData = $request->only(['quantity', 'price', 'status', 'notes']);
                 $updatedStocks = [];
                 $updatedCount = 0;
 
@@ -272,27 +292,17 @@ class StockController extends Controller
                     $existingStock = Stock::where('car_id', $carId)->first();
 
                     if ($existingStock) {
-                        // Update existing stock with provided fields only
-                        $stockUpdateData = [];
-                        foreach ($updateData as $key => $value) {
-                            if ($request->has($key)) {
-                                $stockUpdateData[$key] = $value;
-                            }
+                        $payload = ['quantity' => 1];
+                        if ($request->has('price')) {
+                            $payload['price'] = $request->price;
+                        }
+                        if ($request->has('notes')) {
+                            $payload['notes'] = $request->notes;
                         }
 
-                        if (!empty($stockUpdateData)) {
-                            $existingStock->update($stockUpdateData);
-                            $updatedStocks[] = $existingStock;
-                            $updatedCount++;
-                        }
-
-                        // Update car status if status changed
-                        if ($request->has('status')) {
-                            $car = Car::find($carId);
-                            if ($car) {
-                                $car->update(['status' => $request->status]);
-                            }
-                        }
+                        $existingStock->update($payload);
+                        $updatedStocks[] = $existingStock;
+                        $updatedCount++;
                     }
                 }
 
@@ -303,15 +313,22 @@ class StockController extends Controller
 
                 DB::commit();
 
+                $notifyData = [];
+                if ($request->has('price')) {
+                    $notifyData['price'] = $request->price;
+                }
+                if ($request->has('notes')) {
+                    $notifyData['notes'] = $request->notes;
+                }
+
                 \Log::info('Bulk stock update successful', [
                     'updated_count' => $updatedCount,
-                    'updated_fields' => array_keys($updateData)
+                    'updated_fields' => array_merge(['quantity'], array_keys($notifyData)),
                 ]);
 
-                // Dispatch email notification for first stock if status changed
-                if ($request->has('status') && !empty($updatedStocks)) {
+                if (!empty($notifyData) && !empty($updatedStocks)) {
                     try {
-                        SendStockUpdateNotification::dispatch($updatedStocks[0], $updateData);
+                        SendStockUpdateNotification::dispatch($updatedStocks[0], $notifyData);
                     } catch (\Exception $e) {
                         \Log::error('Failed to dispatch stock update notification job', [
                             'error' => $e->getMessage()
@@ -325,40 +342,45 @@ class StockController extends Controller
                     'message' => "Stock updated for " . $updatedCount . " car(s)"
                 ]);
             } else {
-                // Legacy mode: Single stock update
-                $updateData = $request->only(['quantity', 'price', 'status', 'notes']);
-                $stock->update($updateData);
-
-                // Update car status if stock status changed
-                if ($request->has('status') && $stock->car) {
-                    $stock->car->update(['status' => $request->status]);
-                    \Log::info('Car status updated', [
-                        'car_id' => $stock->car->id,
-                        'new_status' => $request->status
-                    ]);
+                // Legacy mode: Single stock update — quantity forced to 1; status never from request; car unchanged.
+                $payload = ['quantity' => 1];
+                if ($request->has('price')) {
+                    $payload['price'] = $request->price;
                 }
+                if ($request->has('notes')) {
+                    $payload['notes'] = $request->notes;
+                }
+                $stock->update($payload);
 
                 DB::commit();
 
                 $stock->load(['car.category', 'car.subcategory', 'car.photos']);
 
+                $notifyData = [];
+                if ($request->has('price')) {
+                    $notifyData['price'] = $request->price;
+                }
+                if ($request->has('notes')) {
+                    $notifyData['notes'] = $request->notes;
+                }
+
                 \Log::info('Stock updated successfully', [
                     'stock_id' => $stock->id,
-                    'updated_fields' => array_keys($updateData)
+                    'updated_fields' => array_merge(['quantity'], array_keys($notifyData)),
                 ]);
 
-                // Dispatch email notification job to queue (don't wait for it)
-                try {
-                    SendStockUpdateNotification::dispatch($stock, $updateData);
-                    \Log::info('Stock update notification job dispatched', [
-                        'stock_id' => $stock->id
-                    ]);
-                } catch (\Exception $e) {
-                    \Log::error('Failed to dispatch stock update notification job', [
-                        'stock_id' => $stock->id,
-                        'error' => $e->getMessage()
-                    ]);
-                    // Don't fail the main request if email dispatch fails
+                if (!empty($notifyData)) {
+                    try {
+                        SendStockUpdateNotification::dispatch($stock, $notifyData);
+                        \Log::info('Stock update notification job dispatched', [
+                            'stock_id' => $stock->id
+                        ]);
+                    } catch (\Exception $e) {
+                        \Log::error('Failed to dispatch stock update notification job', [
+                            'stock_id' => $stock->id,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
                 }
 
                 return response()->json([
@@ -391,11 +413,7 @@ class StockController extends Controller
         try {
             DB::beginTransaction();
 
-            // Update car status to available if stock is deleted
-            if ($stock->car) {
-                $stock->car->update(['status' => 'available']);
-            }
-
+            // Do not change car status or quantity when removing the stock row.
             $stock->delete();
 
             DB::commit();
@@ -459,7 +477,7 @@ class StockController extends Controller
             $validator = Validator::make($request->all(), [
                 'stock_ids' => 'required|array',
                 'stock_ids.*' => 'exists:stocks,id',
-                'status' => 'required|in:available,sold,reserved,damaged,lost,stolen',
+                'status' => ['required', Rule::in(Stock::STATUSES)],
             ]);
 
             if ($validator->fails()) {

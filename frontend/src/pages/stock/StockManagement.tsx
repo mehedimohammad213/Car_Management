@@ -212,7 +212,6 @@ const StockManagement: React.FC = () => {
         car_id: car.id,
         quantity: 1,
         price: car.price_amount ? (typeof car.price_amount === "string" ? parseFloat(car.price_amount) : car.price_amount) : 0,
-        status: "available" as const,
         notes: "",
       };
 

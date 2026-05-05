@@ -10,6 +10,19 @@ class Stock extends Model
 {
     use HasFactory;
 
+    /** Matches car Location & Status options + inventory outcomes. */
+    public const STATUSES = [
+        'pending',
+        'available',
+        'sold',
+        'reserved',
+        'in_transit',
+        'preorder',
+        'damaged',
+        'lost',
+        'stolen',
+    ];
+
     protected $table = 'stocks';
 
     protected $fillable = [
@@ -41,16 +54,20 @@ class Stock extends Model
     public function getStatusBadgeAttribute(): string
     {
         $statusColors = [
+            'pending' => 'bg-slate-100 text-slate-800',
             'available' => 'bg-green-100 text-green-800',
             'sold' => 'bg-red-100 text-red-800',
             'reserved' => 'bg-yellow-100 text-yellow-800',
+            'in_transit' => 'bg-sky-100 text-sky-800',
+            'preorder' => 'bg-violet-100 text-violet-800',
             'damaged' => 'bg-orange-100 text-orange-800',
             'lost' => 'bg-gray-100 text-gray-800',
             'stolen' => 'bg-red-100 text-red-800',
         ];
 
         $color = $statusColors[$this->status] ?? 'bg-gray-100 text-gray-800';
-        return '<span class="px-2 py-1 text-xs font-medium rounded-full ' . $color . '">' . ucfirst($this->status) . '</span>';
+        $label = str_replace('_', ' ', (string) $this->status);
+        return '<span class="px-2 py-1 text-xs font-medium rounded-full ' . $color . '">' . ucwords($label) . '</span>';
     }
 
     // Scopes for filtering

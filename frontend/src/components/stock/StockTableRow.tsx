@@ -137,6 +137,21 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
                 Reserved
               </span>
             )}
+            {effectiveStatus === "pending" && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-200">
+                Pending
+              </span>
+            )}
+            {effectiveStatus === "in_transit" && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-sky-100 text-sky-800 border border-sky-200">
+                In Transit
+              </span>
+            )}
+            {effectiveStatus === "preorder" && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-violet-100 text-violet-800 border border-violet-200">
+                Preorder
+              </span>
+            )}
             {(effectiveStatus === "damaged" ||
               effectiveStatus === "lost" ||
               effectiveStatus === "stolen") && (

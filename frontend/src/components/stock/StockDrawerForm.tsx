@@ -137,10 +137,6 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
       newErrors.car_id = "Car selection is required";
     }
 
-    if (formData.quantity <= 0) {
-      newErrors.quantity = "Quantity must be greater than 0";
-    }
-
     if (formData.price !== undefined && formData.price < 0) {
       newErrors.price = "Price cannot be negative";
     }
@@ -162,33 +158,27 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
             const group = carGroups.find(g => g.key === key);
 
             if (group) {
-              // Update stock for all cars with same make+model+package
+              // Update stock for all cars with same make+model+package (price/notes only; API fixes quantity=1, ignores status)
               const updateData = {
                 make: car.make,
                 model: car.model,
                 package: (car as any).package || "",
                 car_ids: group.carIds,
-                quantity: formData.quantity,
                 price: formData.price,
-                status: formData.status,
                 notes: formData.notes,
               };
               onSubmit(updateData as any);
             } else {
               // Fallback to single stock update
               const submitData = {
-                quantity: formData.quantity,
                 price: formData.price,
-                status: formData.status,
                 notes: formData.notes,
               };
               onSubmit(submitData);
             }
           } else {
             const submitData = {
-              quantity: formData.quantity,
               price: formData.price,
-              status: formData.status,
               notes: formData.notes,
             };
             onSubmit(submitData);
@@ -202,9 +192,8 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
               model: group.model,
               package: group.package || "",
               car_ids: group.carIds,
-              quantity: formData.quantity,
+              quantity: 1,
               price: formData.price,
-              status: formData.status,
               notes: formData.notes,
             };
             onSubmit(createData as any);
@@ -294,17 +283,14 @@ const StockDrawerForm: React.FC<StockDrawerFormProps> = ({
           <input
             type="number"
             min="1"
-            value={formData.quantity}
+            value={1}
+            readOnly
+            title="Quantity is always 1 (set by system for create and update)."
             onChange={(e) =>
               handleInputChange("quantity", parseInt(e.target.value))
             }
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-              errors.quantity ? "border-red-300" : "border-gray-300"
-            }`}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
           />
-          {errors.quantity && (
-            <p className="mt-1 text-sm text-red-600">{errors.quantity}</p>
-          )}
         </div>
 
         {/* Status dropdown intentionally commented out per request */}

@@ -1,11 +1,26 @@
 import { apiClient } from "./apiClient";
 
+/** Aligned with car form (Location & Status) + inventory outcomes; matches `stocks.status` enum. */
+export const STOCK_STATUS_VALUES = [
+  "pending",
+  "available",
+  "sold",
+  "reserved",
+  "in_transit",
+  "preorder",
+  "damaged",
+  "lost",
+  "stolen",
+] as const;
+
+export type StockStatusValue = (typeof STOCK_STATUS_VALUES)[number];
+
 export interface Stock {
   id: number;
   car_id: number | string; // Can be string from API
   quantity: number;
   price?: number | string; // Can be string from API
-  status: "available" | "sold" | "reserved" | "damaged" | "lost" | "stolen";
+  status: StockStatusValue;
   notes?: string;
   created_at: string;
   updated_at: string;
@@ -91,17 +106,21 @@ export interface StockStatistics {
 }
 
 export interface CreateStockData {
-  car_id: number;
-  quantity: number;
+  car_id?: number;
+  /** Ignored by API: stock quantity is always stored as 1 on create. */
+  quantity?: number;
   price?: number;
-  status: "available" | "sold" | "reserved" | "damaged" | "lost" | "stolen";
+  /** Ignored by API: stock status is derived from the car on create. */
+  status?: StockStatusValue;
   notes?: string;
 }
 
 export interface UpdateStockData {
+  /** Ignored by API: quantity is always stored as 1 on update. */
   quantity?: number;
   price?: number;
-  status?: "available" | "sold" | "reserved" | "damaged" | "lost" | "stolen";
+  /** Ignored by API: stock status is not changed from update requests. */
+  status?: StockStatusValue;
   notes?: string;
 }
 
@@ -122,7 +141,7 @@ export interface StockFilters {
 
 export interface BulkUpdateStatusData {
   stock_ids: number[];
-  status: "available" | "sold" | "reserved" | "damaged" | "lost" | "stolen";
+  status: StockStatusValue;
 }
 
 class StockApiService {

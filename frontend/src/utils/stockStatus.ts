@@ -1,13 +1,7 @@
 import type { Stock } from "../services/stockApi";
+import { STOCK_STATUS_VALUES } from "../services/stockApi";
 
-const STOCK_STATUSES = new Set([
-  "available",
-  "sold",
-  "reserved",
-  "damaged",
-  "lost",
-  "stolen",
-]);
+const STOCK_STATUSES = new Set<string>(STOCK_STATUS_VALUES);
 
 /**
  * Merges car.status and stock.status when they drift (e.g. car marked sold via car edit
@@ -53,14 +47,19 @@ export function isCarEligibleForPendingStockTab(
   const s = String(car?.status ?? "").toLowerCase().trim();
   return (
     s === "pending" ||
+    s === "preorder" ||
+    s === "in_transit" ||
     s === "available" ||
     s === "sold" ||
     s === ""
   );
 }
 
-/** Order for “status-wise” lists: in-stock first, then issues, sold last */
+/** Order for “status-wise” lists: workflow first, then issues, sold last */
 const STATUS_LIST_ORDER = [
+  "pending",
+  "preorder",
+  "in_transit",
   "available",
   "reserved",
   "damaged",
@@ -80,6 +79,8 @@ export const STATUS_SECTION_LABELS: Record<string, string> = {
   pending: "Pending",
   available: "Available",
   reserved: "Reserved",
+  in_transit: "In Transit",
+  preorder: "Preorder",
   damaged: "Damaged",
   lost: "Lost",
   stolen: "Stolen",
