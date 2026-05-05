@@ -1,8 +1,9 @@
 import React from "react";
 import { Car, Eye, Edit, PackagePlus } from "lucide-react";
 import { getCssColor, getGradeColor } from "../../utils/carUtils";
-import { isCarStatusSold } from "../../utils/stockStatus";
+import { getEffectiveStatusForUnifiedRow } from "../../utils/stockStatus";
 import StockActionsDropdown from "./StockActionsDropdown";
+import { StockStatusBadges } from "./StockStatusBadges";
 
 interface AvailableCar {
   id: number;
@@ -192,7 +193,11 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
           {/* Table Body with Enhanced Styling */}
           <div className="divide-y divide-gray-100">
             {cars.map((car, index) => {
-              const carSold = isCarStatusSold(car);
+              const effectiveStatus = getEffectiveStatusForUnifiedRow({
+                kind: "pending",
+                car,
+              });
+              const carSold = effectiveStatus === "sold";
               const makeModelKey = `${car.make}_${car.model}`;
               const availableCarsCount = availableCarsCountMap.get(makeModelKey) || 0;
 
@@ -269,15 +274,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                         {chassisNo}
                       </div>
                       <div className="flex flex-wrap items-center gap-1.5">
-                        {carSold ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
-                            Sold
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-200">
-                            Pending
-                          </span>
-                        )}
+                        <StockStatusBadges effectiveStatus={effectiveStatus} />
                         {car.category && (
                           <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200">
                             {car.category.name}
