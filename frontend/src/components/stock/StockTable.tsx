@@ -203,6 +203,7 @@ const StockTable: React.FC<StockTableProps> = ({
                         car={car}
                         showMakeModelCount={firstIdx === i}
                         makeModelCount={totalForKey}
+                        emptyPriceLabel="N/A"
                         onView={unifiedPendingCallbacks.onView}
                         onEdit={unifiedPendingCallbacks.onEdit}
                         onDelete={unifiedPendingCallbacks.onDelete}
@@ -233,6 +234,7 @@ const StockTable: React.FC<StockTableProps> = ({
                         stock={stock}
                         currentStockCount={currentStockCount}
                         showCount={!!isFirstOfMakeModel}
+                        emptyPriceLabel="N/A"
                         onEdit={onEdit}
                         onDelete={onDelete}
                         onView={onView}

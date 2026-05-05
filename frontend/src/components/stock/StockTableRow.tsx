@@ -21,6 +21,8 @@ interface StockTableRowProps {
   showDelete?: boolean;
   /** User role: view-only (no edit/delete). */
   readOnly?: boolean;
+  /** Fallback when price is missing/invalid. */
+  emptyPriceLabel?: string;
 }
 
 const StockTableRow: React.FC<StockTableRowProps> = ({
@@ -32,6 +34,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
   onView,
   showDelete = true,
   readOnly = false,
+  emptyPriceLabel = "N/A",
 }) => {
   const car = stock.car;
   const effectiveStatus = getEffectiveStockStatus(stock);
@@ -51,9 +54,9 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
     : [];
 
   const formatPrice = (amount?: number | string, currency?: string) => {
-    if (amount === undefined || amount === null) return "Price on request";
+    if (amount === undefined || amount === null) return emptyPriceLabel;
     const numAmount = typeof amount === "string" ? parseFloat(amount) : amount;
-    if (isNaN(numAmount)) return "Price on request";
+    if (isNaN(numAmount)) return emptyPriceLabel;
     const formatted = formatPriceUtil(numAmount, currency);
     // Extract just the number part to match CarTable display
     return formatted.replace(/^[A-Z]+\s/, "");
@@ -237,7 +240,7 @@ const StockTableRow: React.FC<StockTableRowProps> = ({
           <span className="text-sm font-semibold text-gray-900">
             {car?.price_amount
               ? formatPrice(car.price_amount, car.price_currency)
-              : "Price on request"}
+              : emptyPriceLabel}
           </span>
         </div>
       </div>

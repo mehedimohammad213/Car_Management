@@ -369,7 +369,7 @@ const AvailableCarsTable: React.FC<AvailableCarsTableProps> = ({
                           ? parseFloat(car.price_amount).toLocaleString("en-IN")
                           : car.price_amount.toLocaleString("en-IN")
                         }`
-                        : "Price on request"}
+                        : "N/A"}
                     </span>
                   </div>
 

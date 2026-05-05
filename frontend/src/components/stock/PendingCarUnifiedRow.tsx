@@ -21,12 +21,18 @@ interface PendingCarUnifiedRowProps {
   onEdit?: (car: PendingCarRecord) => void;
   onDelete?: (car: PendingCarRecord) => void;
   onCreateStock: (car: PendingCarRecord) => void;
+  /** Fallback when price is missing/invalid. */
+  emptyPriceLabel?: string;
 }
 
-const formatPrice = (amount?: number | string, currency?: string) => {
-  if (amount === undefined || amount === null) return "Price on request";
+const formatPrice = (
+  amount?: number | string,
+  currency?: string,
+  emptyPriceLabel: string = "N/A"
+) => {
+  if (amount === undefined || amount === null) return emptyPriceLabel;
   const numAmount = typeof amount === "string" ? parseFloat(amount) : amount;
-  if (isNaN(numAmount)) return "Price on request";
+  if (isNaN(numAmount)) return emptyPriceLabel;
   const formatted = formatPriceUtil(numAmount, currency);
   return formatted.replace(/^[A-Z]+\s/, "");
 };
@@ -42,6 +48,7 @@ const PendingCarUnifiedRow: React.FC<PendingCarUnifiedRowProps> = ({
   onEdit,
   onDelete,
   onCreateStock,
+  emptyPriceLabel = "N/A",
 }) => {
   const carSold = isCarStatusSold(car);
   const effectiveStatus = getEffectiveStatusForUnifiedRow({
@@ -180,9 +187,10 @@ const PendingCarUnifiedRow: React.FC<PendingCarUnifiedRowProps> = ({
           {car.price_amount != null && car.price_amount !== ""
             ? formatPrice(
                 car.price_amount as number | string,
-                car.price_currency as string | undefined
+                car.price_currency as string | undefined,
+                emptyPriceLabel
               )
-            : "Price on request"}
+            : emptyPriceLabel}
         </span>
       </div>
 
