@@ -6,8 +6,12 @@ import {
   getCssColor,
 } from "../../utils/carUtils";
 import type { PendingCarRecord } from "../../hooks/usePendingCarsFilters";
-import { isCarStatusSold } from "../../utils/stockStatus";
+import {
+  getEffectiveStatusForUnifiedRow,
+  isCarStatusSold,
+} from "../../utils/stockStatus";
 import StockActionsDropdown from "./StockActionsDropdown";
+import { StockStatusBadges } from "./StockStatusBadges";
 
 interface PendingCarUnifiedRowProps {
   car: PendingCarRecord;
@@ -40,6 +44,10 @@ const PendingCarUnifiedRow: React.FC<PendingCarUnifiedRowProps> = ({
   onCreateStock,
 }) => {
   const carSold = isCarStatusSold(car);
+  const effectiveStatus = getEffectiveStatusForUnifiedRow({
+    kind: "pending",
+    car,
+  });
   const refNo =
     car.ref_no ||
     (car.id != null ? `AA${car.id.toString().padStart(6, "0")}` : "N/A");
@@ -78,15 +86,7 @@ const PendingCarUnifiedRow: React.FC<PendingCarUnifiedRowProps> = ({
             <span className="text-gray-400">Chassis:</span> {chassisNo}
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
-            {carSold ? (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
-                Sold
-              </span>
-            ) : (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-200">
-                Pending
-              </span>
-            )}
+            <StockStatusBadges effectiveStatus={effectiveStatus} />
             {car.category &&
             typeof car.category === "object" &&
             car.category !== null &&

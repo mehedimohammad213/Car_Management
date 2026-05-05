@@ -1,6 +1,7 @@
 import React from "react";
 import { Search, X, Download, FileText, Plus } from "lucide-react";
 import { makeToModels } from "../../utils/carData";
+import { STOCK_STATUS_DROPDOWN_OPTIONS } from "../../utils/stockStatus";
 
 interface StockFiltersProps {
   searchTerm: string;
@@ -22,6 +23,10 @@ interface StockFiltersProps {
   onCreateStock?: () => void;
   /** Pending tab: quick action to create a new car */
   onAddCar?: () => void;
+  /** All Stock tab: narrow by workflow / inventory status */
+  showStatusFilter?: boolean;
+  statusFilter?: string;
+  onStatusFilterChange?: (value: string) => void;
   filterOptions?: {
     years?: number[];
     colors?: string[];
@@ -49,17 +54,20 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
   onCreateInvoice,
   onCreateStock,
   onAddCar,
+  showStatusFilter,
+  statusFilter,
+  onStatusFilterChange,
   filterOptions,
   searchPlaceholder = "Search stocks by make, model, year, chassis number, or any keyword...",
 }) => {
   const hasActiveFilters =
     searchTerm ||
-    searchTerm ||
     yearFilter ||
     makeFilter ||
     modelFilter ||
     colorFilter ||
-    fuelFilter;
+    fuelFilter ||
+    (showStatusFilter && !!statusFilter);
 
   return (
     <div className="mb-0">
@@ -76,6 +84,27 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
           />
         </div>
 
+
+        {/* Inventory status — All Stock tab */}
+        {showStatusFilter &&
+          statusFilter !== undefined &&
+          onStatusFilterChange && (
+          <div className="w-full lg:w-auto">
+            <select
+              value={statusFilter}
+              onChange={(e) => onStatusFilterChange(e.target.value)}
+              aria-label="Filter by stock status"
+              className="w-full lg:w-auto min-w-[160px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+            >
+              <option value="">All statuses</option>
+              {STOCK_STATUS_DROPDOWN_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Make Filter */}
         <div className="w-full lg:w-auto">

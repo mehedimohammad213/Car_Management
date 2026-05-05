@@ -21,6 +21,7 @@ import { stockApi, Stock } from "../../services/stockApi";
 import { carApi } from "../../services/carApi";
 import {
   getEffectiveStockStatus,
+  getEffectiveStatusForUnifiedRow,
   isStockRowSold,
 } from "../../utils/stockStatus";
 import { filterPendingCarsLikeStockFilters } from "../../utils/filterPendingCarsLikeStockFilters";
@@ -51,6 +52,7 @@ const StockManagement: React.FC = () => {
     model?: string;
   } | null>(null);
   const [isDeletingPendingCar, setIsDeletingPendingCar] = useState(false);
+  const [allTabStatusFilter, setAllTabStatusFilter] = useState("");
 
   const stockScope =
     activeTab === "soldout" ? "sold" : activeTab === "available" ? "available" : "all";
@@ -158,7 +160,14 @@ const StockManagement: React.FC = () => {
     return [...pending, ...stocksPart];
   }, [pendingFilteredForUnified, filteredStocksFull]);
 
-  const unifiedTotalItems = unifiedCombined.length;
+  const unifiedFilteredByStatus = useMemo(() => {
+    if (!allTabStatusFilter) return unifiedCombined;
+    return unifiedCombined.filter(
+      (row) => getEffectiveStatusForUnifiedRow(row) === allTabStatusFilter
+    );
+  }, [unifiedCombined, allTabStatusFilter]);
+
+  const unifiedTotalItems = unifiedFilteredByStatus.length;
   const unifiedTotalPages = Math.max(
     Math.ceil(unifiedTotalItems / perPage),
     1
@@ -166,8 +175,8 @@ const StockManagement: React.FC = () => {
 
   const unifiedPageRows = useMemo(() => {
     const start = (currentPage - 1) * perPage;
-    return unifiedCombined.slice(start, start + perPage);
-  }, [unifiedCombined, currentPage, perPage]);
+    return unifiedFilteredByStatus.slice(start, start + perPage);
+  }, [unifiedFilteredByStatus, currentPage, perPage]);
 
   useEffect(() => {
     fetchAvailableCars();
@@ -186,6 +195,15 @@ const StockManagement: React.FC = () => {
       setCurrentPage(safe);
     }
   }, [activeTab, unifiedTotalPages, currentPage, setCurrentPage]);
+
+  useEffect(() => {
+    if (activeTab !== "all") return;
+    setCurrentPage(1);
+  }, [allTabStatusFilter, activeTab, setCurrentPage]);
+
+  useEffect(() => {
+    if (activeTab !== "all") setAllTabStatusFilter("");
+  }, [activeTab]);
 
   // Normalize missing/invalid `tab` to default, and sync from URL.
   useEffect(() => {
@@ -307,7 +325,13 @@ const StockManagement: React.FC = () => {
             <StockFilters
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
-              onClearFilters={handleClearFilters}
+              onClearFilters={() => {
+                handleClearFilters();
+                setAllTabStatusFilter("");
+              }}
+              showStatusFilter={activeTab === "all"}
+              statusFilter={allTabStatusFilter}
+              onStatusFilterChange={setAllTabStatusFilter}
               yearFilter={yearFilter}
               onYearFilterChange={setYearFilter}
               makeFilter={makeFilter}

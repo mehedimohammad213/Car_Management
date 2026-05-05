@@ -17,6 +17,16 @@ export function getEffectiveStockStatus(stock: Stock): string {
     return "sold";
   }
 
+  /** Stock rows often stay default `available` while workflow lives on `car.status`. */
+  if (
+    stockSt === "available" &&
+    carSt &&
+    STOCK_STATUSES.has(carSt) &&
+    carSt !== "available"
+  ) {
+    return carSt;
+  }
+
   if (STOCK_STATUSES.has(stockSt)) {
     return stockSt;
   }
@@ -29,6 +39,23 @@ export function getEffectiveStockStatus(stock: Stock): string {
 
 export function isStockRowSold(stock: Stock): boolean {
   return getEffectiveStockStatus(stock) === "sold";
+}
+
+/**
+ * Unified "All Stock" list: rows are either stock records or pending cars (no stock row yet).
+ */
+export function getEffectiveStatusForUnifiedRow(
+  row:
+    | { kind: "stock"; stock: Stock }
+    | { kind: "pending"; car: { status?: string } }
+): string {
+  if (row.kind === "stock") {
+    return getEffectiveStockStatus(row.stock);
+  }
+  const carSt = String(row.car?.status ?? "").toLowerCase().trim();
+  if (carSt === "sold") return "sold";
+  if (STOCK_STATUSES.has(carSt)) return carSt;
+  return "pending";
 }
 
 /** Cars in the “no stock row yet” pool still carry `car.status` (e.g. sold after stock was removed). */
@@ -56,7 +83,7 @@ export function isCarEligibleForPendingStockTab(
 }
 
 /** Order for “status-wise” lists: workflow first, then issues, sold last */
-const STATUS_LIST_ORDER = [
+export const STATUS_LIST_ORDER = [
   "pending",
   "preorder",
   "in_transit",
@@ -86,3 +113,12 @@ export const STATUS_SECTION_LABELS: Record<string, string> = {
   stolen: "Stolen",
   sold: "Sold",
 };
+
+/** Options for inventory status dropdowns (order matches STATUS_LIST_ORDER). */
+export const STOCK_STATUS_DROPDOWN_OPTIONS: {
+  value: string;
+  label: string;
+}[] = STATUS_LIST_ORDER.map((value) => ({
+  value,
+  label: STATUS_SECTION_LABELS[value] ?? value,
+}));
