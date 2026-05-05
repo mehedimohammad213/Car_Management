@@ -1,7 +1,8 @@
 import React from "react";
-import { Pencil, Trash2, Eye } from "lucide-react";
+import { Pencil, Trash2, Eye, Download } from "lucide-react";
 import { PaymentHistory } from "../../services/paymentHistoryApi";
 import StockActionsDropdown from "../stock/StockActionsDropdown";
+import { PaymentHistoryInvoiceService } from "../../services/paymentHistoryInvoiceService";
 
 interface PaymentHistoryTableRowProps {
   paymentHistory: PaymentHistory;
@@ -158,6 +159,16 @@ const PaymentHistoryTableRow: React.FC<PaymentHistoryTableRowProps> = ({
               icon: Trash2,
               onClick: () => onDelete(paymentHistory),
               variant: "danger" as const,
+            },
+            {
+              id: "download",
+              label: "Download PDF",
+              icon: Download,
+              onClick: () =>
+                PaymentHistoryInvoiceService.generateSalesTrackingReport(
+                  paymentHistory
+                ),
+              variant: "success" as const,
             },
           ]}
         />

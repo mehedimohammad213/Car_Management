@@ -2,7 +2,12 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { MoreVertical, type LucideIcon } from "lucide-react";
 import clsx from "clsx";
 
-export type StockActionVariant = "default" | "primary" | "amber" | "danger";
+export type StockActionVariant =
+  | "default"
+  | "primary"
+  | "amber"
+  | "danger"
+  | "success";
 
 export interface StockActionMenuItem {
   id: string;
@@ -41,6 +46,7 @@ const variantRowClass: Record<StockActionVariant, string> = {
   primary: "text-primary-600 hover:bg-primary-50",
   amber: "text-amber-600 hover:bg-amber-50",
   danger: "text-red-600 hover:bg-red-50",
+  success: "text-green-600 hover:bg-green-50",
 };
 
 const variantIconClass: Record<StockActionVariant, string> = {
@@ -48,6 +54,7 @@ const variantIconClass: Record<StockActionVariant, string> = {
   primary: "text-primary-600",
   amber: "text-amber-600",
   danger: "text-red-600",
+  success: "text-green-600",
 };
 
 interface StockActionsDropdownProps {
