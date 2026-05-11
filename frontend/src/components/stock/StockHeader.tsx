@@ -35,8 +35,8 @@ function TabDataCount({ n, active }: { n: number; active: boolean }) {
   return (
     <span
       className={`ml-1.5 inline-flex min-w-[1.35rem] items-center justify-center rounded-md px-1.5 py-0.5 text-[11px] font-bold tabular-nums ${active
-          ? "bg-white/25 text-white"
-          : "bg-gray-200/90 text-gray-600"
+        ? "bg-white/25 text-white"
+        : "bg-gray-200/90 text-gray-600"
         }`}
     >
       {n}
@@ -99,40 +99,40 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
           {/* Tab Selection - right side of header */}
           <div className="flex flex-wrap gap-1">
             {visibleTabs.includes("all") && (
-            <button
-              onClick={() => onTabChange("all")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "all"
+              <button
+                onClick={() => onTabChange("all")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "all"
                   ? "bg-primary-600 text-white"
                   : "text-gray-600 hover:bg-gray-100"
-                }`}
-            >
-              All Stock
-              <TabDataCount n={tabCounts.all} active={activeTab === "all"} />
-            </button>
+                  }`}
+              >
+                All
+                <TabDataCount n={tabCounts.all} active={activeTab === "all"} />
+              </button>
             )}
             {visibleTabs.includes("before") && (
-            <button
-              onClick={() => onTabChange("before")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "before"
+              <button
+                onClick={() => onTabChange("before")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "before"
                   ? "bg-primary-600 text-white"
                   : "text-gray-600 hover:bg-gray-100"
-                }`}
-            >
-              Pending
-              <TabDataCount n={tabCounts.pending} active={activeTab === "before"} />
-            </button>
+                  }`}
+              >
+                Reserved
+                <TabDataCount n={tabCounts.pending} active={activeTab === "before"} />
+              </button>
             )}
             {visibleTabs.includes("current") && (
-            <button
-              onClick={() => onTabChange("current")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "current"
+              <button
+                onClick={() => onTabChange("current")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "current"
                   ? "bg-primary-600 text-white"
                   : "text-gray-600 hover:bg-gray-100"
-                }`}
-            >
-              Current
-              <TabDataCount n={tabCounts.current} active={activeTab === "current"} />
-            </button>
+                  }`}
+              >
+                Display
+                <TabDataCount n={tabCounts.current} active={activeTab === "current"} />
+              </button>
             )}
             {/* Available / Sold out tabs — commented out (see Sidebar)
             <button

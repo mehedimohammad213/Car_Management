@@ -23,9 +23,8 @@ type NavItem = {
 
 const BdtIcon: React.FC<{ className?: string }> = ({ className }) => (
   <span
-    className={`inline-flex items-center justify-center font-extrabold leading-none text-lg text-current ${
-      className ?? ""
-    }`}
+    className={`inline-flex items-center justify-center font-extrabold leading-none text-lg text-current ${className ?? ""
+      }`}
   >
     ৳
   </span>
@@ -96,26 +95,22 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
 
   return (
     <aside
-      className={`hidden lg:block relative shrink-0 overflow-y-auto no-vertical-scrollbar rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm ${
-        collapsed ? "w-16" : "w-64"
-      }`}
+      className={`hidden lg:block relative shrink-0 overflow-y-auto no-vertical-scrollbar rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm ${collapsed ? "w-16" : "w-64"
+        }`}
       aria-label="Sidebar navigation"
     >
       <div
-        className={`h-[calc(100vh-2rem)] py-4 ${
-          collapsed ? "px-2" : "px-3"
-        } flex flex-col`}
+        className={`h-[calc(100vh-2rem)] py-4 ${collapsed ? "px-2" : "px-3"
+          } flex flex-col`}
       >
         {/* Toolbar */}
         <div
-          className={`relative pb-4 mb-4 ${
-            collapsed ? "px-1" : "px-2"
-          }`}
+          className={`relative pb-4 mb-4 ${collapsed ? "px-1" : "px-2"
+            }`}
         >
           <div
-            className={`flex items-center gap-2 ${
-              collapsed ? "justify-center" : ""
-            }`}
+            className={`flex items-center gap-2 ${collapsed ? "justify-center" : ""
+              }`}
           >
             <div className="h-9 w-9 rounded-xl bg-primary-600 flex items-center justify-center shadow-sm">
               <CarIcon className="h-5 w-5 text-white" />
@@ -154,14 +149,12 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
               const stockMainPath = `/admin/stock?tab=${effectiveStockTab}`;
 
               const stockTabLinkClasses = (tab: StockPageTab) =>
-                `flex items-center w-full transition-colors py-2 rounded-none ${
-                  collapsed
-                    ? "justify-center px-0 border-l-0"
-                    : "justify-start gap-3 px-3 border-l-4 border-transparent"
-                } ${
-                  effectiveStockTab === tab
-                    ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200 border-primary-500"
-                    : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+                `flex items-center w-full transition-colors py-2 rounded-none ${collapsed
+                  ? "justify-center px-0 border-l-0"
+                  : "justify-start gap-3 px-3 border-l-4 border-transparent"
+                } ${effectiveStockTab === tab
+                  ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200 border-primary-500"
+                  : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                 }`;
 
               return (
@@ -172,19 +165,17 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                       setStockSubmenuOpen((v) => !v);
                       setPurchaseSubmenuOpen(false);
                     }}
-                    className={`flex items-center w-full transition-colors py-2 rounded-none ${
-                      collapsed
-                        ? "justify-center px-0 border-l-0"
-                        : "justify-start gap-3 px-3 border-l-4 border-transparent"
-                    } ${
-                      isActive
+                    className={`flex items-center w-full transition-colors py-2 rounded-none ${collapsed
+                      ? "justify-center px-0 border-l-0"
+                      : "justify-start gap-3 px-3 border-l-4 border-transparent"
+                      } ${isActive
                         ? collapsed
                           ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
                           : "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200 border-primary-500"
                         : collapsed
-                        ? "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
-                        : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
-                    }`}
+                          ? "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                          : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+                      }`}
                   >
                     <Icon className="w-4 h-4" />
                     <span className={`truncate ${collapsed ? "hidden" : "inline"}`}>
@@ -193,9 +184,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
 
                     {!collapsed && (
                       <ChevronDown
-                        className={`ml-auto w-4 h-4 opacity-60 transform transition-transform ${
-                          stockSubmenuOpen ? "rotate-180" : ""
-                        }`}
+                        className={`ml-auto w-4 h-4 opacity-60 transform transition-transform ${stockSubmenuOpen ? "rotate-180" : ""
+                          }`}
                       />
                     )}
                   </Link>
@@ -203,40 +193,40 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                   {!collapsed && stockSubmenuOpen && (
                     <div className="mt-1 flex flex-col gap-1 pl-7 pr-2">
                       {allowedStockTabs.includes("all") && (
-                      <Link
-                        to="/admin/stock?tab=all"
-                        className={stockTabLinkClasses("all")}
-                        onClick={() => {
-                          setStockSubmenuOpen(true);
-                          setPurchaseSubmenuOpen(false);
-                        }}
-                      >
-                        <span className="truncate">All Stock</span>
-                      </Link>
+                        <Link
+                          to="/admin/stock?tab=all"
+                          className={stockTabLinkClasses("all")}
+                          onClick={() => {
+                            setStockSubmenuOpen(true);
+                            setPurchaseSubmenuOpen(false);
+                          }}
+                        >
+                          <span className="truncate">All Stock</span>
+                        </Link>
                       )}
                       {allowedStockTabs.includes("before") && (
-                      <Link
-                        to="/admin/stock?tab=before"
-                        className={stockTabLinkClasses("before")}
-                        onClick={() => {
-                          setStockSubmenuOpen(true);
-                          setPurchaseSubmenuOpen(false);
-                        }}
-                      >
-                        <span className="truncate">Pending Stock</span>
-                      </Link>
+                        <Link
+                          to="/admin/stock?tab=before"
+                          className={stockTabLinkClasses("before")}
+                          onClick={() => {
+                            setStockSubmenuOpen(true);
+                            setPurchaseSubmenuOpen(false);
+                          }}
+                        >
+                          <span className="truncate">Reserved Stock</span>
+                        </Link>
                       )}
                       {allowedStockTabs.includes("current") && (
-                      <Link
-                        to="/admin/stock?tab=current"
-                        className={stockTabLinkClasses("current")}
-                        onClick={() => {
-                          setStockSubmenuOpen(true);
-                          setPurchaseSubmenuOpen(false);
-                        }}
-                      >
-                        <span className="truncate">Current Stock</span>
-                      </Link>
+                        <Link
+                          to="/admin/stock?tab=current"
+                          className={stockTabLinkClasses("current")}
+                          onClick={() => {
+                            setStockSubmenuOpen(true);
+                            setPurchaseSubmenuOpen(false);
+                          }}
+                        >
+                          <span className="truncate">Display Stock</span>
+                        </Link>
                       )}
                       {/* Available / Sold Out tabs hidden
                       <Link
@@ -271,14 +261,12 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
               const purchaseMainPath = `/admin/purchase-history?tab=${effectivePurchaseTab}`;
 
               const purchaseTabLinkClasses = (tab: PurchaseTab) =>
-                `flex items-center w-full transition-colors py-2 rounded-none ${
-                  collapsed
-                    ? "justify-center px-0 border-l-0"
-                    : "justify-start gap-3 px-3 border-l-4 border-transparent"
-                } ${
-                  effectivePurchaseTab === tab
-                    ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200 border-primary-500"
-                    : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+                `flex items-center w-full transition-colors py-2 rounded-none ${collapsed
+                  ? "justify-center px-0 border-l-0"
+                  : "justify-start gap-3 px-3 border-l-4 border-transparent"
+                } ${effectivePurchaseTab === tab
+                  ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200 border-primary-500"
+                  : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                 }`;
 
               return (
@@ -289,19 +277,17 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                       setPurchaseSubmenuOpen((v) => !v);
                       setStockSubmenuOpen(false);
                     }}
-                    className={`flex items-center w-full transition-colors py-2 rounded-none ${
-                      collapsed
-                        ? "justify-center px-0 border-l-0"
-                        : "justify-start gap-3 px-3 border-l-4 border-transparent"
-                    } ${
-                      isActive
+                    className={`flex items-center w-full transition-colors py-2 rounded-none ${collapsed
+                      ? "justify-center px-0 border-l-0"
+                      : "justify-start gap-3 px-3 border-l-4 border-transparent"
+                      } ${isActive
                         ? collapsed
                           ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
                           : "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200 border-primary-500"
                         : collapsed
                           ? "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
                           : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
-                    }`}
+                      }`}
                   >
                     <Icon className="w-4 h-4" />
                     <span className={`truncate ${collapsed ? "hidden" : "inline"}`}>
@@ -310,9 +296,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
 
                     {!collapsed && (
                       <ChevronDown
-                        className={`ml-auto w-4 h-4 opacity-60 transform transition-transform ${
-                          purchaseSubmenuOpen ? "rotate-180" : ""
-                        }`}
+                        className={`ml-auto w-4 h-4 opacity-60 transform transition-transform ${purchaseSubmenuOpen ? "rotate-180" : ""
+                          }`}
                       />
                     )}
                   </Link>
@@ -337,7 +322,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                           setStockSubmenuOpen(false);
                         }}
                       >
-                        <span className="truncate">History</span>
+                        <span className="truncate">Purchase History</span>
                       </Link>
                     </div>
                   )}
@@ -353,19 +338,17 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                   setStockSubmenuOpen(false);
                   setPurchaseSubmenuOpen(false);
                 }}
-                className={`flex items-center w-full transition-colors py-2 rounded-none ${
-                  collapsed
-                    ? "justify-center px-0 border-l-0"
-                    : "justify-start gap-3 px-3 border-l-4 border-transparent"
-                } ${
-                  isActive
+                className={`flex items-center w-full transition-colors py-2 rounded-none ${collapsed
+                  ? "justify-center px-0 border-l-0"
+                  : "justify-start gap-3 px-3 border-l-4 border-transparent"
+                  } ${isActive
                     ? collapsed
                       ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
                       : "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200 border-primary-500"
                     : collapsed
                       ? "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
                       : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
-                }`}
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 <span className={`truncate ${collapsed ? "hidden" : "inline"}`}>
@@ -377,9 +360,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
         </nav>
 
         <div
-          className={`pt-4 ${
-            collapsed ? "hidden" : "block"
-          }`}
+          className={`pt-4 ${collapsed ? "hidden" : "block"
+            }`}
         >
           <div className="px-2">
             <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
@@ -393,9 +375,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
 
         {/* Sidebar footer card image */}
         <div
-          className={`pt-2 ${
-            collapsed ? "hidden" : "block"
-          }`}
+          className={`pt-2 ${collapsed ? "hidden" : "block"
+            }`}
         >
           <div className="p-2">
             <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">

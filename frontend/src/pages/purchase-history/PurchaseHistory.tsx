@@ -207,11 +207,11 @@ const PurchaseHistoryPage: React.FC = () => {
       );
       if (response.success) {
         toast.success("Purchase history deleted successfully");
-          if (activeTab === "history") {
-            fetchHistoryPurchaseHistories();
-          } else {
-            fetchLcHistoriesAll();
-          }
+        if (activeTab === "history") {
+          fetchHistoryPurchaseHistories();
+        } else {
+          fetchLcHistoriesAll();
+        }
         setShowDeleteModal(false);
         setPurchaseHistoryToDelete(null);
       } else {
@@ -280,7 +280,7 @@ const PurchaseHistoryPage: React.FC = () => {
                     : "text-gray-600 hover:bg-gray-100"
                     }`}
                 >
-                  LC Wise View
+                  View
                 </button>
                 <button
                   onClick={() => {
@@ -296,7 +296,7 @@ const PurchaseHistoryPage: React.FC = () => {
                     : "text-gray-600 hover:bg-gray-100"
                     }`}
                 >
-                  History Table
+                  History
                 </button>
               </div>
             </div>
@@ -395,13 +395,13 @@ const PurchaseHistoryPage: React.FC = () => {
             activeTab === "lc_wise" ? LC_PER_PAGE : HISTORY_PER_PAGE;
 
           return (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={paginationTotalPages}
-          totalItems={paginationTotalItems}
-          perPage={paginationPerPage}
-          onPageChange={setCurrentPage}
-        />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={paginationTotalPages}
+              totalItems={paginationTotalItems}
+              perPage={paginationPerPage}
+              onPageChange={setCurrentPage}
+            />
           );
         })()}
 
