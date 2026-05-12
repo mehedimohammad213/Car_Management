@@ -111,14 +111,6 @@ export const useStockFilters = (
 
         if (sortBy) {
             filtered.sort((a, b) => {
-                if (stockScope === "all") {
-                    const ra = getStatusSortRank(getEffectiveStockStatus(a));
-                    const rb = getStatusSortRank(getEffectiveStockStatus(b));
-                    if (ra !== rb) {
-                        return ra - rb;
-                    }
-                }
-
                 let aValue: any;
                 let bValue: any;
 

@@ -88,6 +88,9 @@ export function usePendingCarsFilters(availableCars: PendingCarRecord[]) {
       if (car.fuel) fuels.add(car.fuel);
     });
 
+    // Sort by descending id
+    filtered.sort((a, b) => b.id - a.id);
+
     const totalPages = Math.max(
       Math.ceil(filtered.length / PER_PAGE),
       1

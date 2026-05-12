@@ -157,7 +157,13 @@ const StockManagement: React.FC = () => {
       kind: "stock" as const,
       stock,
     }));
-    return [...pending, ...stocksPart];
+    const combined = [...pending, ...stocksPart];
+    combined.sort((a, b) => {
+      const idA = a.kind === "pending" ? a.car.id : (a.stock.car?.id || a.stock.id);
+      const idB = b.kind === "pending" ? b.car.id : (b.stock.car?.id || b.stock.id);
+      return Number(idB) - Number(idA);
+    });
+    return combined;
   }, [pendingFilteredForUnified, filteredStocksFull]);
 
   const unifiedFilteredByStatus = useMemo(() => {
@@ -408,11 +414,11 @@ const StockManagement: React.FC = () => {
               unifiedPendingCallbacks={
                 activeTab === "all"
                   ? {
-                      onView: handleViewCar,
-                      onEdit: handleEditPendingCar,
-                      onDelete: handleDeletePendingCar,
-                      onCreateStock: handleCreateStockFromCar,
-                    }
+                    onView: handleViewCar,
+                    onEdit: handleEditPendingCar,
+                    onDelete: handleDeletePendingCar,
+                    onCreateStock: handleCreateStockFromCar,
+                  }
                   : undefined
               }
             />
@@ -492,11 +498,11 @@ const StockManagement: React.FC = () => {
           message={
             pendingCarToDelete
               ? `Are you sure you want to delete ${[
-                  pendingCarToDelete.make,
-                  pendingCarToDelete.model,
-                ]
-                  .filter(Boolean)
-                  .join(" ") || `car #${pendingCarToDelete.id}`}? This action cannot be undone.`
+                pendingCarToDelete.make,
+                pendingCarToDelete.model,
+              ]
+                .filter(Boolean)
+                .join(" ") || `car #${pendingCarToDelete.id}`}? This action cannot be undone.`
               : "Are you sure you want to delete this car? This action cannot be undone."
           }
           isLoading={isDeletingPendingCar}
