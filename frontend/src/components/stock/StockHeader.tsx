@@ -34,9 +34,9 @@ interface StockHeaderProps {
 function TabDataCount({ n, active }: { n: number; active: boolean }) {
   return (
     <span
-      className={`ml-1.5 inline-flex min-w-[1.35rem] items-center justify-center rounded-md px-1.5 py-0.5 text-[11px] font-bold tabular-nums ${active
-        ? "bg-white/25 text-white"
-        : "bg-gray-200/90 text-gray-600"
+      className={`px-2 py-0.5 text-xs font-bold rounded-full transition-colors ${active
+        ? "bg-white text-primary-600"
+        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
         }`}
     >
       {n}
@@ -102,7 +102,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
               <button
                 onClick={() => onTabChange("all")}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "all"
-                  ? "bg-primary-600 text-white"
+                  ? "bg-primary-600 text-white shadow-md shadow-primary-600/10"
                   : "text-gray-600 hover:bg-gray-100"
                   }`}
               >
@@ -114,7 +114,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
               <button
                 onClick={() => onTabChange("before")}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "before"
-                  ? "bg-primary-600 text-white"
+                  ? "bg-primary-600 text-white shadow-md shadow-primary-600/10"
                   : "text-gray-600 hover:bg-gray-100"
                   }`}
               >
@@ -126,7 +126,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
               <button
                 onClick={() => onTabChange("current")}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "current"
-                  ? "bg-primary-600 text-white"
+                  ? "bg-primary-600 text-white shadow-md shadow-primary-600/10"
                   : "text-gray-600 hover:bg-gray-100"
                   }`}
               >
