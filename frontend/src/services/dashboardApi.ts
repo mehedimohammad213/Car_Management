@@ -3,6 +3,7 @@ import { stockApi, Stock, StockStatistics } from "./stockApi";
 import { categoryApi, Category } from "./categoryApi";
 import { purchaseHistoryApi, PurchaseHistory } from "./purchaseHistoryApi";
 import { paymentHistoryApi, PaymentHistory } from "./paymentHistoryApi";
+import { userApi } from "./userApi";
 
 export interface DashboardData {
   totalCars: number;
@@ -11,6 +12,7 @@ export interface DashboardData {
   totalStockValue: number;
   availableCars: number;
   soldCars: number;
+  totalUsers: number;
   carsByCategory: Array<{
     category: string;
     count: number;
@@ -58,6 +60,7 @@ class DashboardApiService {
         availableCarsResponse,
         purchasesResponse,
         paymentsResponse,
+        usersResponse,
       ] = await Promise.allSettled([
         carApi.getCars({ per_page: 1000 }), // Get all cars
         categoryApi.getCategories({ per_page: 1000 }), // Get all categories
@@ -66,6 +69,7 @@ class DashboardApiService {
         stockApi.getAvailableCars(),
         purchaseHistoryApi.getPurchaseHistories({ per_page: 1000 }),
         paymentHistoryApi.getPaymentHistories({ per_page: 1000 }),
+        userApi.getAllUsers({ per_page: 1 }), // Get user total
       ]);
 
       // Handle successful responses
@@ -109,6 +113,11 @@ class DashboardApiService {
         paymentsResponse.status === "fulfilled"
           ? paymentsResponse.value.data || []
           : [];
+
+      const totalUsers =
+        usersResponse.status === "fulfilled" && usersResponse.value.success
+          ? usersResponse.value.data.pagination.total
+          : 0;
 
       // Calculate cars by category
       const carsByCategory = this.calculateCarsByCategory(cars, categories);
@@ -154,6 +163,7 @@ class DashboardApiService {
         totalStockValue: stockStats.total_value || 0,
         availableCars: availableCars.length,
         soldCars,
+        totalUsers,
         carsByCategory,
         carsByBrand,
         recentCars,

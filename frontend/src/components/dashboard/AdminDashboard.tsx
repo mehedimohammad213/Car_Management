@@ -13,7 +13,8 @@ import {
     DollarSignIcon,
     Calendar,
     X,
-    ChevronDown
+    ChevronDown,
+    Users
 } from "lucide-react";
 import { DashboardData } from "../../services/dashboardApi";
 
@@ -54,15 +55,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         if (!dateStr) return true;
         const date = new Date(dateStr);
         if (isNaN(date.getTime())) return true;
-        
+
         if (fromDate) {
             const from = new Date(fromDate);
-            from.setHours(0,0,0,0);
+            from.setHours(0, 0, 0, 0);
             if (date < from) return false;
         }
         if (toDate) {
             const to = new Date(toDate);
-            to.setHours(23,59,59,999);
+            to.setHours(23, 59, 59, 999);
             if (date > to) return false;
         }
         return true;
@@ -73,15 +74,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         if (!dateStr) return true;
         const date = new Date(dateStr);
         if (isNaN(date.getTime())) return true;
-        
+
         if (purchaseFromDate) {
             const from = new Date(purchaseFromDate);
-            from.setHours(0,0,0,0);
+            from.setHours(0, 0, 0, 0);
             if (date < from) return false;
         }
         if (purchaseToDate) {
             const to = new Date(purchaseToDate);
-            to.setHours(23,59,59,999);
+            to.setHours(23, 59, 59, 999);
             if (date > to) return false;
         }
         return true;
@@ -114,12 +115,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         if (!data || !data.payments) return [];
         return data.payments.filter(pm => {
             const matchesDate = isWithinRange(pm.purchase_date);
-            
+
             const showroom = (pm.showroom_name || "").toLowerCase();
             const customer = (pm.customer_name || "").toLowerCase();
             const query = searchQuery.toLowerCase().trim();
             const matchesSearch = query === "" || showroom.includes(query) || customer.includes(query);
-            
+
             return matchesDate && matchesSearch;
         });
     }, [data, fromDate, toDate, searchQuery]);
@@ -129,19 +130,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         if (!data || !data.purchases) return [];
         return data.purchases.filter(purchase => {
             const matchesDate = isWithinPurchaseRange(purchase.purchase_date || purchase.lc_date);
-            
+
             const lcNumber = (purchase.lc_number || "").toLowerCase();
             const bankName = (purchase.lc_bank_name || "").toLowerCase();
             const carText = getCarDetails(purchase).toLowerCase();
             const chassisText = getChassisDetails(purchase).toLowerCase();
             const query = purchaseSearchQuery.toLowerCase().trim();
-            
-            const matchesSearch = query === "" || 
-                lcNumber.includes(query) || 
-                bankName.includes(query) || 
-                carText.includes(query) || 
+
+            const matchesSearch = query === "" ||
+                lcNumber.includes(query) ||
+                bankName.includes(query) ||
+                carText.includes(query) ||
                 chassisText.includes(query);
-                
+
             return matchesDate && matchesSearch;
         });
     }, [data, purchaseFromDate, purchaseToDate, purchaseSearchQuery]);
@@ -166,7 +167,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         filteredPurchasesList.forEach((purchase) => {
             const lcKey = purchase.lc_number || "Direct Purchase";
-            
+
             // Extract cars
             const purchaseCars: any[] = [];
             if (purchase.cars && purchase.cars.length > 0) {
@@ -189,7 +190,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             // Safe numeric parsing to avoid string concatenation
             groups[lcKey].total_amount += Number(purchase.purchase_amount) || 0;
-            
+
             purchaseCars.forEach(car => {
                 if (car && !groups[lcKey].cars.some(c => c.id === car.id)) {
                     groups[lcKey].cars.push({
@@ -210,6 +211,32 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const displayedLcs = useMemo(() => {
         return groupedLcs.slice(0, 5);
     }, [groupedLcs]);
+
+    // Group stocks by status for statistics
+    const carStatusCounts = useMemo(() => {
+        const counts: Record<string, number> = {
+            pending: 0,
+            available: 0,
+            sold: 0,
+            reserved: 0,
+            in_transit: 0,
+            preorder: 0,
+            damaged: 0,
+            lost: 0,
+            stolen: 0
+        };
+
+        if (data && data.stocks) {
+            data.stocks.forEach(stock => {
+                const status = stock.status;
+                if (status && counts[status] !== undefined) {
+                    counts[status]++;
+                }
+            });
+        }
+
+        return counts;
+    }, [data]);
 
     // 2. Early return templates for Loading & Error ONLY after hooks have been defined
     if (isLoading) {
@@ -272,8 +299,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         return sum + installmentsSum;
     }, 0);
     const totalDueAmount = Math.max(0, totalPaymentPurchaseAmount - totalPaidAmount);
-    const paidPercentage = totalPaymentPurchaseAmount > 0 
-        ? Math.round((totalPaidAmount / totalPaymentPurchaseAmount) * 100) 
+    const paidPercentage = totalPaymentPurchaseAmount > 0
+        ? Math.round((totalPaidAmount / totalPaymentPurchaseAmount) * 100)
         : 0;
 
     // All-time calculations (unaffected by filter)
@@ -290,7 +317,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-gray-950 text-slate-800 dark:text-slate-200 py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto space-y-8">
-                
+
                 {/* Header Section */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-gray-900">
                     <div>
@@ -301,24 +328,102 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             Real-time metrics for inventory, purchases, and payments.
                         </p>
                     </div>
-                    
+
                     <button
                         onClick={onRefresh}
                         className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-900 hover:bg-slate-100 dark:hover:bg-gray-800 border border-slate-200 dark:border-gray-800 rounded-xl shadow-sm text-sm font-semibold text-slate-700 dark:text-slate-300 transition-all duration-200 active:scale-95"
                     >
                         <RefreshCwIcon className="w-4 h-4 text-slate-500" />
-                        Refresh Metrics
+                        Refresh
                     </button>
+                </div>
+                {/* Stats & Overview Card */}
+                <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {/* Users Summary Card Column */}
+                        <div className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-primary-50 to-indigo-50 dark:from-primary-950/20 dark:to-indigo-950/20 rounded-2xl border border-primary-100/50 dark:border-primary-900/30">
+                            <div className="p-4 bg-primary-600 text-white rounded-2xl shadow-lg shadow-primary-500/20 mb-4">
+                                <Users className="w-8 h-8" />
+                            </div>
+                            <span className="text-sm font-semibold text-slate-500 dark:text-gray-400">Total Users</span>
+                            <span className="text-4xl font-extrabold text-slate-900 dark:text-white mt-2">
+                                {data.totalUsers ?? 0}
+                            </span>
+                        </div>
+
+                        {/* Car Status Stats Column */}
+                        <div className="md:col-span-2 space-y-4">
+                            <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-gray-800">
+                                <div className="p-2 bg-indigo-500 text-white rounded-lg">
+                                    <CarIcon className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">Car Status Breakdown</h3>
+                                    <p className="text-xs text-slate-500 dark:text-gray-400">Total cars in system: {data.totalStock ?? 0}</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                {/* Pending */}
+                                <div className="p-4 bg-amber-50/50 dark:bg-amber-950/10 rounded-xl border border-amber-100/50 dark:border-amber-900/20 flex flex-col">
+                                    <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">Pending</span>
+                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+                                        {carStatusCounts.pending}
+                                    </span>
+                                </div>
+
+                                {/* Available */}
+                                <div className="p-4 bg-emerald-50/50 dark:bg-emerald-950/10 rounded-xl border border-emerald-100/50 dark:border-emerald-900/20 flex flex-col">
+                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Available</span>
+                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+                                        {carStatusCounts.available}
+                                    </span>
+                                </div>
+
+                                {/* Sold */}
+                                <div className="p-4 bg-blue-50/50 dark:bg-blue-950/10 rounded-xl border border-blue-100/50 dark:border-blue-900/20 flex flex-col">
+                                    <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">Sold</span>
+                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+                                        {carStatusCounts.sold}
+                                    </span>
+                                </div>
+
+                                {/* In Transit */}
+                                <div className="p-4 bg-purple-50/50 dark:bg-purple-950/10 rounded-xl border border-purple-100/50 dark:border-purple-900/20 flex flex-col">
+                                    <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">In Transit</span>
+                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+                                        {carStatusCounts.in_transit}
+                                    </span>
+                                </div>
+
+                                {/* Reserved */}
+                                <div className="p-4 bg-teal-50/50 dark:bg-teal-950/10 rounded-xl border border-teal-100/50 dark:border-teal-900/20 flex flex-col">
+                                    <span className="text-xs font-semibold text-teal-600 dark:text-teal-400">Reserved</span>
+                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+                                        {carStatusCounts.reserved}
+                                    </span>
+                                </div>
+
+                                {/* Preorder */}
+                                <div className="p-4 bg-rose-50/50 dark:bg-rose-950/10 rounded-xl border border-rose-100/50 dark:border-rose-900/20 flex flex-col">
+                                    <span className="text-xs font-semibold text-rose-600 dark:text-rose-400">Preorder</span>
+                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+                                        {carStatusCounts.preorder}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
 
 
                 {/* Sub Lists Sections - Stacked Vertically */}
                 <div className="space-y-12 mt-8">
-                    
+
                     {/* SECTION 1: Import & Purchase Details (Grouped LCs, Max 5 Cards Shown) */}
                     <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 p-6 shadow-sm flex flex-col h-[440px]">
-                        
+
                         {/* Header of the Import & Purchase parts containing Title, Search, and Date Picker */}
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 flex-shrink-0 pb-4 border-b border-slate-100 dark:border-gray-800">
                             <div className="flex items-center gap-3">
@@ -356,7 +461,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                 {/* Date Picker Filter Section */}
                                 <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-gray-850 border border-slate-200 dark:border-gray-750 rounded-xl px-3 py-2 shadow-sm transition-all" title="Purchases Date Filter">
                                     <Calendar className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                                    
+
                                     {/* From Date */}
                                     <div className="flex items-center gap-1">
                                         <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">From</span>
@@ -367,7 +472,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                             onClick={(e) => {
                                                 try {
                                                     (e.target as any).showPicker();
-                                                } catch (err) {}
+                                                } catch (err) { }
                                             }}
                                             className="bg-transparent border-0 p-0 text-[11px] font-semibold text-gray-700 dark:text-gray-250 focus:ring-0 focus:outline-none cursor-pointer w-[90px]"
                                         />
@@ -386,7 +491,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                             onClick={(e) => {
                                                 try {
                                                     (e.target as any).showPicker();
-                                                } catch (err) {}
+                                                } catch (err) { }
                                             }}
                                             className="bg-transparent border-0 p-0 text-[11px] font-semibold text-gray-700 dark:text-gray-250 focus:ring-0 focus:outline-none cursor-pointer w-[90px]"
                                         />
@@ -419,7 +524,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
                                         return (
                                             <div key={lcGroup.id} className="p-5 bg-slate-50 dark:bg-gray-800/40 rounded-2xl border border-slate-200 dark:border-gray-800/50 shadow-sm hover:shadow-md transition-all duration-205 flex flex-col justify-between space-y-4 h-fit">
-                                                
+
                                                 {/* Top Header of Card */}
                                                 <div className="flex justify-between items-start pb-2.5 border-b border-slate-200/60 dark:border-gray-850">
                                                     <div>
@@ -454,7 +559,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                                     </div>
 
                                                     {/* Expand Toggle Button */}
-                                                    <button 
+                                                    <button
                                                         onClick={() => toggleLcExpanded(lcGroup.id)}
                                                         className="w-full text-center text-xs font-semibold py-2 bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-600 dark:text-slate-300 rounded-xl transition-all flex items-center justify-center gap-1.5 border border-slate-200/50 dark:border-gray-700/50"
                                                     >
@@ -493,7 +598,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
                     {/* SECTION 2: Sales & Payment Details (Single Card Section, Full-Width Responsive Grid) */}
                     <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 p-6 shadow-sm flex flex-col h-[440px]">
-                        
+
                         {/* Header of the Sales Parts containing Title, Search, and Date Picker */}
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 flex-shrink-0 pb-4 border-b border-slate-100 dark:border-gray-800">
                             <div className="flex items-center gap-3">
@@ -531,7 +636,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                 {/* Date Picker Filter Section */}
                                 <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-gray-850 border border-slate-200 dark:border-gray-750 rounded-xl px-3 py-2 shadow-sm transition-all" title="Sales & Payments Date Filter">
                                     <Calendar className="w-4 h-4 text-primary-500 flex-shrink-0" />
-                                    
+
                                     {/* From Date */}
                                     <div className="flex items-center gap-1">
                                         <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">From</span>
@@ -542,7 +647,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                             onClick={(e) => {
                                                 try {
                                                     (e.target as any).showPicker();
-                                                } catch (err) {}
+                                                } catch (err) { }
                                             }}
                                             className="bg-transparent border-0 p-0 text-[11px] font-semibold text-gray-700 dark:text-gray-250 focus:ring-0 focus:outline-none cursor-pointer w-[90px]"
                                         />
@@ -561,7 +666,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                             onClick={(e) => {
                                                 try {
                                                     (e.target as any).showPicker();
-                                                } catch (err) {}
+                                                } catch (err) { }
                                             }}
                                             className="bg-transparent border-0 p-0 text-[11px] font-semibold text-gray-700 dark:text-gray-250 focus:ring-0 focus:outline-none cursor-pointer w-[90px]"
                                         />
@@ -604,7 +709,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                                     </div>
                                                     <span className="text-xs text-slate-500 font-semibold bg-white dark:bg-gray-800 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-770">{payment.purchase_date || "N/A"}</span>
                                                 </div>
-                                                
+
                                                 <div className="space-y-2.5 text-xs text-slate-600 dark:text-gray-400">
                                                     <div className="flex justify-between items-center">
                                                         <span className="font-medium">Purchase Amount:</span>
@@ -612,7 +717,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                                             BDT {(Number(payment.purchase_amount) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                         </span>
                                                     </div>
-                                                    
+
                                                     {/* Dynamic Installments List */}
                                                     <div className="space-y-1.5 border-t border-slate-200/40 dark:border-gray-800/50 pt-2.5">
                                                         {installments.map((inst, index) => (
@@ -637,12 +742,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                                         )}
                                                         {installments.length === 1 && (
                                                             <div className="flex justify-between items-center">
-                                                                    <span className="font-medium">2nd Installment:</span>
-                                                                    <span className="font-semibold text-slate-400 text-right">N/A</span>
-                                                                </div>
+                                                                <span className="font-medium">2nd Installment:</span>
+                                                                <span className="font-semibold text-slate-400 text-right">N/A</span>
+                                                            </div>
                                                         )}
                                                     </div>
-                                                    
+
                                                     <div className="flex justify-between items-center font-bold text-slate-700 dark:text-gray-300 border-t border-slate-255 dark:border-gray-800 pt-2.5 mt-2">
                                                         <span>Remaining Balance:</span>
                                                         <span className="font-extrabold text-amber-600 dark:text-amber-400 text-right">
