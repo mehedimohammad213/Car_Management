@@ -1,30 +1,19 @@
-import React from "react";
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    PieChart,
-    Pie,
-    Cell,
-    AreaChart,
-    Area,
-} from "recharts";
+import React, { useState, useMemo } from "react";
 import {
     ShoppingCartIcon,
     CarIcon,
-    UsersIcon,
     PackageIcon,
     ActivityIcon,
     ArrowUpRightIcon,
     ArrowDownRightIcon,
-    CheckCircleIcon,
-    ClockIcon,
-    XCircleIcon,
-    AlertTriangleIcon,
+    FileTextIcon,
+    CreditCardIcon,
+    RefreshCwIcon,
+    AlertCircleIcon,
+    DollarSignIcon,
+    Calendar,
+    X,
+    ChevronDown
 } from "lucide-react";
 import { DashboardData } from "../../services/dashboardApi";
 
@@ -36,15 +25,6 @@ export const BdtIcon: React.FC<{ className?: string }> = ({ className }) => (
         ৳
     </span>
 );
-
-const COLORS = [
-    "#4f46e5",
-    "#14b8a6",
-    "#f59e0b",
-    "#ef4444",
-    "#8b5cf6",
-    "#06b6d4",
-];
 
 interface AdminDashboardProps {
     data: DashboardData | null;
@@ -59,12 +39,188 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     error,
     onRefresh,
 }) => {
+    // 1. Declare ALL hooks at the very top
+    const [fromDate, setFromDate] = useState<string>("");
+    const [toDate, setToDate] = useState<string>("");
+    const [searchQuery, setSearchQuery] = useState<string>("");
+
+    const [purchaseFromDate, setPurchaseFromDate] = useState<string>("");
+    const [purchaseToDate, setPurchaseToDate] = useState<string>("");
+    const [purchaseSearchQuery, setPurchaseSearchQuery] = useState<string>("");
+    const [expandedLcs, setExpandedLcs] = useState<Record<string, boolean>>({});
+
+    // Date filter helper for sales payments
+    const isWithinRange = (dateStr: string | null | undefined) => {
+        if (!dateStr) return true;
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return true;
+        
+        if (fromDate) {
+            const from = new Date(fromDate);
+            from.setHours(0,0,0,0);
+            if (date < from) return false;
+        }
+        if (toDate) {
+            const to = new Date(toDate);
+            to.setHours(23,59,59,999);
+            if (date > to) return false;
+        }
+        return true;
+    };
+
+    // Date filter helper for purchases
+    const isWithinPurchaseRange = (dateStr: string | null | undefined) => {
+        if (!dateStr) return true;
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return true;
+        
+        if (purchaseFromDate) {
+            const from = new Date(purchaseFromDate);
+            from.setHours(0,0,0,0);
+            if (date < from) return false;
+        }
+        if (purchaseToDate) {
+            const to = new Date(purchaseToDate);
+            to.setHours(23,59,59,999);
+            if (date > to) return false;
+        }
+        return true;
+    };
+
+    // Helper to extract car chassis details from purchase history
+    const getChassisDetails = (purchase: any) => {
+        if (purchase.cars && purchase.cars.length > 0) {
+            return purchase.cars.map((c: any) => c.chassis_no_full || c.chassis_no_masked).filter(Boolean).join(", ");
+        }
+        if (purchase.car) {
+            return purchase.car.chassis_no_full || purchase.car.chassis_no_masked || "N/A";
+        }
+        return "N/A";
+    };
+
+    // Helper to extract car make/model details from purchase history
+    const getCarDetails = (purchase: any) => {
+        if (purchase.cars && purchase.cars.length > 0) {
+            return purchase.cars.map((c: any) => `${c.make} ${c.model}`).join(", ");
+        }
+        if (purchase.car) {
+            return `${purchase.car.make} ${purchase.car.model}`;
+        }
+        return "N/A";
+    };
+
+    // Filter payments list dynamically by date wise range and search query
+    const filteredPayments = useMemo(() => {
+        if (!data || !data.payments) return [];
+        return data.payments.filter(pm => {
+            const matchesDate = isWithinRange(pm.purchase_date);
+            
+            const showroom = (pm.showroom_name || "").toLowerCase();
+            const customer = (pm.customer_name || "").toLowerCase();
+            const query = searchQuery.toLowerCase().trim();
+            const matchesSearch = query === "" || showroom.includes(query) || customer.includes(query);
+            
+            return matchesDate && matchesSearch;
+        });
+    }, [data, fromDate, toDate, searchQuery]);
+
+    // Filter purchases list dynamically by date wise range and search query
+    const filteredPurchasesList = useMemo(() => {
+        if (!data || !data.purchases) return [];
+        return data.purchases.filter(purchase => {
+            const matchesDate = isWithinPurchaseRange(purchase.purchase_date || purchase.lc_date);
+            
+            const lcNumber = (purchase.lc_number || "").toLowerCase();
+            const bankName = (purchase.lc_bank_name || "").toLowerCase();
+            const carText = getCarDetails(purchase).toLowerCase();
+            const chassisText = getChassisDetails(purchase).toLowerCase();
+            const query = purchaseSearchQuery.toLowerCase().trim();
+            
+            const matchesSearch = query === "" || 
+                lcNumber.includes(query) || 
+                bankName.includes(query) || 
+                carText.includes(query) || 
+                chassisText.includes(query);
+                
+            return matchesDate && matchesSearch;
+        });
+    }, [data, purchaseFromDate, purchaseToDate, purchaseSearchQuery]);
+
+    // Group purchases by LC Number so we don't show separate cards for the same LC
+    const groupedLcs = useMemo(() => {
+        const groups: Record<string, {
+            id: string;
+            lc_number: string;
+            lc_bank_name: string | null;
+            lc_date: string | null;
+            total_amount: number;
+            purchase_date: string | null;
+            cars: Array<{
+                id: number;
+                make: string;
+                model: string;
+                chassis_no_full?: string | null;
+                chassis_no_masked?: string | null;
+            }>;
+        }> = {};
+
+        filteredPurchasesList.forEach((purchase) => {
+            const lcKey = purchase.lc_number || "Direct Purchase";
+            
+            // Extract cars
+            const purchaseCars: any[] = [];
+            if (purchase.cars && purchase.cars.length > 0) {
+                purchaseCars.push(...purchase.cars);
+            } else if (purchase.car) {
+                purchaseCars.push(purchase.car);
+            }
+
+            if (!groups[lcKey]) {
+                groups[lcKey] = {
+                    id: lcKey,
+                    lc_number: purchase.lc_number || "",
+                    lc_bank_name: purchase.lc_bank_name,
+                    lc_date: purchase.lc_date,
+                    total_amount: 0,
+                    purchase_date: purchase.purchase_date,
+                    cars: [],
+                };
+            }
+
+            // Safe numeric parsing to avoid string concatenation
+            groups[lcKey].total_amount += Number(purchase.purchase_amount) || 0;
+            
+            purchaseCars.forEach(car => {
+                if (car && !groups[lcKey].cars.some(c => c.id === car.id)) {
+                    groups[lcKey].cars.push({
+                        id: car.id,
+                        make: car.make,
+                        model: car.model,
+                        chassis_no_full: car.chassis_no_full,
+                        chassis_no_masked: car.chassis_no_masked,
+                    });
+                }
+            });
+        });
+
+        return Object.values(groups);
+    }, [filteredPurchasesList]);
+
+    // Show only the top 5 LC cards
+    const displayedLcs = useMemo(() => {
+        return groupedLcs.slice(0, 5);
+    }, [groupedLcs]);
+
+    // 2. Early return templates for Loading & Error ONLY after hooks have been defined
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="flex items-center justify-center min-h-[60vh] bg-slate-50 dark:bg-gray-950">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary-200 border-t-primary-600 mx-auto mb-4"></div>
-                    <p className="text-slate-600 dark:text-gray-400">Loading dashboard...</p>
+                    <div className="relative w-20 h-20 mx-auto mb-6">
+                        <div className="absolute inset-0 rounded-full border-4 border-primary-200 dark:border-primary-900/50 animate-pulse"></div>
+                        <div className="absolute inset-0 rounded-full border-4 border-t-primary-600 border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
+                    </div>
+                    <p className="text-slate-600 dark:text-gray-400 font-medium animate-pulse">Loading administrative analytics...</p>
                 </div>
             </div>
         );
@@ -72,403 +228,637 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
     if (error || !data) {
         return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="text-center">
-                    <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <ActivityIcon className="w-8 h-8 text-red-600 dark:text-red-400" />
+            <div className="flex items-center justify-center min-h-[60vh] bg-slate-50 dark:bg-gray-950">
+                <div className="text-center max-w-md p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-slate-200 dark:border-gray-800">
+                    <div className="w-16 h-16 bg-red-50 dark:bg-red-950/30 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-red-200 dark:border-red-900/50">
+                        <ActivityIcon className="w-8 h-8 text-red-600 dark:text-red-400 animate-pulse" />
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        Unable to load dashboard
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                        Dashboard offline
                     </h3>
-                    <p className="text-slate-600 dark:text-gray-400 mb-4">
-                        {error || "Failed to load dashboard data"}
+                    <p className="text-slate-500 dark:text-gray-400 mb-6 text-sm">
+                        {error || "We're having trouble retrieving the latest metrics. Please check your network connection."}
                     </p>
                     <button
                         onClick={onRefresh}
-                        className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                        className="w-full py-3 bg-gradient-to-r from-primary-600 to-indigo-600 hover:from-primary-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/20 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
                     >
-                        Try Again
+                        <RefreshCwIcon className="w-4 h-4" />
+                        Reconnect Now
                     </button>
                 </div>
             </div>
         );
     }
 
+    const toggleLcExpanded = (id: string) => {
+        setExpandedLcs(prev => ({
+            ...prev,
+            [id]: !prev[id]
+        }));
+    };
+
+    // Helper to calculate ordinal suffix for installments
+    const getOrdinalSuffix = (num: number) => {
+        const s = ["th", "st", "nd", "rd"];
+        const v = num % 100;
+        return s[(v - 20) % 10] || s[v] || s[0];
+    };
+
+    // Dynamic calculations based on filtered payments (Safe cast to Number)
+    const totalPaymentPurchaseAmount = filteredPayments.reduce((sum, item) => sum + (Number(item.purchase_amount) || 0), 0);
+    const totalPaidAmount = filteredPayments.reduce((sum, payment) => {
+        const installmentsSum = payment.installments?.reduce((iSum, inst) => iSum + (Number(inst.amount) || 0), 0) || 0;
+        return sum + installmentsSum;
+    }, 0);
+    const totalDueAmount = Math.max(0, totalPaymentPurchaseAmount - totalPaidAmount);
+    const paidPercentage = totalPaymentPurchaseAmount > 0 
+        ? Math.round((totalPaidAmount / totalPaymentPurchaseAmount) * 100) 
+        : 0;
+
+    // All-time calculations (unaffected by filter)
+    const totalStockValue = Number(data.totalStockValue) || 0;
+    const totalStock = Number(data.totalStock) || 0;
+    const availableCars = Number(data.availableCars) || 0;
+    const soldCars = Number(data.soldCars) || 0;
+    const avgCarValue = totalStock > 0 ? Math.round(totalStockValue / totalStock) : 0;
+
+    const totalPurchaseAmount = Number(data.totalPurchaseAmount) || 0;
+    const totalCnfAmount = Number(data.totalCnfAmount) || 0;
+    const totalLcsCount = Number(data.totalLcsCount) || 0;
+
     return (
-        <div className="min-h-screen bg-white dark:bg-gray-900 p-4 sm:p-6">
+        <div className="min-h-screen bg-slate-50 dark:bg-gray-950 text-slate-800 dark:text-slate-200 py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto space-y-8">
-                {/* Enhanced Stats Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div className="group relative overflow-hidden bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-xl border border-primary-200 dark:border-primary-800 p-6 hover:shadow-lg transition-all duration-300">
-                        <div className="absolute top-0 right-0 w-20 h-20 bg-primary-500/10 rounded-full -translate-y-10 translate-x-10"></div>
-                        <div className="relative">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 bg-primary-500 rounded-xl shadow-lg">
-                                    <BdtIcon className="text-white text-2xl" />
-                                </div>
-                                <div className="flex items-center text-green-600 dark:text-green-400">
-                                    <ArrowUpRightIcon className="w-4 h-4 mr-1" />
-                                    <span className="text-sm font-semibold">+12.5%</span>
-                                </div>
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-primary-600 dark:text-primary-400 mb-1">
-                                    Total Stock Value
-                                </p>
-                                <p className="text-3xl font-bold text-slate-900 dark:text-white">
-                                    BDT {data.totalStockValue.toLocaleString()}
-                                </p>
-                                <p className="text-xs text-slate-500 dark:text-gray-400 mt-2">
-                                    vs last month
-                                </p>
-                            </div>
-                        </div>
+                
+                {/* Header Section */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-gray-900">
+                    <div>
+                        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white bg-gradient-to-r from-primary-600 to-indigo-600 dark:from-primary-400 dark:to-indigo-400 bg-clip-text text-transparent">
+                            System Overview
+                        </h1>
+                        <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">
+                            Real-time metrics for inventory, purchases, and payments.
+                        </p>
                     </div>
-
-                    <div className="group relative overflow-hidden bg-gradient-to-br from-secondary-50 to-secondary-100 dark:from-secondary-900/20 dark:to-secondary-800/20 rounded-xl border border-secondary-200 dark:border-secondary-800 p-6 hover:shadow-lg transition-all duration-300">
-                        <div className="absolute top-0 right-0 w-20 h-20 bg-secondary-500/10 rounded-full -translate-y-10 translate-x-10"></div>
-                        <div className="relative">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 bg-secondary-500 rounded-xl shadow-lg">
-                                    <ShoppingCartIcon className="w-6 h-6 text-white" />
-                                </div>
-                                <div className="flex items-center text-green-600 dark:text-green-400">
-                                    <ArrowUpRightIcon className="w-4 h-4 mr-1" />
-                                    <span className="text-sm font-semibold">+8.2%</span>
-                                </div>
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-secondary-600 dark:text-secondary-400 mb-1">
-                                    Cars Sold
-                                </p>
-                                <p className="text-3xl font-bold text-slate-900 dark:text-white">
-                                    {data.soldCars}
-                                </p>
-                                <p className="text-xs text-slate-500 dark:text-gray-400 mt-2">
-                                    this month
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="group relative overflow-hidden bg-gradient-to-br from-accent-orange-50 to-accent-orange-100 dark:from-accent-orange-900/20 dark:to-accent-orange-800/20 rounded-xl border border-accent-orange-200 dark:border-accent-orange-800 p-6 hover:shadow-lg transition-all duration-300">
-                        <div className="absolute top-0 right-0 w-20 h-20 bg-accent-orange-500/10 rounded-full -translate-y-10 translate-x-10"></div>
-                        <div className="relative">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 bg-accent-orange-500 rounded-xl shadow-lg">
-                                    <CarIcon className="w-6 h-6 text-white" />
-                                </div>
-                                <div className="flex items-center text-red-600 dark:text-red-400">
-                                    <ArrowDownRightIcon className="w-4 h-4 mr-1" />
-                                    <span className="text-sm font-semibold">-3.1%</span>
-                                </div>
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-accent-orange-600 dark:text-accent-orange-400 mb-1">
-                                    Available Cars
-                                </p>
-                                <p className="text-3xl font-bold text-slate-900 dark:text-white">
-                                    {data.availableCars}
-                                </p>
-                                <p className="text-xs text-slate-500 dark:text-gray-400 mt-2">
-                                    in inventory
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="group relative overflow-hidden bg-gradient-to-br from-accent-purple-50 to-accent-purple-100 dark:from-accent-purple-900/20 dark:to-accent-purple-800/20 rounded-xl border border-accent-purple-200 dark:border-accent-purple-800 p-6 hover:shadow-lg transition-all duration-300">
-                        <div className="absolute top-0 right-0 w-20 h-20 bg-accent-purple-500/10 rounded-full -translate-y-10 translate-x-10"></div>
-                        <div className="relative">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 bg-accent-purple-500 rounded-xl shadow-lg">
-                                    <UsersIcon className="w-6 h-6 text-white" />
-                                </div>
-                                <div className="flex items-center text-green-600 dark:text-green-400">
-                                    <ArrowUpRightIcon className="w-4 h-4 mr-1" />
-                                    <span className="text-sm font-semibold">+15.3%</span>
-                                </div>
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-accent-purple-600 dark:text-accent-purple-400 mb-1">
-                                    Categories
-                                </p>
-                                <p className="text-3xl font-bold text-slate-900 dark:text-white">
-                                    {data.totalCategories}
-                                </p>
-                                <p className="text-xs text-slate-500 dark:text-gray-400 mt-2">
-                                    active categories
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                    
+                    <button
+                        onClick={onRefresh}
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-900 hover:bg-slate-100 dark:hover:bg-gray-800 border border-slate-200 dark:border-gray-800 rounded-xl shadow-sm text-sm font-semibold text-slate-700 dark:text-slate-300 transition-all duration-200 active:scale-95"
+                    >
+                        <RefreshCwIcon className="w-4 h-4 text-slate-500" />
+                        Refresh Metrics
+                    </button>
                 </div>
 
-                {/* Enhanced Charts Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between mb-6">
-                            <div>
-                                <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-                                    Sales Performance
-                                </h3>
-                                <p className="text-sm text-slate-600 dark:text-gray-400">
-                                    Monthly revenue trends
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 bg-primary-500 rounded-full"></div>
-                                <span className="text-sm text-slate-600 dark:text-gray-400">Revenue</span>
+                {/* Main 3-Column Core Sections: Inventory, Purchases, Payments */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    {/* INVENTORY / STOCK SUMMARY COLUMN */}
+                    <div className="flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+                        {/* Section Header */}
+                        <div className="p-6 border-b border-slate-100 dark:border-gray-800 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 dark:from-emerald-500/10 dark:to-teal-500/10">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-emerald-500 dark:bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-500/20">
+                                    <PackageIcon className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">Stock & Inventory</h2>
+                                    <p className="text-xs text-slate-500 dark:text-gray-400">Total assets in showrooms</p>
+                                </div>
                             </div>
                         </div>
-                        <ResponsiveContainer width="100%" height={320}>
-                            <AreaChart data={data.monthlySales}>
-                                <defs>
-                                    <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                                <XAxis
-                                    dataKey="month"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 12, fill: "#64748b" }}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 12, fill: "#64748b" }}
-                                    tickFormatter={(value) => `BDT ${(value / 1000).toFixed(0)}k`}
-                                />
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: "white",
-                                        border: "1px solid #e2e8f0",
-                                        borderRadius: "8px",
-                                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                                    }}
-                                    formatter={(value: number) => [`BDT ${value.toLocaleString()}`, "Sales"]}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="sales"
-                                    stroke="#4f46e5"
-                                    strokeWidth={3}
-                                    fill="url(#salesGradient)"
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </div>
 
-                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between mb-6">
-                            <div>
-                                <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-                                    Brand Distribution
-                                </h3>
-                                <p className="text-sm text-slate-600 dark:text-gray-400">
-                                    Cars by manufacturer
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <PackageIcon className="w-4 h-4 text-slate-600 dark:text-gray-400" />
-                                <span className="text-sm text-slate-600 dark:text-gray-400">
-                                    {data.carsByBrand.length} brands
+                        {/* Core KPI Stat */}
+                        <div className="p-6 border-b border-slate-100 dark:border-gray-800">
+                            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 tracking-wider uppercase">Total Stock Value</span>
+                            <div className="flex items-baseline gap-2 mt-1">
+                                <BdtIcon className="text-2xl text-slate-400" />
+                                <span className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                    {totalStockValue.toLocaleString()}
                                 </span>
                             </div>
                         </div>
-                        <ResponsiveContainer width="100%" height={320}>
-                            <PieChart>
-                                <Pie
-                                    data={data.carsByBrand}
-                                    cx="50%"
-                                    cy="50%"
-                                    labelLine={false}
-                                    label={({ brand, count, percent }) =>
-                                        `${brand}: ${count} (${(percent * 100).toFixed(0)}%)`
-                                    }
-                                    outerRadius={100}
-                                    innerRadius={40}
-                                    fill="#8884d8"
-                                    dataKey="count"
-                                    stroke="#fff"
-                                    strokeWidth={2}
-                                >
-                                    {data.carsByBrand.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: "white",
-                                        border: "1px solid #e2e8f0",
-                                        borderRadius: "8px",
-                                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                                    }}
-                                    formatter={(value: number, name, props) => [
-                                        `${value} cars`,
-                                        props.payload.brand,
-                                    ]}
-                                />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
 
-                {/* Order & Stock Overview */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between mb-6">
-                            <div>
-                                <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-                                    Orders Overview
-                                </h3>
-                                <p className="text-sm text-slate-600 dark:text-gray-400">
-                                    Order status and performance
-                                </p>
+                        {/* Sub-metrics */}
+                        <div className="p-6 space-y-4 flex-grow">
+                            <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-gray-800/40 rounded-xl">
+                                <div className="flex items-center gap-2.5">
+                                    <CarIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                    <span className="text-sm font-medium text-slate-600 dark:text-gray-400">Total Cars</span>
+                                </div>
+                                <span className="text-base font-bold text-slate-900 dark:text-white">{totalStock}</span>
                             </div>
-                            <div className="p-2 bg-primary-100 dark:bg-primary-900/20 rounded-lg">
-                                <ShoppingCartIcon className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+
+                            <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-gray-800/40 rounded-xl">
+                                <div className="flex items-center gap-2.5">
+                                    <ArrowUpRightIcon className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                                    <span className="text-sm font-medium text-slate-600 dark:text-gray-400">Available Stock</span>
+                                </div>
+                                <span className="text-base font-bold text-slate-900 dark:text-white">{availableCars}</span>
+                            </div>
+
+                            <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-gray-800/40 rounded-xl">
+                                <div className="flex items-center gap-2.5">
+                                    <ShoppingCartIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                    <span className="text-sm font-medium text-slate-600 dark:text-gray-400">Cars Sold</span>
+                                </div>
+                                <span className="text-base font-bold text-slate-900 dark:text-white">{soldCars}</span>
+                            </div>
+
+                            <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-gray-800/40 rounded-xl">
+                                <div className="flex items-center gap-2.5">
+                                    <DollarSignIcon className="w-4 h-4 text-slate-500" />
+                                    <span className="text-sm font-medium text-slate-600 dark:text-gray-400">Avg. Car Value</span>
+                                </div>
+                                <div className="flex items-center gap-1 text-base font-bold text-slate-900 dark:text-white">
+                                    <BdtIcon className="text-sm text-slate-400" />
+                                    <span>{avgCarValue.toLocaleString()}</span>
+                                </div>
                             </div>
                         </div>
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <CheckCircleIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
-                                        <span className="text-sm font-medium text-green-900 dark:text-green-100">
-                                            Completed
-                                        </span>
-                                    </div>
-                                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">24</p>
-                                    <p className="text-xs text-green-600 dark:text-green-400">+12% this week</p>
+                    </div>
+
+                    {/* PURCHASES SUMMARY COLUMN */}
+                    <div className="flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+                        {/* Section Header */}
+                        <div className="p-6 border-b border-slate-100 dark:border-gray-800 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 dark:from-blue-500/10 dark:to-indigo-500/10">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-blue-500 dark:bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/20">
+                                    <FileTextIcon className="w-5 h-5" />
                                 </div>
-                                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <ClockIcon className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
-                                        <span className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
-                                            Pending
-                                        </span>
-                                    </div>
-                                    <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">8</p>
-                                    <p className="text-xs text-yellow-600 dark:text-yellow-400">-3% this week</p>
+                                <div>
+                                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">Import & Purchase</h2>
+                                    <p className="text-xs text-slate-500 dark:text-gray-400">Procurement & LC summary</p>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <PackageIcon className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                                        <span className="text-sm font-medium text-primary-900 dark:text-primary-100">
-                                            Processing
-                                        </span>
-                                    </div>
-                                    <p className="text-2xl font-bold text-primary-600 dark:text-primary-400">5</p>
-                                    <p className="text-xs text-primary-600 dark:text-primary-400">+2% this week</p>
+                        </div>
+
+                        {/* Core KPI Stat */}
+                        <div className="p-6 border-b border-slate-100 dark:border-gray-800">
+                            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 tracking-wider uppercase">Total Purchase Outlay</span>
+                            <div className="flex items-baseline gap-2 mt-1">
+                                <BdtIcon className="text-2xl text-slate-400" />
+                                <span className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                    {totalPurchaseAmount.toLocaleString()}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Sub-metrics */}
+                        <div className="p-6 space-y-4 flex-grow">
+                            <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-gray-800/40 rounded-xl">
+                                <div className="flex items-center gap-2.5">
+                                    <FileTextIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                    <span className="text-sm font-medium text-slate-600 dark:text-gray-400">Active LCs</span>
                                 </div>
-                                <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <XCircleIcon className="w-4 h-4 text-red-600 dark:text-red-400" />
-                                        <span className="text-sm font-medium text-red-900 dark:text-red-100">
-                                            Cancelled
-                                        </span>
-                                    </div>
-                                    <p className="text-2xl font-bold text-red-600 dark:text-red-400">2</p>
-                                    <p className="text-xs text-red-600 dark:text-red-400">-1% this week</p>
+                                <span className="text-base font-bold text-slate-900 dark:text-white">{totalLcsCount}</span>
+                            </div>
+
+                            <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-gray-800/40 rounded-xl">
+                                <div className="flex items-center gap-2.5">
+                                    <ArrowUpRightIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                    <span className="text-sm font-medium text-slate-600 dark:text-gray-400">Total C&F Cost</span>
+                                </div>
+                                <div className="flex items-center gap-1 text-base font-bold text-slate-900 dark:text-white">
+                                    <BdtIcon className="text-sm text-slate-400" />
+                                    <span>{totalCnfAmount.toLocaleString()}</span>
                                 </div>
                             </div>
-                            <div className="pt-4 border-t border-slate-200 dark:border-gray-700">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-slate-600 dark:text-gray-400">Total Orders</span>
-                                    <span className="text-lg font-semibold text-slate-900 dark:text-white">39</span>
+
+                            <div className="flex flex-col p-4 bg-slate-50 dark:bg-gray-800/40 rounded-xl space-y-2">
+                                <span className="text-xs font-semibold text-slate-500 dark:text-gray-400 uppercase">C&F Ratio to Purchase</span>
+                                <div className="w-full bg-slate-200 dark:bg-gray-700 rounded-full h-2 mt-1">
+                                    <div 
+                                        className="bg-blue-500 h-2 rounded-full transition-all duration-500" 
+                                        style={{ width: `${totalPurchaseAmount > 0 ? Math.min(100, Math.round((totalCnfAmount / totalPurchaseAmount) * 105)) : 0}%` }}
+                                    ></div>
                                 </div>
-                                <div className="flex items-center justify-between mt-2">
-                                    <span className="text-sm text-slate-600 dark:text-gray-400">Avg. Order Value</span>
-                                    <span className="text-lg font-semibold text-slate-900 dark:text-white">
-                                        BDT 28,450
+                                <div className="flex items-center justify-between text-xs text-slate-600 dark:text-gray-400 pt-1">
+                                    <span>Ratio</span>
+                                    <span className="font-bold">
+                                        {totalPurchaseAmount > 0 ? ((totalCnfAmount / totalPurchaseAmount) * 100).toFixed(1) : 0}%
                                     </span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between mb-6">
-                            <div>
-                                <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-                                    Stock Overview
-                                </h3>
-                                <p className="text-sm text-slate-600 dark:text-gray-400">
-                                    Inventory levels and alerts
-                                </p>
-                            </div>
-                            <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
-                                <PackageIcon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                    {/* PAYMENTS SUMMARY COLUMN (Filtered by Date Picker) */}
+                    <div className="flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+                        {/* Section Header */}
+                        <div className="p-6 border-b border-slate-100 dark:border-gray-800 bg-gradient-to-r from-amber-500/5 to-orange-500/5 dark:from-amber-500/10 dark:to-amber-500/10">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-amber-500 dark:bg-amber-600 text-white rounded-xl shadow-lg shadow-amber-500/20">
+                                    <CreditCardIcon className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">Sales & Payments</h2>
+                                    <p className="text-xs text-slate-500 dark:text-gray-400">Accounts receivable & collections</p>
+                                </div>
                             </div>
                         </div>
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <CheckCircleIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
-                                        <span className="text-sm font-medium text-green-900 dark:text-green-100">
-                                            In Stock
-                                        </span>
-                                    </div>
-                                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                                        {data.availableCars}
-                                    </p>
-                                    <p className="text-xs text-green-600 dark:text-green-400">
-                                        {Math.round((data.availableCars / data.totalCars) * 100)}% of total
-                                    </p>
+
+                        {/* Core KPI Stat */}
+                        <div className="p-6 border-b border-slate-100 dark:border-gray-800">
+                            <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 tracking-wider uppercase">Total Sales Value</span>
+                            <div className="flex items-baseline gap-2 mt-1">
+                                <BdtIcon className="text-2xl text-slate-400" />
+                                <span className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                    {totalPaymentPurchaseAmount.toLocaleString()}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Sub-metrics */}
+                        <div className="p-6 space-y-4 flex-grow">
+                            <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-gray-800/40 rounded-xl">
+                                <div className="flex items-center gap-2.5">
+                                    <ArrowUpRightIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                    <span className="text-sm font-medium text-slate-600 dark:text-gray-400">Total Collected</span>
                                 </div>
-                                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <AlertTriangleIcon className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
-                                        <span className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
-                                            Low Stock
-                                        </span>
-                                    </div>
-                                    <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">3</p>
-                                    <p className="text-xs text-yellow-600 dark:text-yellow-400">Need restocking</p>
+                                <div className="flex items-center gap-1 text-base font-bold text-emerald-600 dark:text-emerald-400">
+                                    <BdtIcon className="text-sm text-slate-400" />
+                                    <span>{totalPaidAmount.toLocaleString()}</span>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <CarIcon className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                                        <span className="text-sm font-medium text-primary-900 dark:text-primary-100">
-                                            Total Cars
-                                        </span>
-                                    </div>
-                                    <p className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                                        {data.totalCars}
-                                    </p>
-                                    <p className="text-xs text-primary-600 dark:text-primary-400">In inventory</p>
+
+                            <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-gray-800/40 rounded-xl">
+                                <div className="flex items-center gap-2.5">
+                                    <AlertCircleIcon className="w-4 h-4 text-red-600 dark:text-red-400" />
+                                    <span className="text-sm font-medium text-slate-600 dark:text-gray-400">Total Outstanding</span>
                                 </div>
-                                <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <XCircleIcon className="w-4 h-4 text-red-600 dark:text-red-400" />
-                                        <span className="text-sm font-medium text-red-900 dark:text-red-100">
-                                            Out of Stock
-                                        </span>
-                                    </div>
-                                    <p className="text-2xl font-bold text-red-600 dark:text-red-400">2</p>
-                                    <p className="text-xs text-red-600 dark:text-red-400">Urgent restock</p>
+                                <div className="flex items-center gap-1 text-base font-bold text-red-600 dark:text-red-400">
+                                    <BdtIcon className="text-sm text-slate-400" />
+                                    <span>{totalDueAmount.toLocaleString()}</span>
                                 </div>
                             </div>
-                            <div className="pt-4 border-t border-slate-200 dark:border-gray-700">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-slate-600 dark:text-gray-400">Stock Value</span>
-                                    <span className="text-lg font-semibold text-slate-900 dark:text-white">
-                                        BDT {data.totalStockValue.toLocaleString()}
-                                    </span>
+
+                            <div className="flex flex-col p-4 bg-slate-50 dark:bg-gray-800/40 rounded-xl space-y-2">
+                                <span className="text-xs font-semibold text-slate-500 dark:text-gray-400 uppercase">Collection Progress</span>
+                                <div className="w-full bg-slate-200 dark:bg-gray-700 rounded-full h-2 mt-1">
+                                    <div 
+                                        className="bg-amber-500 h-2 rounded-full transition-all duration-500" 
+                                        style={{ width: `${paidPercentage}%` }}
+                                    ></div>
+                                </div>
+                                <div className="flex items-center justify-between text-xs text-slate-600 dark:text-gray-400 pt-1">
+                                    <span>Collected</span>
+                                    <span className="font-bold">{paidPercentage}%</span>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
+
+                {/* Sub Lists Sections - Stacked Vertically */}
+                <div className="space-y-12 mt-8">
+                    
+                    {/* SECTION 1: Import & Purchase Details (Grouped LCs, Max 5 Cards Shown) */}
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 p-6 shadow-sm flex flex-col h-[740px]">
+                        
+                        {/* Header of the Import & Purchase parts containing Title, Search, and Date Picker */}
+                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 flex-shrink-0 pb-4 border-b border-slate-100 dark:border-gray-800">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-blue-500 dark:bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/20">
+                                    <FileTextIcon className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                                        Import & Purchase Details
+                                    </h3>
+                                    <p className="text-xs text-slate-500 dark:text-gray-400">Detailed logs of LCs, custom duties, and imports</p>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-3">
+                                {/* Search input */}
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        placeholder="Search LC/bank/chassis..."
+                                        value={purchaseSearchQuery}
+                                        onChange={(e) => setPurchaseSearchQuery(e.target.value)}
+                                        className="w-[200px] sm:w-[240px] bg-slate-50 dark:bg-gray-850 border border-slate-200 dark:border-gray-750 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-gray-250 placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    />
+                                    {purchaseSearchQuery && (
+                                        <button
+                                            onClick={() => setPurchaseSearchQuery("")}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 rounded-full"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Date Picker Filter Section */}
+                                <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-gray-850 border border-slate-200 dark:border-gray-750 rounded-xl px-3 py-2 shadow-sm transition-all" title="Purchases Date Filter">
+                                    <Calendar className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                                    
+                                    {/* From Date */}
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">From</span>
+                                        <input
+                                            type="date"
+                                            value={purchaseFromDate}
+                                            onChange={(e) => setPurchaseFromDate(e.target.value)}
+                                            onClick={(e) => {
+                                                try {
+                                                    (e.target as any).showPicker();
+                                                } catch (err) {}
+                                            }}
+                                            className="bg-transparent border-0 p-0 text-[11px] font-semibold text-gray-700 dark:text-gray-250 focus:ring-0 focus:outline-none cursor-pointer w-[90px]"
+                                        />
+                                    </div>
+
+                                    {/* Divider */}
+                                    <span className="text-gray-300 dark:text-gray-700 font-light mx-0.5">|</span>
+
+                                    {/* To Date */}
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">To</span>
+                                        <input
+                                            type="date"
+                                            value={toDate}
+                                            onChange={(e) => setToDate(e.target.value)}
+                                            onClick={(e) => {
+                                                try {
+                                                    (e.target as any).showPicker();
+                                                } catch (err) {}
+                                            }}
+                                            className="bg-transparent border-0 p-0 text-[11px] font-semibold text-gray-700 dark:text-gray-250 focus:ring-0 focus:outline-none cursor-pointer w-[90px]"
+                                        />
+                                    </div>
+
+                                    {(purchaseFromDate || purchaseToDate) && (
+                                        <button
+                                            onClick={() => { setPurchaseFromDate(""); setPurchaseToDate(""); }}
+                                            className="p-0.5 hover:bg-slate-200 dark:hover:bg-gray-700 rounded-md text-slate-400 hover:text-slate-600 transition-colors"
+                                            title="Clear filters"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* List Section showing exactly 5 LC cards in a responsive grid layout */}
+                        <div className="flex-grow overflow-y-auto pr-2 max-h-[640px] scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-gray-800">
+                            {displayedLcs.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <p className="text-sm text-slate-500 dark:text-gray-400">No matching purchase records found.</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {displayedLcs.map((lcGroup) => {
+                                        const isExpanded = !!expandedLcs[lcGroup.id];
+                                        const carCount = lcGroup.cars.length;
+
+                                        return (
+                                            <div key={lcGroup.id} className="p-5 bg-slate-50 dark:bg-gray-800/40 rounded-2xl border border-slate-200 dark:border-gray-800/50 shadow-sm hover:shadow-md transition-all duration-205 flex flex-col justify-between space-y-4 h-fit">
+                                                
+                                                {/* Top Header of Card */}
+                                                <div className="flex justify-between items-start pb-2.5 border-b border-slate-200/60 dark:border-gray-850">
+                                                    <div>
+                                                        <span className="font-bold text-slate-900 dark:text-white text-base">
+                                                            LC: {lcGroup.lc_number || "Direct Purchase"}
+                                                        </span>
+                                                        <span className="block text-[10px] text-slate-500 mt-0.5">
+                                                            {lcGroup.lc_bank_name || "N/A"}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-[10px] text-slate-500 font-semibold bg-white dark:bg-gray-800 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-770">
+                                                        {lcGroup.purchase_date || "N/A"}
+                                                    </span>
+                                                </div>
+
+                                                {/* Card Body */}
+                                                <div className="space-y-3.5 text-xs text-slate-600 dark:text-gray-400">
+                                                    {/* LC Date & Total */}
+                                                    <div className="grid grid-cols-2 gap-x-4">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">LC Date</span>
+                                                            <span className="font-semibold text-slate-800 dark:text-gray-200 mt-0.5">
+                                                                {lcGroup.lc_date || "N/A"}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex flex-col text-right">
+                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">Total</span>
+                                                            <span className="font-extrabold text-blue-600 dark:text-blue-400 text-sm mt-0.5">
+                                                                ৳{lcGroup.total_amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Expand Toggle Button */}
+                                                    <button 
+                                                        onClick={() => toggleLcExpanded(lcGroup.id)}
+                                                        className="w-full text-center text-xs font-semibold py-2 bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-600 dark:text-slate-300 rounded-xl transition-all flex items-center justify-center gap-1.5 border border-slate-200/50 dark:border-gray-700/50"
+                                                    >
+                                                        <span>{isExpanded ? "Hide Cars" : `View Cars (${carCount})`}</span>
+                                                        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-250 ${isExpanded ? 'rotate-180' : ''}`} />
+                                                    </button>
+
+                                                    {/* Expanded Chassis / Car list section */}
+                                                    {isExpanded && (
+                                                        <div className="mt-3 pt-3 border-t border-slate-200/60 dark:border-gray-800/80 space-y-2.5 animate-fadeIn">
+                                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-wider block">Cars under this LC</span>
+                                                            <div className="space-y-2">
+                                                                {lcGroup.cars.map((c: any, cIdx: number) => (
+                                                                    <div key={c.id || cIdx} className="p-2.5 bg-white dark:bg-gray-900 rounded-xl border border-slate-200 dark:border-gray-800 flex flex-col gap-1 text-[11px] shadow-sm">
+                                                                        <div className="font-bold text-slate-900 dark:text-white">
+                                                                            {c.make} {c.model}
+                                                                        </div>
+                                                                        <div className="flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                                                                            <span>Chassis:</span>
+                                                                            <span className="font-semibold text-slate-700 dark:text-gray-300">{c.chassis_no_full || c.chassis_no_masked || "N/A"}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* SECTION 2: Sales & Payment Details (Single Card Section, Full-Width Responsive Grid) */}
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 p-6 shadow-sm flex flex-col h-[740px]">
+                        
+                        {/* Header of the Sales Parts containing Title, Search, and Date Picker */}
+                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 flex-shrink-0 pb-4 border-b border-slate-100 dark:border-gray-800">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-amber-500 dark:bg-amber-600 text-white rounded-xl shadow-lg shadow-amber-500/20">
+                                    <CreditCardIcon className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                                        Sales & Payment Details
+                                    </h3>
+                                    <p className="text-xs text-slate-500 dark:text-gray-400">Detailed logs of customer accounts and installments</p>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-3">
+                                {/* Search input */}
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        placeholder="Search showroom/customer..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-[200px] sm:w-[240px] bg-slate-50 dark:bg-gray-850 border border-slate-200 dark:border-gray-750 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-gray-250 placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                    />
+                                    {searchQuery && (
+                                        <button
+                                            onClick={() => setSearchQuery("")}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 rounded-full"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Date Picker Filter Section */}
+                                <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-gray-850 border border-slate-200 dark:border-gray-750 rounded-xl px-3 py-2 shadow-sm transition-all" title="Sales & Payments Date Filter">
+                                    <Calendar className="w-4 h-4 text-primary-500 flex-shrink-0" />
+                                    
+                                    {/* From Date */}
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">From</span>
+                                        <input
+                                            type="date"
+                                            value={fromDate}
+                                            onChange={(e) => setFromDate(e.target.value)}
+                                            onClick={(e) => {
+                                                try {
+                                                    (e.target as any).showPicker();
+                                                } catch (err) {}
+                                            }}
+                                            className="bg-transparent border-0 p-0 text-[11px] font-semibold text-gray-700 dark:text-gray-250 focus:ring-0 focus:outline-none cursor-pointer w-[90px]"
+                                        />
+                                    </div>
+
+                                    {/* Divider */}
+                                    <span className="text-gray-300 dark:text-gray-700 font-light mx-0.5">|</span>
+
+                                    {/* To Date */}
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">To</span>
+                                        <input
+                                            type="date"
+                                            value={toDate}
+                                            onChange={(e) => setToDate(e.target.value)}
+                                            onClick={(e) => {
+                                                try {
+                                                    (e.target as any).showPicker();
+                                                } catch (err) {}
+                                            }}
+                                            className="bg-transparent border-0 p-0 text-[11px] font-semibold text-gray-700 dark:text-gray-250 focus:ring-0 focus:outline-none cursor-pointer w-[90px]"
+                                        />
+                                    </div>
+
+                                    {(fromDate || toDate) && (
+                                        <button
+                                            onClick={() => { setFromDate(""); setToDate(""); }}
+                                            className="p-0.5 hover:bg-slate-200 dark:hover:bg-gray-700 rounded-md text-slate-400 hover:text-slate-600 transition-colors"
+                                            title="Clear filters"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* List Section in a beautiful responsive grid layout with a scrollbar */}
+                        <div className="flex-grow overflow-y-auto pr-2 max-h-[640px] scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-gray-800">
+                            {filteredPayments.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <p className="text-sm text-slate-500 dark:text-gray-400">No matching sales records found.</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {filteredPayments.map((payment) => {
+                                        const installments = payment.installments || [];
+                                        const totalPaid = installments.reduce((sum, inst) => sum + (Number(inst.amount) || 0), 0);
+                                        const remainingBalance = (Number(payment.purchase_amount) || 0) - totalPaid;
+
+                                        return (
+                                            <div key={payment.id} className="p-5 bg-slate-50 dark:bg-gray-800/40 rounded-2xl border border-slate-200 dark:border-gray-800/50 shadow-sm hover:shadow-md transition-all duration-205 flex flex-col justify-between space-y-4">
+                                                <div className="flex justify-between items-start pb-2.5 border-b border-slate-200/60 dark:border-gray-850">
+                                                    <div>
+                                                        <span className="font-bold text-slate-900 dark:text-white text-base">
+                                                            {payment.showroom_name || payment.customer_name || "Direct Customer"}
+                                                        </span>
+                                                        <span className="block text-[10px] text-slate-500 mt-0.5">Showroom / Client Account</span>
+                                                    </div>
+                                                    <span className="text-xs text-slate-500 font-semibold bg-white dark:bg-gray-800 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-700">{payment.purchase_date || "N/A"}</span>
+                                                </div>
+                                                
+                                                <div className="space-y-2.5 text-xs text-slate-600 dark:text-gray-400">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="font-medium">Purchase Amount:</span>
+                                                        <span className="font-bold text-slate-900 dark:text-white text-right">
+                                                            BDT {(Number(payment.purchase_amount) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    {/* Dynamic Installments List */}
+                                                    <div className="space-y-1.5 border-t border-slate-200/40 dark:border-gray-800/50 pt-2.5">
+                                                        {installments.map((inst, index) => (
+                                                            <div key={inst.id || index} className="flex justify-between items-center">
+                                                                <span className="font-medium">{index + 1}{getOrdinalSuffix(index + 1)} Installment:</span>
+                                                                <span className="font-semibold text-slate-800 dark:text-gray-200 text-right">
+                                                                    BDT {(Number(inst.amount) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                        {installments.length === 0 && (
+                                                            <>
+                                                                <div className="flex justify-between items-center">
+                                                                    <span className="font-medium">1st Installment:</span>
+                                                                    <span className="font-semibold text-slate-400 text-right">N/A</span>
+                                                                </div>
+                                                                <div className="flex justify-between items-center">
+                                                                    <span className="font-medium">2nd Installment:</span>
+                                                                    <span className="font-semibold text-slate-400 text-right">N/A</span>
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                        {installments.length === 1 && (
+                                                            <div className="flex justify-between items-center">
+                                                                    <span className="font-medium">2nd Installment:</span>
+                                                                    <span className="font-semibold text-slate-400 text-right">N/A</span>
+                                                                </div>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    <div className="flex justify-between items-center font-bold text-slate-700 dark:text-gray-300 border-t border-slate-255 dark:border-gray-800 pt-2.5 mt-2">
+                                                        <span>Remaining Balance:</span>
+                                                        <span className="font-extrabold text-amber-600 dark:text-amber-400 text-right">
+                                                            BDT {remainingBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
         </div>
     );

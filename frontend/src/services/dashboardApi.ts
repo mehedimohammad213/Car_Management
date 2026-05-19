@@ -1,6 +1,8 @@
 import { carApi, Car } from "./carApi";
 import { stockApi, Stock, StockStatistics } from "./stockApi";
 import { categoryApi, Category } from "./categoryApi";
+import { purchaseHistoryApi, PurchaseHistory } from "./purchaseHistoryApi";
+import { paymentHistoryApi, PaymentHistory } from "./paymentHistoryApi";
 
 export interface DashboardData {
   totalCars: number;
@@ -29,6 +31,19 @@ export interface DashboardData {
     sales: number;
     orders: number;
   }>;
+
+  // New Purchase and Payment Summary fields
+  totalPurchaseAmount: number;
+  totalCnfAmount: number;
+  totalLcsCount: number;
+  totalPaymentPurchaseAmount: number;
+  totalPaidAmount: number;
+  totalDueAmount: number;
+
+  // Detailed lists for dynamic filtering
+  purchases: PurchaseHistory[];
+  payments: PaymentHistory[];
+  stocks: Stock[];
 }
 
 class DashboardApiService {
@@ -41,12 +56,16 @@ class DashboardApiService {
         stocksResponse,
         stockStatsResponse,
         availableCarsResponse,
+        purchasesResponse,
+        paymentsResponse,
       ] = await Promise.allSettled([
         carApi.getCars({ per_page: 1000 }), // Get all cars
         categoryApi.getCategories({ per_page: 1000 }), // Get all categories
         stockApi.getStocks({ per_page: 1000 }), // Get all stocks
         stockApi.getStockStatistics(),
         stockApi.getAvailableCars(),
+        purchaseHistoryApi.getPurchaseHistories({ per_page: 1000 }),
+        paymentHistoryApi.getPaymentHistories({ per_page: 1000 }),
       ]);
 
       // Handle successful responses
@@ -81,6 +100,16 @@ class DashboardApiService {
           ? availableCarsResponse.value.data || []
           : [];
 
+      const purchases =
+        purchasesResponse.status === "fulfilled"
+          ? purchasesResponse.value.data || []
+          : [];
+
+      const payments =
+        paymentsResponse.status === "fulfilled"
+          ? paymentsResponse.value.data || []
+          : [];
+
       // Calculate cars by category
       const carsByCategory = this.calculateCarsByCategory(cars, categories);
 
@@ -104,6 +133,20 @@ class DashboardApiService {
       // Calculate sold cars from stock data
       const soldCars = stocks.filter((stock) => stock.status === "sold").length;
 
+      // Purchase calculations
+      const totalPurchaseAmount = purchases.reduce((sum, item) => sum + (item.purchase_amount || 0), 0);
+      const totalCnfAmount = purchases.reduce((sum, item) => sum + (item.cnf_amount || 0), 0);
+      const uniqueLcs = new Set(purchases.map(item => item.lc_number).filter(Boolean));
+      const totalLcsCount = uniqueLcs.size;
+
+      // Payment calculations
+      const totalPaymentPurchaseAmount = payments.reduce((sum, item) => sum + (item.purchase_amount || 0), 0);
+      const totalPaidAmount = payments.reduce((sum, payment) => {
+        const installmentsSum = payment.installments?.reduce((iSum, inst) => iSum + (inst.amount || 0), 0) || 0;
+        return sum + installmentsSum;
+      }, 0);
+      const totalDueAmount = Math.max(0, totalPaymentPurchaseAmount - totalPaidAmount);
+
       return {
         totalCars: cars.length,
         totalCategories: categories.length,
@@ -117,6 +160,19 @@ class DashboardApiService {
         stockStatistics: stockStats,
         topSellingCars,
         monthlySales,
+
+        // New Purchase and Payment Summary fields
+        totalPurchaseAmount,
+        totalCnfAmount,
+        totalLcsCount,
+        totalPaymentPurchaseAmount,
+        totalPaidAmount,
+        totalDueAmount,
+
+        // Detailed lists
+        purchases,
+        payments,
+        stocks,
       };
     } catch (error) {
       console.error("Error fetching dashboard data:", error);

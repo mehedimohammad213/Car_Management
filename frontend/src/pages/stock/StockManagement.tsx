@@ -97,14 +97,14 @@ const StockManagement: React.FC = () => {
 
       // Fallback: check in allStocks locally loaded in memory
       const existsInStocks = allStocks.some(
-        (s) => s.car?.chassis_no?.trim().toLowerCase() === inputCleaned.toLowerCase() ||
+        (s) => s.car?.chassis_no_masked?.trim().toLowerCase() === inputCleaned.toLowerCase() ||
                s.car?.chassis_no_full?.trim().toLowerCase() === inputCleaned.toLowerCase()
       );
 
       // Fallback: check in availableCars locally loaded in memory
       const existsInAvailable = availableCars.some(
-        (c) => c.chassis_no?.trim().toLowerCase() === inputCleaned.toLowerCase() ||
-               c.chassis_no_full?.trim().toLowerCase() === inputCleaned.toLowerCase()
+        (c: any) => c.chassis_no_masked?.trim().toLowerCase() === inputCleaned.toLowerCase() ||
+                    c.chassis_no_full?.trim().toLowerCase() === inputCleaned.toLowerCase()
       );
 
       if (existsInStocks || existsInAvailable) {
