@@ -73,10 +73,9 @@ const PurchaseHistoryPage: React.FC = () => {
   }, [activeTab, currentPage, searchTerm, filterMonth, filterYear]);
 
   useEffect(() => {
-    if (activeTab !== "lc_wise") return;
     fetchLcHistoriesAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, searchTerm, filterMonth, filterYear]);
+  }, [searchTerm, filterMonth, filterYear]);
 
   const fetchHistoryPurchaseHistories = async () => {
     try {
@@ -275,12 +274,22 @@ const PurchaseHistoryPage: React.FC = () => {
                       return next;
                     });
                   }}
-                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "lc_wise"
-                    ? "bg-primary-600 text-white"
-                    : "text-gray-600 hover:bg-gray-100"
-                    }`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                    activeTab === "lc_wise"
+                      ? "bg-primary-600 text-white shadow-md shadow-primary-600/10"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
                 >
-                  View
+                  <span>View</span>
+                  <span
+                    className={`px-2 py-0.5 text-xs font-bold rounded-full transition-colors ${
+                      activeTab === "lc_wise"
+                        ? "bg-white text-primary-600"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {lcTotalItems}
+                  </span>
                 </button>
                 <button
                   onClick={() => {
@@ -291,12 +300,22 @@ const PurchaseHistoryPage: React.FC = () => {
                       return next;
                     });
                   }}
-                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "history"
-                    ? "bg-primary-600 text-white"
-                    : "text-gray-600 hover:bg-gray-100"
-                    }`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                    activeTab === "history"
+                      ? "bg-primary-600 text-white shadow-md shadow-primary-600/10"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
                 >
-                  History
+                  <span>History</span>
+                  <span
+                    className={`px-2 py-0.5 text-xs font-bold rounded-full transition-colors ${
+                      activeTab === "history"
+                        ? "bg-white text-primary-600"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {lcHistoriesAll.length}
+                  </span>
                 </button>
               </div>
             </div>
