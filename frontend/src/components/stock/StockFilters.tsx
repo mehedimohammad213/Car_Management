@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, X, Download, FileText, Plus } from "lucide-react";
+import { Search, X, Download, FileText, Plus, ChevronDown } from "lucide-react";
 import { makeToModels } from "../../utils/carData";
 import { STOCK_STATUS_DROPDOWN_OPTIONS } from "../../utils/stockStatus";
 
@@ -62,6 +62,29 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
   filterOptions,
   searchPlaceholder = "Search stocks by make, model, year, chassis number, or any keyword...",
 }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const totalCount = statusCounts
+    ? Object.values(statusCounts).reduce((a, b) => a + b, 0)
+    : 0;
+  const selectedOption = STOCK_STATUS_DROPDOWN_OPTIONS.find(
+    (opt) => opt.value === statusFilter
+  );
+  const selectedCount = statusFilter
+    ? statusCounts?.[statusFilter] || 0
+    : totalCount;
+
   const hasActiveFilters =
     searchTerm ||
     yearFilter ||
@@ -91,25 +114,61 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
         {showStatusFilter &&
           statusFilter !== undefined &&
           onStatusFilterChange && (
-          <div className="w-full lg:w-auto">
-            <select
-              value={statusFilter}
-              onChange={(e) => onStatusFilterChange(e.target.value)}
-              aria-label="Filter by stock status"
-              className="w-full lg:w-auto min-w-[160px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+          <div className="w-full lg:w-auto relative" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsOpen(!isOpen)}
+              className="w-full lg:w-auto min-w-[190px] flex items-center justify-between px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm"
             >
-              <option value="">
-                All statuses {statusCounts ? `(${Object.values(statusCounts).reduce((a, b) => a + b, 0)})` : "(0)"}
-              </option>
-              {STOCK_STATUS_DROPDOWN_OPTIONS.map(({ value, label }) => {
-                const count = statusCounts?.[value] || 0;
-                return (
-                  <option key={value} value={value}>
-                    {label} ({count})
-                  </option>
-                );
-              })}
-            </select>
+              <span className="flex items-center gap-2">
+                <span className="text-gray-700 dark:text-gray-300">
+                  {selectedOption ? selectedOption.label : "All statuses"}
+                </span>
+                <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold bg-primary-100 text-primary-800 rounded-full dark:bg-primary-900 dark:text-primary-200">
+                  {selectedCount}
+                </span>
+              </span>
+              <ChevronDown className={`w-4 h-4 ml-2 text-gray-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            {isOpen && (
+              <div className="absolute left-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 py-2 max-h-80 overflow-y-auto backdrop-blur-md bg-opacity-95">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onStatusFilterChange("");
+                    setIsOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${!statusFilter ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
+                >
+                  <span>All statuses</span>
+                  <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold bg-gray-100 text-gray-600 rounded-full dark:bg-gray-900 dark:text-gray-400">
+                    {totalCount}
+                  </span>
+                </button>
+                <div className="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                {STOCK_STATUS_DROPDOWN_OPTIONS.map(({ value, label }) => {
+                  const count = statusCounts?.[value] || 0;
+                  const isSelected = statusFilter === value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => {
+                        onStatusFilterChange(value);
+                        setIsOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${isSelected ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
+                    >
+                      <span>{label}</span>
+                      <span className={`inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full ${isSelected ? 'bg-primary-100 text-primary-800 dark:bg-primary-950 dark:text-primary-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-900 dark:text-gray-400'}`}>
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
