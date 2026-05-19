@@ -167,31 +167,21 @@ const UserManagement: React.FC = () => {
   return (
     <div className="min-h-screen">
       <div className="max-w-full mx-auto px-4 pb-6">
-        <div className="p-0 mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-primary-600">
-                Users / User List
-              </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                Create, update, and remove user accounts
-              </p>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-4 sm:p-6 mb-6">
+          {/* Header aligned with Payment page style */}
+          <div className="p-0 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h1 className="text-2xl font-bold text-primary-600">
+                  Users / User List
+                </h1>
+              </div>
             </div>
-            <button
-              type="button"
-              onClick={handleCreateUser}
-              className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm self-start sm:self-auto"
-            >
-              <Plus className="w-4 h-4" />
-              Add user
-            </button>
           </div>
-        </div>
 
-        <MessageDisplay message={message} />
-
-        <div className="mb-8">
+          {/* Filters aligned with Payment page top section */}
           <div className="flex flex-col lg:flex-row gap-4 items-center">
+            {/* Search */}
             <div className="flex-1 relative w-full lg:w-auto">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
@@ -202,9 +192,11 @@ const UserManagement: React.FC = () => {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
               />
             </div>
+
+            {/* Clear Filters Button */}
             {searchTerm && (
               <button
                 onClick={() => {
@@ -218,6 +210,16 @@ const UserManagement: React.FC = () => {
                 <X className="w-5 h-5" />
               </button>
             )}
+
+            {/* Add Button moved here */}
+            <button
+              type="button"
+              onClick={handleCreateUser}
+              className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all font-medium shadow-sm hover:shadow-md whitespace-nowrap self-start sm:self-auto"
+            >
+              <Plus className="w-4 h-4" />
+              Add user
+            </button>
           </div>
         </div>
 
@@ -253,7 +255,7 @@ const UserManagement: React.FC = () => {
           ) : (
             <div className="overflow-x-auto no-horizontal-scrollbar">
               <div className="min-w-[1100px]">
-                <div className="bg-gray-200 border-b border-gray-300 text-gray-700">
+                <div className="bg-primary-100 border-b border-primary-200 text-primary-800">
                   <div className="grid grid-cols-12 gap-4 p-4 text-xs font-bold uppercase tracking-wider">
                     <div className="col-span-3">User Information</div>
                     <div className="col-span-2">Username</div>
@@ -347,13 +349,17 @@ const UserManagement: React.FC = () => {
           )}
         </div>
 
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          perPage={perPage}
-          onPageChange={handlePageChange}
-        />
+        {totalItems > 0 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              perPage={perPage}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
 
         <UserFormModal
           isOpen={showUserModal}
