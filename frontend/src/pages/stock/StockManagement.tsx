@@ -415,6 +415,8 @@ const StockManagement: React.FC = () => {
             }}
             tabCounts={stockTabCounts}
             visibleTabs={allowedTabs}
+            searchTerm={activeTab === "before" ? pendingFilters.searchTerm : searchTerm}
+            onSearchChange={activeTab === "before" ? pendingFilters.setSearchTerm : setSearchTerm}
           />
 
           {activeTab === "all" || activeTab === "current" ? (

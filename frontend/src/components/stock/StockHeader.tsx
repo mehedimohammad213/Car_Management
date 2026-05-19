@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Search } from "lucide-react";
 import { InvoiceCreationModal } from "./InvoiceCreationModal";
 import type { Car } from "../../services/carApi";
 import type { StockInvoiceItem } from "../../services/stockInvoiceService";
@@ -29,6 +30,8 @@ interface StockHeaderProps {
   tabCounts: StockTabCounts;
   /** Which tabs to show (defaults to all, before, current). */
   visibleTabs?: StockPageTab[];
+  searchTerm?: string;
+  onSearchChange?: (term: string) => void;
 }
 
 function TabDataCount({ n, active }: { n: number; active: boolean }) {
@@ -51,6 +54,8 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
   onTabChange,
   tabCounts,
   visibleTabs = DEFAULT_VISIBLE_TABS,
+  searchTerm = "",
+  onSearchChange,
 }) => {
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
@@ -96,8 +101,21 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
               Stocks / Stock List
             </h1>
           </div>
-          {/* Tab Selection - right side of header */}
-          <div className="flex flex-wrap gap-1">
+          {/* Tab Selection & Search - right side of header */}
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            {onSearchChange !== undefined && (
+              <div className="relative w-full sm:w-[500px]">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder={activeTab === "before" ? "Search pending cars by make, model, year, ref no, chassis..." : "Search stock by make, model, year, ref no, chassis..."}
+                  value={searchTerm}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm shadow-sm"
+                />
+              </div>
+            )}
+            <div className="flex flex-wrap gap-1">
             {visibleTabs.includes("all") && (
               <button
                 onClick={() => onTabChange("all")}
@@ -159,6 +177,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
               <TabDataCount n={tabCounts.soldout} active={activeTab === "soldout"} />
             </button>
             */}
+            </div>
           </div>
         </div>
       </div>

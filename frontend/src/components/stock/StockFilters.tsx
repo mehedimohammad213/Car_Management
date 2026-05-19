@@ -133,17 +133,6 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
   return (
     <div className="mb-0">
       <div className="flex flex-col lg:flex-row gap-4 items-center">
-        {/* Search */}
-        <div className="flex-1 relative w-full lg:w-auto">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <input
-            type="text"
-            placeholder={searchPlaceholder}
-            value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-          />
-        </div>
 
 
         {/* Inventory status — All Stock tab */}
@@ -420,7 +409,8 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
         </div>
 
         {/* From Date Filter */}
-        <div className="w-full lg:w-auto relative">
+        <div className="w-full lg:w-auto flex items-center gap-2">
+          <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">From</span>
           <input
             type="date"
             placeholder="From Date"
@@ -437,7 +427,8 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
         </div>
 
         {/* To Date Filter */}
-        <div className="w-full lg:w-auto relative">
+        <div className="w-full lg:w-auto flex items-center gap-2">
+          <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">To</span>
           <input
             type="date"
             placeholder="To Date"
