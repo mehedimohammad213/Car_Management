@@ -10,6 +10,8 @@ export function filterPendingCarsLikeStockFilters(
     modelFilter: string;
     colorFilter: string;
     fuelFilter: string;
+    fromDateFilter?: string;
+    toDateFilter?: string;
   }
 ): PendingCarRecord[] {
   let filtered = [...cars];
@@ -60,6 +62,24 @@ export function filterPendingCarsLikeStockFilters(
     filtered = filtered.filter(
       (car) => String(car.fuel ?? "").toLowerCase() === ff
     );
+  }
+
+  if (opts.fromDateFilter) {
+    filtered = filtered.filter((car) => {
+      const createdAt = car.created_at;
+      if (!createdAt) return false;
+      const dateStr = String(createdAt).substring(0, 10);
+      return dateStr >= opts.fromDateFilter!;
+    });
+  }
+
+  if (opts.toDateFilter) {
+    filtered = filtered.filter((car) => {
+      const createdAt = car.created_at;
+      if (!createdAt) return false;
+      const dateStr = String(createdAt).substring(0, 10);
+      return dateStr <= opts.toDateFilter!;
+    });
   }
 
   return filtered;

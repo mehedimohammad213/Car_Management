@@ -148,6 +148,10 @@ const StockManagement: React.FC = () => {
     setColorFilter,
     fuelFilter,
     setFuelFilter,
+    fromDateFilter,
+    setFromDateFilter,
+    toDateFilter,
+    setToDateFilter,
     sortBy,
     sortOrder,
     currentPage,
@@ -209,6 +213,8 @@ const StockManagement: React.FC = () => {
         modelFilter,
         colorFilter,
         fuelFilter,
+        fromDateFilter,
+        toDateFilter,
       }),
     [
       availableCars,
@@ -218,6 +224,8 @@ const StockManagement: React.FC = () => {
       modelFilter,
       colorFilter,
       fuelFilter,
+      fromDateFilter,
+      toDateFilter,
     ]
   );
 
@@ -430,6 +438,10 @@ const StockManagement: React.FC = () => {
               onColorFilterChange={setColorFilter}
               fuelFilter={fuelFilter}
               onFuelFilterChange={setFuelFilter}
+              fromDateFilter={fromDateFilter}
+              onFromDateFilterChange={setFromDateFilter}
+              toDateFilter={toDateFilter}
+              onToDateFilterChange={setToDateFilter}
               isGeneratingPDF={
                 activeTab === "current" && !isStockUserView ? isGeneratingPDF : false
               }
@@ -457,6 +469,10 @@ const StockManagement: React.FC = () => {
               onColorFilterChange={pendingFilters.setColorFilter}
               fuelFilter={pendingFilters.fuelFilter}
               onFuelFilterChange={pendingFilters.setFuelFilter}
+              fromDateFilter={pendingFilters.fromDateFilter}
+              onFromDateFilterChange={pendingFilters.setFromDateFilter}
+              toDateFilter={pendingFilters.toDateFilter}
+              onToDateFilterChange={pendingFilters.setToDateFilter}
               isGeneratingPDF={false}
               filterOptions={pendingFilters.filterOptions}
               searchPlaceholder="Search pending cars by make, model, year, ref no, chassis…"

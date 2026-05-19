@@ -14,6 +14,7 @@ export type PendingCarRecord = Record<string, unknown> & {
   chassis_no_full?: string;
   chassis_no_masked?: string;
   status?: string;
+  created_at?: string;
 };
 
 export function usePendingCarsFilters(availableCars: PendingCarRecord[]) {
@@ -23,11 +24,13 @@ export function usePendingCarsFilters(availableCars: PendingCarRecord[]) {
   const [modelFilter, setModelFilter] = useState("");
   const [colorFilter, setColorFilter] = useState("");
   const [fuelFilter, setFuelFilter] = useState("");
+  const [fromDateFilter, setFromDateFilter] = useState("");
+  const [toDateFilter, setToDateFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, yearFilter, makeFilter, modelFilter, colorFilter, fuelFilter]);
+  }, [searchTerm, yearFilter, makeFilter, modelFilter, colorFilter, fuelFilter, fromDateFilter, toDateFilter]);
 
   const derived = useMemo(() => {
     /** No stock row yet; includes sold cars so they can be restocked. */
@@ -79,6 +82,24 @@ export function usePendingCarsFilters(availableCars: PendingCarRecord[]) {
       );
     }
 
+    if (fromDateFilter) {
+      filtered = filtered.filter((car) => {
+        const createdAt = car.created_at || (car as any).created_at;
+        if (!createdAt) return false;
+        const dateStr = String(createdAt).substring(0, 10);
+        return dateStr >= fromDateFilter;
+      });
+    }
+
+    if (toDateFilter) {
+      filtered = filtered.filter((car) => {
+        const createdAt = car.created_at || (car as any).created_at;
+        if (!createdAt) return false;
+        const dateStr = String(createdAt).substring(0, 10);
+        return dateStr <= toDateFilter;
+      });
+    }
+
     const years = new Set<number>();
     const colors = new Set<string>();
     const fuels = new Set<string>();
@@ -118,6 +139,8 @@ export function usePendingCarsFilters(availableCars: PendingCarRecord[]) {
     modelFilter,
     colorFilter,
     fuelFilter,
+    fromDateFilter,
+    toDateFilter,
     currentPage,
   ]);
 
@@ -134,6 +157,8 @@ export function usePendingCarsFilters(availableCars: PendingCarRecord[]) {
     setModelFilter("");
     setColorFilter("");
     setFuelFilter("");
+    setFromDateFilter("");
+    setToDateFilter("");
     setCurrentPage(1);
   }, []);
 
@@ -150,6 +175,10 @@ export function usePendingCarsFilters(availableCars: PendingCarRecord[]) {
     setColorFilter,
     fuelFilter,
     setFuelFilter,
+    fromDateFilter,
+    setFromDateFilter,
+    toDateFilter,
+    setToDateFilter,
     currentPage,
     setCurrentPage,
     totalPages: derived.totalPages,

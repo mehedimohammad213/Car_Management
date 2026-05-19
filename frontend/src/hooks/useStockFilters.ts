@@ -26,13 +26,15 @@ export const useStockFilters = (
     const [modelFilter, setModelFilter] = useState("");
     const [colorFilter, setColorFilter] = useState("");
     const [fuelFilter, setFuelFilter] = useState("");
+    const [fromDateFilter, setFromDateFilter] = useState("");
+    const [toDateFilter, setToDateFilter] = useState("");
     const [sortBy, setSortBy] = useState("created_at");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchTerm, yearFilter, makeFilter, modelFilter, colorFilter, fuelFilter]);
+    }, [searchTerm, yearFilter, makeFilter, modelFilter, colorFilter, fuelFilter, fromDateFilter, toDateFilter]);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -109,6 +111,22 @@ export const useStockFilters = (
             );
         }
 
+        if (fromDateFilter) {
+            filtered = filtered.filter((stock) => {
+                if (!stock.created_at) return false;
+                const dateStr = stock.created_at.substring(0, 10); // "YYYY-MM-DD"
+                return dateStr >= fromDateFilter;
+            });
+        }
+
+        if (toDateFilter) {
+            filtered = filtered.filter((stock) => {
+                if (!stock.created_at) return false;
+                const dateStr = stock.created_at.substring(0, 10); // "YYYY-MM-DD"
+                return dateStr <= toDateFilter;
+            });
+        }
+
         if (sortBy) {
             filtered.sort((a, b) => {
                 let aValue: any;
@@ -177,6 +195,8 @@ export const useStockFilters = (
         sortBy,
         sortOrder,
         yearFilter,
+        fromDateFilter,
+        toDateFilter,
     ]);
 
     const handleSort = useCallback(
@@ -199,6 +219,8 @@ export const useStockFilters = (
         setModelFilter("");
         setColorFilter("");
         setFuelFilter("");
+        setFromDateFilter("");
+        setToDateFilter("");
         setCurrentPage(1);
         setSortBy("created_at");
         setSortOrder("desc");
@@ -219,6 +241,10 @@ export const useStockFilters = (
         setColorFilter,
         fuelFilter,
         setFuelFilter,
+        fromDateFilter,
+        setFromDateFilter,
+        toDateFilter,
+        setToDateFilter,
         sortBy,
         sortOrder,
         currentPage,

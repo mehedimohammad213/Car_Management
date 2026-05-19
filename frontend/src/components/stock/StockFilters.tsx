@@ -17,6 +17,10 @@ interface StockFiltersProps {
   onColorFilterChange: (color: string) => void;
   fuelFilter: string;
   onFuelFilterChange: (fuel: string) => void;
+  fromDateFilter?: string;
+  onFromDateFilterChange?: (date: string) => void;
+  toDateFilter?: string;
+  onToDateFilterChange?: (date: string) => void;
   isGeneratingPDF: boolean;
   onGeneratePDF?: () => void;
   onCreateInvoice?: () => void;
@@ -50,6 +54,10 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
   onColorFilterChange,
   fuelFilter,
   onFuelFilterChange,
+  fromDateFilter = "",
+  onFromDateFilterChange,
+  toDateFilter = "",
+  onToDateFilterChange,
   isGeneratingPDF,
   onGeneratePDF,
   onCreateInvoice,
@@ -118,6 +126,8 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
     modelFilter ||
     colorFilter ||
     fuelFilter ||
+    fromDateFilter ||
+    toDateFilter ||
     (showStatusFilter && !!statusFilter);
 
   return (
@@ -407,6 +417,30 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
               </div>
             </div>
           )}
+        </div>
+
+        {/* From Date Filter */}
+        <div className="w-full lg:w-auto relative">
+          <input
+            type="date"
+            placeholder="From Date"
+            value={fromDateFilter}
+            onChange={(e) => onFromDateFilterChange && onFromDateFilterChange(e.target.value)}
+            className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm"
+            title="From Date"
+          />
+        </div>
+
+        {/* To Date Filter */}
+        <div className="w-full lg:w-auto relative">
+          <input
+            type="date"
+            placeholder="To Date"
+            value={toDateFilter}
+            onChange={(e) => onToDateFilterChange && onToDateFilterChange(e.target.value)}
+            className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm"
+            title="To Date"
+          />
         </div>
 
         {/* Color Filter */}
