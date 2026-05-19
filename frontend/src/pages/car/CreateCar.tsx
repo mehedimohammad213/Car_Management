@@ -10,6 +10,7 @@ import { stockManagementPath } from "../../utils/stockNavigation";
 const CreateCar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const prefilledChassisNo = (location.state as { prefilledChassisNo?: string } | null)?.prefilledChassisNo;
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [filterOptions, setFilterOptions] = useState<CarFilterOptions | null>(null);
@@ -208,6 +209,14 @@ const CreateCar: React.FC = () => {
         ) : (
           <CarFormModal
             mode="create"
+            car={
+              prefilledChassisNo
+                ? ({
+                    chassis_no_full: prefilledChassisNo,
+                    chassis_no_masked: prefilledChassisNo,
+                  } as any)
+                : null
+            }
             categories={categories || []}
             filterOptions={filterOptions}
             onSubmit={handleSubmit}
