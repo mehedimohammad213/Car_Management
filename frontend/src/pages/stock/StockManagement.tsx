@@ -52,7 +52,28 @@ const StockManagement: React.FC = () => {
     model?: string;
   } | null>(null);
   const [isDeletingPendingCar, setIsDeletingPendingCar] = useState(false);
-  const [allTabStatusFilter, setAllTabStatusFilter] = useState("");
+  const [allTabStatusFilter, setAllTabStatusFilter] = useState(searchParams.get("status") || "");
+
+  const handleStatusFilterChange = (status: string) => {
+    setAllTabStatusFilter(status);
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (status) {
+          next.set("status", status);
+        } else {
+          next.delete("status");
+        }
+        return next;
+      },
+      { replace: true }
+    );
+  };
+
+  useEffect(() => {
+    const s = searchParams.get("status") || "";
+    setAllTabStatusFilter(s);
+  }, [searchParams]);
 
   const [showChassisModal, setShowChassisModal] = useState(false);
   const [chassisInput, setChassisInput] = useState("");
@@ -298,8 +319,18 @@ const StockManagement: React.FC = () => {
   }, [allTabStatusFilter, activeTab, setCurrentPage]);
 
   useEffect(() => {
-    if (activeTab !== "all") setAllTabStatusFilter("");
-  }, [activeTab]);
+    if (activeTab !== "all") {
+      setAllTabStatusFilter("");
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          next.delete("status");
+          return next;
+        },
+        { replace: true }
+      );
+    }
+  }, [activeTab, setSearchParams]);
 
   // Normalize missing/invalid `tab` to default, and sync from URL.
   useEffect(() => {
@@ -427,11 +458,11 @@ const StockManagement: React.FC = () => {
               onSearchChange={setSearchTerm}
               onClearFilters={() => {
                 handleClearFilters();
-                setAllTabStatusFilter("");
+                handleStatusFilterChange("");
               }}
               showStatusFilter={activeTab === "all" || activeTab === "current"}
               statusFilter={allTabStatusFilter}
-              onStatusFilterChange={setAllTabStatusFilter}
+              onStatusFilterChange={handleStatusFilterChange}
               yearFilter={yearFilter}
               onYearFilterChange={setYearFilter}
               makeFilter={makeFilter}

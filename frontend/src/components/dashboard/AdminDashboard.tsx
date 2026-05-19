@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     ShoppingCartIcon,
     CarIcon,
@@ -17,6 +18,7 @@ import {
     Users
 } from "lucide-react";
 import { DashboardData } from "../../services/dashboardApi";
+import { getEffectiveStockStatus } from "../../utils/stockStatus";
 
 export const BdtIcon: React.FC<{ className?: string }> = ({ className }) => (
     <span
@@ -212,10 +214,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         return groupedLcs.slice(0, 5);
     }, [groupedLcs]);
 
-    // Group stocks by status for statistics
+    const navigate = useNavigate();
+
+    // Group stocks by status for statistics (aligned with Stock page logic)
     const carStatusCounts = useMemo(() => {
         const counts: Record<string, number> = {
-            pending: 0,
+            pending: Number(data?.availableCars) || 0,
             available: 0,
             sold: 0,
             reserved: 0,
@@ -228,7 +232,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         if (data && data.stocks) {
             data.stocks.forEach(stock => {
-                const status = stock.status;
+                const status = getEffectiveStockStatus(stock);
                 if (status && counts[status] !== undefined) {
                     counts[status]++;
                 }
@@ -237,6 +241,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         return counts;
     }, [data]);
+
+    const handleStatusCardClick = (status: string) => {
+        navigate(`/admin/stock?tab=all&status=${status}`);
+    };
 
     // 2. Early return templates for Loading & Error ONLY after hooks have been defined
     if (isLoading) {
@@ -310,36 +318,40 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const soldCars = Number(data.soldCars) || 0;
     const avgCarValue = totalStock > 0 ? Math.round(totalStockValue / totalStock) : 0;
 
+    const totalCarsSystem = (data?.stocks?.length || 0) + (Number(data?.availableCars) || 0);
+
     const totalPurchaseAmount = Number(data.totalPurchaseAmount) || 0;
     const totalCnfAmount = Number(data.totalCnfAmount) || 0;
     const totalLcsCount = Number(data.totalLcsCount) || 0;
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-gray-950 text-slate-800 dark:text-slate-200 py-8 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto space-y-8">
+        <div className="min-h-screen text-slate-800 dark:text-slate-200">
+            <div className="max-w-full mx-auto px-4 pb-6 space-y-6">
 
-                {/* Header Section */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-gray-900">
-                    <div>
-                        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white bg-gradient-to-r from-primary-600 to-indigo-600 dark:from-primary-400 dark:to-indigo-400 bg-clip-text text-transparent">
-                            System Overview
-                        </h1>
-                        <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">
-                            Real-time metrics for inventory, purchases, and payments.
-                        </p>
+                {/* Dashboard Card Container (matches Stock page main card) */}
+                <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg p-4 sm:p-6 mb-6">
+                    {/* Header Section */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 mb-6 border-b border-gray-200 dark:border-gray-700">
+                        <div>
+                            <h1 className="text-2xl font-bold text-primary-600">
+                                Dashboard / System Overview
+                            </h1>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                Real-time metrics for inventory, purchases, and payments.
+                            </p>
+                        </div>
+
+                        <button
+                            onClick={onRefresh}
+                            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-850 transition-all duration-200"
+                        >
+                            <RefreshCwIcon className="w-4 h-4 text-primary-500" />
+                            Refresh
+                        </button>
                     </div>
 
-                    <button
-                        onClick={onRefresh}
-                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-900 hover:bg-slate-100 dark:hover:bg-gray-800 border border-slate-200 dark:border-gray-800 rounded-xl shadow-sm text-sm font-semibold text-slate-700 dark:text-slate-300 transition-all duration-200 active:scale-95"
-                    >
-                        <RefreshCwIcon className="w-4 h-4 text-slate-500" />
-                        Refresh
-                    </button>
-                </div>
-                {/* Stats & Overview Card */}
-                <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {/* Stats & Overview Card */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Users Summary Card Column */}
                         <div className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-primary-50 to-indigo-50 dark:from-primary-950/20 dark:to-indigo-950/20 rounded-2xl border border-primary-100/50 dark:border-primary-900/30">
                             <div className="p-4 bg-primary-600 text-white rounded-2xl shadow-lg shadow-primary-500/20 mb-4">
@@ -352,65 +364,94 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         </div>
 
                         {/* Car Status Stats Column */}
-                        <div className="md:col-span-2 space-y-4">
-                            <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-gray-800">
+                        <div className="lg:col-span-2 space-y-4">
+                            <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-gray-700">
                                 <div className="p-2 bg-indigo-500 text-white rounded-lg">
                                     <CarIcon className="w-5 h-5" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-bold text-slate-900 dark:text-white">Car Status Breakdown</h3>
-                                    <p className="text-xs text-slate-500 dark:text-gray-400">Total cars in system: {data.totalStock ?? 0}</p>
+                                    <p className="text-xs text-slate-500 dark:text-gray-400">Total cars in system: {totalCarsSystem}</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                {/* Pending */}
-                                <div className="p-4 bg-amber-50/50 dark:bg-amber-950/10 rounded-xl border border-amber-100/50 dark:border-amber-900/20 flex flex-col">
-                                    <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">Pending</span>
-                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
-                                        {carStatusCounts.pending}
-                                    </span>
-                                </div>
-
-                                {/* Available */}
-                                <div className="p-4 bg-emerald-50/50 dark:bg-emerald-950/10 rounded-xl border border-emerald-100/50 dark:border-emerald-900/20 flex flex-col">
-                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Available</span>
-                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
-                                        {carStatusCounts.available}
-                                    </span>
-                                </div>
-
-                                {/* Sold */}
-                                <div className="p-4 bg-blue-50/50 dark:bg-blue-950/10 rounded-xl border border-blue-100/50 dark:border-blue-900/20 flex flex-col">
-                                    <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">Sold</span>
-                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
-                                        {carStatusCounts.sold}
-                                    </span>
-                                </div>
-
-                                {/* In Transit */}
-                                <div className="p-4 bg-purple-50/50 dark:bg-purple-950/10 rounded-xl border border-purple-100/50 dark:border-purple-900/20 flex flex-col">
-                                    <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">In Transit</span>
-                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
-                                        {carStatusCounts.in_transit}
-                                    </span>
-                                </div>
-
-                                {/* Reserved */}
-                                <div className="p-4 bg-teal-50/50 dark:bg-teal-950/10 rounded-xl border border-teal-100/50 dark:border-teal-900/20 flex flex-col">
-                                    <span className="text-xs font-semibold text-teal-600 dark:text-teal-400">Reserved</span>
-                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
-                                        {carStatusCounts.reserved}
-                                    </span>
-                                </div>
-
-                                {/* Preorder */}
-                                <div className="p-4 bg-rose-50/50 dark:bg-rose-950/10 rounded-xl border border-rose-100/50 dark:border-rose-900/20 flex flex-col">
-                                    <span className="text-xs font-semibold text-rose-600 dark:text-rose-400">Preorder</span>
-                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
-                                        {carStatusCounts.preorder}
-                                    </span>
-                                </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                                {[
+                                    {
+                                        key: "pending",
+                                        label: "Pending",
+                                        bgColor: "bg-amber-50/50 dark:bg-amber-950/10",
+                                        borderColor: "border-amber-100/50 dark:border-amber-900/20",
+                                        textColor: "text-amber-600 dark:text-amber-400"
+                                    },
+                                    {
+                                        key: "preorder",
+                                        label: "Preorder",
+                                        bgColor: "bg-rose-50/50 dark:bg-rose-950/10",
+                                        borderColor: "border-rose-100/50 dark:border-rose-900/20",
+                                        textColor: "text-rose-600 dark:text-rose-400"
+                                    },
+                                    {
+                                        key: "in_transit",
+                                        label: "In Transit",
+                                        bgColor: "bg-purple-50/50 dark:bg-purple-950/10",
+                                        borderColor: "border-purple-100/50 dark:border-purple-900/20",
+                                        textColor: "text-purple-600 dark:text-purple-400"
+                                    },
+                                    {
+                                        key: "available",
+                                        label: "Available",
+                                        bgColor: "bg-emerald-50/50 dark:bg-emerald-950/10",
+                                        borderColor: "border-emerald-100/50 dark:border-emerald-900/20",
+                                        textColor: "text-emerald-600 dark:text-emerald-400"
+                                    },
+                                    {
+                                        key: "reserved",
+                                        label: "Reserved",
+                                        bgColor: "bg-teal-50/50 dark:bg-teal-950/10",
+                                        borderColor: "border-teal-100/50 dark:border-teal-900/20",
+                                        textColor: "text-teal-600 dark:text-teal-400"
+                                    },
+                                    {
+                                        key: "damaged",
+                                        label: "Damaged",
+                                        bgColor: "bg-orange-50/50 dark:bg-orange-950/10",
+                                        borderColor: "border-orange-100/50 dark:border-orange-900/20",
+                                        textColor: "text-orange-600 dark:text-orange-400"
+                                    },
+                                    {
+                                        key: "lost",
+                                        label: "Lost",
+                                        bgColor: "bg-slate-100/50 dark:bg-slate-900/20",
+                                        borderColor: "border-slate-200/50 dark:border-slate-800/20",
+                                        textColor: "text-slate-650 dark:text-slate-400"
+                                    },
+                                    {
+                                        key: "stolen",
+                                        label: "Stolen",
+                                        bgColor: "bg-red-50/50 dark:bg-red-950/10",
+                                        borderColor: "border-red-100/50 dark:border-red-900/20",
+                                        textColor: "text-red-600 dark:text-red-400"
+                                    },
+                                    {
+                                        key: "sold",
+                                        label: "Sold",
+                                        bgColor: "bg-blue-50/50 dark:bg-blue-950/10",
+                                        borderColor: "border-blue-100/50 dark:border-blue-900/20",
+                                        textColor: "text-blue-600 dark:text-blue-400"
+                                    }
+                                ].map((cfg) => (
+                                    <div
+                                        key={cfg.key}
+                                        onClick={() => handleStatusCardClick(cfg.key)}
+                                        className={`p-4 ${cfg.bgColor} rounded-xl border ${cfg.borderColor} flex flex-col cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200 hover:shadow-md`}
+                                    >
+                                        <span className={`text-xs font-semibold ${cfg.textColor}`}>{cfg.label}</span>
+                                        <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+                                            {carStatusCounts[cfg.key] ?? 0}
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -419,10 +460,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
 
                 {/* Sub Lists Sections - Stacked Vertically */}
-                <div className="space-y-12 mt-8">
+                <div className="space-y-6 mt-6">
 
                     {/* SECTION 1: Import & Purchase Details (Grouped LCs, Max 5 Cards Shown) */}
-                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 p-6 shadow-sm flex flex-col h-[440px]">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg p-6 flex flex-col h-[440px]">
 
                         {/* Header of the Import & Purchase parts containing Title, Search, and Date Picker */}
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 flex-shrink-0 pb-4 border-b border-slate-100 dark:border-gray-800">
@@ -597,7 +638,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </div>
 
                     {/* SECTION 2: Sales & Payment Details (Single Card Section, Full-Width Responsive Grid) */}
-                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 p-6 shadow-sm flex flex-col h-[440px]">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg p-6 flex flex-col h-[440px]">
 
                         {/* Header of the Sales Parts containing Title, Search, and Date Picker */}
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 flex-shrink-0 pb-4 border-b border-slate-100 dark:border-gray-800">
