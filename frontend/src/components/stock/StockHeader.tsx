@@ -30,8 +30,10 @@ interface StockHeaderProps {
   tabCounts: StockTabCounts;
   /** Which tabs to show (defaults to all, before, current). */
   visibleTabs?: StockPageTab[];
-  searchTerm?: string;
-  onSearchChange?: (term: string) => void;
+  fromDateFilter?: string;
+  onFromDateFilterChange?: (date: string) => void;
+  toDateFilter?: string;
+  onToDateFilterChange?: (date: string) => void;
 }
 
 function TabDataCount({ n, active }: { n: number; active: boolean }) {
@@ -54,8 +56,10 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
   onTabChange,
   tabCounts,
   visibleTabs = DEFAULT_VISIBLE_TABS,
-  searchTerm = "",
-  onSearchChange,
+  fromDateFilter,
+  onFromDateFilterChange,
+  toDateFilter,
+  onToDateFilterChange,
 }) => {
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
@@ -95,23 +99,49 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
   return (
     <>
       <div className="p-0 mb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 w-full">
           <div>
-            <h1 className="text-2xl font-bold text-primary-600">
+            <h1 className="text-2xl font-bold text-primary-600 whitespace-nowrap">
               Stocks / Stock List
             </h1>
           </div>
           {/* Tab Selection & Search - right side of header */}
-          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-            {onSearchChange !== undefined && (
-              <div className="relative w-full sm:w-[500px]">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <div className="flex flex-wrap items-center justify-end gap-3 flex-1">
+
+            {fromDateFilter !== undefined && onFromDateFilterChange !== undefined && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">From</span>
                 <input
-                  type="text"
-                  placeholder={activeTab === "before" ? "Search pending cars by make, model, year, ref no, chassis..." : "Search stock by make, model, year, ref no, chassis..."}
-                  value={searchTerm}
-                  onChange={(e) => onSearchChange(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm shadow-sm"
+                  type="date"
+                  placeholder="From Date"
+                  value={fromDateFilter}
+                  onChange={(e) => onFromDateFilterChange(e.target.value)}
+                  onClick={(e) => {
+                    try {
+                      (e.target as any).showPicker();
+                    } catch (err) {}
+                  }}
+                  className="px-3 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm cursor-pointer"
+                  title="From Date"
+                />
+              </div>
+            )}
+
+            {toDateFilter !== undefined && onToDateFilterChange !== undefined && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">To</span>
+                <input
+                  type="date"
+                  placeholder="To Date"
+                  value={toDateFilter}
+                  onChange={(e) => onToDateFilterChange(e.target.value)}
+                  onClick={(e) => {
+                    try {
+                      (e.target as any).showPicker();
+                    } catch (err) {}
+                  }}
+                  className="px-3 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm cursor-pointer"
+                  title="To Date"
                 />
               </div>
             )}

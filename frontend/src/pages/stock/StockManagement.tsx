@@ -415,8 +415,10 @@ const StockManagement: React.FC = () => {
             }}
             tabCounts={stockTabCounts}
             visibleTabs={allowedTabs}
-            searchTerm={activeTab === "before" ? pendingFilters.searchTerm : searchTerm}
-            onSearchChange={activeTab === "before" ? pendingFilters.setSearchTerm : setSearchTerm}
+            fromDateFilter={activeTab === "before" ? pendingFilters.fromDateFilter : fromDateFilter}
+            onFromDateFilterChange={activeTab === "before" ? pendingFilters.setFromDateFilter : setFromDateFilter}
+            toDateFilter={activeTab === "before" ? pendingFilters.toDateFilter : toDateFilter}
+            onToDateFilterChange={activeTab === "before" ? pendingFilters.setToDateFilter : setToDateFilter}
           />
 
           {activeTab === "all" || activeTab === "current" ? (
@@ -427,7 +429,7 @@ const StockManagement: React.FC = () => {
                 handleClearFilters();
                 setAllTabStatusFilter("");
               }}
-              showStatusFilter={activeTab === "all"}
+              showStatusFilter={activeTab === "all" || activeTab === "current"}
               statusFilter={allTabStatusFilter}
               onStatusFilterChange={setAllTabStatusFilter}
               yearFilter={yearFilter}
