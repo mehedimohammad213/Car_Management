@@ -100,14 +100,44 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
     <>
       <div className="p-0 mb-4">
         <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 w-full">
-          <div>
+          <div className="flex-shrink-0">
             <h1 className="text-2xl font-bold text-primary-600 whitespace-nowrap">
               Stocks / Stock List
             </h1>
           </div>
-          {/* Tab Selection & Search - right side of header */}
-          <div className="flex flex-wrap items-center justify-end gap-3 flex-1">
 
+          {/* Center Column: Tab Selection */}
+          <div className="flex justify-center flex-grow lg:flex-1">
+            <div className="flex flex-wrap gap-1">
+              {visibleTabs.includes("all") && (
+                <button
+                  onClick={() => onTabChange("all")}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "all"
+                    ? "bg-primary-600 text-white shadow-md shadow-primary-600/10"
+                    : "text-gray-600 hover:bg-gray-100"
+                    }`}
+                >
+                  All Stock
+                  <TabDataCount n={tabCounts.all} active={activeTab === "all"} />
+                </button>
+              )}
+              {visibleTabs.includes("current") && (
+                <button
+                  onClick={() => onTabChange("current")}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "current"
+                    ? "bg-primary-600 text-white shadow-md shadow-primary-600/10"
+                    : "text-gray-600 hover:bg-gray-100"
+                    }`}
+                >
+                  Current Stock
+                  <TabDataCount n={tabCounts.current} active={activeTab === "current"} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Right Column: Date Selectors */}
+          <div className="flex flex-wrap items-center justify-end gap-3 flex-shrink-0">
             {fromDateFilter !== undefined && onFromDateFilterChange !== undefined && (
               <div className="flex items-center gap-2">
                 <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">From</span>
@@ -145,69 +175,6 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
                 />
               </div>
             )}
-            <div className="flex flex-wrap gap-1">
-            {visibleTabs.includes("all") && (
-              <button
-                onClick={() => onTabChange("all")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "all"
-                  ? "bg-primary-600 text-white shadow-md shadow-primary-600/10"
-                  : "text-gray-600 hover:bg-gray-100"
-                  }`}
-              >
-                All Stock
-                <TabDataCount n={tabCounts.all} active={activeTab === "all"} />
-              </button>
-            )}
-            {/* {visibleTabs.includes("before") && (
-              <button
-                onClick={() => onTabChange("before")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "before"
-                  ? "bg-primary-600 text-white shadow-md shadow-primary-600/10"
-                  : "text-gray-600 hover:bg-gray-100"
-                  }`}
-              >
-                Reserved
-                <TabDataCount n={tabCounts.pending} active={activeTab === "before"} />
-              </button>
-            )} */}
-            {visibleTabs.includes("current") && (
-              <button
-                onClick={() => onTabChange("current")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "current"
-                  ? "bg-primary-600 text-white shadow-md shadow-primary-600/10"
-                  : "text-gray-600 hover:bg-gray-100"
-                  }`}
-              >
-                Current Stock
-                <TabDataCount n={tabCounts.current} active={activeTab === "current"} />
-              </button>
-            )}
-            {/* Available / Sold out tabs — commented out (see Sidebar)
-            <button
-              onClick={() => onTabChange("available")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "available"
-                  ? "bg-primary-600 text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-                }`}
-            >
-              Available
-              <TabDataCount
-                n={tabCounts.available}
-                active={activeTab === "available"}
-              />
-            </button>
-            <button
-              onClick={() => onTabChange("soldout")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "soldout"
-                  ? "bg-primary-600 text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-                }`}
-            >
-              Sold out
-              <TabDataCount n={tabCounts.soldout} active={activeTab === "soldout"} />
-            </button>
-            */}
-            </div>
           </div>
         </div>
       </div>
