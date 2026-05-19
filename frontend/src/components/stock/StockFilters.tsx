@@ -426,7 +426,12 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
             placeholder="From Date"
             value={fromDateFilter}
             onChange={(e) => onFromDateFilterChange && onFromDateFilterChange(e.target.value)}
-            className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm"
+            onClick={(e) => {
+              try {
+                (e.target as any).showPicker();
+              } catch (err) {}
+            }}
+            className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm cursor-pointer"
             title="From Date"
           />
         </div>
@@ -438,7 +443,12 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
             placeholder="To Date"
             value={toDateFilter}
             onChange={(e) => onToDateFilterChange && onToDateFilterChange(e.target.value)}
-            className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm"
+            onClick={(e) => {
+              try {
+                (e.target as any).showPicker();
+              } catch (err) {}
+            }}
+            className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm cursor-pointer"
             title="To Date"
           />
         </div>
