@@ -214,6 +214,7 @@ const CreateCar: React.FC = () => {
                 ? ({
                     chassis_no_full: prefilledChassisNo,
                     chassis_no_masked: prefilledChassisNo,
+                    year: 2026,
                   } as any)
                 : null
             }
