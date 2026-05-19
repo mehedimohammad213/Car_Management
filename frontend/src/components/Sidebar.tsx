@@ -225,7 +225,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                             setPurchaseSubmenuOpen(false);
                           }}
                         >
-                          <span className="truncate">Display Stock</span>
+                          <span className="truncate">Current Stock</span>
                         </Link>
                       )}
                       {/* Available / Sold Out tabs hidden

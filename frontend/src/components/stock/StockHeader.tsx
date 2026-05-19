@@ -106,7 +106,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
                   : "text-gray-600 hover:bg-gray-100"
                   }`}
               >
-                All
+                All Stock
                 <TabDataCount n={tabCounts.all} active={activeTab === "all"} />
               </button>
             )}
@@ -130,7 +130,7 @@ export const StockHeader: React.FC<StockHeaderProps> = ({
                   : "text-gray-600 hover:bg-gray-100"
                   }`}
               >
-                Display
+                Current Stock
                 <TabDataCount n={tabCounts.current} active={activeTab === "current"} />
               </button>
             )}
