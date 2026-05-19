@@ -312,7 +312,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                           setStockSubmenuOpen(false);
                         }}
                       >
-                        <span className="truncate">LC Wise View</span>
+                        <span className="truncate">LC History</span>
                       </Link>
                       <Link
                         to="/admin/purchase-history?tab=history"

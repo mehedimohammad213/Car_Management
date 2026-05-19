@@ -290,10 +290,9 @@ const Header: React.FC = () => {
                 if (item.path === "/admin/stock") {
                   const stockMainPath = `/admin/stock?tab=${effectiveStockTab}`;
                   const stockTabClass = (tab: StockPageTab) =>
-                    `flex items-center space-x-2 w-full px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                      effectiveStockTab === tab
-                        ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
-                        : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
+                    `flex items-center space-x-2 w-full px-3 py-2 rounded-md text-base font-medium transition-colors ${effectiveStockTab === tab
+                      ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
+                      : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
                     }`;
 
                   return (
@@ -304,61 +303,59 @@ const Header: React.FC = () => {
                           setMobileStockSubmenuOpen((v) => !v);
                           setMobilePurchaseSubmenuOpen(false);
                         }}
-                        className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                          isActiveRoute
-                            ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
-                            : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                        }`}
+                        className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${isActiveRoute
+                          ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
+                          : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                          }`}
                       >
                         <Icon className="h-5 w-5" />
                         <span>{item.label}</span>
                         <ChevronDownIcon
-                          className={`ml-auto h-4 w-4 opacity-60 transform transition-transform ${
-                            mobileStockSubmenuOpen ? "rotate-180" : ""
-                          }`}
+                          className={`ml-auto h-4 w-4 opacity-60 transform transition-transform ${mobileStockSubmenuOpen ? "rotate-180" : ""
+                            }`}
                         />
                       </Link>
 
                       {mobileStockSubmenuOpen && (
                         <div className="ml-5 mt-1 flex flex-col gap-1">
                           {allowedStockTabs.includes("all") && (
-                          <Link
-                            to="/admin/stock?tab=all"
-                            onClick={() => {
-                              setMobileMenuOpen(false);
-                              setMobileStockSubmenuOpen(true);
-                              setMobilePurchaseSubmenuOpen(false);
-                            }}
-                            className={stockTabClass("all")}
-                          >
-                            <span>All Stock</span>
-                          </Link>
+                            <Link
+                              to="/admin/stock?tab=all"
+                              onClick={() => {
+                                setMobileMenuOpen(false);
+                                setMobileStockSubmenuOpen(true);
+                                setMobilePurchaseSubmenuOpen(false);
+                              }}
+                              className={stockTabClass("all")}
+                            >
+                              <span>All Stock</span>
+                            </Link>
                           )}
                           {allowedStockTabs.includes("before") && (
-                          <Link
-                            to="/admin/stock?tab=before"
-                            onClick={() => {
-                              setMobileMenuOpen(false);
-                              setMobileStockSubmenuOpen(true);
-                              setMobilePurchaseSubmenuOpen(false);
-                            }}
-                            className={stockTabClass("before")}
-                          >
-                            <span>Pending Stock</span>
-                          </Link>
+                            <Link
+                              to="/admin/stock?tab=before"
+                              onClick={() => {
+                                setMobileMenuOpen(false);
+                                setMobileStockSubmenuOpen(true);
+                                setMobilePurchaseSubmenuOpen(false);
+                              }}
+                              className={stockTabClass("before")}
+                            >
+                              <span>Pending Stock</span>
+                            </Link>
                           )}
                           {allowedStockTabs.includes("current") && (
-                          <Link
-                            to="/admin/stock?tab=current"
-                            onClick={() => {
-                              setMobileMenuOpen(false);
-                              setMobileStockSubmenuOpen(true);
-                              setMobilePurchaseSubmenuOpen(false);
-                            }}
-                            className={stockTabClass("current")}
-                          >
-                            <span>Current Stock</span>
-                          </Link>
+                            <Link
+                              to="/admin/stock?tab=current"
+                              onClick={() => {
+                                setMobileMenuOpen(false);
+                                setMobileStockSubmenuOpen(true);
+                                setMobilePurchaseSubmenuOpen(false);
+                              }}
+                              className={stockTabClass("current")}
+                            >
+                              <span>Current Stock</span>
+                            </Link>
                           )}
                           {/* Available / Sold Out — commented out (match Sidebar)
                           <Link
@@ -394,10 +391,9 @@ const Header: React.FC = () => {
                 if (item.path === "/admin/purchase-history") {
                   const purchaseMainPath = `/admin/purchase-history?tab=${effectivePurchaseTab}`;
                   const purchaseTabClass = (tab: PurchaseTab) =>
-                    `flex items-center space-x-2 w-full px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                      effectivePurchaseTab === tab
-                        ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
-                        : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
+                    `flex items-center space-x-2 w-full px-3 py-2 rounded-md text-base font-medium transition-colors ${effectivePurchaseTab === tab
+                      ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
+                      : "text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
                     }`;
 
                   return (
@@ -408,18 +404,16 @@ const Header: React.FC = () => {
                           setMobilePurchaseSubmenuOpen((v) => !v);
                           setMobileStockSubmenuOpen(false);
                         }}
-                        className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                          isActiveRoute
-                            ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
-                            : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                        }`}
+                        className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${isActiveRoute
+                          ? "bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-blue-200"
+                          : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                          }`}
                       >
                         <Icon className="h-5 w-5" />
                         <span>{item.label}</span>
                         <ChevronDownIcon
-                          className={`ml-auto h-4 w-4 opacity-60 transform transition-transform ${
-                            mobilePurchaseSubmenuOpen ? "rotate-180" : ""
-                          }`}
+                          className={`ml-auto h-4 w-4 opacity-60 transform transition-transform ${mobilePurchaseSubmenuOpen ? "rotate-180" : ""
+                            }`}
                         />
                       </Link>
 
@@ -434,7 +428,7 @@ const Header: React.FC = () => {
                             }}
                             className={purchaseTabClass("lc_wise")}
                           >
-                            <span>LC Wise View</span>
+                            <span>LC History</span>
                           </Link>
                           <Link
                             to="/admin/purchase-history?tab=history"

@@ -274,19 +274,17 @@ const PurchaseHistoryPage: React.FC = () => {
                       return next;
                     });
                   }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                    activeTab === "lc_wise"
-                      ? "bg-primary-600 text-white shadow-md shadow-primary-600/10"
-                      : "text-gray-600 hover:bg-gray-100"
-                  }`}
-                >
-                  <span>View</span>
-                  <span
-                    className={`px-2 py-0.5 text-xs font-bold rounded-full transition-colors ${
-                      activeTab === "lc_wise"
-                        ? "bg-white text-primary-600"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "lc_wise"
+                    ? "bg-primary-600 text-white shadow-md shadow-primary-600/10"
+                    : "text-gray-600 hover:bg-gray-100"
                     }`}
+                >
+                  <span>LC History</span>
+                  <span
+                    className={`px-2 py-0.5 text-xs font-bold rounded-full transition-colors ${activeTab === "lc_wise"
+                      ? "bg-white text-primary-600"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      }`}
                   >
                     {lcTotalItems}
                   </span>
@@ -300,19 +298,17 @@ const PurchaseHistoryPage: React.FC = () => {
                       return next;
                     });
                   }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                    activeTab === "history"
-                      ? "bg-primary-600 text-white shadow-md shadow-primary-600/10"
-                      : "text-gray-600 hover:bg-gray-100"
-                  }`}
-                >
-                  <span>History</span>
-                  <span
-                    className={`px-2 py-0.5 text-xs font-bold rounded-full transition-colors ${
-                      activeTab === "history"
-                        ? "bg-white text-primary-600"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === "history"
+                    ? "bg-primary-600 text-white shadow-md shadow-primary-600/10"
+                    : "text-gray-600 hover:bg-gray-100"
                     }`}
+                >
+                  <span>Purchase History</span>
+                  <span
+                    className={`px-2 py-0.5 text-xs font-bold rounded-full transition-colors ${activeTab === "history"
+                      ? "bg-white text-primary-600"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      }`}
                   >
                     {lcHistoriesAll.length}
                   </span>
