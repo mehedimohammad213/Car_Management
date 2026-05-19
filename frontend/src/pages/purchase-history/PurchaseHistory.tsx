@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Plus, Search, X } from "lucide-react";
+import { Plus, Search, X, ChevronDown } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   purchaseHistoryApi,
@@ -46,6 +46,31 @@ const PurchaseHistoryPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterMonth, setFilterMonth] = useState("");
   const [filterYear, setFilterYear] = useState("");
+
+  const [monthOpen, setMonthOpen] = useState(false);
+  const [yearOpen, setYearOpen] = useState(false);
+
+  const [monthSearch, setMonthSearch] = useState("");
+  const [yearSearch, setYearSearch] = useState("");
+
+  const monthRef = React.useRef<HTMLDivElement>(null);
+  const yearRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (monthRef.current && !monthRef.current.contains(target)) {
+        setMonthOpen(false);
+        setMonthSearch("");
+      }
+      if (yearRef.current && !yearRef.current.contains(target)) {
+        setYearOpen(false);
+        setYearSearch("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -330,30 +355,128 @@ const PurchaseHistoryPage: React.FC = () => {
               />
             </div>
 
-            <div className="w-full lg:w-auto min-w-[150px]">
-              <select
-                value={filterMonth}
-                onChange={(e) => setFilterMonth(e.target.value)}
-                className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+            {/* Month Filter */}
+            <div className="w-full lg:w-auto relative" ref={monthRef}>
+              <button
+                type="button"
+                onClick={() => setMonthOpen(!monthOpen)}
+                className="w-full lg:w-auto min-w-[150px] flex items-center justify-between px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm"
               >
-                <option value="">All Months</option>
-                {months.map((m) => (
-                  <option key={m.value} value={m.value}>{m.label}</option>
-                ))}
-              </select>
+                <span className="text-gray-700 dark:text-gray-300">
+                  {months.find((m) => m.value === filterMonth)?.label || "All Months"}
+                </span>
+                <ChevronDown className={`w-4 h-4 ml-2 text-gray-500 transition-transform duration-200 ${monthOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {monthOpen && (
+                <div className="absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 py-2 max-h-80 flex flex-col backdrop-blur-md bg-opacity-95">
+                  <div className="px-3 py-1.5 border-b border-gray-100 dark:border-gray-700">
+                    <input
+                      type="text"
+                      placeholder="Search months..."
+                      value={monthSearch}
+                      onChange={(e) => setMonthSearch(e.target.value)}
+                      className="w-full px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-1 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+                      autoFocus
+                    />
+                  </div>
+                  <div className="overflow-y-auto flex-1 max-h-48 py-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFilterMonth("");
+                        setMonthOpen(false);
+                        setMonthSearch("");
+                      }}
+                      className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${!filterMonth ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
+                    >
+                      <span>All Months</span>
+                    </button>
+                    <div className="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                    {months
+                      .filter(({ label }) => label.toLowerCase().includes(monthSearch.toLowerCase()))
+                      .map(({ value, label }) => {
+                        const isSelected = filterMonth === value;
+                        return (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => {
+                              setFilterMonth(value);
+                              setMonthOpen(false);
+                              setMonthSearch("");
+                            }}
+                            className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${isSelected ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
+                          >
+                            <span>{label}</span>
+                          </button>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="w-full lg:w-auto min-w-[120px]">
-              <select
-                value={filterYear}
-                onChange={(e) => setFilterYear(e.target.value)}
-                className="w-full lg:w-auto min-w-[120px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+            {/* Year Filter */}
+            <div className="w-full lg:w-auto relative" ref={yearRef}>
+              <button
+                type="button"
+                onClick={() => setYearOpen(!yearOpen)}
+                className="w-full lg:w-auto min-w-[120px] flex items-center justify-between px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm"
               >
-                <option value="">All Years</option>
-                {years.map((y) => (
-                  <option key={y} value={y}>{y}</option>
-                ))}
-              </select>
+                <span className="text-gray-700 dark:text-gray-300">
+                  {filterYear || "All Years"}
+                </span>
+                <ChevronDown className={`w-4 h-4 ml-2 text-gray-500 transition-transform duration-200 ${yearOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {yearOpen && (
+                <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 py-2 max-h-80 flex flex-col backdrop-blur-md bg-opacity-95">
+                  <div className="px-3 py-1.5 border-b border-gray-100 dark:border-gray-700">
+                    <input
+                      type="text"
+                      placeholder="Search years..."
+                      value={yearSearch}
+                      onChange={(e) => setYearSearch(e.target.value)}
+                      className="w-full px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-1 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+                      autoFocus
+                    />
+                  </div>
+                  <div className="overflow-y-auto flex-1 max-h-48 py-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFilterYear("");
+                        setYearOpen(false);
+                        setYearSearch("");
+                      }}
+                      className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${!filterYear ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
+                    >
+                      <span>All Years</span>
+                    </button>
+                    <div className="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                    {years
+                      .filter((y) => y.includes(yearSearch))
+                      .map((y) => {
+                        const isSelected = filterYear === y;
+                        return (
+                          <button
+                            key={y}
+                            type="button"
+                            onClick={() => {
+                              setFilterYear(y);
+                              setYearOpen(false);
+                              setYearSearch("");
+                            }}
+                            className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${isSelected ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
+                          >
+                            <span>{y}</span>
+                          </button>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
             </div>
 
             {hasActiveFilters && (
