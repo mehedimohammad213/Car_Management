@@ -440,7 +440,7 @@ const StockManagement: React.FC = () => {
               onCreateStock={isStockUserView ? undefined : handleCreateStock}
               statusCounts={statusCounts}
               filterOptions={filterOptions}
-              onAddCar={isStockUserView ? undefined : handleAddStockClick}
+              onAddCar={isStockUserView || activeTab === "current" ? undefined : handleAddStockClick}
             />
           ) : activeTab === "before" ? (
             <StockFilters
