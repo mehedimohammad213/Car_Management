@@ -431,7 +431,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                 <div className="w-full bg-slate-200 dark:bg-gray-700 rounded-full h-2 mt-1">
                                     <div 
                                         className="bg-blue-500 h-2 rounded-full transition-all duration-500" 
-                                        style={{ width: `${totalPurchaseAmount > 0 ? Math.min(100, Math.round((totalCnfAmount / totalPurchaseAmount) * 105)) : 0}%` }}
+                                        style={{ width: `${totalPurchaseAmount > 0 ? Math.min(100, Math.round((totalCnfAmount / totalPurchaseAmount) * 100)) : 0}%` }}
                                     ></div>
                                 </div>
                                 <div className="flex items-center justify-between text-xs text-slate-600 dark:text-gray-400 pt-1">
@@ -516,7 +516,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <div className="space-y-12 mt-8">
                     
                     {/* SECTION 1: Import & Purchase Details (Grouped LCs, Max 5 Cards Shown) */}
-                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 p-6 shadow-sm flex flex-col h-[740px]">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 p-6 shadow-sm flex flex-col h-[440px]">
                         
                         {/* Header of the Import & Purchase parts containing Title, Search, and Date Picker */}
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 flex-shrink-0 pb-4 border-b border-slate-100 dark:border-gray-800">
@@ -581,7 +581,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                         <input
                                             type="date"
                                             value={toDate}
-                                            onChange={(e) => setToDate(e.target.value)}
+                                            onChange={(e) => setPurchaseToDate(e.target.value)}
                                             onClick={(e) => {
                                                 try {
                                                     (e.target as any).showPicker();
@@ -604,8 +604,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             </div>
                         </div>
 
-                        {/* List Section showing exactly 5 LC cards in a responsive grid layout */}
-                        <div className="flex-grow overflow-y-auto pr-2 max-h-[640px] scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-gray-800">
+                        {/* List Section showing exactly 3 LC cards (1 row) in a responsive grid layout */}
+                        <div className="flex-grow overflow-y-auto pr-2 max-h-[320px] scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-gray-800">
                             {displayedLcs.length === 0 ? (
                                 <div className="text-center py-12">
                                     <p className="text-sm text-slate-500 dark:text-gray-400">No matching purchase records found.</p>
@@ -691,7 +691,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </div>
 
                     {/* SECTION 2: Sales & Payment Details (Single Card Section, Full-Width Responsive Grid) */}
-                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 p-6 shadow-sm flex flex-col h-[740px]">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-900 p-6 shadow-sm flex flex-col h-[440px]">
                         
                         {/* Header of the Sales Parts containing Title, Search, and Date Picker */}
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 flex-shrink-0 pb-4 border-b border-slate-100 dark:border-gray-800">
@@ -780,7 +780,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         </div>
 
                         {/* List Section in a beautiful responsive grid layout with a scrollbar */}
-                        <div className="flex-grow overflow-y-auto pr-2 max-h-[640px] scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-gray-800">
+                        <div className="flex-grow overflow-y-auto pr-2 max-h-[320px] scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-gray-800">
                             {filteredPayments.length === 0 ? (
                                 <div className="text-center py-12">
                                     <p className="text-sm text-slate-500 dark:text-gray-400">No matching sales records found.</p>
@@ -801,7 +801,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                                         </span>
                                                         <span className="block text-[10px] text-slate-500 mt-0.5">Showroom / Client Account</span>
                                                     </div>
-                                                    <span className="text-xs text-slate-500 font-semibold bg-white dark:bg-gray-800 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-700">{payment.purchase_date || "N/A"}</span>
+                                                    <span className="text-xs text-slate-500 font-semibold bg-white dark:bg-gray-800 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-770">{payment.purchase_date || "N/A"}</span>
                                                 </div>
                                                 
                                                 <div className="space-y-2.5 text-xs text-slate-600 dark:text-gray-400">
