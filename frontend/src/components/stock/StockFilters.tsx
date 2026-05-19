@@ -63,12 +63,38 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
   searchPlaceholder = "Search stocks by make, model, year, chassis number, or any keyword...",
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [makeOpen, setMakeOpen] = React.useState(false);
+  const [modelOpen, setModelOpen] = React.useState(false);
+  const [yearOpen, setYearOpen] = React.useState(false);
+
+  const [statusSearch, setStatusSearch] = React.useState("");
+  const [makeSearch, setMakeSearch] = React.useState("");
+  const [modelSearch, setModelSearch] = React.useState("");
+  const [yearSearch, setYearSearch] = React.useState("");
+
   const dropdownRef = React.useRef<HTMLDivElement>(null);
+  const makeRef = React.useRef<HTMLDivElement>(null);
+  const modelRef = React.useRef<HTMLDivElement>(null);
+  const yearRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (dropdownRef.current && !dropdownRef.current.contains(target)) {
         setIsOpen(false);
+        setStatusSearch("");
+      }
+      if (makeRef.current && !makeRef.current.contains(target)) {
+        setMakeOpen(false);
+        setMakeSearch("");
+      }
+      if (modelRef.current && !modelRef.current.contains(target)) {
+        setModelOpen(false);
+        setModelSearch("");
+      }
+      if (yearRef.current && !yearRef.current.contains(target)) {
+        setYearOpen(false);
+        setYearSearch("");
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -132,98 +158,255 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
             </button>
 
             {isOpen && (
-              <div className="absolute left-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 py-2 max-h-80 overflow-y-auto backdrop-blur-md bg-opacity-95">
-                <button
-                  type="button"
-                  onClick={() => {
-                    onStatusFilterChange("");
-                    setIsOpen(false);
-                  }}
-                  className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${!statusFilter ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
-                >
-                  <span>All statuses</span>
-                  <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold bg-gray-100 text-gray-600 rounded-full dark:bg-gray-900 dark:text-gray-400">
-                    {totalCount}
-                  </span>
-                </button>
-                <div className="border-t border-gray-100 dark:border-gray-700 my-1"></div>
-                {STOCK_STATUS_DROPDOWN_OPTIONS.map(({ value, label }) => {
-                  const count = statusCounts?.[value] || 0;
-                  const isSelected = statusFilter === value;
-                  return (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => {
-                        onStatusFilterChange(value);
-                        setIsOpen(false);
-                      }}
-                      className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${isSelected ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
-                    >
-                      <span>{label}</span>
-                      <span className={`inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full ${isSelected ? 'bg-primary-100 text-primary-800 dark:bg-primary-950 dark:text-primary-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-900 dark:text-gray-400'}`}>
-                        {count}
-                      </span>
-                    </button>
-                  );
-                })}
+              <div className="absolute left-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 py-2 max-h-80 flex flex-col backdrop-blur-md bg-opacity-95">
+                <div className="px-3 py-1.5 border-b border-gray-100 dark:border-gray-700">
+                  <input
+                    type="text"
+                    placeholder="Search statuses..."
+                    value={statusSearch}
+                    onChange={(e) => setStatusSearch(e.target.value)}
+                    className="w-full px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-1 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+                    autoFocus
+                  />
+                </div>
+                <div className="overflow-y-auto flex-1 max-h-48 py-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onStatusFilterChange("");
+                      setIsOpen(false);
+                      setStatusSearch("");
+                    }}
+                    className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${!statusFilter ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
+                  >
+                    <span>All statuses</span>
+                    <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold bg-gray-100 text-gray-600 rounded-full dark:bg-gray-900 dark:text-gray-400">
+                      {totalCount}
+                    </span>
+                  </button>
+                  <div className="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                  {STOCK_STATUS_DROPDOWN_OPTIONS
+                    .filter(({ label }) => label.toLowerCase().includes(statusSearch.toLowerCase()))
+                    .map(({ value, label }) => {
+                      const count = statusCounts?.[value] || 0;
+                      const isSelected = statusFilter === value;
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => {
+                            onStatusFilterChange(value);
+                            setIsOpen(false);
+                            setStatusSearch("");
+                          }}
+                          className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${isSelected ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
+                        >
+                          <span>{label}</span>
+                          <span className={`inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full ${isSelected ? 'bg-primary-100 text-primary-800 dark:bg-primary-950 dark:text-primary-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-900 dark:text-gray-400'}`}>
+                            {count}
+                          </span>
+                        </button>
+                      );
+                    })}
+                </div>
               </div>
             )}
           </div>
         )}
 
         {/* Make Filter */}
-        <div className="w-full lg:w-auto">
-          <select
-            value={makeFilter || ""}
-            onChange={(e) => {
-              if (onMakeFilterChange) {
-                onMakeFilterChange(e.target.value);
-                if (onModelFilterChange) onModelFilterChange("");
-              }
-            }}
-            className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+        <div className="w-full lg:w-auto relative" ref={makeRef}>
+          <button
+            type="button"
+            onClick={() => setMakeOpen(!makeOpen)}
+            className="w-full lg:w-auto min-w-[150px] flex items-center justify-between px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm"
           >
-            <option value="">All Makes</option>
-            {Object.keys(makeToModels).sort().map((make) => (
-              <option key={make} value={make}>
-                {make}
-              </option>
-            ))}
-          </select>
+            <span className="text-gray-700 dark:text-gray-300">
+              {makeFilter || "All Makes"}
+            </span>
+            <ChevronDown className={`w-4 h-4 ml-2 text-gray-500 transition-transform duration-200 ${makeOpen ? "rotate-180" : ""}`} />
+          </button>
+
+          {makeOpen && (
+            <div className="absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 py-2 max-h-80 flex flex-col backdrop-blur-md bg-opacity-95">
+              <div className="px-3 py-1.5 border-b border-gray-100 dark:border-gray-700">
+                <input
+                  type="text"
+                  placeholder="Search makes..."
+                  value={makeSearch}
+                  onChange={(e) => setMakeSearch(e.target.value)}
+                  className="w-full px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-1 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+                  autoFocus
+                />
+              </div>
+              <div className="overflow-y-auto flex-1 max-h-48 py-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onMakeFilterChange) {
+                      onMakeFilterChange("");
+                      if (onModelFilterChange) onModelFilterChange("");
+                    }
+                    setMakeOpen(false);
+                    setMakeSearch("");
+                  }}
+                  className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${!makeFilter ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
+                >
+                  All Makes
+                </button>
+                <div className="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                {Object.keys(makeToModels)
+                  .sort()
+                  .filter((make) => make.toLowerCase().includes(makeSearch.toLowerCase()))
+                  .map((make) => {
+                    const isSelected = makeFilter === make;
+                    return (
+                      <button
+                        key={make}
+                        type="button"
+                        onClick={() => {
+                          if (onMakeFilterChange) {
+                            onMakeFilterChange(make);
+                            if (onModelFilterChange) onModelFilterChange("");
+                          }
+                          setMakeOpen(false);
+                          setMakeSearch("");
+                        }}
+                        className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${isSelected ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
+                      >
+                        {make}
+                      </button>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Model Filter */}
-        <div className="w-full lg:w-auto">
-          <select
-            value={modelFilter || ""}
-            onChange={(e) => onModelFilterChange && onModelFilterChange(e.target.value)}
+        <div className="w-full lg:w-auto relative" ref={modelRef}>
+          <button
+            type="button"
             disabled={!makeFilter}
-            className={`w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent ${!makeFilter ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100'}`}
+            onClick={() => setModelOpen(!modelOpen)}
+            className={`w-full lg:w-auto min-w-[150px] flex items-center justify-between px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 transition-all font-semibold text-sm shadow-sm ${!makeFilter ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 hover:border-gray-400'}`}
           >
-            <option value="">All Models</option>
-            {makeFilter && makeToModels[makeFilter]?.sort().map((model) => (
-              <option key={model} value={model}>
-                {model}
-              </option>
-            ))}
-          </select>
+            <span className={!makeFilter ? 'text-gray-400' : 'text-gray-700 dark:text-gray-300'}>
+              {modelFilter || "All Models"}
+            </span>
+            <ChevronDown className="w-4 h-4 ml-2 text-gray-400" />
+          </button>
+
+          {modelOpen && makeFilter && (
+            <div className="absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 py-2 max-h-80 flex flex-col backdrop-blur-md bg-opacity-95">
+              <div className="px-3 py-1.5 border-b border-gray-100 dark:border-gray-700">
+                <input
+                  type="text"
+                  placeholder="Search models..."
+                  value={modelSearch}
+                  onChange={(e) => setModelSearch(e.target.value)}
+                  className="w-full px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-1 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+                  autoFocus
+                />
+              </div>
+              <div className="overflow-y-auto flex-1 max-h-48 py-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onModelFilterChange) onModelFilterChange("");
+                    setModelOpen(false);
+                    setModelSearch("");
+                  }}
+                  className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${!modelFilter ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
+                >
+                  All Models
+                </button>
+                <div className="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                {makeToModels[makeFilter]
+                  ?.sort()
+                  .filter((model) => model.toLowerCase().includes(modelSearch.toLowerCase()))
+                  .map((model) => {
+                    const isSelected = modelFilter === model;
+                    return (
+                      <button
+                        key={model}
+                        type="button"
+                        onClick={() => {
+                          if (onModelFilterChange) onModelFilterChange(model);
+                          setModelOpen(false);
+                          setModelSearch("");
+                        }}
+                        className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${isSelected ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
+                      >
+                        {model}
+                      </button>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Year Filter */}
-        <div className="w-full lg:w-auto">
-          <select
-            value={yearFilter}
-            onChange={(e) => onYearFilterChange(e.target.value)}
-            className="w-full lg:w-auto min-w-[150px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+        <div className="w-full lg:w-auto relative" ref={yearRef}>
+          <button
+            type="button"
+            onClick={() => setYearOpen(!yearOpen)}
+            className="w-full lg:w-auto min-w-[150px] flex items-center justify-between px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm"
           >
-            <option value="">All Years</option>
-            {filterOptions?.years?.map((year: number) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
+            <span className="text-gray-700 dark:text-gray-300">
+              {yearFilter || "All Years"}
+            </span>
+            <ChevronDown className={`w-4 h-4 ml-2 text-gray-500 transition-transform duration-200 ${yearOpen ? "rotate-180" : ""}`} />
+          </button>
+
+          {yearOpen && (
+            <div className="absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 py-2 max-h-80 flex flex-col backdrop-blur-md bg-opacity-95">
+              <div className="px-3 py-1.5 border-b border-gray-100 dark:border-gray-700">
+                <input
+                  type="text"
+                  placeholder="Search years..."
+                  value={yearSearch}
+                  onChange={(e) => setYearSearch(e.target.value)}
+                  className="w-full px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-1 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+                  autoFocus
+                />
+              </div>
+              <div className="overflow-y-auto flex-1 max-h-48 py-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onYearFilterChange("");
+                    setYearOpen(false);
+                    setYearSearch("");
+                  }}
+                  className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${!yearFilter ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
+                >
+                  All Years
+                </button>
+                <div className="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                {filterOptions?.years
+                  ?.filter((year) => year.toString().includes(yearSearch))
+                  ?.map((year: number) => {
+                    const isSelected = yearFilter === year.toString();
+                    return (
+                      <button
+                        key={year}
+                        type="button"
+                        onClick={() => {
+                          onYearFilterChange(year.toString());
+                          setYearOpen(false);
+                          setYearSearch("");
+                        }}
+                        className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${isSelected ? 'font-bold bg-primary-50/50 dark:bg-primary-950/20 text-primary-600' : 'text-gray-700 dark:text-gray-200'}`}
+                      >
+                        {year}
+                      </button>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Color Filter */}
