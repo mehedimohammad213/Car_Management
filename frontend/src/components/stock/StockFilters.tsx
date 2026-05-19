@@ -132,7 +132,44 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
 
   return (
     <div className="mb-0">
-      <div className="flex flex-col lg:flex-row gap-4 items-center">
+      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between w-full">
+        {/* Left Side: Filter Dropdowns */}
+        <div className="flex flex-col lg:flex-row flex-wrap items-stretch lg:items-center gap-3 w-full lg:w-auto">
+          {/* From Date Filter */}
+          <div className="w-full lg:w-auto flex items-center gap-2">
+            <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">From</span>
+            <input
+              type="date"
+              placeholder="From Date"
+              value={fromDateFilter}
+              onChange={(e) => onFromDateFilterChange && onFromDateFilterChange(e.target.value)}
+              onClick={(e) => {
+                try {
+                  (e.target as any).showPicker();
+                } catch (err) {}
+              }}
+              className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm cursor-pointer"
+              title="From Date"
+            />
+          </div>
+
+          {/* To Date Filter */}
+          <div className="w-full lg:w-auto flex items-center gap-2">
+            <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">To</span>
+            <input
+              type="date"
+              placeholder="To Date"
+              value={toDateFilter}
+              onChange={(e) => onToDateFilterChange && onToDateFilterChange(e.target.value)}
+              onClick={(e) => {
+                try {
+                  (e.target as any).showPicker();
+                } catch (err) {}
+              }}
+              className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm cursor-pointer"
+              title="To Date"
+            />
+          </div>
 
 
         {/* Inventory status — All Stock tab */}
@@ -408,41 +445,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
           )}
         </div>
 
-        {/* From Date Filter */}
-        <div className="w-full lg:w-auto flex items-center gap-2">
-          <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">From</span>
-          <input
-            type="date"
-            placeholder="From Date"
-            value={fromDateFilter}
-            onChange={(e) => onFromDateFilterChange && onFromDateFilterChange(e.target.value)}
-            onClick={(e) => {
-              try {
-                (e.target as any).showPicker();
-              } catch (err) {}
-            }}
-            className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm cursor-pointer"
-            title="From Date"
-          />
-        </div>
 
-        {/* To Date Filter */}
-        <div className="w-full lg:w-auto flex items-center gap-2">
-          <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">To</span>
-          <input
-            type="date"
-            placeholder="To Date"
-            value={toDateFilter}
-            onChange={(e) => onToDateFilterChange && onToDateFilterChange(e.target.value)}
-            onClick={(e) => {
-              try {
-                (e.target as any).showPicker();
-              } catch (err) {}
-            }}
-            className="w-full lg:w-auto px-4 py-2 border border-gray-300 rounded-xl bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 hover:border-gray-400 transition-all font-semibold text-sm shadow-sm cursor-pointer"
-            title="To Date"
-          />
-        </div>
 
         {/* Color Filter */}
         {/* <div className="w-full lg:w-auto">
@@ -476,8 +479,12 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
           </select>
         </div> */}
 
-        {/* Clear Filters Button */}
-        {hasActiveFilters && (
+        </div>
+
+        {/* Right Side: Actions */}
+        <div className="flex items-center gap-3 w-full lg:w-auto justify-end sm:justify-start">
+          {/* Clear Filters Button */}
+          {hasActiveFilters && (
           <button
             onClick={onClearFilters}
             className="w-10 h-10 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-sm"
@@ -546,5 +553,6 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
         )} */}
       </div>
     </div>
+  </div>
   );
 };
