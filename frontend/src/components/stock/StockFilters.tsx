@@ -27,6 +27,7 @@ interface StockFiltersProps {
   showStatusFilter?: boolean;
   statusFilter?: string;
   onStatusFilterChange?: (value: string) => void;
+  statusCounts?: Record<string, number>;
   filterOptions?: {
     years?: number[];
     colors?: string[];
@@ -57,6 +58,7 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
   showStatusFilter,
   statusFilter,
   onStatusFilterChange,
+  statusCounts,
   filterOptions,
   searchPlaceholder = "Search stocks by make, model, year, chassis number, or any keyword...",
 }) => {
@@ -96,12 +98,17 @@ export const StockFilters: React.FC<StockFiltersProps> = ({
               aria-label="Filter by stock status"
               className="w-full lg:w-auto min-w-[160px] px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
             >
-              <option value="">All statuses</option>
-              {STOCK_STATUS_DROPDOWN_OPTIONS.map(({ value, label }) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
+              <option value="">
+                All statuses {statusCounts ? `(${Object.values(statusCounts).reduce((a, b) => a + b, 0)})` : "(0)"}
+              </option>
+              {STOCK_STATUS_DROPDOWN_OPTIONS.map(({ value, label }) => {
+                const count = statusCounts?.[value] || 0;
+                return (
+                  <option key={value} value={value}>
+                    {label} ({count})
+                  </option>
+                );
+              })}
             </select>
           </div>
         )}

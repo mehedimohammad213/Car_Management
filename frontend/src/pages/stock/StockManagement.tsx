@@ -166,6 +166,15 @@ const StockManagement: React.FC = () => {
     return combined;
   }, [pendingFilteredForUnified, filteredStocksFull]);
 
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    unifiedCombined.forEach((row) => {
+      const status = getEffectiveStatusForUnifiedRow(row);
+      counts[status] = (counts[status] || 0) + 1;
+    });
+    return counts;
+  }, [unifiedCombined]);
+
   const unifiedFilteredByStatus = useMemo(() => {
     if (!allTabStatusFilter) return unifiedCombined;
     return unifiedCombined.filter(
@@ -356,6 +365,7 @@ const StockManagement: React.FC = () => {
               }
               onCreateInvoice={() => setShowInvoiceModal(true)}
               onCreateStock={isStockUserView ? undefined : handleCreateStock}
+              statusCounts={statusCounts}
               filterOptions={filterOptions}
               onAddCar={
                 isStockUserView
