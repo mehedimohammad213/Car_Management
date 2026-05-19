@@ -67,9 +67,7 @@ const CreateCar: React.FC = () => {
       console.log("Submitting car data:", formData);
       const response = await carApi.createCar(formData);
       console.log("Car creation response:", response);
-      const returnTab = (location.state as { returnStockTab?: StockPageTab } | null)
-        ?.returnStockTab;
-      navigate(stockManagementPath(returnTab), {
+      navigate(stockManagementPath("all"), {
         state: { message: "Car created successfully!" },
       });
     } catch (error: any) {

@@ -46,7 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
 
   const allowedStockTabs: StockPageTab[] =
     user.role === "admin"
-      ? ["all", "before", "current"]
+      ? ["all", "current"]
       : ["current"];
   const defaultStockTab: StockPageTab =
     user.role === "user" ? "current" : "all";
@@ -204,7 +204,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                           <span className="truncate">All Stock</span>
                         </Link>
                       )}
-                      {allowedStockTabs.includes("before") && (
+                      {/* {allowedStockTabs.includes("before") && (
                         <Link
                           to="/admin/stock?tab=before"
                           className={stockTabLinkClasses("before")}
@@ -215,7 +215,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                         >
                           <span className="truncate">Reserved Stock</span>
                         </Link>
-                      )}
+                      )} */}
                       {allowedStockTabs.includes("current") && (
                         <Link
                           to="/admin/stock?tab=current"

@@ -36,7 +36,7 @@ const StockManagement: React.FC = () => {
   const defaultTab: StockPageTab = isStockUserView ? "current" : "all";
   const allowedTabs: StockPageTab[] = isStockUserView
     ? ["current"]
-    : ["all", "before", "current"];
+    : ["all", "current"];
   const queryTab = searchParams.get("tab");
   const initialTab: StockPageTab =
     queryTab && allowedTabs.includes(queryTab as StockPageTab)
@@ -357,6 +357,14 @@ const StockManagement: React.FC = () => {
               onCreateInvoice={() => setShowInvoiceModal(true)}
               onCreateStock={isStockUserView ? undefined : handleCreateStock}
               filterOptions={filterOptions}
+              onAddCar={
+                isStockUserView
+                  ? undefined
+                  : () =>
+                      navigate("/create-car", {
+                        state: { returnStockTab: activeTab },
+                      })
+              }
             />
           ) : activeTab === "before" ? (
             <StockFilters
