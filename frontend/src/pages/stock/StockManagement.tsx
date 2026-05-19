@@ -461,6 +461,7 @@ const StockManagement: React.FC = () => {
                 handleStatusFilterChange("");
               }}
               showStatusFilter={activeTab === "all" || activeTab === "current"}
+              disableStatusFilter={activeTab === "current"}
               statusFilter={allTabStatusFilter}
               onStatusFilterChange={handleStatusFilterChange}
               yearFilter={yearFilter}
